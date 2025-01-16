@@ -10,11 +10,18 @@ class RepositoryServiceProvider extends ServiceProvider
 {
     /**
      * Register services.
-     *
-     * @return void
      */
     public function register()
     {
+        // Bind interface với implementation
         $this->app->bind(PostRepositoryInterface::class, PostRepository::class);
+    }
+
+    /**
+     * Bootstrap services.
+     */
+    public function boot()
+    {
+        //
     }
 }
