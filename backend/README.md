@@ -1,2 +1,2 @@
-# green-future-cooperative
- Đồ án tốt nghiệp K63
+# Backend của project
+ Backend được viết bằng Laravel 11 sử dụng RestfulAPI theo mẫu Repository
