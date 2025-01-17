@@ -9,7 +9,7 @@ use App\Traits\GeneratesSlug;
 
 class Post extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, GeneratesSlug;
 
     protected $fillable = [
         'title',
@@ -22,7 +22,7 @@ class Post extends Model
         'post_status',
         'published_at',
     ];
-    use GeneratesSlug;
+    
 
     protected static function boot()
     {
@@ -30,13 +30,13 @@ class Post extends Model
 
         static::creating(function ($post) {
             if (empty($post->slug)) {
-                $post->slug = static::generateSlug($post->title, static::class);
+                $post->slug = static::generateUniqueSlug($post->title, static::class);
             }
         });
 
         static::updating(function ($post) {
             if ($post->isDirty('title') && empty($post->slug)) {
-                $post->slug = static::generateSlug($post->title, static::class);
+                $post->slug = static::generateUniqueSlug($post->title, static::class);
             }
         });
     }

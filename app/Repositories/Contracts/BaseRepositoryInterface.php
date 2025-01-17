@@ -2,7 +2,7 @@
 
 namespace App\Repositories\Contracts;
 
-interface CRUDRepositoryInterface
+interface BaseRepositoryInterface
 {
     public function getAll();
     public function getById($id);

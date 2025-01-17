@@ -3,6 +3,7 @@
 namespace App\Traits;
 
 use Illuminate\Support\Str;
+use App\Models\Post; 
 
 trait GeneratesSlug
 {
@@ -14,16 +15,16 @@ trait GeneratesSlug
      * @param  string $field
      * @return string
      */
-    public static function generateSlug($title, $modelClass, $field = 'slug')
+    public function generateUniqueSlug(string $title, string $column = 'slug')
     {
+        // Tạo slug từ title
         $slug = Str::slug($title);
-        $originalSlug = $slug;
-        $count = 1;
+        $count = 0;
 
-        // Check for duplicates in the specified model
-        while ($modelClass::where($field, $slug)->exists()) {
-            $slug = "{$originalSlug}-{$count}";
+        // Kiểm tra xem slug đã tồn tại chưa
+        while (Post::withTrashed()->where($column, $slug)->exists()) {
             $count++;
+            $slug = Str::slug($title) . '-' . $count;
         }
 
         return $slug;
