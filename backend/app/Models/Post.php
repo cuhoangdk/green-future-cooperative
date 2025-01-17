@@ -22,7 +22,17 @@ class Post extends Model
         'post_status',
         'published_at',
     ];
-    
+    // Quan hệ với PostCategory (Giả sử mỗi post có một category)
+    public function category()
+    {
+        return $this->belongsTo(PostCategory::class, 'category_id');
+    }
+
+    // Quan hệ với User (Giả sử mỗi post có một author)
+    public function author()
+    {
+        return $this->belongsTo(User::class, 'author_id');
+    }
 
     protected static function boot()
     {

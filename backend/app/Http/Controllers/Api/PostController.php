@@ -11,6 +11,7 @@ use App\Traits\GeneratesSlug;
 class PostController extends Controller
 {
     use GeneratesSlug; 
+    
     protected $postRepository;
 
     public function __construct(PostRepositoryInterface $postRepository)
@@ -20,13 +21,13 @@ class PostController extends Controller
 
     public function index()
     {
-        $posts = $this->postRepository->getAll();
+        $posts = $this->postRepository->getAll()->load(['category', 'author']);
         return PostResource::collection($posts);
     }
 
     public function show($id)
     {
-        $post = $this->postRepository->getById($id);
+        $post = $this->postRepository->getById($id)->load(['category', 'author']);
         if (!$post) {
             return response()->json(['message' => 'Post not found'], 404);
         }
@@ -69,7 +70,7 @@ class PostController extends Controller
 
     public function getBySlug($slug)
     {
-        $post = $this->postRepository->getBySlug($slug);
+        $post = $this->postRepository->getBySlug($slug)->load(['category', 'author']);
         if (!$post) {
             return response()->json(['message' => 'Post not found'], 404);
         }
@@ -78,7 +79,7 @@ class PostController extends Controller
 
     public function getByCategory($categoryId)
     {
-        $posts = $this->postRepository->getByCategory($categoryId);
+        $posts = $this->postRepository->getByCategory($categoryId)->load(['category', 'author']);
         return PostResource::collection($posts);
     }
 }
