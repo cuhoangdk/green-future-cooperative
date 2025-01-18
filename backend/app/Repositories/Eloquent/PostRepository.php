@@ -9,7 +9,7 @@ use Illuminate\Contracts\Pagination\Paginator;
 class PostRepository implements PostRepositoryInterface
 {
     protected $model;
-    private $perPage=10; 
+    private int $perPage=10; 
 
     public function __construct(Post $model)
     {
@@ -59,6 +59,6 @@ class PostRepository implements PostRepositoryInterface
     public function getByCategory($categoryId):Paginator
     {
         return $this->model->where('category_id', $categoryId)->with(['category', 'author'])->paginate($this->perPage);
-    }
+    }    
 
 }

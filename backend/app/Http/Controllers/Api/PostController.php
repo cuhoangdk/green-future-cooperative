@@ -7,7 +7,7 @@ use App\Http\Resources\PostResource;
 use App\Repositories\Contracts\PostRepositoryInterface;
 use App\Http\Requests\StoreUpdatePostRequest;
 use App\Traits\GeneratesSlug;
-use Illuminate\Pagination\Paginator;
+use Illuminate\Http\Request;
 
 class PostController extends Controller
 {
@@ -28,10 +28,13 @@ class PostController extends Controller
 
     public function show($id)
     {
-        $post = $this->postRepository->getById($id)->load(['category', 'author']);
+        $post = $this->postRepository->getById($id);
+
         if (!$post) {
             return response()->json(['message' => 'Post not found'], 404);
         }
+
+        $post->load(['category', 'author']);
         return new PostResource($post);
     }
 
@@ -71,16 +74,30 @@ class PostController extends Controller
 
     public function getBySlug($slug)
     {
-        $post = $this->postRepository->getBySlug($slug)->load(['category', 'author']);
+        $post = $this->postRepository->getBySlug($slug);
+
         if (!$post) {
             return response()->json(['message' => 'Post not found'], 404);
         }
+
+        $post->load(['category', 'author']);
         return new PostResource($post);
     }
 
     public function getByCategory($categoryId)
     {
         $posts = $this->postRepository->getByCategory($categoryId);
+        return PostResource::collection($posts);
+    }
+    public function search(Request $request)
+    {
+        $term = $request->query('q'); // Lấy từ khóa tìm kiếm từ query string
+
+        if (!$term) {
+            return response()->json(['message' => 'Search term is required'], 400);
+        }
+
+        $posts = $this->postRepository->search($term);
         return PostResource::collection($posts);
     }
 }

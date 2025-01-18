@@ -12,5 +12,9 @@ Route::middleware('api')->group(function () {
         Route::delete('/{id}', [PostController::class, 'destroy']); // DELETE /api/posts/{id}
         Route::get('/slug/{slug}', [PostController::class, 'getBySlug']); // GET /api/posts/slug/{slug}
         Route::get('/category/{categoryId}', [PostController::class, 'getByCategory']); // GET /api/posts/category/{categoryId}
+        // Route::get('/search', [PostController::class, 'search']); //GET /api/posts/search
     });       
+});
+Route::get('/posts/search', function () {
+    return response()->json(['message' => 'Route is working']);
 });
