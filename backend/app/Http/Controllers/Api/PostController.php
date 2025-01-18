@@ -7,6 +7,7 @@ use App\Http\Resources\PostResource;
 use App\Repositories\Contracts\PostRepositoryInterface;
 use App\Http\Requests\StoreUpdatePostRequest;
 use App\Traits\GeneratesSlug;
+use Illuminate\Pagination\Paginator;
 
 class PostController extends Controller
 {
@@ -21,7 +22,7 @@ class PostController extends Controller
 
     public function index()
     {
-        $posts = $this->postRepository->getAll()->load(['category', 'author']);
+        $posts = $this->postRepository->getAll();
         return PostResource::collection($posts);
     }
 
@@ -79,7 +80,7 @@ class PostController extends Controller
 
     public function getByCategory($categoryId)
     {
-        $posts = $this->postRepository->getByCategory($categoryId)->load(['category', 'author']);
+        $posts = $this->postRepository->getByCategory($categoryId);
         return PostResource::collection($posts);
     }
 }

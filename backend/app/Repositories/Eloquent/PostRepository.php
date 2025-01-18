@@ -4,19 +4,21 @@ namespace App\Repositories\Eloquent;
 
 use App\Models\Post;
 use App\Repositories\Contracts\PostRepositoryInterface;
+use Illuminate\Contracts\Pagination\Paginator;
 
 class PostRepository implements PostRepositoryInterface
 {
     protected $model;
+    private $perPage=10; 
 
     public function __construct(Post $model)
     {
         $this->model = $model;
     }
 
-    public function getAll()
+    public function getAll(): Paginator
     {
-        return $this->model->all();
+        return $this->model->with(['category', 'author'])->paginate($this->perPage);
     }
 
     public function getById($id)
@@ -54,8 +56,9 @@ class PostRepository implements PostRepositoryInterface
         return $this->model->where('slug', $slug)->first();
     }
 
-    public function getByCategory($categoryId)
+    public function getByCategory($categoryId):Paginator
     {
-        return $this->model->where('category_id', $categoryId)->get();
+        return $this->model->where('category_id', $categoryId)->with(['category', 'author'])->paginate($this->perPage);
     }
+
 }
