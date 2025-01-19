@@ -88,16 +88,5 @@ class PostController extends Controller
     {
         $posts = $this->postRepository->getByCategory($categoryId);
         return PostResource::collection($posts);
-    }
-    public function search(Request $request)
-    {
-        $term = $request->query('q'); // Lấy từ khóa tìm kiếm từ query string
-
-        if (!$term) {
-            return response()->json(['message' => 'Search term is required'], 400);
-        }
-
-        $posts = $this->postRepository->search($term);
-        return PostResource::collection($posts);
-    }
+    }    
 }
