@@ -4,9 +4,6 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use App\Models\PostCategory;
-use App\Models\User;
-
 class PostResource extends JsonResource
 {
     /**

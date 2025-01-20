@@ -7,7 +7,6 @@ use App\Http\Resources\PostResource;
 use App\Repositories\Contracts\PostRepositoryInterface;
 use App\Http\Requests\StoreUpdatePostRequest;
 use App\Traits\GeneratesSlug;
-use Illuminate\Http\Request;
 
 class PostController extends Controller
 {
@@ -41,7 +40,6 @@ class PostController extends Controller
     public function store(StoreUpdatePostRequest $request)
     {
         $validated = $request->validated();
-        $validated['slug'] = $this->generateUniqueSlug($validated['title']);
 
         $post = $this->postRepository->create($validated);
         return new PostResource($post);
@@ -50,10 +48,6 @@ class PostController extends Controller
     public function update(StoreUpdatePostRequest $request, $id)
     {
         $validated = $request->validated();
-
-        if (isset($validated['title'])) {
-            $validated['slug'] = $this->generateUniqueSlug($validated['title']);
-        }
 
         $post = $this->postRepository->update($id, $validated);
         if (!$post) {
@@ -89,4 +83,37 @@ class PostController extends Controller
         $posts = $this->postRepository->getByCategory($categoryId);
         return PostResource::collection($posts);
     }    
+    public function restore($id)
+{
+    $post = $this->postRepository->getTrashedById($id);
+
+    if (!$post) {
+        return response()->json(['message' => 'Post not found or not trashed'], 404);
+    }
+
+    $restored = $this->postRepository->restore($id);
+
+    if (!$restored) {
+        return response()->json(['message' => 'Failed to restore post'], 500);
+    }
+
+    return response()->json(['message' => 'Post restored successfully']);
+}
+
+    public function forceDelete($id)
+    {
+        $post = $this->postRepository->getTrashedById($id);
+
+        if (!$post) {
+            return response()->json(['message' => 'Post not found or not trashed'], 404);
+        }
+
+        $deleted = $this->postRepository->forceDelete($id);
+
+        if (!$deleted) {
+            return response()->json(['message' => 'Failed to permanently delete post'], 500);
+        }
+
+        return response()->json(['message' => 'Post permanently deleted successfully']);
+    }
 }

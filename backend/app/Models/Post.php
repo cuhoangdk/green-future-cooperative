@@ -39,12 +39,14 @@ class Post extends Model
         parent::boot();
 
         static::creating(function ($post) {
+            // Kiểm tra và tạo slug nếu chưa có
             if (empty($post->slug)) {
                 $post->slug = static::generateUniqueSlug($post->title, static::class);
             }
         });
 
         static::updating(function ($post) {
+            // Kiểm tra xem tiêu đề có thay đổi và slug chưa có, nếu đúng thì tạo lại slug
             if ($post->isDirty('title') && empty($post->slug)) {
                 $post->slug = static::generateUniqueSlug($post->title, static::class);
             }

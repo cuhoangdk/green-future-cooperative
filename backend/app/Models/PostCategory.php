@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\GeneratesSlug;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class PostCategory extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes, GeneratesSlug;
 
     /**
      * Các cột có thể được gán giá trị hàng loạt.
@@ -37,5 +39,21 @@ class PostCategory extends Model
     public function posts()
     {
         return $this->hasMany(Post::class, 'category_id');
+    }
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($post) {
+            if (empty($post->slug)) {
+                $post->slug = static::generateUniqueSlug($post->name, static::class);
+            }
+        });
+
+        static::updating(function ($post) {
+            if ($post->isDirty('name') && empty($post->slug)) {
+                $post->slug = static::generateUniqueSlug($post->name, static::class);
+            }
+        });
     }
 }

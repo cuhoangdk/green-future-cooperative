@@ -3,30 +3,35 @@
 namespace App\Traits;
 
 use Illuminate\Support\Str;
-use App\Models\Post; 
 
 trait GeneratesSlug
 {
     /**
-     * Generate a unique slug for a given model and field.
+     * Tạo slug duy nhất cho một mô hình và trường dữ liệu.
      *
      * @param  string $title
-     * @param  string $modelClass
-     * @param  string $field
+     * @param  string $modelClass Lớp mô hình để kiểm tra tính duy nhất của slug
+     * @param  string $column Cột cần kiểm tra tính duy nhất (mặc định là 'slug')
      * @return string
      */
-    public function generateUniqueSlug(string $title, string $column = 'slug')
+    public static function generateUniqueSlug(string $title, string $modelClass, string $column = 'slug')
     {
         // Tạo slug từ title
-        $slug = Str::slug($title);
+        $baseSlug = Str::slug($title);
+
+        // Giới hạn độ dài của baseSlug còn 250 ký tự trừ đi độ dài của `-$count`
+        $maxSlugLength = 200;
+        $baseSlug = substr($baseSlug, 0, $maxSlugLength);
+
+        $slug = $baseSlug;
         $count = 0;
 
         // Kiểm tra xem slug đã tồn tại chưa
-        while (Post::withTrashed()->where($column, $slug)->exists()) {
+        while ($modelClass::withTrashed()->where($column, $slug)->exists()) {
             $count++;
-            $slug = Str::slug($title) . '-' . $count;
+            $slug = $baseSlug . '-' . $count;
         }
-
+        
         return $slug;
     }
 }

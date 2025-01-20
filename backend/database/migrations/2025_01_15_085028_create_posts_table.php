@@ -18,15 +18,15 @@ return new class extends Migration
             $table->string('summary');
             $table->text('content');
             $table->string('featured_image')->nullable();
-            $table->unsignedBigInteger('category_id');
-            $table->unsignedBigInteger('author_id');
+            $table->unsignedBigInteger('category_id')->nullable();
+            $table->unsignedBigInteger('author_id')->nullable();
             $table->enum('post_status', ['draft', 'published', 'archived'])->default('draft');
             $table->timestamp('published_at')->nullable();
             $table->timestamps();
             $table->softDeletes();
         
-            $table->foreign('category_id')->references('id')->on('post_categories')->onDelete('cascade');
-            $table->foreign('author_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('category_id')->references('id')->on('post_categories')->onDelete('set null');
+            $table->foreign('author_id')->references('id')->on('users')->onDelete('set null');
         });        
     }
 

@@ -60,5 +60,27 @@ class PostRepository implements PostRepositoryInterface
     {
         return $this->model->where('category_id', $categoryId)->with(['category', 'author'])->paginate($this->perPage);
     }    
+    public function getTrashedById($id)
+    {
+        return $this->model->onlyTrashed()->find($id);
+    }
+
+    public function restore($id)
+    {
+        $post = $this->model->onlyTrashed()->find($id);
+        if ($post) {
+            return $post->restore();
+        }
+        return false;
+    }
+
+    public function forceDelete($id)
+    {
+        $post = $this->model->onlyTrashed()->find($id);
+        if ($post) {
+            return $post->forceDelete();
+        }
+        return false;
+    }
 
 }
