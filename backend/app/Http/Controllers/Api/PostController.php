@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\PostResource; 
 use App\Repositories\Contracts\PostRepositoryInterface;
@@ -19,9 +20,22 @@ class PostController extends Controller
         $this->postRepository = $postRepository;
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $posts = $this->postRepository->getAll();
+        // Xử lý các tham số
+        $perPage = $request->input('per_page', 10);
+        $sortBy = $request->input('sort_by', 'created_at');
+        $sortDirection = $request->input('sort_direction', 'desc');
+        $search = $request->input('search');
+
+        // Lấy bài viết với các tham số
+        $posts = $this->postRepository->getFilteredPosts(
+            search: $search,
+            sortBy: $sortBy,
+            sortDirection: $sortDirection,
+            perPage: $perPage
+        );
+
         return PostResource::collection($posts);
     }
 

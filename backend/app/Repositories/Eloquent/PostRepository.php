@@ -82,5 +82,39 @@ class PostRepository implements PostRepositoryInterface
         }
         return false;
     }
+    public function getFilteredPosts(
+        ?string $search = null,
+        string $sortBy = 'created_at',
+        string $sortDirection = 'desc',
+        int $perPage = 10
+    ) {
+        $query = Post::query()
+            ->with(['category', 'author'])
+            ->when($search, function ($query) use ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('title', 'like', "%{$search}%")
+                      ->orWhere('slug', 'like', "%{$search}%")
+                      ->orWhere('summary', 'like', "%{$search}%")
+                      ->orWhere('content', 'like', "%{$search}%");
+                });
+            })
+            ->orderBy($this->validateSortColumn($sortBy), $this->validateSortDirection($sortDirection));
 
+        return $query->paginate($perPage);
+    }
+
+    private function validateSortColumn(string $column): string
+    {
+        $allowedColumns = [
+            'title', 'created_at', 'updated_at', 
+            'published_at', 'post_status'
+        ];
+        
+        return in_array($column, $allowedColumns) ? $column : 'created_at';
+    }
+
+    private function validateSortDirection(string $direction): string
+    {
+        return in_array(strtolower($direction), ['asc', 'desc']) ? $direction : 'desc';
+    }
 }
