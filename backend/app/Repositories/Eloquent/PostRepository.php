@@ -95,11 +95,14 @@ class PostRepository implements PostRepositoryInterface
                     $q->where('title', 'like', "%{$search}%")
                       ->orWhere('slug', 'like', "%{$search}%")
                       ->orWhere('summary', 'like', "%{$search}%")
-                      ->orWhere('content', 'like', "%{$search}%");
+                      ->orWhere('content', 'like', "%{$search}%")
+                      ->orWhereHas('author', function ($authorQuery) use ($search) {
+                          $authorQuery->where('name', 'like', "%{$search}%"); // Giả sử trường tên tác giả là 'name'
+                      });
                 });
             })
             ->orderBy($this->validateSortColumn($sortBy), $this->validateSortDirection($sortDirection));
-
+    
         return $query->paginate($perPage);
     }
 
