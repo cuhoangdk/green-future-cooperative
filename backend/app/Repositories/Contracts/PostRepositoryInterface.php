@@ -7,9 +7,9 @@ interface PostRepositoryInterface extends BaseRepositoryInterface
     public function getBySlug($slug);
     public function getByCategory($categoryId): Paginator;
     public function getFilteredPosts(
-        ?string $search = null,
         string $sortBy = 'created_at',
         string $sortDirection = 'desc',
-        int $perPage = 10
+        int $perPage = 10,
+        array $filters = []
     );
 }

@@ -32,6 +32,8 @@ class StoreUpdatePostRequest extends FormRequest
             'author_id' => 'required|exists:users,id',
             'post_status' => 'in:draft,published,archived',
             'published_at' => 'nullable|date',
+            'start_date' => 'sometimes|date_format:Y-m-d',
+            'end_date' => 'sometimes|date_format:Y-m-d|after_or_equal:start_date'
         ];
     }
     protected function failedValidation(Validator $validator)

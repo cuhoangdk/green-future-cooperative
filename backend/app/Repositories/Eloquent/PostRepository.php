@@ -4,6 +4,7 @@ namespace App\Repositories\Eloquent;
 
 use App\Models\Post;
 use App\Repositories\Contracts\PostRepositoryInterface;
+use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\Paginator;
 
 class PostRepository implements PostRepositoryInterface
@@ -83,25 +84,52 @@ class PostRepository implements PostRepositoryInterface
         return false;
     }
     public function getFilteredPosts(
-        ?string $search = null,
         string $sortBy = 'created_at',
         string $sortDirection = 'desc',
-        int $perPage = 10
+        int $perPage = 10,
+        array $filters = []
     ) {
         $query = Post::query()
             ->with(['category', 'author'])
-            ->when($search, function ($query) use ($search) {
+            ->when($filters['search'] ?? null, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('title', 'like', "%{$search}%")
                       ->orWhere('slug', 'like', "%{$search}%")
                       ->orWhere('summary', 'like', "%{$search}%")
                       ->orWhere('content', 'like', "%{$search}%")
                       ->orWhereHas('author', function ($authorQuery) use ($search) {
-                          $authorQuery->where('name', 'like', "%{$search}%"); // Giả sử trường tên tác giả là 'name'
+                          $authorQuery->where('name', 'like', "%{$search}%");
                       });
                 });
             })
-            ->orderBy($this->validateSortColumn($sortBy), $this->validateSortDirection($sortDirection));
+            ->when($filters['author'] ?? null, function ($query, $author) {
+                $query->where('author_id', $author);
+            })
+            ->when($filters['category'] ?? null, function ($query, $category) {
+                $query->where('category_id', $category);
+            })
+            ->when($filters['status'] ?? null, function ($query, $status) {
+                $query->where('post_status', $status);
+            })
+            ->when(($filters['start_date'] ?? null) && ($filters['end_date'] ?? null), 
+                function ($query) use ($filters) {
+                    $query->whereBetween('created_at', [
+                        Carbon::parse($filters['start_date'])->startOfDay(),
+                        Carbon::parse($filters['end_date'])->endOfDay()
+                    ]);
+                },
+                function ($query) use ($filters) {
+                    $query->when($filters['start_date'] ?? null, function ($query, $startDate) {
+                        $query->where('created_at', '>=', Carbon::parse($startDate)->startOfDay());
+                    })->when($filters['end_date'] ?? null, function ($query, $endDate) {
+                        $query->where('created_at', '<=', Carbon::parse($endDate)->endOfDay());
+                    });
+                }
+            )
+            ->orderBy(
+                $this->validateSortColumn($sortBy), 
+                $this->validateSortDirection($sortDirection)
+            );
     
         return $query->paginate($perPage);
     }

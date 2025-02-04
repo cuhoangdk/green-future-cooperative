@@ -22,18 +22,24 @@ class PostController extends Controller
 
     public function index(Request $request)
     {
-        // Xử lý các tham số
         $perPage = $request->input('per_page', 10);
         $sortBy = $request->input('sort_by', 'created_at');
         $sortDirection = $request->input('sort_direction', 'desc');
-        $search = $request->input('search');
+        
+        $filters = [
+            'search' => $request->input('search'),
+            'author' => $request->input('author_id'),
+            'category' => $request->input('category_id'),
+            'status' => $request->input('status'),
+            'start_date' => $request->input('start_date'),
+            'end_date' => $request->input('end_date'),
+        ];
 
-        // Lấy bài viết với các tham số
         $posts = $this->postRepository->getFilteredPosts(
-            search: $search,
             sortBy: $sortBy,
             sortDirection: $sortDirection,
-            perPage: $perPage
+            perPage: $perPage,
+            filters: $filters
         );
 
         return PostResource::collection($posts);
