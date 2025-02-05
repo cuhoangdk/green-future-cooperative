@@ -26,7 +26,7 @@ return new class extends Migration
             $table->softDeletes();
         
             $table->foreign('category_id')->references('id')->on('post_categories')->onDelete('set null');
-            $table->foreign('author_id')->references('id')->on('users')->onDelete('set null');
+            $table->foreign('author_id')->references('id')->on('cooperative_members')->onDelete('set null');
         });        
     }
 

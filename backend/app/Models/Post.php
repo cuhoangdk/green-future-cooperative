@@ -31,7 +31,7 @@ class Post extends Model
     // Quan hệ với User (Giả sử mỗi post có một author)
     public function author()
     {
-        return $this->belongsTo(User::class, 'author_id');
+        return $this->belongsTo(CooperativeMember::class, 'author_id');
     }
 
     protected static function boot()
