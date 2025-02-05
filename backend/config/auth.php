@@ -64,10 +64,11 @@ return [
     */
 
     'providers' => [
-        'users' => [
+        'cooperative_members' => [
             'driver' => 'eloquent',
             'model' => App\Models\CooperativeMember::class,
         ],
+
 
         // 'users' => [
         //     'driver' => 'database',
