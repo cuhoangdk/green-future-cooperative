@@ -5,8 +5,7 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use App\Repositories\Contracts\PostRepositoryInterface;
 use App\Repositories\Eloquent\PostRepository;
-use App\Repositories\Contracts\AuthRepositoryInterface;
-use App\Repositories\Eloquent\AuthRepository;
+
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -17,7 +16,7 @@ class AppServiceProvider extends ServiceProvider
     {
         // Bind interface với implementation
         $this->app->bind(PostRepositoryInterface::class, PostRepository::class);
-        $this->app->bind(AuthRepositoryInterface::class, AuthRepository::class);
+        
     }
 
     /**

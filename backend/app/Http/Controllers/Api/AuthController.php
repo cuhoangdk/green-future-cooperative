@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
@@ -14,8 +15,17 @@ class AuthController extends Controller
     {
         $this->authRepository = $authRepository;
     }
+
+    /**
+     * Đăng nhập và lấy token
+     */
     public function login(Request $request)
     {
+        $request->validate([
+            'email'    => 'required|email',
+            'password' => 'required',
+        ]);
+
         $data = $this->authRepository->login($request->only('email', 'password'));
 
         if (!$data) {
@@ -25,16 +35,20 @@ class AuthController extends Controller
         return response()->json($data);
     }
 
+    /**
+     * Đăng xuất
+     */
     public function logout()
     {
         $this->authRepository->logout();
         return response()->json(['message' => 'Logged out']);
     }
 
-    public function refreshToken()
+    /**
+     * Lấy thông tin người dùng hiện tại
+     */
+    public function user()
     {
-        return response()->json([
-            'access_token' => $this->authRepository->refreshToken()
-        ]);
+        return response()->json(Auth::user());
     }
 }

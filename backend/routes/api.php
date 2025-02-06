@@ -4,20 +4,11 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\PostCategoryController;
-use Laravel\Passport\Http\Controllers\AccessTokenController;
-use Laravel\Passport\Http\Controllers\AuthorizationController;
-use Laravel\Passport\Http\Controllers\TransientTokenController;
-
-// // Route OAuth2 với Laravel Passport
-// Route::prefix('oauth')->group(function () {
-//     Route::post('/token', [AccessTokenController::class, 'issueToken'])->name('passport.token');
-//     Route::post('/token/refresh', [TransientTokenController::class, 'refresh'])->name('passport.token.refresh');
-//     Route::get('/authorize', [AuthorizationController::class, 'authorize'])->name('passport.authorizations.authorize');
-// });
 
 // Routes dành cho xác thực cooperative_members
 Route::prefix('auth')->group(function () {
-    Route::post('/login', [AuthController::class, 'login'])->name('login');  // Phương thức POST
+    Route::post('/login', [AuthController::class, 'login'])->name('login');
+
     Route::middleware('auth:api')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::get('/user', [AuthController::class, 'user']);
