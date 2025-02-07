@@ -6,6 +6,7 @@ use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvid
 use Laravel\Passport\Passport;
 use App\Repositories\Contracts\AuthRepositoryInterface;
 use App\Repositories\Eloquent\AuthRepository;
+use App\Models\CooperativeMember;
 class AuthServiceProvider extends ServiceProvider
 {
     /**
@@ -21,6 +22,7 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {       
+        Passport::useClientModel(CooperativeMember::class);
         Passport::enablePasswordGrant();
         $this->registerPolicies();
         if (!app()->runningInConsole()) {

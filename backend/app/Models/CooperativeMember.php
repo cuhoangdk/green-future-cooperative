@@ -10,6 +10,7 @@ use Laravel\Passport\HasApiTokens;
 class CooperativeMember extends Authenticatable
 {
     use HasFactory, HasApiTokens, Notifiable;
+    protected $table = 'cooperative_members';
 
     protected $fillable = [
         'username', 'slug', 'email', 'password', 'full_name', 'phone_number',
