@@ -21,8 +21,7 @@ class AuthServiceProvider extends ServiceProvider
      * Bootstrap services.
      */
     public function boot(): void
-    {       
-        Passport::useClientModel(CooperativeMember::class);
+    {           
         Passport::enablePasswordGrant();
         $this->registerPolicies();
         if (!app()->runningInConsole()) {

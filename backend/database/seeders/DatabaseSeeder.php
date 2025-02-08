@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Database\Seeder;
 use App\Models\CooperativeMember;
 use App\Models\Post;
+use App\Models\PostCategory;
 
 class DatabaseSeeder extends Seeder
 {
@@ -15,7 +16,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $categories = \App\Models\PostCategory::factory(5)->create();
+        $categories = PostCategory::factory(5)->create();
             
         // Tạo 1 thành viên hợp tác xã và lấy đối tượng đầu tiên
         $member = CooperativeMember::factory()->create(); // Không cần factory(1)
