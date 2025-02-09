@@ -22,7 +22,7 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {       
-        Passport::useClientModel(CooperativeMember::class);
+        // Passport::useClientModel(CooperativeMember::class);
         Passport::enablePasswordGrant();
         $this->registerPolicies();
         if (!app()->runningInConsole()) {
