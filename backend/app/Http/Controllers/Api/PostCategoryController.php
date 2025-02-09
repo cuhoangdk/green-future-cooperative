@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreUpdateCategoryRequest;
 use App\Http\Resources\PostCategoryResource;
@@ -16,11 +17,26 @@ class PostCategoryController extends Controller
         $this->categoryRepository = $categoryRepository;
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $categories = $this->categoryRepository->getAll();
+        $perPage = $request->input('per_page', 10);
+        $sortBy = $request->input('sort_by', 'created_at');
+        $sortDirection = $request->input('sort_direction', 'desc');
+        
+        $filters = [
+            'search' => $request->input('search'),
+        ];
+
+        $categories = $this->categoryRepository->getFilteredCategories(
+            sortBy: $sortBy,
+            sortDirection: $sortDirection,
+            perPage: $perPage,
+            filters: $filters
+        );
+
         return PostCategoryResource::collection($categories);
     }
+
 
     public function show($id)
     {

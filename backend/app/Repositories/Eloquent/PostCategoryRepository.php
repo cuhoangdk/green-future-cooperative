@@ -78,4 +78,37 @@ class PostCategoryRepository implements PostCategoryRepositoryInterface
         }
         return false;
     }
+    public function getFilteredCategories(
+        string $sortBy = 'created_at',
+        string $sortDirection = 'desc',
+        int $perPage = 10,
+        array $filters = []
+    ) {
+        $query = PostCategory::query();
+    
+        // Tìm kiếm theo tên
+        if (!empty($filters['search'])) {
+            $query->where('name', 'like', "%{$filters['search']}%");
+        }
+    
+        // Sắp xếp
+        $query->orderBy(
+            $this->validateSortColumn($sortBy), 
+            $this->validateSortDirection($sortDirection)
+        );
+    
+        return $query->paginate($perPage);
+    }
+    
+    private function validateSortColumn(string $column): string
+    {
+        $allowedColumns = ['name', 'created_at', 'updated_at'];
+        return in_array($column, $allowedColumns) ? $column : 'created_at';
+    }
+    
+    private function validateSortDirection(string $direction): string
+    {
+        return in_array(strtolower($direction), ['asc', 'desc']) ? $direction : 'desc';
+    }
+    
 }
