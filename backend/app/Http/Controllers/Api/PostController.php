@@ -64,9 +64,13 @@ class PostController extends Controller
     public function store(StoreUpdatePostRequest $request)
     {
         $validated = $request->validated();
-        // Xử lý upload ảnh nếu có
+
         if ($request->hasFile('featured_image')) {
             $validated['featured_image'] = $this->uploadService->uploadImage($request->file('featured_image'), 'posts');
+        }
+         // Nếu trạng thái không phải 'draft', tự động thêm published_at
+        if ($validated['post_status'] !== 'draft') {
+            $validated['published_at'] = now();
         }
         $post = $this->postRepository->create($validated);
         return new PostResource($post);
@@ -74,20 +78,29 @@ class PostController extends Controller
 
     public function update(StoreUpdatePostRequest $request, $id)
     {
+        $validated = $request->validated();
         $post = $this->postRepository->getById($id);
+
         if (!$post) {
             return response()->json(['message' => 'Post not found'], 404);
         }
 
-        $validated = $request->validated();
-
-        // Xóa ảnh cũ nếu có ảnh mới
         if ($request->hasFile('featured_image')) {
+            // Xóa ảnh cũ trước khi upload ảnh mới
             $this->uploadService->deleteImage($post->featured_image);
+
+            // Upload ảnh mới
             $validated['featured_image'] = $this->uploadService->uploadImage($request->file('featured_image'), 'posts');
         }
-
-        $post = $this->postRepository->update($id, $validated);
+        // Nếu post_status chuyển thành 'draft', thì đặt published_at = null
+        if ($validated['post_status'] === 'draft') {
+            $validated['published_at'] = null;
+        }
+        // Nếu post_status không phải 'draft' và chưa có published_at, đặt thời gian hiện tại
+        elseif (is_null($post->published_at)) {
+            $validated['published_at'] = now();
+        }
+        $post->update($validated);
         return new PostResource($post);
     }
 

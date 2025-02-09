@@ -22,10 +22,12 @@ class UploadFileService
         $filename = Str::uuid() . '.' . $file->getClientOriginalExtension();
 
         // Lưu file vào storage
-        $path = $file->storeAs($folder, $filename, $disk);
+        $path = $file->storeAs("public/{$folder}", $filename, $disk);
 
-        return $path ? Storage::disk($disk)->url($path) : null;
+        // Trả về đường dẫn tương đối, thay 'public/' bằng '/storage/'
+        return $path ? str_replace('public/', '/storage/', $path) : null;
     }
+
 
     /**
      * Xóa ảnh cũ trong storage.
@@ -36,9 +38,18 @@ class UploadFileService
      */
     public function deleteImage(?string $filePath, string $disk = 'public'): bool
     {
-        if ($filePath && Storage::disk($disk)->exists($filePath)) {
-            return Storage::disk($disk)->delete($filePath);
+        if (!$filePath) {
+            return false;
         }
+
+        // Chuyển đổi đường dẫn từ '/storage/posts/...jpg' thành 'public/posts/...jpg' để xóa
+        $storagePath = str_replace('/storage/', 'public/', $filePath);
+
+        if (Storage::disk($disk)->exists($storagePath)) {
+            return Storage::disk($disk)->delete($storagePath);
+        }
+
         return false;
     }
+
 }
