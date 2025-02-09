@@ -6,11 +6,14 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Models\Post;
 use App\Models\CooperativeMember;
 use App\Models\PostCategory;
+use App\Traits\GeneratesSlug;
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Post>
  */
 class PostFactory extends Factory
 {
+    use GeneratesSlug;
+
     protected $model = Post::class;
     /**
      * Define the model's default state.
@@ -19,9 +22,10 @@ class PostFactory extends Factory
      */
     public function definition(): array
     {
+        $title = $this->faker->sentence;
         return [
-            'title' => $this->faker->sentence,
-            'slug' => $this->faker->slug,
+            'title' => $title,
+            'slug' => GeneratesSlug::generateUniqueSlug($title, Post::class),
             'summary' => $this->faker->paragraph(1,true),
             'content' => $this->faker->paragraphs(5, true),
             'featured_image' => $this->faker->imageUrl(),

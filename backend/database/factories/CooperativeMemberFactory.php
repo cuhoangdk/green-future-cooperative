@@ -6,7 +6,6 @@ use App\Models\CooperativeMember;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
-
 class CooperativeMemberFactory extends Factory
 {
     protected $model = CooperativeMember::class;
