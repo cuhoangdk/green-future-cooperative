@@ -30,6 +30,8 @@ class PostFactory extends Factory
             'content' => $this->faker->paragraphs(5, true),
             'featured_image' => $this->faker->imageUrl(),
             'post_status' => $postStatus = $this->faker->randomElement(['draft', 'published', 'archived']),
+            'is_hot' => $this->faker->boolean(40), // 10% bài viết là hot
+            'is_featured' => $this->faker->boolean(50), // 20% bài viết là featured
             'published_at' => $postStatus !== 'draft' ? $this->faker->dateTime : null,
             'author_id' => CooperativeMember::factory(),
             'category_id' => PostCategory::factory(),

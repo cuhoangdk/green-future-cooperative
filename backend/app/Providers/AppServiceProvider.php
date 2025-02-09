@@ -3,9 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use App\Repositories\Contracts\PostRepositoryInterface;
-use App\Repositories\Eloquent\PostRepository;
-
+use App\Services\UploadFileService;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -14,9 +12,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        // Bind interface với implementation
-        $this->app->bind(PostRepositoryInterface::class, PostRepository::class);
-        
+        $this->app->singleton(UploadFileService::class, function ($app) {
+            return new UploadFileService();
+        });
     }
 
     /**

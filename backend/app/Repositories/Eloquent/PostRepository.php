@@ -126,6 +126,12 @@ class PostRepository implements PostRepositoryInterface
                     });
                 }
             )
+            ->when(isset($filters['is_hot']) && $filters['is_hot'] !== null, function ($query) use ($filters) {
+                $query->where('is_hot', $filters['is_hot']);
+            })
+            ->when(isset($filters['is_featured']) && $filters['is_featured'] !== null, function ($query) use ($filters) {
+                $query->where('is_featured', $filters['is_featured']);
+            })
             ->orderBy(
                 $this->validateSortColumn($sortBy), 
                 $this->validateSortDirection($sortDirection)

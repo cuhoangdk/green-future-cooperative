@@ -20,6 +20,8 @@ class Post extends Model
         'category_id',
         'author_id',
         'post_status',
+        'is_hot',
+        'is_featured',
         'published_at',
     ];
     // Quan hệ với PostCategory (Giả sử mỗi post có một category)

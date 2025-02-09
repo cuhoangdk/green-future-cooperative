@@ -8,16 +8,18 @@ use App\Http\Resources\PostResource;
 use App\Repositories\Contracts\PostRepositoryInterface;
 use App\Http\Requests\StoreUpdatePostRequest;
 use App\Traits\GeneratesSlug;
-
+use App\Services\UploadFileService;
 class PostController extends Controller
 {
     use GeneratesSlug; 
     
     protected $postRepository;
+    protected $uploadService;
 
-    public function __construct(PostRepositoryInterface $postRepository)
+    public function __construct(PostRepositoryInterface $postRepository, UploadFileService $uploadService)
     {
         $this->postRepository = $postRepository;
+        $this->uploadService = $uploadService;
     }
 
     public function index(Request $request)
@@ -33,6 +35,8 @@ class PostController extends Controller
             'status' => $request->input('status'),
             'start_date' => $request->input('start_date'),
             'end_date' => $request->input('end_date'),
+            'is_hot' => $request->boolean('is_hot'),
+            'is_featured' => $request->boolean('is_featured'),
         ];
 
         $posts = $this->postRepository->getFilteredPosts(
@@ -60,20 +64,30 @@ class PostController extends Controller
     public function store(StoreUpdatePostRequest $request)
     {
         $validated = $request->validated();
-
+        // Xử lý upload ảnh nếu có
+        if ($request->hasFile('featured_image')) {
+            $validated['featured_image'] = $this->uploadService->uploadImage($request->file('featured_image'), 'posts');
+        }
         $post = $this->postRepository->create($validated);
         return new PostResource($post);
     }
 
     public function update(StoreUpdatePostRequest $request, $id)
     {
-        $validated = $request->validated();
-
-        $post = $this->postRepository->update($id, $validated);
+        $post = $this->postRepository->getById($id);
         if (!$post) {
             return response()->json(['message' => 'Post not found'], 404);
         }
 
+        $validated = $request->validated();
+
+        // Xóa ảnh cũ nếu có ảnh mới
+        if ($request->hasFile('featured_image')) {
+            $this->uploadService->deleteImage($post->featured_image);
+            $validated['featured_image'] = $this->uploadService->uploadImage($request->file('featured_image'), 'posts');
+        }
+
+        $post = $this->postRepository->update($id, $validated);
         return new PostResource($post);
     }
 

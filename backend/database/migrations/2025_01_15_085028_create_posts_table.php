@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('featured_image')->nullable();
             $table->unsignedBigInteger('category_id')->nullable();
             $table->unsignedBigInteger('author_id')->nullable();
-            $table->enum('post_status', ['draft', 'published', 'archived'])->default('draft');
+            $table->enum('post_status', ['draft', 'published', 'archived'])->default('draft');                     
             $table->timestamp('published_at')->nullable();
             $table->timestamps();
             $table->softDeletes();
