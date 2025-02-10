@@ -22,17 +22,29 @@ class PostCategoryController extends Controller
         $perPage = $request->input('per_page', 10);
         $sortBy = $request->input('sort_by', 'created_at');
         $sortDirection = $request->input('sort_direction', 'desc');
-        
-        $filters = [
-            'search' => $request->input('search'),
-        ];
+
+        $categories = $this->categoryRepository->getAll(
+            sortBy: $sortBy,
+            sortDirection: $sortDirection,
+            perPage: $perPage
+        )->appends(request()->query());
+
+        return PostCategoryResource::collection($categories);
+    }
+
+    public function search(Request $request)
+    {
+        $perPage = $request->input('per_page', 10);
+        $sortBy = $request->input('sort_by', 'created_at');
+        $sortDirection = $request->input('sort_direction', 'desc');
+        $filters = ['search' => $request->input('search')];
 
         $categories = $this->categoryRepository->getFilteredCategories(
             sortBy: $sortBy,
             sortDirection: $sortDirection,
             perPage: $perPage,
             filters: $filters
-        );
+        )->appends(request()->query());
 
         return PostCategoryResource::collection($categories);
     }

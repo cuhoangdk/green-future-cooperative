@@ -17,9 +17,11 @@ class PostRepository implements PostRepositoryInterface
         $this->model = $model;
     }
 
-    public function getAll(): Paginator
+    public function getAll(string $sortBy = 'created_at', string $sortDirection = 'desc', int $perPage = 10): Paginator
     {
-        return $this->model->with(['category', 'author'])->paginate($this->perPage);
+        return $this->model->with(['category', 'author'])
+            ->orderBy($this->validateSortColumn($sortBy), $this->validateSortDirection($sortDirection))
+            ->paginate($perPage);
     }
 
     public function getById($id)
@@ -107,7 +109,7 @@ class PostRepository implements PostRepositoryInterface
                       ->orWhere('summary', 'like', "%{$search}%")
                       ->orWhere('content', 'like', "%{$search}%")
                       ->orWhereHas('author', function ($authorQuery) use ($search) {
-                          $authorQuery->where('name', 'like', "%{$search}%");
+                          $authorQuery->where('full_name', 'like', "%{$search}%");
                       });
                 });
             })

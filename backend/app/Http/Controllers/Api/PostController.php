@@ -28,6 +28,17 @@ class PostController extends Controller
         $sortBy = $request->input('sort_by', 'created_at');
         $sortDirection = $request->input('sort_direction', 'desc');
 
+        $posts = $this->postRepository->getAll($sortBy, $sortDirection, $perPage);
+
+        return PostResource::collection($posts);
+    }
+
+    public function search(Request $request)
+    {
+        $perPage = $request->input('per_page', 10);
+        $sortBy = $request->input('sort_by', 'created_at');
+        $sortDirection = $request->input('sort_direction', 'desc');
+
         $filters = [
             'search' => $request->input('search'),
             'author' => $request->input('author_id'),
@@ -39,17 +50,11 @@ class PostController extends Controller
             'is_featured' => $request->boolean('is_featured'),
         ];
 
-        $posts = $this->postRepository->getFilteredPosts(
-            sortBy: $sortBy,
-            sortDirection: $sortDirection,
-            perPage: $perPage,
-            filters: $filters
-        )
-            ->appends(['per_page' => $perPage, 'sort_direction' => $sortDirection, 'sort_by' => $sortBy]);
-        ;
+        $posts = $this->postRepository->getFilteredPosts($sortBy, $sortDirection, $perPage, $filters)->appends(request()->query());
 
         return PostResource::collection($posts);
     }
+
 
     public function show($id)
     {
@@ -136,7 +141,7 @@ class PostController extends Controller
 
         $posts = $this->postRepository
             ->getByCategory($categoryId, $perPage, $sortDirection, $sortBy)
-            ->appends(['per_page' => $perPage, 'sort_direction' => $sortDirection, 'sort_by' => $sortBy]);
+            ->appends(request()->query());
         return PostResource::collection($posts);
     }
 
