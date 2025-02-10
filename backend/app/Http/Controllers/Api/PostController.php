@@ -4,15 +4,15 @@ namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\PostResource; 
+use App\Http\Resources\PostResource;
 use App\Repositories\Contracts\PostRepositoryInterface;
 use App\Http\Requests\StoreUpdatePostRequest;
 use App\Traits\GeneratesSlug;
 use App\Services\UploadFileService;
 class PostController extends Controller
 {
-    use GeneratesSlug; 
-    
+    use GeneratesSlug;
+
     protected $postRepository;
     protected $uploadService;
 
@@ -27,7 +27,7 @@ class PostController extends Controller
         $perPage = $request->input('per_page', 10);
         $sortBy = $request->input('sort_by', 'created_at');
         $sortDirection = $request->input('sort_direction', 'desc');
-        
+
         $filters = [
             'search' => $request->input('search'),
             'author' => $request->input('author_id'),
@@ -44,7 +44,9 @@ class PostController extends Controller
             sortDirection: $sortDirection,
             perPage: $perPage,
             filters: $filters
-        );
+        )
+            ->appends(['per_page' => $perPage, 'sort_direction' => $sortDirection, 'sort_by' => $sortBy]);
+        ;
 
         return PostResource::collection($posts);
     }
@@ -68,7 +70,7 @@ class PostController extends Controller
         if ($request->hasFile('featured_image')) {
             $validated['featured_image'] = $this->uploadService->uploadImage($request->file('featured_image'), 'posts');
         }
-         // Nếu trạng thái không phải 'draft', tự động thêm published_at
+        // Nếu trạng thái không phải 'draft', tự động thêm published_at
         if ($validated['post_status'] !== 'draft') {
             $validated['published_at'] = now();
         }
@@ -125,27 +127,35 @@ class PostController extends Controller
         return new PostResource($post);
     }
 
-    public function getByCategory($categoryId)
+    public function getByCategory(Request $request)
     {
-        $posts = $this->postRepository->getByCategory($categoryId);
+        $perPage = $request->input('per_page', 10);
+        $sortBy = $request->input('sort_by', 'created_at');
+        $sortDirection = $request->input('sort_direction', 'desc');
+        $categoryId = $request->categoryId;
+
+        $posts = $this->postRepository
+            ->getByCategory($categoryId, $perPage, $sortDirection, $sortBy)
+            ->appends(['per_page' => $perPage, 'sort_direction' => $sortDirection, 'sort_by' => $sortBy]);
         return PostResource::collection($posts);
-    }    
+    }
+
     public function restore($id)
-{
-    $post = $this->postRepository->getTrashedById($id);
+    {
+        $post = $this->postRepository->getTrashedById($id);
 
-    if (!$post) {
-        return response()->json(['message' => 'Post not found or not trashed'], 404);
+        if (!$post) {
+            return response()->json(['message' => 'Post not found or not trashed'], 404);
+        }
+
+        $restored = $this->postRepository->restore($id);
+
+        if (!$restored) {
+            return response()->json(['message' => 'Failed to restore post'], 500);
+        }
+
+        return response()->json(['message' => 'Post restored successfully']);
     }
-
-    $restored = $this->postRepository->restore($id);
-
-    if (!$restored) {
-        return response()->json(['message' => 'Failed to restore post'], 500);
-    }
-
-    return response()->json(['message' => 'Post restored successfully']);
-}
 
     public function forceDelete($id)
     {
@@ -162,5 +172,17 @@ class PostController extends Controller
         }
 
         return response()->json(['message' => 'Post permanently deleted successfully']);
+    }
+
+    public function getHotPosts()
+    {
+        $posts = $this->postRepository->getHotPosts();
+        return PostResource::collection($posts);
+    }
+
+    public function getFeaturedPosts()
+    {
+        $posts = $this->postRepository->getFeaturedPosts();
+        return PostResource::collection($posts);
     }
 }

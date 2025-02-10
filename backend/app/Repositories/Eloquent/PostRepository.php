@@ -57,9 +57,18 @@ class PostRepository implements PostRepositoryInterface
         return $this->model->where('slug', $slug)->first();
     }
 
-    public function getByCategory($categoryId):Paginator
+    public function getByCategory(
+        $categoryId,
+        $perPage = 10,
+        $sortDirection = 'desc',
+        $sortBy = 'created_at'
+        ):Paginator
     {
-        return $this->model->where('category_id', $categoryId)->with(['category', 'author'])->paginate($this->perPage);
+        $posts = $this->model->where('category_id', $categoryId)
+            ->orderBy($sortBy, $sortDirection)
+            ->with(['category', 'author'])
+            ->paginate($perPage);
+        return $posts;
     }    
     public function getTrashedById($id)
     {
@@ -138,6 +147,22 @@ class PostRepository implements PostRepositoryInterface
             );
     
         return $query->paginate($perPage);
+    }
+
+    public function getHotPosts(int $limit = 5)
+    {
+        return $this->model->where('is_hot', true)
+            ->orderBy('created_at', 'desc')
+            ->limit($limit)
+            ->get();
+    }
+
+    public function getFeaturedPosts(int $limit = 5)
+    {
+        return $this->model->where('is_featured', true)
+            ->orderBy('created_at', 'desc')
+            ->limit($limit)
+            ->get();
     }
 
     private function validateSortColumn(string $column): string
