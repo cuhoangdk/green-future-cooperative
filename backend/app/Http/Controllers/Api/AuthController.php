@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers\Api;
 
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Repositories\Contracts\AuthRepositoryInterface;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
@@ -17,7 +16,7 @@ class AuthController extends Controller
     }
 
     /**
-     * Đăng nhập và lấy token
+     * Đăng nhập & lấy Access Token + Refresh Token
      */
     public function login(Request $request)
     {
@@ -26,13 +25,31 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
-        $data = $this->authRepository->login($request->only('email', 'password'));
+        $tokenData = $this->authRepository->login($request->only('email', 'password'));
 
-        if (!$data) {
-            return response()->json(['message' => 'Unauthorized'], 401);
+        if (!$tokenData) {
+            return response()->json(['message' => 'Invalid credentials'], 401);
         }
 
-        return response()->json($data);
+        return response()->json($tokenData);
+    }
+
+    /**
+     * Làm mới Access Token
+     */
+    public function refreshToken(Request $request)
+    {
+        $request->validate([
+            'refresh_token' => 'required',
+        ]);
+
+        $tokenData = $this->authRepository->refreshToken($request->refresh_token);
+
+        if (!$tokenData) {
+            return response()->json(['message' => 'Invalid refresh token'], 401);
+        }
+
+        return response()->json($tokenData);
     }
 
     /**
@@ -41,14 +58,6 @@ class AuthController extends Controller
     public function logout()
     {
         $this->authRepository->logout();
-        return response()->json(['message' => 'Logged out']);
-    }
-
-    /**
-     * Lấy thông tin người dùng hiện tại
-     */
-    public function user()
-    {
-        return response()->json(Auth::user());
+        return response()->json(['message' => 'Logged out successfully']);
     }
 }
