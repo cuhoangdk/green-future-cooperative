@@ -23,6 +23,7 @@ Route::prefix('posts')->group(function () {
     Route::get('/search', [PostController::class, 'search']); // GET /api/posts/search
     Route::get('/{id}', [PostController::class, 'show']); // GET /api/posts/{id}
     Route::get('/slug/{slug}', [PostController::class, 'getBySlug']); // GET /api/posts/slug/{slug}
+    Route::get('/category-slug/{slug}', [PostController::class, 'getByCategorySlug']); // GET /api/posts//category-slug//{slug}
     Route::get('/category/{categoryId}', [PostController::class, 'getByCategory']); // GET /api/posts/category/{categoryId}
     // Các route yêu cầu xác thực
     Route::middleware('auth:api')->group(function () {

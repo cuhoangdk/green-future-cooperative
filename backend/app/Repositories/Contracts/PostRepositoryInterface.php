@@ -19,4 +19,6 @@ interface PostRepositoryInterface extends BaseRepositoryInterface
     );
     public function getHotPosts(int $limit = 5);
     public function getFeaturedPosts(int $limit = 5);
+    public function getCategoryBySlug(string $slug);
+
 }

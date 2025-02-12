@@ -6,7 +6,7 @@ use App\Models\Post;
 use App\Repositories\Contracts\PostRepositoryInterface;
 use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\Paginator;
-
+use App\Models\PostCategory;
 class PostRepository implements PostRepositoryInterface
 {
     protected $model;
@@ -165,6 +165,10 @@ class PostRepository implements PostRepositoryInterface
             ->orderBy('created_at', 'desc')
             ->limit($limit)
             ->get();
+    }
+    public function getCategoryBySlug(string $slug)
+    {
+        return PostCategory::where('slug', $slug)->first();
     }
 
     private function validateSortColumn(string $column): string

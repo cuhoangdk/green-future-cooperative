@@ -18,12 +18,8 @@ class PostResource extends JsonResource
         $data = parent::toArray($request);
 
         // Bỏ các trường không mong muốn
-        $data = Arr::except($data, ['category_id', 'author_id', 'category', 'author']);
-
-        // Thêm các trường bổ sung
-        $data['category_name'] = $this->category ? $this->category->name : null;
-        $data['author_name'] = $this->author ? $this->author->full_name : null;
-
+        $data = Arr::except($data, ['category_id', 'author_id']);
+        
         return $data;
     }
 }

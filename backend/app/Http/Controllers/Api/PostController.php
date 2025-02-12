@@ -85,7 +85,7 @@ class PostController extends Controller
         }
 
         $post->load(['category', 'author']);
-        return new PostDetailResource($post);
+        return new PostResource($post);
     }
     /**
      * Tạo mới một bài viết.
@@ -170,7 +170,7 @@ class PostController extends Controller
         }
 
         $post->load(['category', 'author']);
-        return new PostDetailResource($post);
+        return new PostResource($post);
     }
      /**
      * Xem danh sách bài viết theo loại.
@@ -255,4 +255,31 @@ class PostController extends Controller
         $posts = $this->postRepository->getFeaturedPosts();
         return PostResource::collection($posts);
     }
+    /**
+     * Lấy danh sách bài viết theo slug của danh mục.
+     * 
+     * @param string $slug - Slug của danh mục.
+     * @param IndexPostRequest $request - Yêu cầu chứa `per_page`, `sort_by`, `sort_direction`.
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection - Danh sách bài viết dạng JSON.
+     */
+    public function getByCategorySlug($slug, IndexPostRequest $request)
+    {
+        $perPage = $request->input('per_page', 10);
+        $sortBy = $request->input('sort_by', 'created_at');
+        $sortDirection = $request->input('sort_direction', 'desc');
+
+        // Tìm danh mục dựa trên slug
+        $category = $this->postRepository->getCategoryBySlug($slug);
+
+        if (!$category) {
+            return response()->json(['message' => 'Category not found'], 404);
+        }
+
+        $posts = $this->postRepository
+            ->getByCategory($category->id, $perPage, $sortDirection, $sortBy)
+            ->appends(request()->query());
+
+        return PostResource::collection($posts);
+    }
+
 }
