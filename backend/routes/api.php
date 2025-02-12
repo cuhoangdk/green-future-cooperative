@@ -8,7 +8,7 @@ use App\Http\Controllers\Api\PostCategoryController;
 // Routes dành cho xác thực cooperative_members
 Route::prefix('auth')->group(function () {
     Route::post('/login', [AuthController::class, 'login'])->name('login');
-
+    Route::post('/refresh-token', [AuthController::class, 'refreshToken']);
     Route::middleware('auth:api')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::get('/user', [AuthController::class, 'user']);

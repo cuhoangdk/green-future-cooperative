@@ -3,40 +3,75 @@
 namespace App\Repositories\Eloquent;
 
 use App\Repositories\Contracts\AuthRepositoryInterface;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Hash;
+use Laravel\Passport\RefreshToken;
+use Laravel\Passport\Http\Controllers\AccessTokenController;
+use Illuminate\Http\Request;
 use App\Models\CooperativeMember;
+use Psr\Http\Message\ServerRequestInterface;
 
 class AuthRepository implements AuthRepositoryInterface
 {
     /**
-     * Xử lý đăng nhập và tạo token
+     * Đăng nhập và lấy Access Token + Refresh Token từ /oauth/token
      */
     public function login(array $credentials)
     {
-        // Tìm thành viên theo email
         $member = CooperativeMember::where('email', $credentials['email'])->first();
 
-        // Kiểm tra mật khẩu
         if (!$member || !Hash::check($credentials['password'], $member->password)) {
-            return null;
+            return response()->json(['message' => 'Invalid credentials'], 401);
         }
 
-        // Tạo token cho CooperativeMember
-        return [
-            'user'         => $member,
-            'access_token' => $member->createToken('authToken', ['*'])->accessToken,
-            'token_type'   => 'Bearer',
-        ];
+        // Gọi trực tiếp OAuth mà không dùng HTTP request
+        $tokenRequest = Request::create('/oauth/token', 'POST', [
+            'grant_type'    => 'password',
+            'client_id'     => config('passport.client_id'),
+            'client_secret' => config('passport.client_secret'),
+            'username'      => $credentials['email'],
+            'password'      => $credentials['password'],
+            'scope'         => '*',
+        ]);
+
+        $response = app()->handle($tokenRequest);
+        return response()->json(json_decode($response->getContent(), true));
     }
 
     /**
-     * Xử lý đăng xuất
+     * Làm mới Access Token bằng Refresh Token từ /oauth/token
+     */
+    public function refreshToken(string $refreshToken)
+    {
+        // Gọi trực tiếp Laravel Passport để lấy token mới
+        $tokenRequest = Request::create('/oauth/token', 'POST', [
+            'grant_type'    => 'refresh_token',
+            'client_id'     => config('passport.client_id'),
+            'client_secret' => config('passport.client_secret'),
+            'refresh_token' => $refreshToken,
+            'scope'         => '*',
+        ]);
+
+        // Xử lý request trực tiếp trong Laravel
+        $response = app()->handle($tokenRequest);
+
+        // Trả về kết quả
+        return response()->json(json_decode($response->getContent(), true));
+    }
+
+    /**
+     * Đăng xuất (Thu hồi Access Token & Refresh Token)
      */
     public function logout()
     {
-        if (Auth::user()) {
-            Auth::user()->token()->revoke();
+        if (Auth::check()) {
+            $token = Auth::user()->token();
+            $token->revoke();
+
+            // Thu hồi refresh token liên kết với access token này
+            RefreshToken::where('access_token_id', $token->id)->update(['revoked' => true]);
         }
     }
 }
