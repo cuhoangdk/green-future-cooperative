@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Arr;
 class PostResource extends JsonResource
 {
     /**
@@ -13,18 +14,16 @@ class PostResource extends JsonResource
      */    
     public function toArray(Request $request): array
     {
-        return [
-            'id' => $this->id,
-            'title' => $this->title,
-            'slug' => $this->slug,
-            'summary' => $this->summary,
-            'content' => $this->content,
-            'category_name' => $this->category ? $this->category->name : null,  
-            'author_name' => $this->author ? $this->author->full_name : null, 
-            'is_hot' => $this->is_hot,
-            'is_featured' => $this->is_featured,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
-        ];
+        // Lấy dữ liệu mặc định từ parent::toArray()
+        $data = parent::toArray($request);
+
+        // Bỏ các trường không mong muốn
+        $data = Arr::except($data, ['category_id', 'author_id', 'category', 'author']);
+
+        // Thêm các trường bổ sung
+        $data['category_name'] = $this->category ? $this->category->name : null;
+        $data['author_name'] = $this->author ? $this->author->full_name : null;
+
+        return $data;
     }
 }

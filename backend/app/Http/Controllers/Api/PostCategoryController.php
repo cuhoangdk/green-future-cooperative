@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Requests\IndexCategoryRequest;
+use App\Http\Requests\IndexRequest;
+use App\Http\Requests\SearchCategoryRequest;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreUpdateCategoryRequest;
+use App\Http\Requests\PostCategories\StoreUpdateCategoryRequest;
 use App\Http\Resources\PostCategoryResource;
 use App\Repositories\Contracts\PostCategoryRepositoryInterface;
 
@@ -16,8 +19,13 @@ class PostCategoryController extends Controller
     {
         $this->categoryRepository = $categoryRepository;
     }
-
-    public function index(Request $request)
+    /**
+     * Lấy danh sách loại bài viết.
+     * 
+     * @param IndexCategoryRequest $request - Chứa `per_page`, `sort_by`, `sort_direction`.
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection - Danh sách bài viết dạng JSON.
+     */
+    public function index(IndexCategoryRequest $request)
     {
         $perPage = $request->input('per_page', 10);
         $sortBy = $request->input('sort_by', 'created_at');
@@ -31,8 +39,13 @@ class PostCategoryController extends Controller
 
         return PostCategoryResource::collection($categories);
     }
-
-    public function search(Request $request)
+     /**
+     * Tìm danh sách loại bài viết.
+     * 
+     * @param SearchCategoryRequest $request - Chứa `search`,`per_page`, `sort_by`, `sort_direction`.
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection - Danh sách bài viết dạng JSON.
+     */
+    public function search(SearchCategoryRequest $request)
     {
         $perPage = $request->input('per_page', 10);
         $sortBy = $request->input('sort_by', 'created_at');
@@ -48,8 +61,12 @@ class PostCategoryController extends Controller
 
         return PostCategoryResource::collection($categories);
     }
-
-
+    /**
+     * Hiển thị chi tiết loại bài viết.
+     * 
+     * @param int $id - ID bài viết cần hiển thị.
+     * @return PostCategoryResource|\Illuminate\Http\JsonResponse - Thông tin loại bài viết hoặc thông báo lỗi.
+     */
     public function show($id)
     {
         $category = $this->categoryRepository->getById($id);
@@ -60,14 +77,25 @@ class PostCategoryController extends Controller
 
         return new PostCategoryResource($category);
     }
-
+    /**
+     * Tạo mới một loại bài viết.
+     * 
+     * @param StoreUpdateCategoryRequest $request - Yêu cầu chứa dữ liệu bài viết bao gồm title, description
+     * @return PostCategoryResource - Loại bài viết vừa tạo.
+     */
     public function store(StoreUpdateCategoryRequest $request)
     {
         $validated = $request->validated();
         $category = $this->categoryRepository->create($validated);
         return new PostCategoryResource($category);
     }
-
+    /**
+     * Cập nhật thông tin loại bài viết.
+     * 
+     * @param StoreUpdateCategoryRequest $request - Yêu cầu chứa dữ liệu cần cập nhật bao gồm title, description.
+     * @param int $id - ID bài viết cần cập nhật.
+     * @return PostCategoryResource|\Illuminate\Http\JsonResponse - Loại bài viết đã cập nhật hoặc thông báo lỗi.
+     */
     public function update(StoreUpdateCategoryRequest $request, $id)
     {
         $validated = $request->validated();
@@ -79,7 +107,12 @@ class PostCategoryController extends Controller
 
         return new PostCategoryResource($category);
     }
-
+    /**
+     * Xóa loại bài viết.
+     * 
+     * @param int $id - ID loại bài viết cần xóa.
+     * @return \Illuminate\Http\JsonResponse - Thông báo xóa thành công hoặc lỗi.
+     */
     public function destroy($id)
     {
         $deleted = $this->categoryRepository->delete($id);
@@ -88,7 +121,12 @@ class PostCategoryController extends Controller
         }
         return response()->json(['message' => 'Category deleted successfully']);
     }
-
+    /**
+     * Khôi phục loại bài viết.
+     * 
+     * @param int $id - ID bài viết cần khôi phục.
+     * @return \Illuminate\Http\JsonResponse - Thông báo khôi phục thành công hoặc lỗi.
+     */
     public function restore($id)
     {
         $category = $this->categoryRepository->getTrashedById($id);
@@ -104,7 +142,12 @@ class PostCategoryController extends Controller
 
         return response()->json(['message' => 'Category restored successfully']);
     }
-
+    /**
+     * Xóa vĩnh viễn loại bài viết.
+     * 
+     * @param int $id - ID loại bài viết cần xóa.
+     * @return \Illuminate\Http\JsonResponse - Thông báo xóa thành công hoặc lỗi.
+     */
     public function forceDelete($id)
     {
         $category = $this->categoryRepository->getTrashedById($id);

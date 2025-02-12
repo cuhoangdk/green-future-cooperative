@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\Api;
 
-use Illuminate\Http\Request;
+use App\Http\Requests\Posts\IndexPostRequest;
+use App\Http\Requests\Posts\SearchPostRequest;
+use App\Http\Requests\Posts\StoreUpdatePostRequest;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\PostResource;
 use App\Http\Resources\PostDetailResource;
 use App\Repositories\Contracts\PostRepositoryInterface;
-use App\Http\Requests\StoreUpdatePostRequest;
 use App\Traits\GeneratesSlug;
 use App\Services\UploadFileService;
 class PostController extends Controller
@@ -22,8 +23,13 @@ class PostController extends Controller
         $this->postRepository = $postRepository;
         $this->uploadService = $uploadService;
     }
-
-    public function index(Request $request)
+    /**
+     * Lấy danh sách bài viết.
+     * 
+     * @param IndexPostRequest $request - Chứa `per_page`, `sort_by`, `sort_direction`.
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection - Danh sách bài viết dạng JSON.
+     */
+    public function index(IndexPostRequest $request)
     {
         $perPage = $request->input('per_page', 10);
         $sortBy = $request->input('sort_by', 'created_at');
@@ -36,8 +42,13 @@ class PostController extends Controller
 
         return PostResource::collection($posts);
     }
-
-    public function search(Request $request)
+    /**
+     * Tìm kiếm bài viết theo các tiêu chí lọc.
+     * 
+     * @param SearchPostRequest $request - Chứa `per_page`, `sort_by`, `sort_direction`, `search`, `author_id`, `category_id`, `status`, `start_date`, `end_date`, `is_hot`, `is_featured`
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection - Danh sách bài viết dạng JSON.
+     */
+    public function search(SearchPostRequest $request)
     {
         $perPage = $request->input('per_page', 10);
         $sortBy = $request->input('sort_by', 'created_at');
@@ -59,7 +70,12 @@ class PostController extends Controller
         return PostResource::collection($posts);
     }
 
-
+    /**
+     * Hiển thị chi tiết bài viết.
+     * 
+     * @param int $id - ID bài viết cần hiển thị.
+     * @return PostResource|\Illuminate\Http\JsonResponse - Thông tin bài viết hoặc thông báo lỗi.
+     */
     public function show($id)
     {
         $post = $this->postRepository->getById($id);
@@ -71,7 +87,12 @@ class PostController extends Controller
         $post->load(['category', 'author']);
         return new PostDetailResource($post);
     }
-
+    /**
+     * Tạo mới một bài viết.
+     * 
+     * @param StoreUpdatePostRequest $request - Yêu cầu chứa dữ liệu bài viết bao gồm title, summary, content, featured_image, category_id, author_id, post_status, is_hot, is_featured.
+     * @return PostResource - Bài viết vừa tạo.
+     */
     public function store(StoreUpdatePostRequest $request)
     {
         $validated = $request->validated();
@@ -86,7 +107,13 @@ class PostController extends Controller
         $post = $this->postRepository->create($validated);
         return new PostResource($post);
     }
-
+    /**
+     * Cập nhật thông tin bài viết.
+     * 
+     * @param StoreUpdatePostRequest $request - Yêu cầu chứa dữ liệu cần cập nhật bao gồm title, summary, content, featured_image, category_id, author_id, post_status, is_hot, is_featured.
+     * @param int $id - ID bài viết cần cập nhật.
+     * @return PostResource|\Illuminate\Http\JsonResponse - Bài viết đã cập nhật hoặc thông báo lỗi.
+     */
     public function update(StoreUpdatePostRequest $request, $id)
     {
         $validated = $request->validated();
@@ -114,7 +141,12 @@ class PostController extends Controller
         $post->update($validated);
         return new PostResource($post);
     }
-
+    /**
+     * Xóa bài viết.
+     * 
+     * @param int $id - ID bài viết cần xóa.
+     * @return \Illuminate\Http\JsonResponse - Thông báo xóa thành công hoặc lỗi.
+     */
     public function destroy($id)
     {
         $deleted = $this->postRepository->delete($id);
@@ -123,7 +155,12 @@ class PostController extends Controller
         }
         return response()->json(['message' => 'Post deleted successfully']);
     }
-
+    /**
+     * Xem bài viết theo slug.
+     * 
+     * @param $slug - Slug bài viết cần hiện.
+     * @return PostResource - Bài viết chưa slug đó.
+     */
     public function getBySlug($slug)
     {
         $post = $this->postRepository->getBySlug($slug);
@@ -135,8 +172,14 @@ class PostController extends Controller
         $post->load(['category', 'author']);
         return new PostDetailResource($post);
     }
-
-    public function getByCategory(Request $request)
+     /**
+     * Xem danh sách bài viết theo loại.
+     * 
+     * @param int $category_id 
+     * @param IndexPostRequest $request - chứa `per_page`, `sort_by`, `sort_direction`.
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection - Danh sách bài viết dạng JSON.
+     */
+    public function getByCategory(IndexPostRequest $request)
     {
         $perPage = $request->input('per_page', 10);
         $sortBy = $request->input('sort_by', 'created_at');
@@ -148,7 +191,12 @@ class PostController extends Controller
             ->appends(request()->query());
         return PostResource::collection($posts);
     }
-
+    /**
+     * Khôi phục bài viết.
+     * 
+     * @param int $id - ID bài viết cần khôi phục.
+     * @return \Illuminate\Http\JsonResponse - Thông báo khôi phục thành công hoặc lỗi.
+     */
     public function restore($id)
     {
         $post = $this->postRepository->getTrashedById($id);
@@ -165,7 +213,12 @@ class PostController extends Controller
 
         return response()->json(['message' => 'Post restored successfully']);
     }
-
+    /**
+     * Xóa vĩnh viễn bài viết.
+     * 
+     * @param int $id - ID bài viết cần xóa.
+     * @return \Illuminate\Http\JsonResponse - Thông báo xóa thành công hoặc lỗi.
+     */
     public function forceDelete($id)
     {
         $post = $this->postRepository->getTrashedById($id);
@@ -182,13 +235,21 @@ class PostController extends Controller
 
         return response()->json(['message' => 'Post permanently deleted successfully']);
     }
-
+    /**
+     * Xem bài viết hot.
+     * 
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection - Danh sách bài viết dạng JSON.
+     */
     public function getHotPosts()
     {
         $posts = $this->postRepository->getHotPosts();
         return PostResource::collection($posts);
     }
-
+    /**
+     * Xem bài viết nổi bật.
+     * 
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection - Danh sách bài viết dạng JSON.
+     */
     public function getFeaturedPosts()
     {
         $posts = $this->postRepository->getFeaturedPosts();

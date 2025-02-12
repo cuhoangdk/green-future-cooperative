@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Requests\Auth\RefreshTokenRequest;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Repositories\Contracts\AuthRepositoryInterface;
@@ -17,14 +19,12 @@ class AuthController extends Controller
 
     /**
      * Đăng nhập & lấy Access Token + Refresh Token
+     * 
+     * @param LoginRequest $request - Chứa `email`, `password`.
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection - Danh sách thông tin user dạng JSON.
      */
-    public function login(Request $request)
-    {
-        $request->validate([
-            'email'    => 'required|email',
-            'password' => 'required',
-        ]);
-
+    public function login(LoginRequest $request)
+    {        
         $tokenData = $this->authRepository->login($request->only('email', 'password'));
 
         if (!$tokenData) {
@@ -36,13 +36,12 @@ class AuthController extends Controller
 
     /**
      * Làm mới Access Token
+     * 
+     * @param RefreshTokenRequest $request - Chứa `refresh_token`.
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection - Danh sách thông tin refresh token mới và access token mới dạng JSON.
      */
-    public function refreshToken(Request $request)
+    public function refreshToken(RefreshTokenRequest $request)
     {
-        $request->validate([
-            'refresh_token' => 'required',
-        ]);
-
         $tokenData = $this->authRepository->refreshToken($request->refresh_token);
 
         if (!$tokenData) {

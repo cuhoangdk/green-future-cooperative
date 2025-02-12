@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Posts;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class StoreUpdateCategoryRequest extends FormRequest
+class StoreUpdatePostRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,8 +24,16 @@ class StoreUpdateCategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string|max:500',
+            'title' => 'sometimes|required|string|max:255',
+            'summary' => 'nullable|string|max:500',
+            'content' => 'required',
+            'featured_image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'category_id' => 'required|exists:post_categories,id',
+            'author_id' => 'required|exists:cooperative_members,id',
+            'post_status' => 'in:draft,published,archived',
+            'published_at' => 'nullable|date',            
+            'is_hot' => 'boolean',
+            'is_featured' => 'boolean',
         ];
     }
     protected function failedValidation(Validator $validator)

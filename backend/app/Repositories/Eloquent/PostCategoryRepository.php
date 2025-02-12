@@ -18,7 +18,8 @@ class PostCategoryRepository implements PostCategoryRepositoryInterface
 
     public function getAll(string $sortBy = 'created_at', string $sortDirection = 'desc', int $perPage = 10): Paginator
     {
-        return $this->model->orderBy($this->validateSortColumn($sortBy), $this->validateSortDirection($sortDirection))
+        return $this->model
+            ->orderBy($this->validateSortColumn($sortBy), $this->validateSortDirection($sortDirection))
             ->paginate($perPage);
     }
 
