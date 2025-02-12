@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\PostResource;
+use App\Http\Resources\PostDetailResource;
 use App\Repositories\Contracts\PostRepositoryInterface;
 use App\Http\Requests\StoreUpdatePostRequest;
 use App\Traits\GeneratesSlug;
@@ -28,7 +29,10 @@ class PostController extends Controller
         $sortBy = $request->input('sort_by', 'created_at');
         $sortDirection = $request->input('sort_direction', 'desc');
 
-        $posts = $this->postRepository->getAll($sortBy, $sortDirection, $perPage);
+        $posts = $this->postRepository
+        ->getAll($sortBy, $sortDirection, $perPage)
+        ->appends(request()->query());
+        ;
 
         return PostResource::collection($posts);
     }
@@ -65,7 +69,7 @@ class PostController extends Controller
         }
 
         $post->load(['category', 'author']);
-        return new PostResource($post);
+        return new PostDetailResource($post);
     }
 
     public function store(StoreUpdatePostRequest $request)
@@ -129,7 +133,7 @@ class PostController extends Controller
         }
 
         $post->load(['category', 'author']);
-        return new PostResource($post);
+        return new PostDetailResource($post);
     }
 
     public function getByCategory(Request $request)
