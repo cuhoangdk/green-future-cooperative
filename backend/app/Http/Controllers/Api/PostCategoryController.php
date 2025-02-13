@@ -2,10 +2,8 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Requests\IndexCategoryRequest;
-use App\Http\Requests\IndexRequest;
-use App\Http\Requests\SearchCategoryRequest;
-use Illuminate\Http\Request;
+use App\Http\Requests\PostCategories\IndexCategoryRequest;
+use App\Http\Requests\PostCategories\SearchCategoryRequest;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PostCategories\StoreUpdateCategoryRequest;
 use App\Http\Resources\PostCategoryResource;
