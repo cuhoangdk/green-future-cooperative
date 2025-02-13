@@ -13,6 +13,10 @@ export const usePosts = () => {
         return await get<Post[]>(`/posts/category/${id}`, { page, per_page })
     }
 
+    const fetchPostByCategorySlug = async (slug: string, page: number = 1, per_page: number = 10): Promise<ApiResponse<Post[]>> => {
+        return await get<Post[]>(`/posts/category-slug/${slug}`, { page, per_page })
+    }
+
     const fetchHotPosts = async (): Promise<ApiResponse<Post[]>> => {
         return await get<Post[]>('/posts/hot')
     }
@@ -44,6 +48,7 @@ export const usePosts = () => {
     return {
         fetchPosts,
         fetchPostByCategoryId,
+        fetchPostByCategorySlug,
         fetchPostById,
         fetchPostBySlug,
         fetchHotPosts,

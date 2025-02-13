@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
 import type { Post } from '~/types/post';
 import type { PostCategory } from '~/types/postcategory';
 import type { PaginationMeta, PaginationLinks } from '~/types/api'
@@ -198,8 +197,8 @@ onMounted(() => {
                 </div>
                 <div v-else v-for="category in categoryPosts" :key="category.categoryId">
                     <div v-if="category.posts.length > 0">
-                        <PostList :title="category.categoryName" :posts="category.posts" :meta="category.meta"
-                            :links="category.links"
+                        <PostList :title="category.categoryName" :posts="category.posts" :meta="category.meta" 
+                            :links="category.links" :maxCols="3"
                             @page-change="(page) => handlePageChange(category.categoryId, page)" />
                     </div>
                 </div>

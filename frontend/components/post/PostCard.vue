@@ -14,7 +14,7 @@ const handleImageError = () => {
 
 <template>
     <NuxtLink :to="`/posts/${post.slug}`"
-        class="bg-white border border-amber-100 shadow-sm rounded-lg overflow-hidden hover:shadow-md hover:-translate-y-1 duration-200 relative z-10">
+        class="bg-white border border-amber-100 shadow-sm rounded-lg overflow-hidden hover:shadow-md hover:-translate-y-1 duration-200 relative z-0">
         <div class="relative w-full aspect-video">
             <NuxtImg :src="currentImage" :alt="post.title" class="rounded-lg rounded-b-none w-full h-full object-cover"
                 loading="lazy" @error="handleImageError" />

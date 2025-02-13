@@ -53,10 +53,10 @@ onMounted(() => {
         </div>
         <ul v-else class="text-left space-y-2">
             <li v-for="category in categories" :key="category.id">
-                <a :href="'posts/' + category.slug"
+                <NuxtLink :to="'/postcategories/' + category.slug"
                     class="text-left text-xl font-semibold text-green-600 hover:text-green-400 transition-colors duration-200">
                     {{ category.name }}
-                </a>
+                </NuxtLink>
             </li>
         </ul>
 

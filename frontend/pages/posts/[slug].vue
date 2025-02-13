@@ -8,6 +8,8 @@ interface RelatedPosts {
     meta: PaginationMeta | null;
     links: PaginationLinks | null;
 }
+
+
 const route = useRoute()
 const isLoadingPost = ref(true)
 const isLoadingRelatedPosts = ref(true)
@@ -19,11 +21,6 @@ const placeholderImage = '/img/banner.png'; // hoặc logo của bạn
 
 
 const { fetchPostBySlug, fetchPostByCategoryId, fetchFeaturedPosts } = usePosts()
-
-const handleImageError = (event: Event) => {
-    const img = event.target as HTMLImageElement
-    img.src = '/img/banner.png'
-}
 
 const loadPost = async () => {
     try {
@@ -40,8 +37,7 @@ const loadPost = async () => {
 const loadRelatedPosts = async (page: number = 1) => {
     if (post.value?.category) {
         try {
-            isLoadingRelatedPosts.value = true
-            const response = await fetchPostByCategoryId(post.value.category.id, page, 3)
+            const response = await fetchPostByCategoryId(post.value.category.id, page, 4)
             relatedPosts.value = {
                 posts: response.data,
                 meta: response.meta || null,
@@ -137,11 +133,8 @@ onMounted(loadData)
                             class="bg-[#FFFFFF] overflow-hidden duration-200 flex items-start mt-3">
                             <!-- Hình ảnh bên trái -->
                             <div class="w-1/2 h-full">
-                                <NuxtImg :src="featuredPost.image" :alt="featuredPost.title"
-                                    class="min-h-24 w-full h-full object-cover" loading="lazy" :style="{
-                                        backgroundImage: `linear-gradient(to top, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0)), 
-                                    url(${post.image || placeholderImage})`
-                                    }" />
+                                <NuxtImg :src="featuredPost.image || placeholderImage" :alt="featuredPost.title"
+                                    class="min-h-24 w-full h-full object-cover" loading="lazy"  />
                             </div>
 
                             <!-- Nội dung bên phải -->
@@ -162,7 +155,7 @@ onMounted(loadData)
                 </div>
                 <div v-else>
                     <PostList v-if="relatedPosts && relatedPosts.posts.length > 0" title="Bài viết liên quan"
-                        :posts="relatedPosts.posts" :meta="relatedPosts.meta" :links="relatedPosts.links"
+                        :posts="relatedPosts.posts" :meta="relatedPosts.meta" :links="relatedPosts.links" :maxCols="4"
                         @page-change="handlePageChange" />
                 </div>
             </div>
