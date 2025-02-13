@@ -1,10 +1,9 @@
 <template>
   <div>
       <LayoutTheHeader />
-      <LayoutTheMobileMenu />
+      <slot />
       <LayoutTheSocialButtons />
       <LayoutTheBackToTop />
-      <slot />
       <LayoutTheFooter />
   </div>
 </template>

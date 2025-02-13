@@ -1,7 +1,7 @@
 <template>
     <div class="fixed bottom-20 right-4 flex flex-col space-y-2">
         <a v-for="link in socialLinks" :key="link.name" :href="link.url" :class="link.bgColor" target="_blank"
-            class="text-white p-2 rounded-full shadow-lg hover:opacity-80 transition-colors duration-200">
+            class="text-white p-2 rounded-full shadow-lg hover:opacity-80 transition-colors duration-200 z-50">
             <component :is="link.icon" class="w-6 h-6" />
         </a>
     </div>

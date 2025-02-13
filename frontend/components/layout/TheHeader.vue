@@ -4,9 +4,9 @@
         <div class="bg-green-600 border-b border-green-700">
             <div class="max-w-7xl mx-auto px-4 lg:px-8">
                 <div class="flex flex-wrap lg:flex-nowrap items-center justify-between py-1">
-                    <div class="flex items-center space-x-4">
-                        <img src="../../assets/images/logo.jpg" alt="Logo Green Future"
-                            class="rounded-full w-12 h-12 lg:w-18 lg:h18 object-cover" />
+                    <div class="flex items-center space-x-2">
+                        <img src="~/assets/images/logo.jpg" alt="Logo Green Future"
+                            class="rounded-full w-12 h-12 lg:w-16 lg:h-16 object-cover" />
                         <h1 class="text-2xl lg:text-3xl font-bold text-white hidden lg:block">
                             <NuxtLink to="/" class="">Green Future</NuxtLink>
                         </h1>
@@ -50,14 +50,10 @@
         <nav class="hidden lg:block max-w-7xl mx-auto px-4 lg:px-8 py-3">
             <div class="flex justify-center space-x-6 font-semibold">
                 <NuxtLink to="/" class="text-green-500 transition-colors duration-200">Trang chủ</NuxtLink>
-                <NuxtLink to="/products" class="text-gray-600 hover:text-green-500 transition-colors duration-200">Sản
-                    phẩm</NuxtLink>
-                <NuxtLink to="/posts" class="text-gray-600 hover:text-green-500 transition-colors duration-200">Bài viết
-                </NuxtLink>
-                <NuxtLink to="/about" class="text-gray-600 hover:text-green-500 transition-colors duration-200">Về chúng
-                    tôi</NuxtLink>
-                <NuxtLink to="/contact" class="text-gray-600 hover:text-green-500 transition-colors duration-200">Liên
-                    hệ</NuxtLink>
+                <NuxtLink to="/products" class="text-gray-600 hover:text-green-500 transition-colors duration-200">Sản phẩm</NuxtLink>
+                <NuxtLink to="/posts" class="text-gray-600 hover:text-green-500 transition-colors duration-200">Bài viết</NuxtLink>
+                <NuxtLink to="/about" class="text-gray-600 hover:text-green-500 transition-colors duration-200">Về chúng tôi</NuxtLink>
+                <NuxtLink to="/contact" class="text-gray-600 hover:text-green-500 transition-colors duration-200">Liên hệ</NuxtLink>
             </div>
         </nav>
 

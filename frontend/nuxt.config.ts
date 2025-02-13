@@ -6,11 +6,21 @@ export default defineNuxtConfig({
   compatibilityDate: '2024-11-01',
   devtools: { enabled: true },
   css: ['~/assets/css/main.css'],
+
   vite: {
     plugins: [
       tailwindcss(),
     ],
   },
+
+  runtimeConfig: {
+    apiSecret: process.env.NUXT_API_SECRET,
+    public: {
+      apiBase: process.env.NUXT_PUBLIC_API_BASE || 'http://127.0.0.1:8000/api'
+    },
+    defaultImage: '/images/logo.jpg'
+  },
+
   app: {
     head: {
       title: 'Green Future - Thực phẩm sạch cho tương lai xanh',
@@ -25,7 +35,10 @@ export default defineNuxtConfig({
       ]
     }
   },
+
   typescript: {
     strict: true
-  }
+  },
+
+  modules: ['@nuxt/image']
 })

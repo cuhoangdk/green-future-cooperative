@@ -1,6 +1,6 @@
 <template>
     <!-- Mobile Navigation Menu -->
-    <nav :class="['fixed inset-0 top-16 p-4 bg-white z-40 lg:hidden transform transition-transform duration-300',
+    <nav :class="['fixed inset-0 top-16 p-4 bg-white z-50 lg:hidden transform transition-transform duration-300',
         isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full']">
         <div class="text-left flex flex-col items-start justify-start h-full space-y-3">
             <NuxtLink v-for="link in mobileNavLinks" :key="link.path" :to="link.path"
