@@ -19,14 +19,18 @@ class PostRepository implements PostRepositoryInterface
 
     public function getAll(string $sortBy = 'created_at', string $sortDirection = 'desc', int $perPage = 10): Paginator
     {
-        return $this->model->with(['category', 'author'])
+        return $this->model->when(!auth('api_cooperative_members')->check(), function ($query) {
+            $query->where('post_status', 'published');
+        })->with(['category', 'author'])
             ->orderBy($this->validateSortColumn($sortBy), $this->validateSortDirection($sortDirection))
             ->paginate($perPage);
     }
 
     public function getById($id)
     {
-        return $this->model->find($id);
+        return $this->model->when(!auth('api_cooperative_members')->check(), function ($query) {
+            $query->where('post_status', 'published');
+        })->find($id);
     }
 
     public function create(array $data)
@@ -56,7 +60,9 @@ class PostRepository implements PostRepositoryInterface
 
     public function getBySlug($slug)
     {
-        return $this->model->where('slug', $slug)->first();
+        return $this->model->when(!auth('api_cooperative_members')->check(), function ($query) {
+            $query->where('post_status', 'published');
+        })->where('slug', $slug)->first();
     }
 
     public function getByCategory(
@@ -66,7 +72,9 @@ class PostRepository implements PostRepositoryInterface
         $sortBy = 'created_at'
         ):Paginator
     {
-        $posts = $this->model->where('category_id', $categoryId)
+        $posts = $this->model->when(!auth('api_cooperative_members')->check(), function ($query) {
+            $query->where('post_status', 'published');
+        })->where('category_id', $categoryId)
             ->orderBy($sortBy, $sortDirection)
             ->with(['category', 'author'])
             ->paginate($perPage);
@@ -100,7 +108,9 @@ class PostRepository implements PostRepositoryInterface
         int $perPage = 10,
         array $filters = []
     ) {
-        $query = Post::query()
+        $query = Post::query()->when(!auth('api_cooperative_members')->check(), function ($query) {
+            $query->where('post_status', 'published');
+        })
             ->with(['category', 'author'])
             ->when($filters['search'] ?? null, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
@@ -153,7 +163,11 @@ class PostRepository implements PostRepositoryInterface
 
     public function getHotPosts(int $limit = 5)
     {
-        return $this->model->where('is_hot', true)
+        return $this->model
+        ->when(!auth('api_cooperative_members')->check(), function ($query) {
+            $query->where('post_status', 'published');
+        })
+            ->where('is_hot', true)
             ->orderBy('created_at', 'desc')
             ->limit($limit)
             ->get();
@@ -161,14 +175,21 @@ class PostRepository implements PostRepositoryInterface
 
     public function getFeaturedPosts(int $limit = 5)
     {
-        return $this->model->where('is_featured', true)
+        return $this->model
+        ->when(!auth('api_cooperative_members')->check(), function ($query) {
+            $query->where('post_status', 'published');
+        })
+            ->where('is_featured', true)
             ->orderBy('created_at', 'desc')
             ->limit($limit)
             ->get();
     }
+
     public function getCategoryBySlug(string $slug)
     {
-        return PostCategory::where('slug', $slug)->first();
+        return PostCategory::where('slug', $slug)->when(!auth('api_cooperative_members')->check(), function ($query) {
+            $query->where('is_active', true);
+        })->first();
     }
 
     private function validateSortColumn(string $column): string

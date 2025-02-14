@@ -18,14 +18,18 @@ class PostCategoryRepository implements PostCategoryRepositoryInterface
 
     public function getAll(string $sortBy = 'created_at', string $sortDirection = 'desc', int $perPage = 10): Paginator
     {
-        return $this->model
+        return $this->model->when(!auth('api_cooperative_members')->check(), function ($query) {
+            $query->where('is_active', true);
+        })
             ->orderBy($this->validateSortColumn($sortBy), $this->validateSortDirection($sortDirection))
             ->paginate($perPage);
     }
 
     public function getById($id)
 {
-    return $this->model->find($id); 
+    return $this->model->when(!auth('api_cooperative_members')->check(), function ($query) {
+        $query->where('is_active', true);
+    })->find($id); 
 }
 
     public function create(array $data)
@@ -54,7 +58,9 @@ class PostCategoryRepository implements PostCategoryRepositoryInterface
     }
     public function getBySlug($slug)
     {
-        return $this->model->where('slug', $slug)->first();
+        return $this->model->when(!auth('api_cooperative_members')->check(), function ($query) {
+            $query->where('is_active', true);
+        })->where('slug', $slug)->first();
     }
     public function getTrashedById($id)
     {
@@ -87,7 +93,9 @@ class PostCategoryRepository implements PostCategoryRepositoryInterface
         array $filters = []
     ) {
         $query = PostCategory::query();
-    
+        $query->when(!auth('api_cooperative_members')->check(), function ($query) {
+            $query->where('is_active', true);
+        });
         // Tìm kiếm theo tên
         if (!empty($filters['search'])) {
             $query->where('name', 'like', "%{$filters['search']}%");

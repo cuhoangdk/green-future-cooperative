@@ -36,13 +36,13 @@ return [
     */
 
     'guards' => [
-        // 'web' => [
-        //     'driver' => 'session',
-        //     'provider' => 'users',
-        // ],
-        'api' => [
+        'api_cooperative_members' => [
             'driver' => 'passport',
             'provider' => 'cooperative_members',
+        ],
+        'api_customers' => [
+            'driver' => 'passport',
+            'provider' => 'customers',
         ],
     ],
 
@@ -68,11 +68,9 @@ return [
             'driver' => 'eloquent',
             'model' => App\Models\CooperativeMember::class,
         ],
-
-
-        // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
+        // 'customers' => [
+        //     'driver' => 'eloquent',
+        //     'model' => App\Models\Customer::class,
         // ],
     ],
 
