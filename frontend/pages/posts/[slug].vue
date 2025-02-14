@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import type { Post } from '~/types/post'
 import type { PaginationMeta, PaginationLinks } from '~/types/api'
+import { useRuntimeConfig } from '#app';
 
 interface RelatedPosts {
     posts: Post[];
@@ -18,7 +19,8 @@ const post = ref<Post | null>(null)
 const relatedPosts = ref<RelatedPosts | null>(null)
 const featuredPosts = ref<Post[]>([])
 const placeholderImage = '/img/banner.png'; // hoặc logo của bạn
-
+const config = useRuntimeConfig();
+const backendUrl = config.public.backendUrl;
 
 const { fetchPostBySlug, fetchPostByCategoryId, fetchFeaturedPosts } = usePosts()
 
@@ -99,7 +101,7 @@ onMounted(loadData)
                     {{ post.category?.name }}
                 </h2>
                 <h2 class="text-sm text-gray-600 text-left font-semibold lg:w-10/12 w-full mt-3">
-                    {{ post.date }}
+                    {{ post.published_at }}
                 </h2>
                 <hr class="border-gray-300 w-full mt-4" />
             </div>
@@ -108,8 +110,10 @@ onMounted(loadData)
             <div class="w-11/12 max-w-7xl flex flex-col lg:flex-row justify-between items-start gap-x-5 mt-5">
                 <!-- Nội dung chính -->
                 <div class="lg:w-[73%] w-full max-w-7xl mt-5">
-                    <div v-html="post.content" class="text-left"></div>
-                </div>
+                    <div v-html="post.content" class="text-left"></div>                    
+                    <div v-html="post.author?.full_name" class="text-right bold"></div>                
+                </div>                
+                
 
                 <!-- Bài viết nổi bật-->
                 <div class="lg:w-[27%] w-full max-w-7xl mt-5">
@@ -133,8 +137,11 @@ onMounted(loadData)
                             class="bg-[#FFFFFF] overflow-hidden duration-200 flex items-start mt-3">
                             <!-- Hình ảnh bên trái -->
                             <div class="w-1/2 h-full">
-                                <NuxtImg :src="featuredPost.image || placeholderImage" :alt="featuredPost.title"
-                                    class="min-h-24 w-full h-full object-cover" loading="lazy"  />
+                                <NuxtImg :src="`${backendUrl}${featuredPost.featured_image}`" :alt="featuredPost.title"
+                                    class="min-h-24 w-full h-full object-cover" loading="lazy" :style="{
+                                        backgroundImage: `linear-gradient(to top, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0)), 
+                                    url(${post.featured_image || placeholderImage})`
+                                    }" />
                             </div>
 
                             <!-- Nội dung bên phải -->

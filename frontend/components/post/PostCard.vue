@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import type { Post } from '~/types/post'
+import { useRuntimeConfig } from '#app';
+const config = useRuntimeConfig();
+const backendUrl = config.public.backendUrl;
 
 const props = defineProps<{ post: Post }>()
 
-const currentImage = ref(props.post.image)
+const currentImage = ref(props.post.featured_image)
 
 const handleImageError = () => {
     // Sử dụng path từ thư mục public
@@ -16,7 +19,7 @@ const handleImageError = () => {
     <NuxtLink :to="`/posts/${post.slug}`"
         class="bg-white border border-amber-100 shadow-sm rounded-lg overflow-hidden hover:shadow-md hover:-translate-y-1 duration-200 relative z-0">
         <div class="relative w-full aspect-video">
-            <NuxtImg :src="currentImage" :alt="post.title" class="rounded-lg rounded-b-none w-full h-full object-cover"
+            <NuxtImg :src="`${backendUrl}${currentImage}`" :alt="post.title" class="rounded-lg rounded-b-none w-full h-full object-cover"
                 loading="lazy" @error="handleImageError" />
         </div>
 
@@ -27,7 +30,7 @@ const handleImageError = () => {
                 <div class="mt-2 text-sm text-green-500 hover:text-green-600 font-semibold">
                     Đọc thêm
                 </div>
-                <p class="text-gray-500 text-sm mt-2 text-right">{{ post.date }}</p>
+                <p class="text-gray-500 text-sm mt-2 text-right">{{ post.published_at }}</p>
             </div>
         </div>
     </NuxtLink>

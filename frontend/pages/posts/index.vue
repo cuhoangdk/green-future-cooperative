@@ -4,6 +4,7 @@ import type { PostCategory } from '~/types/postcategory';
 import type { PaginationMeta, PaginationLinks } from '~/types/api'
 import { usePosts } from '../../composables/usePosts';
 import { usePostcategories } from '#imports';
+import { useRuntimeConfig } from '#app';
 
 interface CategoryPosts {
     categoryId: number;
@@ -14,6 +15,8 @@ interface CategoryPosts {
 }
 
 const placeholderImage = '/img/banner.png'; // hoặc logo của bạn
+const config = useRuntimeConfig();
+const backendUrl = config.public.backendUrl;
 
 // Thêm loading states
 const isLoading = ref(true);
@@ -138,7 +141,7 @@ onMounted(() => {
                     <div class="absolute inset-0 bg-cover bg-center transition-transform duration-200 transform hover:scale-105"
                         :class="{ 'animate-pulse': isLoadingFeatured }" :style="{
                             backgroundImage: `linear-gradient(to top, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0)), 
-                    url(${isLoadingFeatured ? placeholderImage : hotPosts[0]?.image || placeholderImage})`
+                    url(${isLoadingFeatured ? placeholderImage : backendUrl + hotPosts[0]?.featured_image || placeholderImage})`
                         }">
                     </div>
                 </div>
@@ -175,7 +178,7 @@ onMounted(() => {
                         <div class="absolute inset-0 bg-cover bg-center transition-transform duration-200 transform hover:scale-105"
                             :style="{
                                 backgroundImage: `linear-gradient(to top, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0)), 
-                    url(${post.image || placeholderImage})`
+                    url(${post.featured_image ? backendUrl + post.featured_image : placeholderImage})`
                             }">
                         </div>
                     </div>
