@@ -45,7 +45,7 @@ class PostController extends Controller
     /**
      * Tìm kiếm bài viết theo các tiêu chí lọc.
      * 
-     * @param SearchPostRequest $request - Chứa `per_page`, `sort_by`, `sort_direction`, `search`, `author_id`, `category_id`, `status`, `start_date`, `end_date`, `is_hot`, `is_featured`
+     * @param SearchPostRequest $request - Chứa `per_page`, `sort_by`, `sort_direction`, `search`, `user_id`, `category_id`, `status`, `start_date`, `end_date`, `is_hot`, `is_featured`
      * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection - Danh sách bài viết dạng JSON.
      */
     public function search(SearchPostRequest $request)
@@ -56,7 +56,7 @@ class PostController extends Controller
 
         $filters = [
             'search' => $request->input('search'),
-            'author' => $request->input('author_id'),
+            'user' => $request->input('user_id'),
             'category' => $request->input('category_id'),
             'status' => $request->input('status'),
             'start_date' => $request->input('start_date'),
@@ -84,13 +84,13 @@ class PostController extends Controller
             return response()->json(['message' => 'Post not found'], 404);
         }
 
-        $post->load(['category', 'author']);
+        $post->load(['category', 'user']);
         return new PostResource($post);
     }
     /**
      * Tạo mới một bài viết.
      * 
-     * @param StoreUpdatePostRequest $request - Yêu cầu chứa dữ liệu bài viết bao gồm title, summary, content, featured_image, category_id, author_id, post_status, is_hot, is_featured.
+     * @param StoreUpdatePostRequest $request - Yêu cầu chứa dữ liệu bài viết bao gồm title, summary, content, featured_image, category_id, user_id, post_status, is_hot, is_featured.
      * @return PostResource - Bài viết vừa tạo.
      */
     public function store(StoreUpdatePostRequest $request)
@@ -110,7 +110,7 @@ class PostController extends Controller
     /**
      * Cập nhật thông tin bài viết.
      * 
-     * @param StoreUpdatePostRequest $request - Yêu cầu chứa dữ liệu cần cập nhật bao gồm title, summary, content, featured_image, category_id, author_id, post_status, is_hot, is_featured.
+     * @param StoreUpdatePostRequest $request - Yêu cầu chứa dữ liệu cần cập nhật bao gồm title, summary, content, featured_image, category_id, user_id, post_status, is_hot, is_featured.
      * @param int $id - ID bài viết cần cập nhật.
      * @return PostResource|\Illuminate\Http\JsonResponse - Bài viết đã cập nhật hoặc thông báo lỗi.
      */
@@ -169,7 +169,7 @@ class PostController extends Controller
             return response()->json(['message' => 'Post not found'], 404);
         }
 
-        $post->load(['category', 'author']);
+        $post->load(['category', 'user']);
         return new PostResource($post);
     }
      /**

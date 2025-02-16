@@ -3,15 +3,11 @@
 namespace App\Repositories\Eloquent;
 
 use App\Repositories\Contracts\AuthRepositoryInterface;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Passport\RefreshToken;
-use Laravel\Passport\Http\Controllers\AccessTokenController;
 use Illuminate\Http\Request;
-use App\Models\CooperativeMember;
-use Psr\Http\Message\ServerRequestInterface;
+use App\Models\User;
 
 class AuthRepository implements AuthRepositoryInterface
 {
@@ -20,7 +16,7 @@ class AuthRepository implements AuthRepositoryInterface
      */
     public function login(array $credentials)
     {
-        $member = CooperativeMember::where('email', $credentials['email'])->first();
+        $member = User::where('email', $credentials['email'])->first();
 
         if (!$member || !Hash::check($credentials['password'], $member->password)) {
             return response()->json(['message' => 'Invalid credentials'], 401);

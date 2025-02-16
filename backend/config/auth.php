@@ -36,9 +36,9 @@ return [
     */
 
     'guards' => [
-        'api_cooperative_members' => [
+        'api_users' => [
             'driver' => 'passport',
-            'provider' => 'cooperative_members',
+            'provider' => 'users',
         ],
         'api_customers' => [
             'driver' => 'passport',
@@ -64,9 +64,9 @@ return [
     */
 
     'providers' => [
-        'cooperative_members' => [
+        'users' => [
             'driver' => 'eloquent',
-            'model' => App\Models\CooperativeMember::class,
+            'model' => App\Models\User::class,
         ],
         // 'customers' => [
         //     'driver' => 'eloquent',

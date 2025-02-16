@@ -26,7 +26,7 @@ class SearchPostRequest extends FormRequest
             'sort_by'        => 'nullable|string|in:title,created_at,updated_at,published_at,post_status', 
             'sort_direction' => 'nullable|string|in:asc,desc', 
             'search'         => 'nullable|string|max:255', 
-            'author_id'      => 'nullable|integer|exists:cooperative_members,id', 
+            'user_id'        => 'nullable|integer|exists:users,id', 
             'category_id'    => 'nullable|integer|exists:post_categories,id',
             'status'         => 'nullable|string|in:draft,published,archived', 
             'start_date'     => 'nullable|date', 

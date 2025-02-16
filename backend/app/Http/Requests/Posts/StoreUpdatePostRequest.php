@@ -29,7 +29,7 @@ class StoreUpdatePostRequest extends FormRequest
             'content' => 'required',
             'featured_image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'category_id' => 'required|exists:post_categories,id',
-            'author_id' => 'required|exists:cooperative_members,id',
+            'user_id' => 'required|exists:users,id',
             'post_status' => 'in:draft,published,archived',
             'published_at' => 'nullable|date',            
             'is_hot' => 'boolean',

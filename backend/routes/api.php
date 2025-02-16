@@ -9,7 +9,7 @@ use App\Http\Controllers\Api\PostCategoryController;
 Route::prefix('auth')->group(function () {
     Route::post('/login', [AuthController::class, 'login'])->name('login');
     Route::post('/refresh-token', [AuthController::class, 'refreshToken']);
-    Route::middleware('auth:api_cooperative_members')->group(function () {
+    Route::middleware('auth:api_users')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::get('/user', [AuthController::class, 'user']);
     });
@@ -26,7 +26,7 @@ Route::prefix('posts')->group(function () {
     Route::get('/category-slug/{slug}', [PostController::class, 'getByCategorySlug']); // GET /api/posts/category-slug/{slug}
     Route::get('/category/{categoryId}', [PostController::class, 'getByCategory']); // GET /api/posts/category/{categoryId}
     // Các route yêu cầu xác thực
-    Route::middleware('auth:api_cooperative_members')->group(function () {
+    Route::middleware('auth:api_users')->group(function () {
         Route::post('/', [PostController::class, 'store']); // POST /api/posts
         Route::put('/{id}', [PostController::class, 'update']); // PUT /api/posts/{id}
         Route::delete('/{id}', [PostController::class, 'destroy']); // DELETE /api/posts/{id}
@@ -42,7 +42,7 @@ Route::prefix('postcategories')->group(function () {
     Route::get('/slug/{slug}', [PostCategoryController::class, 'getBySlug']); // GET /api/postcategories/slug/{slug}
 
     // Các route yêu cầu xác thực
-    Route::middleware('auth:api_cooperative_members')->group(function () {
+    Route::middleware('auth:api_users')->group(function () {
         Route::post('/', [PostCategoryController::class, 'store']); // POST /api/postcategories
         Route::put('/{id}', [PostCategoryController::class, 'update']); // PUT /api/postcategories/{id}
         Route::delete('/{id}', [PostCategoryController::class, 'destroy']); // DELETE /api/postcategories/{id}      

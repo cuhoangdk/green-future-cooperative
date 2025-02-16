@@ -21,13 +21,12 @@ class UploadFileService
         // Tạo tên file duy nhất
         $filename = Str::uuid() . '.' . $file->getClientOriginalExtension();
 
-        // Lưu file vào storage
-        $path = $file->storeAs("public/{$folder}", $filename, $disk);
+        // Lưu file vào storage (chỉ sử dụng $folder mà không thêm 'public/')
+        $path = $file->storeAs($folder, $filename, $disk);
 
-        // Trả về đường dẫn tương đối, thay 'public/' bằng '/storage/'
-        return $path ? str_replace('public/', '/storage/', $path) : null;
+        // Trả về đường dẫn tương đối, thay 'public/' bằng '/storage/' nếu cần
+        return $path ? "/storage/{$path}" : null;
     }
-
 
     /**
      * Xóa ảnh cũ trong storage.
@@ -42,8 +41,8 @@ class UploadFileService
             return false;
         }
 
-        // Chuyển đổi đường dẫn từ '/storage/posts/...jpg' thành 'public/posts/...jpg' để xóa
-        $storagePath = str_replace('/storage/', 'public/', $filePath);
+        // Chuyển đổi đường dẫn từ '/storage/posts/...jpg' thành 'posts/...jpg' để xóa
+        $storagePath = str_replace('/storage/', '', $filePath);
 
         if (Storage::disk($disk)->exists($storagePath)) {
             return Storage::disk($disk)->delete($storagePath);
@@ -51,5 +50,4 @@ class UploadFileService
 
         return false;
     }
-
 }

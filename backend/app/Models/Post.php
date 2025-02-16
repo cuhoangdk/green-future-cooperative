@@ -18,11 +18,22 @@ class Post extends Model
         'content',
         'featured_image',
         'category_id',
-        'author_id',
+        'user_id',
         'post_status',
         'is_hot',
+        'hot_order',
         'is_featured',
+        'featured_order',
+        'tags',
+        'meta_title',
+        'meta_description',
+        'views',
         'published_at',
+    ];
+    protected $casts = [
+        'published_at' => 'datetime',
+        'is_hot' => 'boolean',
+        'is_featured' => 'boolean',
     ];
     // Quan hệ với PostCategory (Giả sử mỗi post có một category)
     public function category()
@@ -30,10 +41,10 @@ class Post extends Model
         return $this->belongsTo(PostCategory::class, 'category_id');
     }
 
-    // Quan hệ với User (Giả sử mỗi post có một author)
-    public function author()
+    // Quan hệ với User (Giả sử mỗi post có một user)
+    public function user()
     {
-        return $this->belongsTo(CooperativeMember::class, 'author_id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     protected static function boot()
