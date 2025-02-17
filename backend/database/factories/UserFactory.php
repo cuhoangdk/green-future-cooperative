@@ -22,7 +22,7 @@ class UserFactory extends Factory
         return [
             'full_name' => $fullName,
             'email' => $this->faker->unique()->safeEmail(),
-            'password' => Hash::make('password'), // Mật khẩu mặc định
+            'password' => Hash::make('1234'), // Mật khẩu mặc định
             'phone_number' => $this->faker->unique()->phoneNumber(),
             'farm_location' => $this->faker->state(),
             'farm_size' => $this->faker->randomFloat(2, 0.5, 50), // Diện tích từ 0.5 đến 50

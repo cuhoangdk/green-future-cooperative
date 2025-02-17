@@ -5,13 +5,13 @@ namespace App\Http\Controllers\Api;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RefreshTokenRequest;
 use App\Http\Controllers\Controller;
-use App\Repositories\Contracts\AuthRepositoryInterface;
+use App\Repositories\Contracts\UserAuthRepositoryInterface;
 
-class AuthController extends Controller
+class UserAuthController extends Controller
 {
     protected $authRepository;
 
-    public function __construct(AuthRepositoryInterface $authRepository)
+    public function __construct(UserAuthRepositoryInterface $authRepository)
     {
         $this->authRepository = $authRepository;
     }

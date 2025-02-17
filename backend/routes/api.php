@@ -1,17 +1,17 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\UserAuthController;
 use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\PostCategoryController;
 
 // Routes dành cho xác thực cooperative_members
-Route::prefix('auth')->group(function () {
-    Route::post('/login', [AuthController::class, 'login'])->name('login');
-    Route::post('/refresh-token', [AuthController::class, 'refreshToken']);
+Route::prefix('userauth')->group(function () {
+    Route::post('/login', [UserAuthController::class, 'login'])->name('login');
+    Route::post('/refresh-token', [UserAuthController::class, 'refreshToken']);
     Route::middleware('auth:api_users')->group(function () {
-        Route::post('/logout', [AuthController::class, 'logout']);
-        Route::get('/user', [AuthController::class, 'user']);
+        Route::post('/logout', [UserAuthController::class, 'logout']);
+        Route::get('/user', [UserAuthController::class, 'user']);
     });
 });
 

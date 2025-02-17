@@ -2,14 +2,14 @@
 
 namespace App\Repositories\Eloquent;
 
-use App\Repositories\Contracts\AuthRepositoryInterface;
+use App\Repositories\Contracts\UserAuthRepositoryInterface;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Passport\RefreshToken;
 use Illuminate\Http\Request;
 use App\Models\User;
 
-class AuthRepository implements AuthRepositoryInterface
+class UserAuthRepository implements UserAuthRepositoryInterface
 {
     /**
      * Đăng nhập và lấy Access Token + Refresh Token từ /oauth/token
