@@ -7,4 +7,6 @@ interface UserAuthRepositoryInterface
     public function login(array $credentials);
     public function logout();
     public function refreshToken(string $refreshToken);
+    public function sendResetLink(string $email);
+    public function resetPassword(array $credentials);
 }

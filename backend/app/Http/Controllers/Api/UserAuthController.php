@@ -5,8 +5,9 @@ namespace App\Http\Controllers\Api;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RefreshTokenRequest;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\ResetPasswordRequest;
 use App\Repositories\Contracts\UserAuthRepositoryInterface;
-
+use App\Http\Requests\Auth\ForgetPasswordRequest;
 class UserAuthController extends Controller
 {
     protected $authRepository;
@@ -48,8 +49,7 @@ class UserAuthController extends Controller
         }
 
         return response()->json($tokenData);
-    }
-
+    }   
     /**
      * Đăng xuất
      */
@@ -57,5 +57,39 @@ class UserAuthController extends Controller
     {
         $this->authRepository->logout();
         return response()->json(['message' => 'Logged out successfully']);
+    }    
+   
+    /**
+     * Gửi email reset mật khẩu.
+     *
+     * @param ForgetPasswordRequest $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function sendResetLink(ForgetPasswordRequest $request)
+    {
+        $message = $this->authRepository->sendResetLink($request->email);
+
+        if ($message === 'Reset link sent to your email.') {
+            return response()->json(['message' => $message], 200);
+        }
+
+        return response()->json(['message' => $message], 400);
+    }
+
+    /**
+     * Đặt lại mật khẩu.
+     *
+     * @param ResetPasswordRequest $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function resetPassword(ResetPasswordRequest $request)
+    {
+        $message = $this->authRepository->resetPassword($request->only('email', 'password', 'password_confirmation', 'token'));
+
+        if ($message === 'Password reset successfully.') {
+            return response()->json(['message' => $message], 200);
+        }
+
+        return response()->json(['message' => $message], 400);
     }
 }

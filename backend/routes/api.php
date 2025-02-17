@@ -5,13 +5,17 @@ use App\Http\Controllers\Api\UserAuthController;
 use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\PostCategoryController;
 
+//Route reset password 
+Route::post('/password/forgot', [UserAuthController::class, 'sendResetLink']); // POST /api/password/forgot
+Route::post('/password/reset', [UserAuthController::class, 'resetPassword']); // POST /api/password/reset
+
 // Routes dành cho xác thực cooperative_members
 Route::prefix('userauth')->group(function () {
-    Route::post('/login', [UserAuthController::class, 'login'])->name('login');
-    Route::post('/refresh-token', [UserAuthController::class, 'refreshToken']);
+    Route::post('/login', [UserAuthController::class, 'login'])->name('login'); // POST /api/userauth/login
+    Route::post('/refresh-token', [UserAuthController::class, 'refreshToken']); // POST /api/userauth/refresh-token
     Route::middleware('auth:api_users')->group(function () {
-        Route::post('/logout', [UserAuthController::class, 'logout']);
-        Route::get('/user', [UserAuthController::class, 'user']);
+        Route::post('/logout', [UserAuthController::class, 'logout']); // POST /api/userauth/logout
+        Route::get('/user', [UserAuthController::class, 'user']); // GET /api/userauth/user
     });
 });
 

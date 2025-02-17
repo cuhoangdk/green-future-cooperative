@@ -8,7 +8,9 @@ use Illuminate\Support\Facades\Hash;
 use Laravel\Passport\RefreshToken;
 use Illuminate\Http\Request;
 use App\Models\User;
-
+use Illuminate\Support\Facades\Password;
+use Str;
+use App\Notifications\ResetPasswordNotification;
 class UserAuthRepository implements UserAuthRepositoryInterface
 {
     /**
@@ -69,5 +71,52 @@ class UserAuthRepository implements UserAuthRepositoryInterface
             // Thu hồi refresh token liên kết với access token này
             RefreshToken::where('access_token_id', $token->id)->update(['revoked' => true]);
         }
+    }
+    /**
+     * Gửi email reset mật khẩu.
+     *
+     * @param string $email
+     * @return string
+     */
+    public function sendResetLink(string $email)
+    {
+        // Thay đổi URL của email reset mật khẩu
+        $status = Password::broker()->sendResetLink(
+            ['email' => $email],
+            function ($user, $token) {
+                $user->notify(new ResetPasswordNotification($token));
+            }
+        );
+
+        if ($status === Password::RESET_LINK_SENT) {
+            return 'Reset link sent to your email.';
+        }
+
+        return 'Unable to send reset link.';
+    }
+
+    /**
+     * Đặt lại mật khẩu.
+     *
+     * @param array $credentials
+     * @return string
+     */
+    public function resetPassword(array $credentials)
+    {
+        $status = Password::reset(
+            $credentials,
+            function ($user, $password) {
+                $user->forceFill([
+                    'password' => Hash::make($password),
+                    'remember_token' => Str::random(60),
+                ])->save();
+            }
+        );
+
+        if ($status === Password::PASSWORD_RESET) {
+            return 'Password reset successfully.';
+        }
+
+        return 'Invalid token.';
     }
 }
