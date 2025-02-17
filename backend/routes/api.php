@@ -4,12 +4,25 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\UserAuthController;
 use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\PostCategoryController;
+use App\Http\Controllers\Api\UserController;
 
-//Route reset password 
+Route::middleware(['auth:api_users'])->prefix('users')->group(function () {
+    Route::get('/', [UserController::class, 'index'])->name('users.index'); // GET /api/users/ 
+    Route::get('/search', [UserController::class, 'search'])->name('users.search'); // GET /api/users/search 
+    Route::get('/search-with-filters', [UserController::class, 'searchWithFilters'])->name('users.searchWithFilters'); // GET /api/users/search-with-filters 
+    Route::get('/{usercode}', [UserController::class, 'show'])->name('users.show'); // GET /api/users/{usercode} 
+    Route::post('/', [UserController::class, 'store'])->name('users.store'); // POST /api/users/
+    Route::put('/{id}', [UserController::class, 'update'])->name('users.update'); // PUT /api/users/{id}
+    Route::delete('/{id}', [UserController::class, 'destroy'])->name('users.destroy'); // DELETE /api/users/{id}
+    Route::patch('/restore/{id}', [UserController::class, 'restore'])->name('users.restore'); // PATCH /api/users/restore/{id}
+    Route::delete('/force-delete/{id}', [UserController::class, 'forceDelete'])->name('users.forceDelete'); // DELETE /api/users/force-delete/{id}
+});
+
+// Route reset password 
 Route::post('/password/forgot', [UserAuthController::class, 'sendResetLink']); // POST /api/password/forgot
 Route::post('/password/reset', [UserAuthController::class, 'resetPassword']); // POST /api/password/reset
 
-// Routes dành cho xác thực cooperative_members
+// Routes dành cho xác thực users
 Route::prefix('userauth')->group(function () {
     Route::post('/login', [UserAuthController::class, 'login'])->name('login'); // POST /api/userauth/login
     Route::post('/refresh-token', [UserAuthController::class, 'refreshToken']); // POST /api/userauth/refresh-token

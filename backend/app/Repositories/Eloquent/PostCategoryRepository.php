@@ -9,7 +9,6 @@ use Illuminate\Contracts\Pagination\Paginator;
 class PostCategoryRepository implements PostCategoryRepositoryInterface
 {
     protected $model;
-    private int $perPage=10; 
 
     public function __construct(PostCategory $model)
     {
