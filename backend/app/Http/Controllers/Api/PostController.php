@@ -4,10 +4,10 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Requests\Posts\IndexPostRequest;
 use App\Http\Requests\Posts\SearchPostRequest;
-use App\Http\Requests\Posts\StoreUpdatePostRequest;
+use App\Http\Requests\Posts\StorePostRequest;
+use App\Http\Requests\Posts\UpdatePostRequest;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\PostResource;
-use App\Http\Resources\PostDetailResource;
 use App\Repositories\Contracts\PostRepositoryInterface;
 use App\Traits\GeneratesSlug;
 use App\Services\UploadFileService;
@@ -90,10 +90,10 @@ class PostController extends Controller
     /**
      * Tạo mới một bài viết.
      * 
-     * @param StoreUpdatePostRequest $request - Yêu cầu chứa dữ liệu bài viết bao gồm title, summary, content, featured_image, category_id, user_id, post_status, is_hot, is_featured.
+     * @param StorePostRequest $request - Yêu cầu chứa dữ liệu bài viết bao gồm title, summary, content, featured_image, category_id, user_id, post_status, is_hot, is_featured.
      * @return PostResource - Bài viết vừa tạo.
      */
-    public function store(StoreUpdatePostRequest $request)
+    public function store(StorePostRequest $request)
     {
         $validated = $request->validated();
 
@@ -110,11 +110,11 @@ class PostController extends Controller
     /**
      * Cập nhật thông tin bài viết.
      * 
-     * @param StoreUpdatePostRequest $request - Yêu cầu chứa dữ liệu cần cập nhật bao gồm title, summary, content, featured_image, category_id, user_id, post_status, is_hot, is_featured.
+     * @param UpdatePostRequest $request - Yêu cầu chứa dữ liệu cần cập nhật bao gồm title, summary, content, featured_image, category_id, user_id, post_status, is_hot, is_featured.
      * @param int $id - ID bài viết cần cập nhật.
      * @return PostResource|\Illuminate\Http\JsonResponse - Bài viết đã cập nhật hoặc thông báo lỗi.
      */
-    public function update(StoreUpdatePostRequest $request, $id)
+    public function update(UpdatePostRequest $request, $id)
     {
         $validated = $request->validated();
         $post = $this->postRepository->getById($id);

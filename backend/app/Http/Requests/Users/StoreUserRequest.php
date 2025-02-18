@@ -4,22 +4,20 @@ namespace App\Http\Requests\Users;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreUpdateUserRequest extends FormRequest
+class StoreUserRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true; // Điều chỉnh logic nếu cần giới hạn quyền
+        return true;
     }
 
     public function rules(): array
     {
-        $id = $this->route('id'); // Lấy `id` từ route (nếu có)
-
         return [
-            'email' => 'required|email|unique:users,email,' . $id, // Kiểm tra trùng email trừ user đang cập nhật
-            'password' => $this->isMethod('post') ? 'required|min:6' : 'nullable|min:6', // Bắt buộc với store, tùy chọn với update
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|min:6|confirmed',
             'full_name' => 'required|string|max:255',
-            'phone_number' => 'required|string|max:20|unique:users,phone_number,' . $id,
+            'phone_number' => 'required|string|max:20|unique:users,phone_number',
             'province' => 'required|string|max:255',
             'district' => 'required|string|max:255',
             'ward' => 'required|string|max:255',
@@ -28,7 +26,7 @@ class StoreUpdateUserRequest extends FormRequest
             'bank_name' => 'nullable|string|max:255',
             'avatar_url' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'bio' => 'nullable|string|max:1000',
-            'is_super_admin' => 'nullable|boolean',            
+            'is_super_admin' => 'nullable|boolean',
             'is_banned' => 'nullable|boolean',
             'gender' => 'required|string|in:male,female,other',
         ];

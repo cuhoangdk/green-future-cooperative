@@ -6,7 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class StoreUpdatePostRequest extends FormRequest
+class UpdatePostRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -31,11 +31,12 @@ class StoreUpdatePostRequest extends FormRequest
             'category_id' => 'required|exists:post_categories,id',
             'user_id' => 'required|exists:users,id',
             'post_status' => 'in:draft,published,archived',
-            'published_at' => 'nullable|date',            
+            'published_at' => 'nullable|date',
             'is_hot' => 'boolean',
             'is_featured' => 'boolean',
         ];
     }
+
     protected function failedValidation(Validator $validator)
     {
         throw new HttpResponseException(

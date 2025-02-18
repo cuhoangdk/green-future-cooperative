@@ -6,7 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class StoreUpdateCategoryRequest extends FormRequest
+class UpdateCategoryRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,10 +24,14 @@ class StoreUpdateCategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255',
+            'name' => 'nullable|string|max:255', // Không bắt buộc
             'description' => 'nullable|string|max:500',
         ];
     }
+
+    /**
+     * Xử lý khi validation thất bại.
+     */
     protected function failedValidation(Validator $validator)
     {
         throw new HttpResponseException(

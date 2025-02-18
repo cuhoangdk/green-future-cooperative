@@ -5,7 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Requests\PostCategories\IndexCategoryRequest;
 use App\Http\Requests\PostCategories\SearchCategoryRequest;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\PostCategories\StoreUpdateCategoryRequest;
+use App\Http\Requests\PostCategories\StoreCategoryRequest;
+use App\Http\Requests\PostCategories\UpdateCategoryRequest;
 use App\Http\Resources\PostCategoryResource;
 use App\Repositories\Contracts\PostCategoryRepositoryInterface;
 
@@ -78,10 +79,10 @@ class PostCategoryController extends Controller
     /**
      * Tạo mới một loại bài viết.
      * 
-     * @param StoreUpdateCategoryRequest $request - Yêu cầu chứa dữ liệu bài viết bao gồm title, description
+     * @param StoreCategoryRequest $request - Yêu cầu chứa dữ liệu bài viết bao gồm title, description
      * @return PostCategoryResource - Loại bài viết vừa tạo.
      */
-    public function store(StoreUpdateCategoryRequest $request)
+    public function store(StoreCategoryRequest $request)
     {
         $validated = $request->validated();
         $category = $this->categoryRepository->create($validated);
@@ -90,11 +91,11 @@ class PostCategoryController extends Controller
     /**
      * Cập nhật thông tin loại bài viết.
      * 
-     * @param StoreUpdateCategoryRequest $request - Yêu cầu chứa dữ liệu cần cập nhật bao gồm title, description.
+     * @param UpdateCategoryRequest $request - Yêu cầu chứa dữ liệu cần cập nhật bao gồm title, description.
      * @param int $id - ID bài viết cần cập nhật.
      * @return PostCategoryResource|\Illuminate\Http\JsonResponse - Loại bài viết đã cập nhật hoặc thông báo lỗi.
      */
-    public function update(StoreUpdateCategoryRequest $request, $id)
+    public function update(UpdateCategoryRequest $request, $id)
     {
         $validated = $request->validated();
 

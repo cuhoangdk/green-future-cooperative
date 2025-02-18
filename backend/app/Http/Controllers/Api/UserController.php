@@ -4,13 +4,15 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Requests\Users\SearchUserRequest;
 use App\Http\Requests\Users\SearchUserWithFiltersRequest;
+use App\Http\Requests\Users\StoreUserRequest;
+use App\Http\Requests\Users\UpdateUserRequest;
 use App\Http\Resources\UserResource;
 use App\Traits\GeneratesUserCode;
 use App\Http\Controllers\Controller;
 use App\Repositories\Contracts\UserRepositoryInterface;
 use App\Http\Requests\Users\IndexUserRequest;
 use App\Services\UploadFileService;
-use App\Http\Requests\Users\StoreUpdateUserRequest;
+
 class UserController extends Controller
 {
     use GeneratesUserCode;
@@ -61,10 +63,10 @@ class UserController extends Controller
     /**
      * Tạo mới một người dùng.
      *
-     * @param StoreUpdateUserRequest $request
+     * @param StoreUserRequest $request
      * @return UserResource
      */
-    public function store(StoreUpdateUserRequest $request)
+    public function store(StoreUserRequest $request)
     {
         $validated = $request->validated();
         $validated['password'] = bcrypt($validated['password']); // Mã hóa mật khẩu
@@ -80,11 +82,11 @@ class UserController extends Controller
     /**
      * Cập nhật thông tin người dùng.
      *
-     * @param StoreUpdateUserRequest $request
+     * @param UpdateUserRequest $request
      * @param int $id
      * @return UserResource|\Illuminate\Http\JsonResponse
      */
-    public function update(StoreUpdateUserRequest $request, $id)
+    public function update(UpdateUserRequest $request, $id)
     {
         $validated = $request->validated();
 
