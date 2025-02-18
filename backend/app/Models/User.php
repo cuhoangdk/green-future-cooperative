@@ -32,7 +32,6 @@ class User extends Authenticatable
         'bank_name', 
         'avatar_url', 
         'bio',         
-        'is_active', 
         'is_super_admin', 
         'is_banned',        
         'province', 
