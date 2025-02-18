@@ -31,16 +31,17 @@ class User extends Authenticatable
         'bank_account_number', 
         'bank_name', 
         'avatar_url', 
-        'bio', 
+        'bio',         
         'is_active', 
         'is_super_admin', 
-        'is_banned', 
+        'is_banned',        
         'province', 
         'district', 
         'ward', 
         'street_address',
         'usercode', 
         'last_login_at',
+        'gender',
     ];
 
     /**

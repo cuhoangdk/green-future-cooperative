@@ -11,6 +11,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Password;
 use Str;
 use App\Notifications\ResetPasswordNotification;
+
 class UserAuthRepository implements UserAuthRepositoryInterface
 {
     /**
@@ -18,13 +19,19 @@ class UserAuthRepository implements UserAuthRepositoryInterface
      */
     public function login(array $credentials)
     {
-        $member = User::where('email', $credentials['email'])->first();
+        $user = User::where('email', $credentials['email'])->first();
 
-        if (!$member || !Hash::check($credentials['password'], $member->password)) {
-            return response()->json(['message' => 'Invalid credentials'], 401);
+        // Kiểm tra nếu tài khoản bị khóa (is_banned = true)
+        if (!$user || $user->is_banned) {
+            return response()->json(['message' => 'This account has been banned.'], 403);
         }
 
-        // Gọi trực tiếp OAuth mà không dùng HTTP request
+        // Kiểm tra mật khẩu
+        if (!Hash::check($credentials['password'], $user->password)) {
+            return response()->json(['message' => 'Invalid credentials.'], 401);
+        }
+
+        // Gọi trực tiếp OAuth để lấy token
         $tokenRequest = Request::create('/oauth/token', 'POST', [
             'grant_type'    => 'password',
             'client_id'     => config('passport.client_id'),
@@ -35,7 +42,14 @@ class UserAuthRepository implements UserAuthRepositoryInterface
         ]);
 
         $response = app()->handle($tokenRequest);
-        return response()->json(json_decode($response->getContent(), true));
+        $responseData = json_decode($response->getContent(), true);
+
+        // Kiểm tra lỗi trong phản hồi
+        if (isset($responseData['error'])) {
+            return response()->json(['message' => $responseData['error_description']], $response->getStatusCode());
+        }
+
+        return response()->json($responseData);
     }
 
     /**
@@ -43,7 +57,6 @@ class UserAuthRepository implements UserAuthRepositoryInterface
      */
     public function refreshToken(string $refreshToken)
     {
-        // Gọi trực tiếp Laravel Passport để lấy token mới
         $tokenRequest = Request::create('/oauth/token', 'POST', [
             'grant_type'    => 'refresh_token',
             'client_id'     => config('passport.client_id'),
@@ -52,35 +65,41 @@ class UserAuthRepository implements UserAuthRepositoryInterface
             'scope'         => '*',
         ]);
 
-        // Xử lý request trực tiếp trong Laravel
         $response = app()->handle($tokenRequest);
+        $responseData = json_decode($response->getContent(), true);
 
-        // Trả về kết quả
-        return response()->json(json_decode($response->getContent(), true));
+        if (isset($responseData['error'])) {
+            return response()->json(['message' => $responseData['error_description']], $response->getStatusCode());
+        }
+
+        return response()->json($responseData);
     }
 
     /**
-     * Đăng xuất (Thu hồi Access Token & Refresh Token)
+     * Đăng xuất (Thu hồi Access Token & Refresh Token, cập nhật last_login_at)
      */
     public function logout()
     {
         if (Auth::check()) {
-            $token = Auth::user()->token();
+            $user = Auth::user();
+
+            // Cập nhật last_login_at
+            $user->update(['last_login_at' => now()]);
+
+            // Thu hồi Access Token
+            $token = $user->token();
             $token->revoke();
 
-            // Thu hồi refresh token liên kết với access token này
+            // Thu hồi Refresh Token liên kết
             RefreshToken::where('access_token_id', $token->id)->update(['revoked' => true]);
         }
     }
+
     /**
      * Gửi email reset mật khẩu.
-     *
-     * @param string $email
-     * @return string
      */
     public function sendResetLink(string $email)
     {
-        // Thay đổi URL của email reset mật khẩu
         $status = Password::broker()->sendResetLink(
             ['email' => $email],
             function ($user, $token) {
@@ -88,18 +107,13 @@ class UserAuthRepository implements UserAuthRepositoryInterface
             }
         );
 
-        if ($status === Password::RESET_LINK_SENT) {
-            return 'Reset link sent to your email.';
-        }
-
-        return 'Unable to send reset link.';
+        return $status === Password::RESET_LINK_SENT
+            ? 'Reset link sent to your email.'
+            : 'Unable to send reset link.';
     }
 
     /**
      * Đặt lại mật khẩu.
-     *
-     * @param array $credentials
-     * @return string
      */
     public function resetPassword(array $credentials)
     {
@@ -113,10 +127,8 @@ class UserAuthRepository implements UserAuthRepositoryInterface
             }
         );
 
-        if ($status === Password::PASSWORD_RESET) {
-            return 'Password reset successfully.';
-        }
-
-        return 'Invalid token.';
+        return $status === Password::PASSWORD_RESET
+            ? 'Password reset successfully.'
+            : 'Invalid token.';
     }
 }

@@ -131,8 +131,7 @@ class UserRepository implements UserRepositoryInterface
                     ->orWhere('street_address', 'like', "%{$search}%");
             });
         });
-
-        $query->when($filters['is_active'] ?? null, fn($query, $isActive) => $query->where('is_active', $isActive));
+       
         $query->when($filters['is_super_admin'] ?? null, fn($query, $isSuperAdmin) => $query->where('is_super_admin', $isSuperAdmin));
         $query->when($filters['is_banned'] ?? null, fn($query, $isBanned) => $query->where('is_banned', $isBanned));
 

@@ -39,6 +39,8 @@ class UserFactory extends Factory
             'street_address' => $this->faker->address(),
             'usercode' => null, // Sẽ được tự động tạo
             'last_login_at' => $this->faker->dateTimeBetween('-1 month', 'now'),
+            'gender' => $this->faker->randomElement(['Nam', 'Nữ', 'Khác']),
+
         ];
     }
 

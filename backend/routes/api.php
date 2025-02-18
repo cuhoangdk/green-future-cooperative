@@ -18,17 +18,16 @@ Route::middleware(['auth:api_users'])->prefix('users')->group(function () {
     Route::delete('/force-delete/{id}', [UserController::class, 'forceDelete'])->name('users.forceDelete'); // DELETE /api/users/force-delete/{id}
 });
 
-// Route reset password 
-Route::post('/password/forgot', [UserAuthController::class, 'sendResetLink']); // POST /api/password/forgot
-Route::post('/password/reset', [UserAuthController::class, 'resetPassword']); // POST /api/password/reset
 
 // Routes dành cho xác thực users
 Route::prefix('user-auth')->group(function () {
-    Route::post('/login', [UserAuthController::class, 'login'])->name('login'); // POST /api/userauth/login
-    Route::post('/refresh-token', [UserAuthController::class, 'refreshToken']); // POST /api/userauth/refresh-token
+    Route::post('/login', [UserAuthController::class, 'login'])->name('login'); // POST /api/user-auth/login
+    Route::post('/refresh-token', [UserAuthController::class, 'refreshToken']); // POST /api/user-auth/refresh-token
+    Route::post('/forgot-password', [UserAuthController::class, 'sendResetLink']); // POST /api/user-auth/forgot-password
+    Route::post('/reset-password', [UserAuthController::class, 'resetPassword']); // POST /api/user-auth/reset-password  
     Route::middleware('auth:api_users')->group(function () {
-        Route::post('/logout', [UserAuthController::class, 'logout']); // POST /api/userauth/logout
-        Route::get('/user', [UserAuthController::class, 'user']); // GET /api/userauth/user
+        Route::post('/logout', [UserAuthController::class, 'logout']); // POST /api/use-rauth/logout
+        Route::get('/user', [UserAuthController::class, 'user']); // GET /api/user-auth/user
     });
 });
 
