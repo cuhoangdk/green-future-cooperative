@@ -131,4 +131,58 @@ class UserAuthRepository implements UserAuthRepositoryInterface
             ? 'Password reset successfully.'
             : 'Invalid token.';
     }
+    /**
+     * Đổi mật khẩu.
+     */
+    public function changePassword(int $userId, array $data)
+    {
+        $user = User::find($userId);
+
+        if (!Hash::check($data['current_password'], $user->password)) {
+            return 'Current password is incorrect.';
+        }
+
+        $user->password = Hash::make($data['new_password']);
+        $user->save();
+
+        return 'Password changed successfully.';
+    }
+
+    /**
+     * Lấy thông tin profile.
+     */
+    public function getProfile(int $userId)
+    {
+        return User::find($userId);
+    }
+
+    /**
+     * Cập nhật thông tin profile.
+     */
+    public function updateProfile(int $userId, array $data)
+    {
+        $user = User::find($userId);
+
+        if ($user) {
+            unset($data['is_super_admin'], $data['is_banned'], $data['password']);
+            $user->update($data);
+            return $user;
+        }
+
+        return null;
+    }
+    /**
+     * Xóa tài khoản người dùng (đánh dấu soft delete).
+     */
+    public function deleteProfile(int $userId)
+    {
+        $user = User::find($userId);
+
+        if ($user) {
+            $user->delete();
+            return 'User profile deleted successfully.';
+        }
+
+        return 'Unable to delete user profile.';
+    }
 }

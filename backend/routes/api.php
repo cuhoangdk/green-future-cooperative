@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\PostCategoryController;
 use App\Http\Controllers\Api\UserController;
 
+// Route người dùng
 Route::middleware(['auth:api_users'])->prefix('users')->group(function () {
     Route::get('/', [UserController::class, 'index'])->name('users.index'); // GET /api/users/ 
     Route::get('/search', [UserController::class, 'search'])->name('users.search'); // GET /api/users/search 
@@ -17,21 +18,26 @@ Route::middleware(['auth:api_users'])->prefix('users')->group(function () {
     Route::patch('/restore/{id}', [UserController::class, 'restore'])->name('users.restore'); // PATCH /api/users/restore/{id}
     Route::delete('/force-delete/{id}', [UserController::class, 'forceDelete'])->name('users.forceDelete'); // DELETE /api/users/force-delete/{id}
 });
+// Routes chỉnh sửa thông tin dành cho người dùng đã đăng nhập
+Route::middleware(['auth:api_users'])->group(function () {
+    Route::get('/user-profile', [UserAuthController::class, 'getProfile']); // GET /api/user-profile
+    Route::put('/user-profile', [UserAuthController::class, 'updateProfile']); // PUT /api/user-profile
+    Route::delete('/user-profile', [UserAuthController::class, 'deleteAccount']); // DELETE /api/user-profile    
+});
 
-
-// Routes dành cho xác thực users
+// Routes dành cho xác thực người dùng
 Route::prefix('user-auth')->group(function () {
     Route::post('/login', [UserAuthController::class, 'login'])->name('login'); // POST /api/user-auth/login
     Route::post('/refresh-token', [UserAuthController::class, 'refreshToken']); // POST /api/user-auth/refresh-token
     Route::post('/forgot-password', [UserAuthController::class, 'sendResetLink']); // POST /api/user-auth/forgot-password
     Route::post('/reset-password', [UserAuthController::class, 'resetPassword']); // POST /api/user-auth/reset-password  
+    Route::put('/change-password', [UserAuthController::class, 'changePassword']); // PUT /api/user-auth/change-password
     Route::middleware('auth:api_users')->group(function () {
         Route::post('/logout', [UserAuthController::class, 'logout']); // POST /api/use-rauth/logout
-        Route::get('/user', [UserAuthController::class, 'user']); // GET /api/user-auth/user
     });
 });
 
-// Các route công khai (Không yêu cầu xác thực)
+// Route bài viết
 Route::prefix('posts')->group(function () {
     Route::get('/', [PostController::class, 'index']); // GET /api/posts
     Route::get('/hot', [PostController::class, 'getHotPosts']); // GET /api/posts/hot
@@ -41,7 +47,6 @@ Route::prefix('posts')->group(function () {
     Route::get('/slug/{slug}', [PostController::class, 'getBySlug']); // GET /api/posts/slug/{slug}
     Route::get('/category-slug/{slug}', [PostController::class, 'getByCategorySlug']); // GET /api/posts/category-slug/{slug}
     Route::get('/category/{categoryId}', [PostController::class, 'getByCategory']); // GET /api/posts/category/{categoryId}
-    // Các route yêu cầu xác thực
     Route::middleware('auth:api_users')->group(function () {
         Route::post('/', [PostController::class, 'store']); // POST /api/posts
         Route::put('/{id}', [PostController::class, 'update']); // PUT /api/posts/{id}
@@ -50,7 +55,7 @@ Route::prefix('posts')->group(function () {
         Route::delete('/force-delete/{id}', [PostController::class, 'forceDelete']); // DELETE /api/posts/force-delete/{id}
     });
 });
-
+// Route loại bài viết
 Route::prefix('post-categories')->group(function () {
     Route::get('/', [PostCategoryController::class, 'index']); // GET /api/postcategories
     Route::get('/search',[PostCategoryController::class, 'search']);// GET /api/postcategories/search

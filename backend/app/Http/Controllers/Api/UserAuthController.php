@@ -4,10 +4,13 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RefreshTokenRequest;
-use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\ResetPasswordRequest;
-use App\Repositories\Contracts\UserAuthRepositoryInterface;
+use App\Http\Requests\Auth\ChangePasswordRequest;
+use App\Http\Requests\Auth\UpdateProfileRequest;
 use App\Http\Requests\Auth\ForgetPasswordRequest;
+use App\Http\Controllers\Controller;
+use App\Repositories\Contracts\UserAuthRepositoryInterface;
+use Illuminate\Support\Facades\Auth;
 class UserAuthController extends Controller
 {
     protected $authRepository;
@@ -16,7 +19,7 @@ class UserAuthController extends Controller
     {
         $this->authRepository = $authRepository;
     }
-
+    
     /**
      * Đăng nhập & lấy Access Token + Refresh Token
      * 
@@ -87,6 +90,63 @@ class UserAuthController extends Controller
         $message = $this->authRepository->resetPassword($request->only('email', 'password', 'password_confirmation', 'token'));
 
         if ($message === 'Password reset successfully.') {
+            return response()->json(['message' => $message], 200);
+        }
+
+        return response()->json(['message' => $message], 400);
+    }
+     /**
+     * Đổi mật khẩu.
+     * 
+     * @param ChangePasswordRequest $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function changePassword(ChangePasswordRequest $request)
+    {
+        $message = $this->authRepository->changePassword(Auth::id(), $request->only('current_password', 'new_password', 'new_password_confirmation'));
+
+        if ($message === 'Password changed successfully.') {
+            return response()->json(['message' => $message], 200);
+        }
+
+        return response()->json(['message' => $message], 400);
+    }
+
+    /**
+     * Lấy thông tin profile người dùng hiện tại.
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getProfile()
+    {
+        $user = $this->authRepository->getProfile(Auth::id());
+        return response()->json($user);
+    }
+
+    /**
+     * Cập nhật thông tin profile người dùng.
+     * 
+     * @param UpdateProfileRequest $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function updateProfile(UpdateProfileRequest $request)
+    {
+        $user = $this->authRepository->updateProfile(Auth::id(), $request->validated());
+
+        if ($user) {
+            return response()->json(['message' => 'Profile updated successfully', 'user' => $user]);
+        }
+
+        return response()->json(['message' => 'Unable to update profile.'], 400);
+    }
+    /**
+     * Xóa tài khoản người dùng.
+     */
+    public function deleteAccount()
+    {
+        $message = $this->authRepository->deleteProfile(Auth::id());
+
+        if ($message === 'User profile deleted successfully.') {
             return response()->json(['message' => $message], 200);
         }
 

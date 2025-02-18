@@ -10,10 +10,6 @@ use App\Models\PostCategory;
 class PostRepository implements PostRepositoryInterface
 {
     protected $model;
-<<<<<<< Updated upstream
-=======
-    private int $perPage = 10;
->>>>>>> Stashed changes
 
     public function __construct(Post $model)
     {
@@ -112,7 +108,6 @@ class PostRepository implements PostRepositoryInterface
     ) {
         $query = Post::query()
             ->with(['category', 'user'])
-<<<<<<< Updated upstream
             ->when(!auth('api_users')->check(), function ($query) {
                 $query->where('post_status', 'published'); // Chỉ hiển thị bài viết đã published cho khách.
             });
@@ -171,55 +166,6 @@ class PostRepository implements PostRepositoryInterface
             $this->validateSortDirection($sortDirection)
         );
     
-=======
-            ->when($filters['search'] ?? null, function ($query, $search) {
-                $query->where(function ($q) use ($search) {
-                    $q->where('title', 'like', "%{$search}%")
-                        ->orWhere('slug', 'like', "%{$search}%")
-                        ->orWhere('summary', 'like', "%{$search}%")
-                        ->orWhere('content', 'like', "%{$search}%")
-                        ->orWhereHas('user', function ($userQuery) use ($search) {
-                            $userQuery->where('full_name', 'like', "%{$search}%");
-                        });
-                });
-            })
-            ->when($filters['user'] ?? null, function ($query, $user) {
-                $query->where('user_id', $user);
-            })
-            ->when($filters['category'] ?? null, function ($query, $category) {
-                $query->where('category_id', $category);
-            })
-            ->when($filters['status'] ?? null, function ($query, $status) {
-                $query->where('post_status', $status);
-            })
-            ->when(
-                ($filters['start_date'] ?? null) && ($filters['end_date'] ?? null),
-                function ($query) use ($filters) {
-                    $query->whereBetween('created_at', [
-                        Carbon::parse($filters['start_date'])->startOfDay(),
-                        Carbon::parse($filters['end_date'])->endOfDay()
-                    ]);
-                },
-                function ($query) use ($filters) {
-                    $query->when($filters['start_date'] ?? null, function ($query, $startDate) {
-                        $query->where('created_at', '>=', Carbon::parse($startDate)->startOfDay());
-                    })->when($filters['end_date'] ?? null, function ($query, $endDate) {
-                        $query->where('created_at', '<=', Carbon::parse($endDate)->endOfDay());
-                    });
-                }
-            )
-            ->when(isset($filters['is_hot']) && $filters['is_hot'] !== null, function ($query) use ($filters) {
-                $query->where('is_hot', $filters['is_hot']);
-            })
-            ->when(isset($filters['is_featured']) && $filters['is_featured'] !== null, function ($query) use ($filters) {
-                $query->where('is_featured', $filters['is_featured']);
-            })
-            ->orderBy(
-                $this->validateSortColumn($sortBy),
-                $this->validateSortDirection($sortDirection)
-            );
-
->>>>>>> Stashed changes
         return $query->paginate($perPage);
     }    
 
