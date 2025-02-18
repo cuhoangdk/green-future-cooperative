@@ -30,7 +30,6 @@ class UserFactory extends Factory
             'bank_name' => $this->faker->randomElement(['Vietcombank', 'Techcombank', 'BIDV', 'Agribank']), // Ngân hàng giả
             'avatar_url' => $this->faker->imageUrl(300, 300, 'people'),
             'bio' => $this->faker->sentence(),
-            'is_active' => true, // Mặc định là active
             'is_super_admin' => $this->faker->boolean(10), // 10% cơ hội là super admin
             'is_banned' => $this->faker->boolean(5), // 5% cơ hội bị khóa
             'province' => $this->faker->state(),
