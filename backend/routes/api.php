@@ -23,7 +23,7 @@ Route::post('/password/forgot', [UserAuthController::class, 'sendResetLink']); /
 Route::post('/password/reset', [UserAuthController::class, 'resetPassword']); // POST /api/password/reset
 
 // Routes dành cho xác thực users
-Route::prefix('userauth')->group(function () {
+Route::prefix('user-auth')->group(function () {
     Route::post('/login', [UserAuthController::class, 'login'])->name('login'); // POST /api/userauth/login
     Route::post('/refresh-token', [UserAuthController::class, 'refreshToken']); // POST /api/userauth/refresh-token
     Route::middleware('auth:api_users')->group(function () {
@@ -52,7 +52,7 @@ Route::prefix('posts')->group(function () {
     });
 });
 
-Route::prefix('postcategories')->group(function () {
+Route::prefix('post-categories')->group(function () {
     Route::get('/', [PostCategoryController::class, 'index']); // GET /api/postcategories
     Route::get('/search',[PostCategoryController::class, 'search']);// GET /api/postcategories/search
     Route::get('/{id}', [PostCategoryController::class, 'show']); // GET /api/postcategories/{id}    
