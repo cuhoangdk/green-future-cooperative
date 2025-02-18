@@ -1,8 +1,12 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import type { Post } from '~/types/post'
-import type { PaginationMeta, PaginationLinks } from '~/types/api'
-import { useRuntimeConfig } from '#app';
+definePageMeta({
+    layout: "customer",
+});
+
+import { ref, onMounted } from "vue";
+import type { Post } from "~/types/post";
+import type { PaginationMeta, PaginationLinks } from "~/types/api";
+import { useRuntimeConfig } from "#app";
 
 interface RelatedPosts {
     posts: Post[];
@@ -10,72 +14,76 @@ interface RelatedPosts {
     links: PaginationLinks | null;
 }
 
-
-const route = useRoute()
-const isLoadingPost = ref(true)
-const isLoadingRelatedPosts = ref(true)
-const isLoadingFeaturedPosts = ref(true)
-const post = ref<Post | null>(null)
-const relatedPosts = ref<RelatedPosts | null>(null)
-const featuredPosts = ref<Post[]>([])
-const placeholderImage = '/img/banner.png'; // hoặc logo của bạn
+const route = useRoute();
+const isLoadingPost = ref(true);
+const isLoadingRelatedPosts = ref(true);
+const isLoadingFeaturedPosts = ref(true);
+const post = ref<Post | null>(null);
+const relatedPosts = ref<RelatedPosts | null>(null);
+const featuredPosts = ref<Post[]>([]);
+const placeholderImage = "/img/banner.png"; // hoặc logo của bạn
 const config = useRuntimeConfig();
 const backendUrl = config.public.backendUrl;
 
-const { fetchPostBySlug, fetchPostByCategoryId, fetchFeaturedPosts } = usePosts()
+const { fetchPostBySlug, fetchPostByCategoryId, fetchFeaturedPosts } =
+    usePosts();
 
 const loadPost = async () => {
     try {
-        isLoadingPost.value = true
-        const postResponse = await fetchPostBySlug(route.params.slug as string)
-        post.value = postResponse.data as Post
+        isLoadingPost.value = true;
+        const postResponse = await fetchPostBySlug(route.params.slug as string);
+        post.value = postResponse.data as Post;
     } catch (error) {
-        console.error('Error loading post:', error)
+        console.error("Error loading post:", error);
     } finally {
-        isLoadingPost.value = false
+        isLoadingPost.value = false;
     }
-}
+};
 
 const loadRelatedPosts = async (page: number = 1) => {
     if (post.value?.category) {
         try {
-            const response = await fetchPostByCategoryId(post.value.category.id, page, 4)
+            const response = await fetchPostByCategoryId(
+                post.value.category.id,
+                page,
+                4
+            );
             relatedPosts.value = {
                 posts: response.data,
                 meta: response.meta || null,
-                links: response.links || null
-            }
+                links: response.links || null,
+            };
         } catch (error) {
-            console.error('Error loading related posts:', error)
+            console.error("Error loading related posts:", error);
         } finally {
-            isLoadingRelatedPosts.value = false
+            isLoadingRelatedPosts.value = false;
         }
     }
-}
+};
 
 const loadFeaturedPosts = async () => {
     try {
-        isLoadingFeaturedPosts.value = true
-        const featuredResponse = await fetchFeaturedPosts()
-        featuredPosts.value = featuredResponse.data
+        isLoadingFeaturedPosts.value = true;
+        const featuredResponse = await fetchFeaturedPosts();
+        featuredPosts.value = featuredResponse.data;
     } catch (error) {
-        console.error('Error loading featured posts:', error)
+        console.error("Error loading featured posts:", error);
     } finally {
-        isLoadingFeaturedPosts.value = false
+        isLoadingFeaturedPosts.value = false;
     }
-}
+};
 
 const handlePageChange = (page: number, perPage: number) => {
     loadRelatedPosts(page);
 };
 
 const loadData = async () => {
-    await loadPost()
-    await loadFeaturedPosts()
-    await loadRelatedPosts()
-}
+    await loadPost();
+    await loadFeaturedPosts();
+    await loadRelatedPosts();
+};
 
-onMounted(loadData)
+onMounted(loadData);
 </script>
 
 <template>
@@ -101,7 +109,15 @@ onMounted(loadData)
                     {{ post.category?.name }}
                 </h2>
                 <h2 class="text-sm text-gray-600 text-left font-semibold lg:w-10/12 w-full mt-3">
-                    {{ post.published_at }}
+                    {{
+                        new Date(post.published_at).toLocaleString("vi-VN", {
+                            day: "2-digit",
+                            month: "2-digit",
+                            year: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                        })
+                    }}
                 </h2>
                 <hr class="border-gray-300 w-full mt-4" />
             </div>
@@ -110,15 +126,16 @@ onMounted(loadData)
             <div class="w-11/12 max-w-7xl flex flex-col lg:flex-row justify-between items-start gap-x-5 mt-5">
                 <!-- Nội dung chính -->
                 <div class="lg:w-[73%] w-full max-w-7xl mt-5">
-                    <div v-html="post.content" class="text-left"></div>                    
-                    <div v-html="post.author?.full_name" class="text-right bold"></div>                
-                </div>                
-                
+                    <div v-html="post.content" class="text-left"></div>
+                    <div v-html="`<em>${post.user?.full_name}</em>`" class="mt-3 font-bold text-green-800"></div>
+                </div>
 
                 <!-- Bài viết nổi bật-->
                 <div class="lg:w-[27%] w-full max-w-7xl mt-5">
                     <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-left text-xl font-bold text-green-800">Bài viết nổi bật</h2>
+                        <h2 class="text-left text-xl font-bold text-green-800">
+                            Bài viết nổi bật
+                        </h2>
                         <div class="flex-1 h-[3px] bg-green-300 mx-4"></div>
                     </div>
 
@@ -135,16 +152,12 @@ onMounted(loadData)
                         <NuxtLink v-for="featuredPost in featuredPosts" :key="featuredPost.id"
                             :to="`/posts/${featuredPost.slug}`"
                             class="bg-[#FFFFFF] overflow-hidden duration-200 flex items-start mt-3">
-                            <!-- Hình ảnh bên trái -->
-                            <div class="w-1/2 h-full">
-                                <NuxtImg :src="`${backendUrl}${featuredPost.featured_image}`" :alt="featuredPost.title"
-                                    class="min-h-24 w-full h-full object-cover" loading="lazy" :style="{
-                                        backgroundImage: `linear-gradient(to top, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0)), 
-                                    url(${post.featured_image || placeholderImage})`
-                                    }" />
+                            <div class="w-1/2 h-full border border-green-100 rounded overflow-hidden">
+                                <img :src="`${backendUrl}${featuredPost.featured_image}`" :alt="featuredPost.title"
+                                    class="min-h-24 w-full rounded  aspect-video object-cover transition-transform duration-200 hover:scale-105" loading="lazy"
+                                    @error="event => { const target = event.target as HTMLImageElement; if (target) target.src = placeholderImage; }" />
                             </div>
 
-                            <!-- Nội dung bên phải -->
                             <div class="w-1/2 px-2 py-0">
                                 <h3 class="text-left font-semibold text-green-800 hover:text-green-600 duration-200">
                                     {{ featuredPost.title }}

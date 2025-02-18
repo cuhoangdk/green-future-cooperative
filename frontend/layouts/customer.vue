@@ -2,8 +2,8 @@
   <div>
       <LayoutTheHeader />
       <slot />
-      <LayoutTheSocialButtons />
-      <LayoutTheBackToTop />
+      <LayoutTheSocialButtons class="z-50" />
+      <LayoutTheBackToTop class="z-50" />
       <LayoutTheFooter />
   </div>
 </template>

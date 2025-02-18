@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
-import type { Post } from '~/types/post'
+import { ref, onMounted, onUnmounted } from "vue";
+import type { Post } from "~/types/post";
 
 interface Props {
-    posts: Post[]
-    isLoading: boolean
+    posts: Post[];
+    isLoading: boolean;
 }
 const props = defineProps<Props>();
 
@@ -30,8 +30,9 @@ onMounted(() => {
             Đang tải...
         </p>
         <p v-else-if="props.posts.length" class="text-sm lg:ml-5">
-            <a :href="'/posts/' + props.posts[currentIndex].slug" class="text-green-600 hover:text-green-400 transition-colors duration-200">
-            {{ props.posts[currentIndex].title }}</a>
+            <a :href="'/posts/' + props.posts[currentIndex].slug"
+                class="text-green-600 hover:text-green-400 transition-colors duration-200">
+                {{ props.posts[currentIndex].title }}</a>
         </p>
     </div>
 </template>

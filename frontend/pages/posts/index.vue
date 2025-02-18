@@ -1,4 +1,8 @@
 <script setup lang="ts">
+definePageMeta({
+  layout: 'customer'
+})
+
 import type { Post } from '~/types/post';
 import type { PostCategory } from '~/types/postcategory';
 import type { PaginationMeta, PaginationLinks } from '~/types/api'
@@ -136,18 +140,18 @@ onMounted(() => {
                 </div>
             </div>
             <NuxtLink v-else :to="`/posts/${hotPosts[0]?.slug}`"
-                class="bg-black shadow-sm rounded-sm overflow-hidden relative w-full lg:w-1/2">
+                class="bg-green-900 shadow-sm rounded-sm overflow-hidden relative w-full lg:w-1/2">
                 <div class="relative w-full aspect-video">
-                    <div class="absolute inset-0 bg-cover bg-center transition-transform duration-200 transform hover:scale-105"
-                        :class="{ 'animate-pulse': isLoadingFeatured }" :style="{
+                    <div class="absolute inset-0 bg-cover bg-center transition-transform duration-200 transform hover:scale-105" 
+                        :style="{
                             backgroundImage: `linear-gradient(to top, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0)), 
-                    url(${isLoadingFeatured ? placeholderImage : backendUrl + hotPosts[0]?.featured_image || placeholderImage})`
+                            url(${hotPosts[0].featured_image ? backendUrl + hotPosts[0].featured_image : placeholderImage})`
                         }">
                     </div>
                 </div>
                 <div class="absolute bottom-0 left-0 text-white p-3 w-full">
                     <h3 class="text-xl text-left font-bold" :class="{ 'animate-pulse': isLoadingFeatured }">
-                        {{ isLoadingFeatured ? 'Đang tải...' : hotPosts[0]?.title || 'Đang tải...' }}
+                        {{ hotPosts[0]?.title }}
                     </h3>
                 </div>
             </NuxtLink>
@@ -172,8 +176,9 @@ onMounted(() => {
                     </div>
                 </div>
                 <NuxtLink v-else v-for="(post, index) in featuredPosts.slice(1)" :key="index"
+                    v-if="featuredPosts.length > 2"
                     :to="`/posts/${post.slug}`"
-                    class="bg-[#FFFFFF] shadow-sm rounded-sm overflow-hidden relative min-w-[80%] lg:min-w-0">
+                    class="bg-green-900 shadow-sm rounded-sm overflow-hidden relative min-w-[80%] h-1/2 lg:min-w-0">
                     <div class="relative w-full aspect-video">
                         <div class="absolute inset-0 bg-cover bg-center transition-transform duration-200 transform hover:scale-105"
                             :style="{
@@ -200,8 +205,8 @@ onMounted(() => {
                 </div>
                 <div v-else v-for="category in categoryPosts" :key="category.categoryId">
                     <div v-if="category.posts.length > 0">
-                        <PostList :title="category.categoryName" :posts="category.posts" :meta="category.meta" 
-                            :links="category.links" :maxCols="3"
+                        <PostList :title="category.categoryName" :posts="category.posts" :meta="category.meta"
+                            :links="category.links" :maxCols="3" :gridGap="3"
                             @page-change="(page) => handlePageChange(category.categoryId, page)" />
                     </div>
                 </div>
