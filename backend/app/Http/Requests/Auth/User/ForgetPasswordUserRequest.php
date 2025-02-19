@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Auth;
+namespace App\Http\Requests\Auth\User;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class ForgetPasswordRequest extends FormRequest
+class ForgetPasswordUserRequest extends FormRequest
 {
     public function rules(): array
     {

@@ -16,10 +16,11 @@ class UpdateUserRequest extends FormRequest
         $id = $this->route('id');
 
         return [
-            'email' => 'required|email|unique:users,email,' . $id,
+            'email' => 'required|email|unique:users,email,' . $id. '|unique:customers,email',
             'password' => 'nullable|min:6|confirmed',
             'full_name' => 'required|string|max:255',
             'phone_number' => 'required|string|max:20|unique:users,phone_number,' . $id,
+            'date_of_birth' => 'required|date|before:today',
             'province' => 'required|string|max:255',
             'district' => 'required|string|max:255',
             'ward' => 'required|string|max:255',

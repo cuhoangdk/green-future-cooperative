@@ -6,6 +6,8 @@ use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvid
 use Laravel\Passport\Passport;
 use App\Repositories\Contracts\UserAuthRepositoryInterface;
 use App\Repositories\Eloquent\UserAuthRepository;
+use App\Repositories\Contracts\CustomerAuthRepositoryInterface;
+use App\Repositories\Eloquent\CustomerAuthRepository;
 class AuthServiceProvider extends ServiceProvider
 {
     /**
@@ -14,6 +16,7 @@ class AuthServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind(UserAuthRepositoryInterface::class, UserAuthRepository::class);
+        $this->app->bind(CustomerAuthRepositoryInterface::class, CustomerAuthRepository::class);
     }
 
     /**

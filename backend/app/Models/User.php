@@ -25,6 +25,7 @@ class User extends Authenticatable
         'email', 
         'password', 
         'full_name', 
+        'date_of_birth',
         'phone_number', 
         'farm_location', 
         'farm_size', 
@@ -56,7 +57,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $casts = [
-        'is_active' => 'boolean',
+        'date_of_birth' => 'date',
         'is_super_admin' => 'boolean',
         'is_banned' => 'boolean',
         'last_login_at' => 'datetime',

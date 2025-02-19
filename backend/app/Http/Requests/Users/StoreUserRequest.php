@@ -14,10 +14,11 @@ class StoreUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => 'required|email|unique:users,email',
+            'email' => 'required|email|unique:customers,email|unique:users,email',
             'password' => 'required|min:6|confirmed',
             'full_name' => 'required|string|max:255',
             'phone_number' => 'required|string|max:20|unique:users,phone_number',
+            'date_of_birth' => 'required|date|before:today',
             'province' => 'required|string|max:255',
             'district' => 'required|string|max:255',
             'ward' => 'required|string|max:255',

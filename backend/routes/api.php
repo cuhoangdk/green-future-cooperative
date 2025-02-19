@@ -5,6 +5,32 @@ use App\Http\Controllers\Api\UserAuthController;
 use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\PostCategoryController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\CustomerAuthController;
+use App\Http\Controllers\Api\CustomerProfileController;
+// Routes chỉnh sửa thông tin dành cho khách hàng đã đăng nhập
+Route::prefix('customer-profile')->middleware('auth:api_customers')->group(function () {
+    Route::get('/', [CustomerProfileController::class, 'show']); // GET /api/customer-profile
+    Route::put('/', [CustomerProfileController::class, 'update']); // PUT /api/customer-profile
+    Route::delete('/', [CustomerProfileController::class, 'destroy']); // DELETE /api/customer-profile
+    Route::get('/addresses', [CustomerProfileController::class, 'listAddresses']); // GET /api/customer-profile/addresses 
+    Route::post('/addresses', [CustomerProfileController::class, 'storeAddress']); // POST /api/customer-profile/addresses
+    Route::put('/addresses/{id}', [CustomerProfileController::class, 'updateAddress']); // PUT /api/customer-profile/addresses/{id}
+    Route::delete('/addresses/{id}', [CustomerProfileController::class, 'deleteAddress']); // DELETE /api/customer-profile/addresses/{id}
+});
+
+//Route khách hàng
+Route::prefix('customer-auth')->group(function () {
+    Route::post('/login', [CustomerAuthController::class, 'login']); // POST /api/customer-auth/login
+    Route::post('/register', [CustomerAuthController::class, 'register']); // POST /api/customer-auth/register
+    Route::post('/forgot-password', [CustomerAuthController::class, 'forgotPassword']); // POST /api/customer-auth/forgot-password
+    Route::post('/reset-password', [CustomerAuthController::class, 'resetPassword']); // POST /api/customer-auth/reset-password
+    Route::post('/verify-account', [CustomerAuthController::class, 'verifyAccount']); // POST /api/customer-auth/verify-account
+    Route::middleware('auth:api_customers')->group(function (){
+        Route::put('/change-password', [CustomerAuthController::class, 'changePassword']); // PUT /api/customer-auth/change-password
+        Route::post('/refresh-token', [CustomerAuthController::class, 'refreshToken']); // POST /api/customer-auth/refresh-token
+        Route::post('/logout', [CustomerAuthController::class, 'logout']); // POST /api/customer-auth/logout
+    });
+});
 
 // Route người dùng
 Route::middleware(['auth:api_users'])->prefix('users')->group(function () {
@@ -27,12 +53,12 @@ Route::middleware(['auth:api_users'])->group(function () {
 
 // Routes dành cho xác thực người dùng
 Route::prefix('user-auth')->group(function () {
-    Route::post('/login', [UserAuthController::class, 'login'])->name('login'); // POST /api/user-auth/login
-    Route::post('/refresh-token', [UserAuthController::class, 'refreshToken']); // POST /api/user-auth/refresh-token
+    Route::post('/login', [UserAuthController::class, 'login'])->name('login'); // POST /api/user-auth/login    
     Route::post('/forgot-password', [UserAuthController::class, 'sendResetLink']); // POST /api/user-auth/forgot-password
-    Route::post('/reset-password', [UserAuthController::class, 'resetPassword']); // POST /api/user-auth/reset-password  
-    Route::put('/change-password', [UserAuthController::class, 'changePassword']); // PUT /api/user-auth/change-password
+    Route::post('/reset-password', [UserAuthController::class, 'resetPassword']); // POST /api/user-auth/reset-password    
     Route::middleware('auth:api_users')->group(function () {
+        Route::put('/change-password', [UserAuthController::class, 'changePassword']); // PUT /api/user-auth/change-password
+        Route::post('/refresh-token', [UserAuthController::class, 'refreshToken']); // POST /api/user-auth/refresh-token
         Route::post('/logout', [UserAuthController::class, 'logout']); // POST /api/use-rauth/logout
     });
 });

@@ -23,6 +23,7 @@ class UserFactory extends Factory
             'full_name' => $fullName,
             'email' => $this->faker->unique()->safeEmail(),
             'password' => Hash::make('1234'), // Mật khẩu mặc định
+            'date_of_birth' => $this->faker->date('Y-m-d', '-18 years'),
             'phone_number' => $this->faker->unique()->phoneNumber(),
             'farm_location' => $this->faker->state(),
             'farm_size' => $this->faker->randomFloat(2, 0.5, 50), // Diện tích từ 0.5 đến 50
@@ -38,7 +39,7 @@ class UserFactory extends Factory
             'street_address' => $this->faker->address(),
             'usercode' => null, // Sẽ được tự động tạo
             'last_login_at' => $this->faker->dateTimeBetween('-1 month', 'now'),
-            'gender' => $this->faker->randomElement(['Nam', 'Nữ', 'Khác']),
+            'gender' => $this->faker->randomElement(['male', 'female', 'other']),
 
         ];
     }

@@ -4,10 +4,10 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RefreshTokenRequest;
-use App\Http\Requests\Auth\ResetPasswordRequest;
+use App\Http\Requests\Auth\User\ResetPasswordUserRequest;
 use App\Http\Requests\Auth\ChangePasswordRequest;
-use App\Http\Requests\Auth\UpdateProfileRequest;
-use App\Http\Requests\Auth\ForgetPasswordRequest;
+use App\Http\Requests\Auth\User\UpdateProfileUserRequest;
+use App\Http\Requests\Auth\User\ForgetPasswordUserRequest;
 use App\Http\Controllers\Controller;
 use App\Repositories\Contracts\UserAuthRepositoryInterface;
 use Illuminate\Support\Facades\Auth;
@@ -55,6 +55,8 @@ class UserAuthController extends Controller
     }   
     /**
      * Đăng xuất
+     * 
+     * @return \Illuminate\Http\JsonResponse
      */
     public function logout()
     {
@@ -65,10 +67,10 @@ class UserAuthController extends Controller
     /**
      * Gửi email reset mật khẩu.
      *
-     * @param ForgetPasswordRequest $request
+     * @param ForgetPasswordUserRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function sendResetLink(ForgetPasswordRequest $request)
+    public function sendResetLink(ForgetPasswordUserRequest $request)
     {
         $message = $this->authRepository->sendResetLink($request->email);
 
@@ -82,10 +84,10 @@ class UserAuthController extends Controller
     /**
      * Đặt lại mật khẩu.
      *
-     * @param ResetPasswordRequest $request
+     * @param ResetPasswordUserRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function resetPassword(ResetPasswordRequest $request)
+    public function resetPassword(ResetPasswordUserRequest $request)
     {
         $message = $this->authRepository->resetPassword($request->only('email', 'password', 'password_confirmation', 'token'));
 
@@ -126,10 +128,10 @@ class UserAuthController extends Controller
     /**
      * Cập nhật thông tin profile người dùng.
      * 
-     * @param UpdateProfileRequest $request
+     * @param UpdateProfileUserRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function updateProfile(UpdateProfileRequest $request)
+    public function updateProfile(UpdateProfileUserRequest $request)
     {
         $user = $this->authRepository->updateProfile(Auth::id(), $request->validated());
 
@@ -141,6 +143,8 @@ class UserAuthController extends Controller
     }
     /**
      * Xóa tài khoản người dùng.
+     * 
+     * @return \Illuminate\Http\JsonResponse
      */
     public function deleteAccount()
     {

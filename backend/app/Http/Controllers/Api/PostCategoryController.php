@@ -26,18 +26,20 @@ class PostCategoryController extends Controller
      */
     public function index(IndexCategoryRequest $request)
     {
-        $perPage = $request->input('per_page', 10);
+        $perPage = $request->input('per_page'); // Bỏ giá trị mặc định
         $sortBy = $request->input('sort_by', 'created_at');
         $sortDirection = $request->input('sort_direction', 'desc');
 
+        // Gọi repository để lấy dữ liệu (có hoặc không phân trang)
         $categories = $this->categoryRepository->getAll(
             sortBy: $sortBy,
             sortDirection: $sortDirection,
-            perPage: $perPage
-        )->appends(request()->query());
+            perPage: $perPage // Nếu null, repository sẽ trả về danh sách không phân trang
+        );
 
         return PostCategoryResource::collection($categories);
     }
+
      /**
      * Tìm danh sách loại bài viết.
      * 

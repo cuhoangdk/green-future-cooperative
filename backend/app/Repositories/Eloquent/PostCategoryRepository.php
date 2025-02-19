@@ -15,14 +15,14 @@ class PostCategoryRepository implements PostCategoryRepositoryInterface
         $this->model = $model;
     }
 
-    public function getAll(string $sortBy = 'created_at', string $sortDirection = 'desc', int $perPage = 10): Paginator
+    public function getAll(string $sortBy = 'created_at', string $sortDirection = 'desc', int $perPage = null)
     {
-        return $this->model->when(!auth('api_users')->check(), function ($query) {
-            $query->where('is_active', true);
-        })
-            ->orderBy($this->validateSortColumn($sortBy), $this->validateSortDirection($sortDirection))
-            ->paginate($perPage);
+        $query = $this->model->orderBy($this->validateSortColumn($sortBy), $this->validateSortDirection($sortDirection));
+
+        // Nếu $perPage không được cung cấp, trả về danh sách không phân trang
+        return $perPage ? $query->paginate($perPage) : $query->get();
     }
+
 
     public function getById($id)
 {

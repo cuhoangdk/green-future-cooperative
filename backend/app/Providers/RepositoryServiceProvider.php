@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Repositories\Contracts\CustomerProfileRepositoryInterface;
 use App\Repositories\Contracts\UserRepositoryInterface;
+use App\Repositories\Eloquent\CustomerProfileRepository;
 use App\Repositories\Eloquent\UserRepository;
 use Illuminate\Support\ServiceProvider;
 use App\Repositories\Contracts\PostRepositoryInterface;
@@ -20,7 +22,9 @@ class RepositoryServiceProvider extends ServiceProvider
         // Bind interface với implementation
         $this->app->bind(PostRepositoryInterface::class, PostRepository::class);
         $this->app->bind(PostCategoryRepositoryInterface::class, PostCategoryRepository::class);  
-        $this->app->bind(UserRepositoryInterface::class, UserRepository::class);      
+        $this->app->bind(UserRepositoryInterface::class, UserRepository::class);   
+        $this->app->bind(CustomerProfileRepositoryInterface::class, CustomerProfileRepository::class);  
+            
     }
 
     /**

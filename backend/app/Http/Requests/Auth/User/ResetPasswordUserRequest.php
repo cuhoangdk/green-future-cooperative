@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Auth;
+namespace App\Http\Requests\Auth\User;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class ResetPasswordRequest extends FormRequest
+class ResetPasswordUserRequest extends FormRequest
 {
     /**
      * Xác định người dùng có được phép thực hiện request hay không.
