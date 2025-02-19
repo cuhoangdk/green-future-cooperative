@@ -5,6 +5,7 @@ namespace App\Repositories\Eloquent;
 use App\Models\Customer;
 use App\Repositories\Contracts\CustomerAuthRepositoryInterface;
 use App\Notifications\VerifyCustomerAccount;
+use App\Notifications\CustomerResetPasswordNotification;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
@@ -90,18 +91,32 @@ class CustomerAuthRepository implements CustomerAuthRepositoryInterface
     
 
 
-    public function sendResetLink(string $email)
+    public function sendResetLink(string $email): string
     {
-        $status = Password::broker('customers')->sendResetLink(['email' => $email]);
-
-        if ($status === Password::RESET_LINK_SENT) {
-            return 'Reset link sent to your email.';
+        // Kiểm tra xem email có tồn tại trong cơ sở dữ liệu không
+        $customer = Customer::where('email', $email)->first();
+    
+        if (!$customer) {
+            throw new \Exception('Email not found.', 404);
         }
-
-        return 'Unable to send reset link.';
+    
+        // Sử dụng broker để gửi reset link
+        $status = Password::broker('customers')->sendResetLink(
+            ['email' => $email],
+            function ($user, $token) {
+                // Gửi thông báo qua Notification
+                $user->notify(new CustomerResetPasswordNotification($token));
+            }
+        );
+    
+        // Trả về trạng thái
+        return $status === Password::RESET_LINK_SENT
+            ? 'Reset link sent to your email.'
+            : 'Unable to send reset link.';
     }
+    
 
-    public function resetPassword(array $credentials)
+    public function resetPassword(array $credentials): string
     {
         $status = Password::broker('customers')->reset(
             $credentials,
@@ -113,12 +128,11 @@ class CustomerAuthRepository implements CustomerAuthRepositoryInterface
             }
         );
 
-        if ($status === Password::PASSWORD_RESET) {
-            return 'Password reset successfully.';
-        }
-
-        return 'Invalid token.';
+        return $status === Password::PASSWORD_RESET
+            ? 'Password reset successfully.'
+            : 'Invalid token.';
     }
+
 
     public function changePassword(array $data)
     {

@@ -91,14 +91,14 @@ class CustomerAuthController extends Controller
      */
     public function forgotPassword(ForgotPasswordCustomerRequest $request)
     {
-        $status = $this->authRepository->sendResetLink($request->email);
-
-        if ($status === 'Reset link sent to your email.') {
-            return response()->json(['message' => $status], 200);
+        try {
+            $message = $this->authRepository->sendResetLink($request->email);
+            return response()->json(['message' => $message], 200);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], $e->getCode() ?: 400);
         }
+}
 
-        return response()->json(['message' => $status], 400);
-    }
 
     /**
      * Đặt lại mật khẩu.
@@ -108,13 +108,12 @@ class CustomerAuthController extends Controller
      */
     public function resetPassword(ResetPasswordCustomerRequest $request)
     {
-        $status = $this->authRepository->resetPassword($request->only('email', 'password', 'password_confirmation', 'token'));
-
-        if ($status === 'Password reset successfully.') {
-            return response()->json(['message' => $status], 200);
+        try {
+            $message = $this->authRepository->resetPassword($request->only('email', 'token', 'password', 'password_confirmation'));
+            return response()->json(['message' => $message], 200);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], $e->getCode() ?: 400);
         }
-
-        return response()->json(['message' => $status], 400);
     }
 
     /**
