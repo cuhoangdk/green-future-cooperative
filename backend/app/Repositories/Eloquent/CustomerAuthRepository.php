@@ -122,7 +122,7 @@ class CustomerAuthRepository implements CustomerAuthRepositoryInterface
             $credentials,
             function ($customer, $password) {
                 $customer->forceFill([
-                    'password' => Hash::make($password),
+                    'password' => $password,
                     'remember_token' => Str::random(60),
                 ])->save();
             }
@@ -142,7 +142,7 @@ class CustomerAuthRepository implements CustomerAuthRepositoryInterface
             throw new \Exception('Current password is incorrect.');
         }
 
-        $customer->update(['password' => Hash::make($data['new_password'])]);
+        $customer->update(['password' => $data['new_password']]);
     }
     public function verifyAccount(array $data)
     {
