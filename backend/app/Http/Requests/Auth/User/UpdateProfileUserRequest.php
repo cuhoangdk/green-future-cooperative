@@ -11,6 +11,7 @@ class UpdateProfileUserRequest extends FormRequest
         return [
             'full_name' => 'nullable|string|max:255',
             'phone_number' => 'nullable|string|max:15',
+            'date_of_birth' => 'required|date|before:today',
             'province' => 'nullable|string|max:255',
             'district' => 'nullable|string|max:255',
             'ward' => 'nullable|string|max:255',
