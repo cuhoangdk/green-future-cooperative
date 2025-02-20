@@ -19,7 +19,7 @@ class UserResource extends JsonResource
         $data = parent::toArray($request);
 
         // Bỏ các trường không mong muốn
-        $data = Arr::except($data, ['delete_at']);
+        $data = Arr::except($data, ['deleted_at', 'remember_token']);
         
         return $data;
     }

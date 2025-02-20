@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Customer\UpdateProfileRequest;
 use App\Http\Requests\Customer\StoreAddressRequest;
 use App\Http\Requests\Customer\UpdateAddressRequest;
+use App\Http\Resources\CustomerResource;
+use App\Http\Resources\CustomerAddressResource;
 use App\Repositories\Contracts\CustomerProfileRepositoryInterface;
 
 class CustomerProfileController extends Controller
@@ -20,14 +22,14 @@ class CustomerProfileController extends Controller
     /**
      * Lấy thông tin profile.
      * 
-     * @return \Illuminate\Http\JsonResponse
+     * @return CustomerResource
      */
     public function show()
     {
         $customer = auth('api_customers')->user();
         $profile = $this->profileRepository->getProfile($customer->id);
 
-        return response()->json($profile);
+        return new CustomerResource($profile);
     }
 
     /**
@@ -41,12 +43,14 @@ class CustomerProfileController extends Controller
         $customer = auth('api_customers')->user();
         $profile = $this->profileRepository->updateProfile($customer->id, $request->validated());
 
-        return response()->json(['message' => 'Profile updated successfully', 'data' => $profile]);
+        return response()->json([
+            'message' => 'Profile updated successfully',
+            'data' => new CustomerResource($profile),
+        ]);
     }
 
     /**
      * Xóa tài khoản.
-     * 
      * 
      * @return \Illuminate\Http\JsonResponse
      */
@@ -61,15 +65,14 @@ class CustomerProfileController extends Controller
     /**
      * Lấy danh sách địa chỉ.
      * 
-     * 
-     * @return \Illuminate\Http\JsonResponse
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
      */
     public function listAddresses()
     {
         $customer = auth('api_customers')->user();
         $addresses = $this->profileRepository->getAddresses($customer->id);
 
-        return response()->json($addresses);
+        return CustomerAddressResource::collection($addresses);
     }
 
     /**
@@ -83,26 +86,33 @@ class CustomerProfileController extends Controller
         $customer = auth('api_customers')->user();
         $address = $this->profileRepository->storeAddress($customer->id, $request->validated());
 
-        return response()->json(['message' => 'Address added successfully', 'data' => $address]);
+        return response()->json([
+            'message' => 'Address added successfully',
+            'data' => new CustomerAddressResource($address),
+        ]);
     }
 
     /**
      * Cập nhật địa chỉ.
      * 
      * @param UpdateAddressRequest $request
+     * @param int $id
      * @return \Illuminate\Http\JsonResponse
      */
     public function updateAddress(UpdateAddressRequest $request, $id)
     {
         $address = $this->profileRepository->updateAddress($id, $request->validated());
 
-        return response()->json(['message' => 'Address updated successfully', 'data' => $address]);
+        return response()->json([
+            'message' => 'Address updated successfully',
+            'data' => new CustomerAddressResource($address),
+        ]);
     }
 
     /**
      * Xóa địa chỉ.
      * 
-     * 
+     * @param int $id
      * @return \Illuminate\Http\JsonResponse
      */
     public function deleteAddress($id)

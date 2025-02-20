@@ -9,6 +9,7 @@ use App\Http\Requests\Auth\ChangePasswordRequest;
 use App\Http\Requests\Auth\User\UpdateProfileUserRequest;
 use App\Http\Requests\Auth\User\ForgetPasswordUserRequest;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\UserResource;
 use App\Repositories\Contracts\UserAuthRepositoryInterface;
 use Illuminate\Support\Facades\Auth;
 class UserAuthController extends Controller
@@ -117,12 +118,16 @@ class UserAuthController extends Controller
     /**
      * Lấy thông tin profile người dùng hiện tại.
      * 
-     * @return \Illuminate\Http\JsonResponse
+     * @return UserResource|\Illuminate\Http\JsonResponse
      */
     public function getProfile()
     {
         $user = $this->authRepository->getProfile(Auth::id());
-        return response()->json($user);
+        if ($user) {
+            return new UserResource($user);
+        }
+    
+        return response()->json(['message' => 'User not found.'], 404);
     }
 
     /**

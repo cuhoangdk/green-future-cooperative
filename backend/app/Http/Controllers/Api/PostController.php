@@ -109,37 +109,57 @@ class PostController extends Controller
     }
     /**
      * Cập nhật thông tin bài viết.
-     * 
-     * @param UpdatePostRequest $request - Yêu cầu chứa dữ liệu cần cập nhật bao gồm title, summary, content, featured_image, category_id, user_id, post_status, is_hot, is_featured.
+     *
+     * @param UpdatePostRequest $request - Yêu cầu chứa dữ liệu cần cập nhật.
      * @param int $id - ID bài viết cần cập nhật.
-     * @return PostResource|\Illuminate\Http\JsonResponse - Bài viết đã cập nhật hoặc thông báo lỗi.
+     * @return \Illuminate\Http\JsonResponse - Bài viết đã cập nhật hoặc thông báo lỗi.
      */
     public function update(UpdatePostRequest $request, $id)
     {
+        // Lấy dữ liệu đã validated từ request
         $validated = $request->validated();
+
+        // Lấy bài viết từ repository
         $post = $this->postRepository->getById($id);
 
+        // Kiểm tra nếu bài viết không tồn tại
         if (!$post) {
             return response()->json(['message' => 'Post not found'], 404);
         }
 
+        // // Kiểm tra nếu không có dữ liệu nào được gửi để cập nhật
+        // if (empty($validated) && !$request->hasFile('featured_image')) {
+        //     return response()->json(['message' => 'No valid data provided.'], 422);
+        // }
+
+        // Xử lý file ảnh nếu có
         if ($request->hasFile('featured_image')) {
             // Xóa ảnh cũ trước khi upload ảnh mới
-            $this->uploadService->deleteImage($post->featured_image);
+            if (!empty($post->featured_image)) {
+                $this->uploadService->deleteImage($post->featured_image);
+            }
 
             // Upload ảnh mới
             $validated['featured_image'] = $this->uploadService->uploadImage($request->file('featured_image'), 'posts');
         }
-        // Nếu post_status chuyển thành 'draft', thì đặt published_at = null
-        if ($validated['post_status'] === 'draft') {
+
+        // Nếu trạng thái là 'draft', thì đặt `published_at` = null
+        if (isset($validated['post_status']) && $validated['post_status'] === 'draft') {
             $validated['published_at'] = null;
         }
-        // Nếu post_status không phải 'draft' và chưa có published_at, đặt thời gian hiện tại
-        elseif (is_null($post->published_at)) {
+        // Nếu trạng thái không phải 'draft' và chưa có `published_at`, đặt thời gian hiện tại
+        elseif (isset($validated['post_status']) && $validated['post_status'] !== 'draft' && is_null($post->published_at)) {
             $validated['published_at'] = now();
         }
-        $post->update($validated);
-        return new PostResource($post);
+
+        // Gọi repository để cập nhật bài viết
+        $updatedPost = $this->postRepository->update($id, $validated);
+
+        // Trả về JSON response
+        return response()->json([
+            'message' => 'Post updated successfully',
+            'data' => new PostResource($updatedPost),
+        ], 200);
     }
     /**
      * Xóa bài viết.

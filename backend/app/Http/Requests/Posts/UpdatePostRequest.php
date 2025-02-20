@@ -26,16 +26,16 @@ class UpdatePostRequest extends FormRequest
         return [
             'title' => 'sometimes|required|string|max:255',
             'summary' => 'nullable|string|max:500',
-            'content' => 'required',
+            'content' => 'sometimes|string',
             'featured_image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'category_id' => 'required|exists:post_categories,id',
-            'user_id' => 'required|exists:users,id',
+            'category_id' => 'sometimes|exists:post_categories,id',
             'post_status' => 'in:draft,published,archived',
             'published_at' => 'nullable|date',
             'is_hot' => 'boolean',
             'is_featured' => 'boolean',
         ];
     }
+
 
     protected function failedValidation(Validator $validator)
     {

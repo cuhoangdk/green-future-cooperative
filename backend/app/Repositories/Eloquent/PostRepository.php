@@ -34,11 +34,17 @@ class PostRepository implements PostRepositoryInterface
 
     public function create(array $data)
     {
+        // Gắn user_id của người dùng hiện tại vào dữ liệu
+        $data['user_id'] = auth('api_users')->id();
+
         return $this->model->create($data);
     }
 
     public function update($id, array $data)
     {
+        // Không cho phép thay đổi user_id
+        unset($data['user_id']);
+
         $post = $this->model->find($id);
         if ($post) {
             $post->update($data);
@@ -46,6 +52,7 @@ class PostRepository implements PostRepositoryInterface
         }
         return null;
     }
+
 
     public function delete($id)
     {
