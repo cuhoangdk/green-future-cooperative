@@ -22,6 +22,7 @@ class UpdateProfileRequest extends FormRequest
             'phone_number' => 'required|string|max:20|unique:customers,phone_number,' . $id,
             'gender' => 'required|string|in:male,female,other',
             'date_of_birth' => 'required|date|before:today',
+            'avatar_url' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ];
     }
 }

@@ -63,7 +63,16 @@ class PostRepository implements PostRepositoryInterface
         }
         return false;
     }
-
+    public function getTrashed(
+        string $sortBy = 'deleted_at',
+        string $sortDirection = 'desc',
+        int $perPage = 10
+    ) {
+        return $this->model->onlyTrashed()
+            ->orderBy($sortBy, $sortDirection)
+            ->paginate($perPage);
+    }
+    
     public function getBySlug($slug)
     {
         return $this->model->when(!auth('api_users')->check(), function ($query) {

@@ -11,14 +11,17 @@ use App\Http\Requests\Auth\User\ForgetPasswordUserRequest;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use App\Repositories\Contracts\UserAuthRepositoryInterface;
+use App\Services\UploadFileService;
 use Illuminate\Support\Facades\Auth;
 class UserAuthController extends Controller
 {
     protected $authRepository;
+    protected $uploadService;
 
-    public function __construct(UserAuthRepositoryInterface $authRepository)
+    public function __construct(UserAuthRepositoryInterface $authRepository, UploadFileService $uploadService)
     {
         $this->authRepository = $authRepository;
+        $this->uploadService = $uploadService;
     }
     
     /**
@@ -138,8 +141,17 @@ class UserAuthController extends Controller
      */
     public function updateProfile(UpdateProfileUserRequest $request)
     {
-        $user = $this->authRepository->updateProfile(Auth::id(), $request->validated());
+        $validated = $request->validated();
+        $user = auth('api_users')->user();
+        if ($request->hasFile('avatar_url')) {
+            // Xóa ảnh cũ trước khi upload ảnh mới
+            $this->uploadService->deleteImage($user->avatar_url);
 
+            // Upload ảnh mới
+            $validated['avatar_url'] = $this->uploadService->uploadImage($request->file('avatar_url'), 'customers');
+        }
+        $user = $this->authRepository->updateProfile(Auth::id(), $$validated);
+        
         if ($user) {
             return response()->json(['message' => 'Profile updated successfully', 'user' => $user]);
         }

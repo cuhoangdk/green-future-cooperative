@@ -17,9 +17,10 @@ class UpdateProfileUserRequest extends FormRequest
             'ward' => 'nullable|string|max:255',
             'street_address' => 'nullable|string|max:500',
             'bio' => 'nullable|string|max:1000',
-            'avatar_url' => 'nullable|url|max:255',
+            'avatar_url' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'bank_account_number' => 'nullable|string|max:20',
             'bank_name' => 'nullable|string|max:255',
+            
         ];
     }
 }

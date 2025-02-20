@@ -38,6 +38,7 @@ class CustomerProfileRepository implements CustomerProfileRepositoryInterface
     public function updateProfile($customerId, array $data)
     {
         $customer = $this->customerModel->findOrFail($customerId);
+        unset($data['password']);        
         $customer->update($data);
 
         return $customer;

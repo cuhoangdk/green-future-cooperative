@@ -30,6 +30,7 @@ class StoreUserRequest extends FormRequest
             'is_super_admin' => 'nullable|boolean',
             'is_banned' => 'nullable|boolean',
             'gender' => 'required|string|in:male,female,other',
+            
         ];
     }
 }

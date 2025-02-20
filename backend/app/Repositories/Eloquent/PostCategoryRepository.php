@@ -61,6 +61,16 @@ class PostCategoryRepository implements PostCategoryRepositoryInterface
             $query->where('is_active', true);
         })->where('slug', $slug)->first();
     }
+    public function getTrashed(
+        string $sortBy = 'deleted_at',
+        string $sortDirection = 'desc',
+        int $perPage = 10
+    ) {
+        return $this->model->onlyTrashed()
+            ->orderBy($sortBy, $sortDirection)
+            ->paginate($perPage);
+    }
+    
     public function getTrashedById($id)
     {
         return $this->model->onlyTrashed()->find($id);

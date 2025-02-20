@@ -123,6 +123,27 @@ class PostCategoryController extends Controller
         return response()->json(['message' => 'Category deleted successfully']);
     }
     /**
+     * Lấy danh sách các loại bài viết đã xóa mềm.
+     * 
+     * @param IndexCategoryRequest $request
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+     */
+    public function trashed(IndexCategoryRequest $request)
+    {
+        $perPage = $request->input('per_page', 10);
+        $sortBy = $request->input('sort_by', 'deleted_at');
+        $sortDirection = $request->input('sort_direction', 'desc');
+
+        $trashedCategories = $this->categoryRepository->getTrashed(
+            sortBy: $sortBy,
+            sortDirection: $sortDirection,
+            perPage: $perPage
+        );
+
+        return PostCategoryResource::collection($trashedCategories);
+    }
+
+    /**
      * Khôi phục loại bài viết.
      * 
      * @param int $id - ID bài viết cần khôi phục.

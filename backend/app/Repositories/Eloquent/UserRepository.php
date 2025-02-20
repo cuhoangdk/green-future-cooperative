@@ -75,7 +75,16 @@ class UserRepository implements UserRepositoryInterface
         }
         return false;
     }
-
+    public function getTrashed(
+        string $sortBy = 'deleted_at',
+        string $sortDirection = 'desc',
+        int $perPage = 10
+    ) {
+        return $this->model->onlyTrashed()
+            ->orderBy($sortBy, $sortDirection)
+            ->paginate($perPage);
+    }
+    
     /**
      * Lấy user đã bị xóa (soft delete).
      */

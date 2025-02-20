@@ -37,8 +37,9 @@ Route::middleware(['auth:api_users'])->prefix('users')->group(function () {
     Route::get('/', [UserController::class, 'index'])->name('users.index'); // GET /api/users/ 
     Route::get('/search', [UserController::class, 'search'])->name('users.search'); // GET /api/users/search 
     Route::get('/search-with-filters', [UserController::class, 'searchWithFilters'])->name('users.searchWithFilters'); // GET /api/users/search-with-filters 
-    Route::get('/{usercode}', [UserController::class, 'show'])->name('users.show'); // GET /api/users/{usercode} 
+    Route::get('/trashed', [UserController::class, 'trashed']);// GET /api/users/trashed
     Route::post('/', [UserController::class, 'store'])->name('users.store'); // POST /api/users/
+    Route::get('/{usercode}', [UserController::class, 'show'])->name('users.show'); // GET /api/users/{usercode}
     Route::put('/{id}', [UserController::class, 'update'])->name('users.update'); // PUT /api/users/{id}
     Route::delete('/{id}', [UserController::class, 'destroy'])->name('users.destroy'); // DELETE /api/users/{id}
     Route::patch('/restore/{id}', [UserController::class, 'restore'])->name('users.restore'); // PATCH /api/users/restore/{id}
@@ -69,12 +70,15 @@ Route::prefix('posts')->group(function () {
     Route::get('/hot', [PostController::class, 'getHotPosts']); // GET /api/posts/hot
     Route::get('/featured', [PostController::class, 'getFeaturedPosts']); // GET /api/posts/featured
     Route::get('/search', [PostController::class, 'search']); // GET /api/posts/search
+    Route::middleware('auth:api_users')->group(function () {
+        Route::post('/', [PostController::class, 'store']); // POST /api/posts
+        Route::get('/trashed', [PostController::class, 'trashed']);// GET /api/posts/trashed
+    });
     Route::get('/{id}', [PostController::class, 'show']); // GET /api/posts/{id}
     Route::get('/slug/{slug}', [PostController::class, 'getBySlug']); // GET /api/posts/slug/{slug}
     Route::get('/category-slug/{slug}', [PostController::class, 'getByCategorySlug']); // GET /api/posts/category-slug/{slug}
     Route::get('/category/{categoryId}', [PostController::class, 'getByCategory']); // GET /api/posts/category/{categoryId}
     Route::middleware('auth:api_users')->group(function () {
-        Route::post('/', [PostController::class, 'store']); // POST /api/posts
         Route::put('/{id}', [PostController::class, 'update']); // PUT /api/posts/{id}
         Route::delete('/{id}', [PostController::class, 'destroy']); // DELETE /api/posts/{id}
         Route::post('/restore/{id}', [PostController::class, 'restore']); // POST /api/posts/restore/{id}
@@ -83,16 +87,19 @@ Route::prefix('posts')->group(function () {
 });
 // Route loại bài viết
 Route::prefix('post-categories')->group(function () {
-    Route::get('/', [PostCategoryController::class, 'index']); // GET /api/postcategories
+    // Các route không tham số
+    Route::get('/', [PostCategoryController::class, 'index']); // GET /api/postcategories    
     Route::get('/search',[PostCategoryController::class, 'search']);// GET /api/postcategories/search
+    Route::middleware('auth:api_users')->group(function () {
+        Route::post('/', [PostCategoryController::class, 'store']); // POST /api/postcategories 
+        Route::get('/trashed', [PostCategoryController::class, 'trashed']); // GET /api/postcategories/trashed 
+    });
+    // Các route có tham số
     Route::get('/{id}', [PostCategoryController::class, 'show']); // GET /api/postcategories/{id}    
     Route::get('/slug/{slug}', [PostCategoryController::class, 'getBySlug']); // GET /api/postcategories/slug/{slug}
-
-    // Các route yêu cầu xác thực
-    Route::middleware('auth:api_users')->group(function () {
-        Route::post('/', [PostCategoryController::class, 'store']); // POST /api/postcategories
+    Route::middleware('auth:api_users')->group(function () {               
         Route::put('/{id}', [PostCategoryController::class, 'update']); // PUT /api/postcategories/{id}
-        Route::delete('/{id}', [PostCategoryController::class, 'destroy']); // DELETE /api/postcategories/{id}      
+        Route::delete('/{id}', [PostCategoryController::class, 'destroy']); // DELETE /api/postcategories/{id}         
         Route::post('/restore/{id}', [PostCategoryController::class, 'restore']); // POST /api/postcategories/restore/{id}   
         Route::delete('/force-delete/{id}', [PostCategoryController::class, 'forceDelete']); // DELETE /api/postcategories/force-delete/{id} 
     });

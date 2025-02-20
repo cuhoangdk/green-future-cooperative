@@ -127,10 +127,10 @@ class PostController extends Controller
             return response()->json(['message' => 'Post not found'], 404);
         }
 
-        // // Kiểm tra nếu không có dữ liệu nào được gửi để cập nhật
-        // if (empty($validated) && !$request->hasFile('featured_image')) {
-        //     return response()->json(['message' => 'No valid data provided.'], 422);
-        // }
+        // Kiểm tra nếu không có dữ liệu nào được gửi để cập nhật
+        if (empty($validated) && !$request->hasFile('featured_image')) {
+            return response()->json(['message' => 'No valid data provided.'], 422);
+        }
 
         // Xử lý file ảnh nếu có
         if ($request->hasFile('featured_image')) {
@@ -175,6 +175,27 @@ class PostController extends Controller
         }
         return response()->json(['message' => 'Post deleted successfully']);
     }
+    /**
+     * Lấy danh sách bài viết đã xóa mềm.
+     * 
+     * @param IndexPostRequest $request
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+     */
+    public function trashed(IndexPostRequest $request)
+    {
+        $perPage = $request->input('per_page', 10);
+        $sortBy = $request->input('sort_by', 'deleted_at');
+        $sortDirection = $request->input('sort_direction', 'desc');
+
+        $trashedPosts = $this->postRepository->getTrashed(
+            sortBy: $sortBy,
+            sortDirection: $sortDirection,
+            perPage: $perPage
+        );
+
+        return PostResource::collection($trashedPosts);
+    }
+
     /**
      * Xem bài viết theo slug.
      * 

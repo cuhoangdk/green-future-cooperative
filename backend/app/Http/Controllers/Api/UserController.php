@@ -89,15 +89,9 @@ class UserController extends Controller
     public function update(UpdateUserRequest $request, $id)
     {
         $validated = $request->validated();
-
+        $user = $this->userRepository->getById($id);
         if (!empty($validated['password'])) {
             $validated['password'] = bcrypt($validated['password']);
-        }
-        
-        $user = $this->userRepository->update($id, $validated);
-
-        if (!$user) {
-            return response()->json(['message' => 'User not found'], 404);
         }
         if ($request->hasFile('avatar_url')) {
             // Xóa ảnh cũ trước khi upload ảnh mới
@@ -106,7 +100,33 @@ class UserController extends Controller
             // Upload ảnh mới
             $validated['avatar_url'] = $this->uploadService->uploadImage($request->file('avatar_url'), 'users');
         }
+        $user = $this->userRepository->update($id, $validated);
+
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+        
         return new UserResource($user);
+    }
+    /**
+     * Lấy danh sách người dùng đã xóa mềm.
+     * 
+     * @param IndexUserRequest $request
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+     */
+    public function trashed(IndexUserRequest $request)
+    {
+        $perPage = $request->input('per_page', 10);
+        $sortBy = $request->input('sort_by', 'deleted_at');
+        $sortDirection = $request->input('sort_direction', 'desc');
+
+        $trashedUsers = $this->userRepository->getTrashed(
+            sortBy: $sortBy,
+            sortDirection: $sortDirection,
+            perPage: $perPage
+        );
+
+        return UserResource::collection($trashedUsers);
     }
 
     /**

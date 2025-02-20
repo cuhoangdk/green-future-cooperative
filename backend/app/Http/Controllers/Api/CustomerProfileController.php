@@ -9,14 +9,17 @@ use App\Http\Requests\Customer\UpdateAddressRequest;
 use App\Http\Resources\CustomerResource;
 use App\Http\Resources\CustomerAddressResource;
 use App\Repositories\Contracts\CustomerProfileRepositoryInterface;
+use App\Services\UploadFileService;
 
 class CustomerProfileController extends Controller
 {
     protected $profileRepository;
+    protected $uploadService;
 
-    public function __construct(CustomerProfileRepositoryInterface $profileRepository)
+    public function __construct(CustomerProfileRepositoryInterface $profileRepository, UploadFileService $uploadService)
     {
         $this->profileRepository = $profileRepository;
+        $this->uploadService = $uploadService;
     }
 
     /**
@@ -40,9 +43,17 @@ class CustomerProfileController extends Controller
      */
     public function update(UpdateProfileRequest $request)
     {
+        $validated = $request->validated();
         $customer = auth('api_customers')->user();
-        $profile = $this->profileRepository->updateProfile($customer->id, $request->validated());
+        
+        if ($request->hasFile('avatar_url')) {
+            // Xóa ảnh cũ trước khi upload ảnh mới
+            $this->uploadService->deleteImage($customer->avatar_url);
 
+            // Upload ảnh mới
+            $validated['avatar_url'] = $this->uploadService->uploadImage($request->file('avatar_url'), 'customers');
+        }
+        $profile = $this->profileRepository->updateProfile($customer->id, $validated);
         return response()->json([
             'message' => 'Profile updated successfully',
             'data' => new CustomerResource($profile),

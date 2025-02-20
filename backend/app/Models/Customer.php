@@ -17,6 +17,7 @@ class Customer extends Authenticatable
         'remember_token',
         'full_name',
         'phone_number',
+        'avatar_url', 
         'date_of_birth',
         'gender',
         'total_orders',
