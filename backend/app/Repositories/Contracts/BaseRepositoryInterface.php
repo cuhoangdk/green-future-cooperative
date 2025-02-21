@@ -1,8 +1,6 @@
 <?php
 
 namespace App\Repositories\Contracts;
-use Illuminate\Contracts\Pagination\Paginator;
-
 interface BaseRepositoryInterface
 {    
     public function getAll(string $sortBy = 'created_at', string $sortDirection = 'desc', int $perPage = 10);

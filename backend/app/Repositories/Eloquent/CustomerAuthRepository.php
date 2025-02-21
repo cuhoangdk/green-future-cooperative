@@ -23,6 +23,10 @@ class CustomerAuthRepository implements CustomerAuthRepositoryInterface
         if (!$customer) {
             return response()->json(['message' => 'Invalid email'], 401);
         }
+        // Kiểm tra xem khách hàng có được verify chưa
+        if (!$customer->verified_at) {
+            return response()->json(['message' => 'Your account has not been verified.'], 403);
+        }
 
         // Kiểm tra xem khách hàng có bị khóa không
         if ($customer->is_banned) {

@@ -7,6 +7,19 @@ use App\Http\Controllers\Api\PostCategoryController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\CustomerAuthController;
 use App\Http\Controllers\Api\CustomerProfileController;
+use App\Http\Controllers\Api\PostCommentController;
+
+// Route bình luận bài viết
+Route::prefix('posts/{postId}/comments')->group(function () {
+    Route::get('/', [PostCommentController::class, 'index']);
+    // Kiểm tra trong controller
+    Route::delete('/{id}', [PostCommentController::class, 'destroy']); 
+    Route::middleware('auth:api_customers')->group(function () {
+        Route::post('/', [PostCommentController::class, 'store']);
+        Route::put('/{id}', [PostCommentController::class, 'update']);
+    });
+});
+
 // Routes chỉnh sửa thông tin dành cho khách hàng đã đăng nhập
 Route::prefix('customer-profile')->middleware('auth:api_customers')->group(function () {
     Route::get('/', [CustomerProfileController::class, 'show']); // GET /api/customer-profile
