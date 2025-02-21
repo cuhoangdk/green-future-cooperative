@@ -17,6 +17,7 @@ export interface PaginationMeta {
 
 export interface ApiResponse<T> {
     data: T;
+    original?: any;
     links?: PaginationLinks;
     meta?: PaginationMeta;
     message?: string;

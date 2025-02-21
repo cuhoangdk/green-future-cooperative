@@ -21,9 +21,9 @@ const isLoadingFeaturedPosts = ref(true);
 const post = ref<Post | null>(null);
 const relatedPosts = ref<RelatedPosts | null>(null);
 const featuredPosts = ref<Post[]>([]);
-const placeholderImage = "/img/banner.png"; // hoặc logo của bạn
 const config = useRuntimeConfig();
 const backendUrl = config.public.backendUrl;
+const defaultImage = config.defaultImage;
 
 const { fetchPostBySlug, fetchPostByCategoryId, fetchFeaturedPosts } =
     usePosts();
@@ -155,7 +155,7 @@ onMounted(loadData);
                             <div class="w-1/2 h-full border border-green-100 rounded overflow-hidden">
                                 <img :src="`${backendUrl}${featuredPost.featured_image}`" :alt="featuredPost.title"
                                     class="min-h-24 w-full rounded  aspect-video object-cover transition-transform duration-200 hover:scale-105" loading="lazy"
-                                    @error="event => { const target = event.target as HTMLImageElement; if (target) target.src = placeholderImage; }" />
+                                    @error="event => { const target = event.target as HTMLImageElement; if (target) target.src = defaultImage; }" />
                             </div>
 
                             <div class="w-1/2 px-2 py-0">

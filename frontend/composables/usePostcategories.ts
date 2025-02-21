@@ -6,23 +6,23 @@ export const usePostcategories = () => {
     const { get, post, put, del } = useApi()
 
     const fetchAllPostCategories = async (page: number = 1, per_page: number = 10): Promise<ApiResponse<PostCategory[]>> => {
-        return await get<PostCategory[]>('/postcategories', { page, per_page });
+        return await get<PostCategory[]>('/post-categories', { page, per_page });
     }
 
     const fetchPostCategoryById = async (id: string) => {
-        return await get(`/postcategories/${id}`)
+        return await get(`/post-categories/${id}`)
     }
 
     const createPostCategory = async (postData: PostCategory)=> {
-        return await post('/postcategories', postData)
+        return await post('/post-categories', postData)
     }
 
     const updatePostCategory = async (id: string, postData: PostCategory)=> {
-        return await put(`/postcategories/${id}`, postData)
+        return await put(`/post-categories/${id}`, postData)
     }
 
     const deletePostCategory = async (id: string)=> {
-        return await del(`/postcategories/${id}`)
+        return await del(`/post-categories/${id}`)
     }
 
     return {

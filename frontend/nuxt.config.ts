@@ -18,7 +18,7 @@ export default defineNuxtConfig({
       apiBase: process.env.NUXT_PUBLIC_API_BASE || 'http://127.0.0.1:8000/api',
       backendUrl: process.env.BACKEND_URL || 'http://127.0.0.1:8000'
     },
-    defaultImage: '/images/logo.jpg',    
+    defaultImage: "'/img/banner.png'",    
   },
 
   app: {
