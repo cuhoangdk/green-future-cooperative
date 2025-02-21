@@ -44,6 +44,13 @@ const handlePageChange = (page: number) => {
     loadPosts(page);
 };
 
+const handlePostDeleted = (deletedId : number) => {
+  // Lọc bỏ post đã xóa khỏi danh sách
+  if (postList.value) {
+    postList.value.posts = postList.value.posts.filter(post => post.id !== deletedId);
+  }
+};
+
 // Load posts on component mount
 onMounted(loadPosts);
 
@@ -94,6 +101,7 @@ onMounted(loadPosts);
             </select>
         </div>
         <PostExpandableTable :posts="postList?.posts" :isLoading="isLoadingPost" :links="postList?.links"
-            :meta="postList?.meta" @page-change="handlePageChange" />
+            :meta="postList?.meta" @page-change="handlePageChange" @post-deleted="handlePostDeleted"/>
     </div>
 </template>
+

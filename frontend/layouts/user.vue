@@ -64,7 +64,7 @@
                                     <User2Icon/> Profile
                                 </NuxtLink>
                                 <hr class="my-1 border-gray-200">
-                                <button @click="logout"
+                                <button @click="handleLogout"
                                     class="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100 flex gap-2">
                                     <LogOut /> Logout
                                 </button>
@@ -90,6 +90,11 @@ const route = useRoute()
 
 // You'll need to implement your own auth composable
 const { user, logout } = useAuth()
+
+const handleLogout =  () => {
+    logout()  // Nếu logout() là async, đảm bảo chờ hoàn thành trước khi chuyển trang
+    navigateTo('/admin/login')
+}
 
 // You'll need to define your menus in a configuration file or fetch from API
 const menus = ref([

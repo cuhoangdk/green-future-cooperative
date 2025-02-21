@@ -178,7 +178,8 @@ onMounted(() => {
                 <NuxtLink v-else v-for="(post, index) in featuredPosts.slice(1)" :key="index"
                     v-if="featuredPosts.length > 2"
                     :to="`/posts/${post.slug}`"
-                    class="bg-green-900 shadow-sm rounded-sm overflow-hidden relative min-w-[80%] h-1/2 lg:min-w-0">
+                    class="bg-green-900 shadow-sm rounded-sm overflow-hidden relative min-w-[80%] lg:min-w-0"
+                    :class="{'h-1/2': featuredPosts.length === 3, '': featuredPosts.length > 3}">
                     <div class="relative w-full aspect-video">
                         <div class="absolute inset-0 bg-cover bg-center transition-transform duration-200 transform hover:scale-105"
                             :style="{

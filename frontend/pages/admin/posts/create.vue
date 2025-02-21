@@ -11,6 +11,5 @@
 definePageMeta({
     layout: "user",
     title: "Thêm bài viết",
-
 });
 </script>

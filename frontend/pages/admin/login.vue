@@ -79,7 +79,7 @@ const handleSubmit = async () => {
         showAlert("Đăng nhập thành công");
 
         // Redirect or handle successful login
-        await router.push("/admin/dashboard");
+        await router.push("/admin");
     } catch (error: any) {
         showAlert(error.message || "Đăng nhập thất bại", "error");
     } finally {

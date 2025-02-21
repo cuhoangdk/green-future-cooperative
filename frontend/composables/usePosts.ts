@@ -38,12 +38,12 @@ export const usePosts = () => {
         return await post('/posts', postData, undefined, { useAuth: true})
     }
 
-    const updatePost = async (id: string, postData: FormData)=> {
+    const updatePost = async (id: number, postData: FormData)=> {
         return await put(`/posts/${id}`, postData)
     }
 
-    const deletePost = async (id: string)=> {
-        return await del(`/posts/${id}`)
+    const deletePost = async (id: number)=> {
+        return await del(`/posts/${id}`, undefined, { useAuth: true})
     }
 
     return {
