@@ -1,9 +1,9 @@
 <script setup lang="ts">
+// Imports
+import { useAuth } from '#imports';
 interface FormData {
     email: string;
     password: string;
-    remember: boolean;
-    recaptchaToken?: string;
 }
 
 interface Alert {
@@ -15,23 +15,15 @@ interface Alert {
 interface FormErrors {
     email?: string;
     password?: string;
-    recaptcha?: string;
 }
 
-// Props
-const props = defineProps<{
-    showRecaptcha?: boolean;
-}>();
-
 // Composables
-const { $recaptcha } = useNuxtApp();
 const router = useRouter();
-
+const { login } = useAuth();
 // Reactive state
 const formData = ref<FormData>({
     email: "",
     password: "",
-    remember: false,
 });
 
 const alert = ref<Alert>({
@@ -42,7 +34,6 @@ const alert = ref<Alert>({
 
 const errors = ref<FormErrors>({});
 const isLoading = ref(false);
-const recaptchaElement = ref<HTMLElement | null>(null);
 
 // Methods
 const showAlert = (message: string, type: "success" | "error" = "success") => {
@@ -79,14 +70,10 @@ const handleSubmit = async () => {
     try {
         isLoading.value = true;
 
-        if (props.showRecaptcha) {
-            formData.value.recaptchaToken = await $recaptcha?.getResponse();
-        }
-
         // Call your login API here
-        const response = await $fetch("http://127.0.0.1:8000/api/auth/login", {
-            method: "POST",
-            body: formData.value,
+        const response = await login({
+            email: formData.value.email,
+            password: formData.value.password,
         });
 
         showAlert("Đăng nhập thành công");
@@ -97,18 +84,8 @@ const handleSubmit = async () => {
         showAlert(error.message || "Đăng nhập thất bại", "error");
     } finally {
         isLoading.value = false;
-        if (props.showRecaptcha) {
-            $recaptcha?.reset();
-        }
     }
 };
-
-// Lifecycle hooks
-onMounted(() => {
-    if (props.showRecaptcha) {
-        $recaptcha?.init(recaptchaElement.value);
-    }
-});
 </script>
 
 <template>
@@ -120,15 +97,9 @@ onMounted(() => {
                 <!-- Logo Section -->
                 <div class="text-center space-y-2 mb-8">
                     <div class="flex justify-center mb-4">
-                        <div class="p-2 bg-green-100 rounded-full">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-green-600" fill="none"
-                                viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                            </svg>
-                        </div>
+                        <img src="/img/logo.jpg" alt="Logo" class="h-28 w-28 rounded-full">
                     </div>
-                    <h2 class="text-2xl font-bold text-gray-800">HTX Rau Sạch</h2>
+                    <h1 class="text-3xl font-bold text-gray-800">Green Future</h1>
                     <p class="text-green-600 font-medium">Đăng nhập quản trị</p>
                 </div>
 
@@ -166,29 +137,6 @@ onMounted(() => {
                         </p>
                     </div>
 
-                    <!-- Remember Me -->
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center">
-                            <input v-model="formData.remember" type="checkbox" id="remember"
-                                class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded" />
-                            <label for="remember" class="ml-2 block text-sm text-gray-700">
-                                Ghi nhớ đăng nhập
-                            </label>
-                        </div>
-                        <NuxtLink to="/admin/forgot-password"
-                            class="text-sm font-medium text-green-600 hover:text-green-500">
-                            Quên mật khẩu?
-                        </NuxtLink>
-                    </div>
-
-                    <!-- reCAPTCHA -->
-                    <div v-if="showRecaptcha" class="flex justify-center">
-                        <div ref="recaptchaElement"></div>
-                        <p v-if="errors.recaptcha" class="text-red-500 text-sm mt-1">
-                            {{ errors.recaptcha }}
-                        </p>
-                    </div>
-
                     <!-- Submit Button -->
                     <button type="submit"
                         class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200"
@@ -222,5 +170,3 @@ onMounted(() => {
         </div>
     </div>
 </template>
-
-
