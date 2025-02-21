@@ -28,9 +28,10 @@ class PostRepository implements PostRepositoryInterface
     public function getById($id)
     {
         return $this->model->when(!auth('api_users')->check(), function ($query) {
-            $query->where('post_status', 'published');
-        })->find($id);
+                $query->where('post_status', 'published');
+            })->find($id);
     }
+
 
     public function create(array $data)
     {
@@ -75,10 +76,19 @@ class PostRepository implements PostRepositoryInterface
     
     public function getBySlug($slug)
     {
-        return $this->model->when(!auth('api_users')->check(), function ($query) {
+        $query = $this->model->when(!auth('api_users')->check(), function ($query) {
             $query->where('post_status', 'published');
-        })->where('slug', $slug)->first();
+        });
+
+        $post = $query->where('slug', $slug)->first();
+
+        if ($post && !auth('api_users')->check()) {
+            $post->increment('views');
+        }
+
+        return $post;
     }
+
 
     public function getByCategory(
         $categoryId,
