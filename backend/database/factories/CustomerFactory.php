@@ -14,7 +14,7 @@ class CustomerFactory extends Factory
     {
         return [
             'email' => $this->faker->unique()->safeEmail,
-            'password' => Hash::make('12345678'), // Mật khẩu mặc định
+            'password' => '12345678', // Mật khẩu mặc định
             'avatar_url' => $this->faker->imageUrl(300, 300, 'people'),
             'full_name' => $this->faker->name,
             'phone_number' => $this->faker->phoneNumber,
