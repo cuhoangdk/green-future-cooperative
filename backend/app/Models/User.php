@@ -27,8 +27,6 @@ class User extends Authenticatable
         'full_name', 
         'date_of_birth',
         'phone_number', 
-        'bank_account_number', 
-        'bank_name', 
         'avatar_url', 
         'bio',         
         'is_super_admin', 

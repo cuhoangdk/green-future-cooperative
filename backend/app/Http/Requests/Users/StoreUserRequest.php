@@ -23,8 +23,6 @@ class StoreUserRequest extends FormRequest
             'district' => 'required|string|max:255',
             'ward' => 'required|string|max:255',
             'street_address' => 'required|string',
-            'bank_account_number' => 'nullable|string|max:20',
-            'bank_name' => 'nullable|string|max:255',
             'avatar_url' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'bio' => 'nullable|string|max:1000',
             'is_super_admin' => 'nullable|boolean',

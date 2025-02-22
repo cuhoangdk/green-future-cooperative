@@ -25,8 +25,6 @@ class UserFactory extends Factory
             'password' => Hash::make('1234'), // Mật khẩu mặc định
             'date_of_birth' => $this->faker->date('Y-m-d', '-18 years'),
             'phone_number' => $this->faker->unique()->phoneNumber(),
-            'bank_account_number' => $this->faker->numerify('################'), // Số tài khoản giả
-            'bank_name' => $this->faker->randomElement(['Vietcombank', 'Techcombank', 'BIDV', 'Agribank']), // Ngân hàng giả
             'avatar_url' => $this->faker->imageUrl(300, 300, 'people'),
             'bio' => $this->faker->sentence(),
             'is_super_admin' => $this->faker->boolean(10), // 10% cơ hội là super admin
