@@ -8,6 +8,27 @@ use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\CustomerAuthController;
 use App\Http\Controllers\Api\CustomerProfileController;
 use App\Http\Controllers\Api\PostCommentController;
+use App\Http\Controllers\Api\CustomerController;
+use App\Http\Controllers\Api\CustomerAddressController;
+
+// Quản lý khách hàng (Chỉ Admin hoặc User có quyền)
+Route::middleware(['auth:api_users'])->prefix('customers')->group(function () {
+    Route::get('/', [CustomerController::class, 'index']);
+    Route::post('/', [CustomerController::class, 'store']);
+    Route::get('/{id}', [CustomerController::class, 'show']);
+    Route::put('/{id}', [CustomerController::class, 'update']);
+    Route::delete('/{id}', [CustomerController::class, 'destroy']);
+    
+});
+
+// Quản lý địa chỉ khách hàng (Chỉ Admin hoặc User đăng nhập)
+Route::middleware(['auth:api_users'])->prefix('customers/{customerId}/addresses')->group(function () {
+    Route::get('/', [CustomerAddressController::class, 'index']);
+    Route::post('/', [CustomerAddressController::class, 'store']);
+    Route::put('/{id}', [CustomerAddressController::class, 'update']);
+    Route::delete('/{id}', [CustomerAddressController::class, 'destroy']);
+});
+
 
 // Route bình luận bài viết
 Route::prefix('posts/{postId}/comments')->group(function () {

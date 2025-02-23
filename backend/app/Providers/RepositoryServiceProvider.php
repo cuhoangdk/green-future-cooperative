@@ -3,9 +3,11 @@
 namespace App\Providers;
 
 use App\Repositories\Contracts\CustomerProfileRepositoryInterface;
+use App\Repositories\Contracts\CustomerRepositoryInterface;
 use App\Repositories\Contracts\PostCommentRepositoryInterface;
 use App\Repositories\Contracts\UserRepositoryInterface;
 use App\Repositories\Eloquent\CustomerProfileRepository;
+use App\Repositories\Eloquent\CustomerRepository;
 use App\Repositories\Eloquent\PostCommentRepository;
 use App\Repositories\Eloquent\UserRepository;
 use Illuminate\Support\ServiceProvider;
@@ -27,7 +29,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(PostCommentRepositoryInterface::class, PostCommentRepository::class);  
         $this->app->bind(UserRepositoryInterface::class, UserRepository::class);   
         $this->app->bind(CustomerProfileRepositoryInterface::class, CustomerProfileRepository::class);  
-            
+        $this->app->bind(CustomerRepositoryInterface::class, CustomerRepository::class);
     }
 
     /**
