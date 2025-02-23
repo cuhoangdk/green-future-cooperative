@@ -4,6 +4,7 @@ namespace App\Repositories\Eloquent;
 
 use App\Models\Customer;
 use App\Repositories\Contracts\CustomerRepositoryInterface;
+use Hash;
 
 class CustomerRepository implements CustomerRepositoryInterface
 {
@@ -76,5 +77,15 @@ class CustomerRepository implements CustomerRepositoryInterface
             return true;
         }
         return false;
+    }
+    public function changePassword(int $id, array $data): bool
+    {
+        $customer = $this->model->find($id);
+
+        if (!$customer || !Hash::check($data['current_password'], $customer->password)) {
+            return false;
+        }
+
+        return $customer->update(['password' => $data['new_password']]);
     }
 }

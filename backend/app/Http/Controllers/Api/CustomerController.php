@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\ChangePasswordRequest;
 use App\Http\Requests\Customer\StoreCustomerRequest;
 use App\Http\Requests\Customer\UpdateCustomerRequest;
 use App\Http\Resources\CustomerResource;
@@ -57,7 +58,9 @@ class CustomerController extends Controller
      */
     public function update(UpdateCustomerRequest $request, $id)
     {
-        $customer = $this->customerRepository->update($id, $request->validated());
+        $data = $request->validated();
+        $data['verified_at'] = now();
+        $customer = $this->customerRepository->update($id, $data);
 
         if (!$customer) {
             return response()->json(['message' => 'Customer not found'], 404);
@@ -78,5 +81,22 @@ class CustomerController extends Controller
         }
 
         return response()->json(['message' => 'Customer deleted successfully']);
+    }
+    /**
+     * Đổi mật khẩu khách hàng.
+     * 
+     * @param ChangePasswordRequest $request
+     * @param int $id
+     * @return JsonResponse
+     */
+    public function changePassword(ChangePasswordRequest $request, $id): JsonResponse
+    {
+        $result = $this->customerRepository->changePassword($id, $request->validated());
+
+        if ($result) {
+            return response()->json(['message' => 'Password changed successfully.'], 200);
+        }
+
+        return response()->json(['message' => 'Failed to change password.'], 400);
     }
 }

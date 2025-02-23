@@ -18,7 +18,7 @@ Route::middleware(['auth:api_users'])->prefix('customers')->group(function () {
     Route::get('/{id}', [CustomerController::class, 'show']);
     Route::put('/{id}', [CustomerController::class, 'update']);
     Route::delete('/{id}', [CustomerController::class, 'destroy']);
-    
+    Route::put('/{id}/change-password', [CustomerController::class, 'changePassword']);
 });
 
 // Quản lý địa chỉ khách hàng (Chỉ Admin hoặc User đăng nhập)
