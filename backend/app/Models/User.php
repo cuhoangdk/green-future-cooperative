@@ -38,6 +38,7 @@ class User extends Authenticatable
         'usercode', 
         'last_login_at',
         'gender',
+        'role_id',
     ];
 
     /**
@@ -67,5 +68,26 @@ class User extends Authenticatable
     public function posts()
     {
         return $this->hasMany(Post::class, 'user_id');
+    }
+    /**
+     * Quan hệ với quyền (roles)
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Role, User>
+     */
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
+    }
+    /**
+     * Quan hệ với chức năng (permission)
+     * @param mixed $permission
+     * @return bool
+     */
+    public function hasPermission($permission)
+    {
+        if ($this->is_super_admin) {
+            return true;
+        }
+
+        return $this->role && $this->role->permissions->contains('name', $permission);
     }
 }
