@@ -47,6 +47,7 @@ Route::middleware(['auth:api_users', 'permission'])->prefix('customers/{customer
 // Route bình luận bài viết
 Route::prefix('posts/{postId}/comments')->group(function () {
     Route::get('/', [PostCommentController::class, 'index'])->name('post-comments.index');
+    Route::get('/search', [PostCommentController::class, 'search'])->name('post-comments.search'); // GET /api/posts-comments/search
     // Kiểm tra trong controller
     Route::delete('/{id}', [PostCommentController::class, 'destroy'])->name('post-comments.destroy');
     Route::middleware('auth:api_customers')->group(function () {
