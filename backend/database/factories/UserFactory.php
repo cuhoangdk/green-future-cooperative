@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\User;
+use Http;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 
@@ -18,6 +19,18 @@ class UserFactory extends Factory
     public function definition(): array
     {
         $fullName = $this->faker->name();
+         // Lấy danh sách tỉnh
+         $provinces = json_decode(Http::get("https://esgoo.net/api-tinhthanh/1/0.htm")->body(), true)['data'] ?? [];
+         $province = collect($provinces)->random();
+ 
+         // Lấy danh sách quận/huyện
+         $districts = json_decode(Http::get("https://esgoo.net/api-tinhthanh/2/{$province['id']}.htm")->body(), true)['data'] ?? [];
+         $district = collect($districts)->random();
+ 
+         // Lấy danh sách phường/xã
+         $wards = json_decode(Http::get("https://esgoo.net/api-tinhthanh/3/{$district['id']}.htm")->body(), true)['data'] ?? [];
+         $ward = collect($wards)->random();
+         
 
         return [
             'full_name' => $fullName,
@@ -29,9 +42,9 @@ class UserFactory extends Factory
             'bio' => $this->faker->sentence(),
             'is_super_admin' => $this->faker->boolean(10), // 10% cơ hội là super admin
             'is_banned' => $this->faker->boolean(5), // 5% cơ hội bị khóa
-            'province' => $this->faker->state(),
-            'district' => $this->faker->city(),
-            'ward' => $this->faker->streetName(),
+            'province' => $province['id'],  // Lưu ID thay vì tên
+            'district' => $district['id'],  // Lưu ID thay vì tên
+            'ward' => $ward['id'],          // Lưu ID thay vì tên
             'street_address' => $this->faker->address(),
             'usercode' => null, // Sẽ được tự động tạo
             'last_login_at' => $this->faker->dateTimeBetween('-1 month', 'now'),

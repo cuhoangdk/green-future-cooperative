@@ -58,7 +58,10 @@ class User extends Authenticatable
         'is_super_admin' => 'boolean',
         'is_banned' => 'boolean',
         'last_login_at' => 'datetime',
-    ];
+        'province' => 'string',
+        'district' => 'string',
+        'ward' => 'string',
+    ];    
 
     /**
      * Quan hệ với bài viết (posts).
