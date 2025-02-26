@@ -1,15 +1,13 @@
 <?php
-
 namespace App\Repositories\Contracts;
 
-use App\Repositories\Contracts\BaseRepositoryInterface;
+use App\Models\Farm;
+use Illuminate\Pagination\Paginator;
 
-interface CustomerRepositoryInterface extends BaseRepositoryInterface{
-    public function changePassword(int $id, array $data);
+interface FarmRepositoryInterface extends BaseRepositoryInterface
+{
     public function search(string $sortBy = 'created_at',
     string $sortDirection = 'desc',
     int $perPage = 10,
     array $filters = []);
-
-
 }

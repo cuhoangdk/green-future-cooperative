@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\FarmController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\UserAuthController;
 use App\Http\Controllers\Api\PostController;
@@ -13,7 +14,21 @@ use App\Http\Controllers\Api\CustomerAddressController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\PermissionController;
 
-// Quản lý vai trò (Chỉ người dùng có quyền manage-roles)
+// Quản lý nông trại (Chỉ người dùng có quyền)
+Route::middleware(['auth:api_users', 'permission'])->prefix('farms')->group(function () {
+    Route::get('/', [FarmController::class, 'index'])->name('farms.index');
+    Route::post('/', [FarmController::class, 'store'])->name('farms.store');
+    Route::get('/search', [FarmController::class, 'search'])->name('farms.search');
+    Route::get('/trashed', [FarmController::class, 'trashed'])->name('farms.trashed'); // GET /api/farms/trashed
+    Route::get('/{id}', [FarmController::class, 'show'])->name('farms.show');
+    Route::put('/{id}', [FarmController::class, 'update'])->name('farms.update');
+    Route::delete('/{id}', [FarmController::class, 'destroy'])->name('farms.destroy');    
+    Route::patch('/restore/{id}', [FarmController::class, 'restore'])->name('farms.restore'); // PATCH /api/farms/restore/{id}
+    Route::delete('/force-delete/{id}', [FarmController::class, 'forceDelete'])->name('farms.forceDelete'); // DELETE /api/farms/force-delete/{id}
+});
+
+
+// Quản lý vai trò (Chỉ người dùng có quyền)
 Route::middleware(['auth:api_users', 'permission'])->prefix('roles')->group(function () {
     Route::get('/', [RoleController::class, 'index'])->name('roles.index');
     Route::post('/', [RoleController::class, 'store'])->name('roles.store');
@@ -30,9 +45,13 @@ Route::middleware(['auth:api_users', 'permission'])->get('/permissions', [Permis
 Route::middleware(['auth:api_users', 'permission'])->prefix('customers')->group(function () {
     Route::get('/', [CustomerController::class, 'index'])->name('customers.index');
     Route::post('/', [CustomerController::class, 'store'])->name('customers.store');
+    Route::get('/search', [CustomerController::class, 'search'])->name('customers.search');
+    Route::get('/trashed', [CustomerController::class, 'trashed'])->name('customers.trashed'); // GET /api/uscustomersers/trashed
     Route::get('/{id}', [CustomerController::class, 'show'])->name('customers.show');
     Route::put('/{id}', [CustomerController::class, 'update'])->name('customers.update');
     Route::delete('/{id}', [CustomerController::class, 'destroy'])->name('customers.destroy');
+    Route::patch('/restore/{id}', [CustomerController::class, 'restore'])->name('customers.restore'); // PATCH /api/customers/restore/{id}
+    Route::delete('/force-delete/{id}', [CustomerController::class, 'forceDelete'])->name('customers.forceDelete'); // DELETE /api/customers/force-delete/{id}
     Route::put('/{id}/change-password', [CustomerController::class, 'changePassword'])->name('customers.change-password');
 });
 
