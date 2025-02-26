@@ -37,6 +37,8 @@ class UpdateUserRequest extends FormRequest
                     $fail('Mã phường/xã không hợp lệ.');
                 }
             }],
+            'bank_account_number' => 'nullable|string|max:20',
+            'bank_name' => 'nullable|string|max:255',
             'street_address' => 'required|string',
             'avatar_url' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'bio' => 'nullable|string|max:1000',

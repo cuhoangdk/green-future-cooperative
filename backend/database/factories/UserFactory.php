@@ -42,6 +42,8 @@ class UserFactory extends Factory
             'bio' => $this->faker->sentence(),
             'is_super_admin' => $this->faker->boolean(10), // 10% cơ hội là super admin
             'is_banned' => $this->faker->boolean(5), // 5% cơ hội bị khóa
+            'bank_account_number' => $this->faker->numerify('################'),
+            'bank_name' => $this->faker->randomElement(['Vietcombank', 'Techcombank']),
             'province' => $province['id'],  // Lưu ID thay vì tên
             'district' => $district['id'],  // Lưu ID thay vì tên
             'ward' => $ward['id'],          // Lưu ID thay vì tên
