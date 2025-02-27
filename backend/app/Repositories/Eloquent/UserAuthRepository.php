@@ -2,6 +2,7 @@
 
 namespace App\Repositories\Eloquent;
 
+use App\Jobs\SendResetPasswordEmail;
 use App\Repositories\Contracts\UserAuthRepositoryInterface;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -103,7 +104,7 @@ class UserAuthRepository implements UserAuthRepositoryInterface
         $status = Password::broker()->sendResetLink(
             ['email' => $email],
             function ($user, $token) {
-                $user->notify(new ResetPasswordNotification($token));
+                dispatch(new SendResetPasswordEmail($user, $token));
             }
         );
 

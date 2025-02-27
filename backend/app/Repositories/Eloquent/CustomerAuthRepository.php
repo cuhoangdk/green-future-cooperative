@@ -2,6 +2,9 @@
 
 namespace App\Repositories\Eloquent;
 
+use App\Jobs\CustomerSendResetPasswordEmail;
+use App\Jobs\SendResetPasswordEmail;
+use App\Jobs\SendVerificationEmail;
 use App\Models\Customer;
 use App\Repositories\Contracts\CustomerAuthRepositoryInterface;
 use App\Notifications\VerifyCustomerAccount;
@@ -85,7 +88,7 @@ class CustomerAuthRepository implements CustomerAuthRepositoryInterface
         $customer = Customer::create($data);
     
         // Gửi email xác minh
-        $customer->notify(new VerifyCustomerAccount($customer->remember_token));
+        dispatch(new SendVerificationEmail($customer));
     
         return response()->json([
             'message' => 'Customer registered successfully. Please verify your email.',
@@ -109,7 +112,7 @@ class CustomerAuthRepository implements CustomerAuthRepositoryInterface
             ['email' => $email],
             function ($user, $token) {
                 // Gửi thông báo qua Notification
-                $user->notify(new CustomerResetPasswordNotification($token));
+                dispatch(new CustomerSendResetPasswordEmail($user, $token));
             }
         );
     
