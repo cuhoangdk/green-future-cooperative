@@ -23,7 +23,7 @@ class CustomerAddressController extends Controller
     public function index($customerId)
     {
         $addresses = $this->addressRepository->getAddresses($customerId);
-        return CustomerAddressResource::collection($addresses);
+        return CustomerAddressResource::collection($addresses->load('address'));
     }
 
     /**
@@ -32,7 +32,7 @@ class CustomerAddressController extends Controller
     public function store(StoreAddressRequest $request, $customerId)
     {
         $address = $this->addressRepository->storeAddress($customerId, $request->validated());
-        return new CustomerAddressResource($address);
+        return new CustomerAddressResource($address->load('address'));
     }
 
 
@@ -47,7 +47,7 @@ class CustomerAddressController extends Controller
             return response()->json(['message' => 'Address not found'], 404);
         }
 
-        return new CustomerAddressResource($address);
+        return new CustomerAddressResource($address->load('address'));
     }
 
     /**

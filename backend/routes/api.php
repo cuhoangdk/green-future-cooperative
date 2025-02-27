@@ -52,7 +52,7 @@ Route::middleware(['auth:api_users', 'permission'])->prefix('customers')->group(
     Route::delete('/{id}', [CustomerController::class, 'destroy'])->name('customers.destroy');
     Route::patch('/restore/{id}', [CustomerController::class, 'restore'])->name('customers.restore'); // PATCH /api/customers/restore/{id}
     Route::delete('/force-delete/{id}', [CustomerController::class, 'forceDelete'])->name('customers.forceDelete'); // DELETE /api/customers/force-delete/{id}
-    Route::put('/{id}/change-password', [CustomerController::class, 'changePassword'])->name('customers.change-password');
+    Route::put('/change-password/{id}', [CustomerController::class, 'changePassword'])->name('customers.change-password');
 });
 
 // Quản lý địa chỉ khách hàng (Chỉ Admin hoặc User đăng nhập)

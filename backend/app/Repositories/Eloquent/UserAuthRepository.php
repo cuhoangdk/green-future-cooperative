@@ -165,8 +165,29 @@ class UserAuthRepository implements UserAuthRepositoryInterface
         $user = User::find($userId);
 
         if ($user) {
+            // Tách dữ liệu address nếu có
+            $addressData = [
+                'province' => $data['address']['province'] ?? null,
+                'district' => $data['address']['district'] ?? null,
+                'ward' => $data['address']['ward'] ?? null,
+                'street_address' => $data['address']['street_address'] ?? null,
+            ];
+            unset($data['address']); // Loại bỏ address khỏi data chính
+
+            // Loại bỏ các trường không cho phép cập nhật
             unset($data['is_super_admin'], $data['is_banned'], $data['password']);
+
+            // Cập nhật thông tin user
             $user->update($data);
+
+            // Cập nhật hoặc tạo address nếu có
+            if ($addressData) {
+                $user->address()->updateOrCreate(
+                    ['addressable_id' => $user->id, 'addressable_type' => get_class($user)],
+                    $addressData
+                );
+            }
+
             return $user;
         }
 

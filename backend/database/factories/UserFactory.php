@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Address;
 use App\Models\User;
 use Http;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -18,18 +19,7 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
-        $fullName = $this->faker->name();
-         // Lấy danh sách tỉnh
-         $provinces = json_decode(Http::get("https://esgoo.net/api-tinhthanh/1/0.htm")->body(), true)['data'] ?? [];
-         $province = collect($provinces)->random();
- 
-         // Lấy danh sách quận/huyện
-         $districts = json_decode(Http::get("https://esgoo.net/api-tinhthanh/2/{$province['id']}.htm")->body(), true)['data'] ?? [];
-         $district = collect($districts)->random();
- 
-         // Lấy danh sách phường/xã
-         $wards = json_decode(Http::get("https://esgoo.net/api-tinhthanh/3/{$district['id']}.htm")->body(), true)['data'] ?? [];
-         $ward = collect($wards)->random();
+        $fullName = $this->faker->name();         
          
 
         return [
@@ -44,10 +34,6 @@ class UserFactory extends Factory
             'is_banned' => $this->faker->boolean(5), // 5% cơ hội bị khóa
             'bank_account_number' => $this->faker->numerify('################'),
             'bank_name' => $this->faker->randomElement(['Vietcombank', 'Techcombank']),
-            'province' => $province['id'],  // Lưu ID thay vì tên
-            'district' => $district['id'],  // Lưu ID thay vì tên
-            'ward' => $ward['id'],          // Lưu ID thay vì tên
-            'street_address' => $this->faker->address(),
             'usercode' => null, // Sẽ được tự động tạo
             'last_login_at' => $this->faker->dateTimeBetween('-1 month', 'now'),
             'gender' => $this->faker->randomElement(['male', 'female', 'other']),
@@ -63,13 +49,15 @@ class UserFactory extends Factory
     public function configure()
     {
         return $this->afterMaking(function (User $user) {
-            // Tạo usercode tự động
+            // Tạo usercode tự động khi make
             $user->usercode = $user->generateUserCode($user->full_name, User::class);
         })->afterCreating(function (User $user) {
-            // Gán lại usercode nếu cần sau khi tạo
+            // Cập nhật usercode nếu cần sau khi tạo
             if (empty($user->usercode)) {
                 $user->update(['usercode' => $user->generateUserCode($user->full_name, User::class)]);
             }
+            // Tự động tạo địa chỉ trong bảng addresses
+            $user->address()->save(Address::factory()->make());
         });
     }
 }

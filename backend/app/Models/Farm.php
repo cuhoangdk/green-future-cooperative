@@ -11,8 +11,7 @@ class Farm extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'user_id', 'name',
-        'province', 'district', 'ward', 'street_address',
+        'user_id', 'name',        
         'description', 'farm_size', 'soil_type', 'irrigation_method',
         'latitude', 'longitude',
     ];
@@ -21,4 +20,9 @@ class Farm extends Model
     {
         return $this->belongsTo(User::class);
     }
+    public function address()
+    {
+        return $this->morphOne(Address::class, 'addressable');
+    }
+
 }

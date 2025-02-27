@@ -20,7 +20,7 @@ class UserResource extends JsonResource
 
         // Bỏ các trường không mong muốn
         $data = Arr::except($data, ['deleted_at', 'remember_token']);
-        
+        $data['address'] = new AddressResource($this->whenLoaded('address'));
         return $data;
     }
 }

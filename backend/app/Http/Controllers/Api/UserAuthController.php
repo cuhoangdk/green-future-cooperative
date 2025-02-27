@@ -127,7 +127,7 @@ class UserAuthController extends Controller
     {
         $user = $this->authRepository->getProfile(Auth::id());
         if ($user) {
-            return new UserResource($user);
+            return new UserResource($user->load('address'));
         }
     
         return response()->json(['message' => 'User not found.'], 404);
@@ -150,10 +150,10 @@ class UserAuthController extends Controller
             // Upload ảnh mới
             $validated['avatar_url'] = $this->uploadService->uploadImage($request->file('avatar_url'), 'customers');
         }
-        $user = $this->authRepository->updateProfile(Auth::id(), $$validated);
+        $user = $this->authRepository->updateProfile(Auth::id(), $validated);
         
         if ($user) {
-            return response()->json(['message' => 'Profile updated successfully', 'user' => $user]);
+            return response()->json(['message' => 'Profile updated successfully', 'data' => new UserResource($user->load('address'))]);
         }
 
         return response()->json(['message' => 'Unable to update profile.'], 400);

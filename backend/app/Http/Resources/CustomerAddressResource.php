@@ -20,6 +20,7 @@ class CustomerAddressResource extends JsonResource
 
         // Bỏ các trường không mong muốn
         $data = Arr::except($data, ['deleted_at']);
+        $data['address'] = new AddressResource($this->whenLoaded('address'));
         
         return $data;
     }

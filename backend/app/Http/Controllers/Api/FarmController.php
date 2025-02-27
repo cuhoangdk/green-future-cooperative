@@ -26,7 +26,7 @@ class FarmController extends Controller
         
         $farms = $this->farmRepository->getAll($sortBy, $sortDirection, $perPage)
         ->appends(request()->query());
-        return FarmResource::collection($farms);
+        return FarmResource::collection($farms->load('address'));
     }
 
     public function store(StoreFarmRequest $request)
@@ -34,7 +34,7 @@ class FarmController extends Controller
         $data = $request->validated();
         $data['user_id'] = auth('api_users')->id(); // Gán user_id từ người dùng hiện tại
         $farm = $this->farmRepository->create($data);
-        return new FarmResource($farm);
+        return new FarmResource($farm->load('address'));
     }
 
     public function show($id)
@@ -43,7 +43,7 @@ class FarmController extends Controller
         if (!$farm) {
             return response()->json(['message' => 'Farm not found'], 404);
         }
-        return new FarmResource($farm);
+        return new FarmResource($farm->load('address'));
     }
 
     public function update(UpdateFarmRequest $request, $id)
@@ -52,7 +52,7 @@ class FarmController extends Controller
         if (!$farm) {
             return response()->json(['message' => 'Farm not found'], 404);
         }
-        return new FarmResource($farm);
+        return new FarmResource($farm->load('address'));
     }
 
     public function destroy($id)
@@ -81,7 +81,7 @@ class FarmController extends Controller
             perPage: $perPage
         );
 
-        return FarmResource::collection($trashedUsers);
+        return FarmResource::collection($trashedUsers->load('address'));
     }
 
     /**
@@ -126,6 +126,6 @@ class FarmController extends Controller
         $filters = $request->only(['search']);
 
         $farms = $this->farmRepository->search($sortBy, $sortDirection, $perPage, $filters);
-        return FarmResource::collection($farms);
+        return FarmResource::collection($farms->load('address'));
     }
 }

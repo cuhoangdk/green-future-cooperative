@@ -32,11 +32,7 @@ class User extends Authenticatable
         'avatar_url', 
         'bio',         
         'is_super_admin', 
-        'is_banned',        
-        'province', 
-        'district', 
-        'ward', 
-        'street_address',
+        'is_banned',          
         'usercode', 
         'last_login_at',
         'gender',
@@ -95,4 +91,9 @@ class User extends Authenticatable
 
         return $this->role && $this->role->permissions->contains('name', $permission);
     }
+    public function address()
+    {
+        return $this->morphOne(Address::class, 'addressable');
+    }
+
 }

@@ -15,11 +15,7 @@ class CustomerAddress extends Model
         'customer_id',
         'full_name',
         'phone_number',
-        'address_type',
-        'province',
-        'district',
-        'ward',
-        'street_address',
+        'address_type',        
         'is_default',
     ];
 
@@ -50,4 +46,9 @@ class CustomerAddress extends Model
             }
         });
     }
+    public function address()
+    {
+        return $this->morphOne(Address::class, 'addressable');
+    }
+
 }

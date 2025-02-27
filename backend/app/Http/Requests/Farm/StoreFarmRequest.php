@@ -15,22 +15,37 @@ class StoreFarmRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
-            'province' => ['required', 'string', function ($attribute, $value, $fail) {
-            if (!LocationHelper::isValidProvince($value)) {
-                $fail('Mã tỉnh không hợp lệ.');
-            }
-            }],
-            'district' => ['required', 'string', function ($attribute, $value, $fail) {
-                if (!LocationHelper::isValidDistrict($this->province, $value)) {
-                    $fail('Mã quận/huyện không hợp lệ.');
-                }
-            }],
-            'ward' => ['required', 'string', function ($attribute, $value, $fail) {
-                if (!LocationHelper::isValidWard($this->district, $value)) {
-                    $fail('Mã phường/xã không hợp lệ.');
-                }
-            }],
-            'street_address' => 'nullable|string',
+            'address' => 'required|array',
+            'address.province' => [
+                'required',
+                'string',
+                function ($attribute, $value, $fail) {
+                    if (!LocationHelper::isValidProvince($value)) {
+                        $fail('Mã tỉnh không hợp lệ.');
+                    }
+                },
+            ],
+            'address.district' => [
+                'required',
+                'string',
+                function ($attribute, $value, $fail) {
+                    $province = $this->input('address.province');
+                    if (!$province || !LocationHelper::isValidDistrict($province, $value)) {
+                        $fail('Mã quận/huyện không hợp lệ.');
+                    }
+                },
+            ],
+            'address.ward' => [
+                'required',
+                'string',
+                function ($attribute, $value, $fail) {
+                    $district = $this->input('address.district');
+                    if (!$district || !LocationHelper::isValidWard($district, $value)) {
+                        $fail('Mã phường/xã không hợp lệ.');
+                    }
+                },
+            ],
+            'address.street_address' => 'nullable|string|max:500',
             'description' => 'nullable|string',
             'farm_size' => 'nullable|numeric|min:0',
             'soil_type' => 'nullable|string|max:255',
