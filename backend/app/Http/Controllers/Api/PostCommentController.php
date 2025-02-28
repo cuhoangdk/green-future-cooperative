@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\PostComments\SearchCommentRequest;
 use App\Http\Requests\PostComments\StoreCommentRequest;
 use App\Http\Requests\PostComments\UpdateCommentRequest;
 use App\Http\Resources\PostCommentResource;
@@ -85,4 +86,20 @@ class PostCommentController extends Controller
         $this->commentRepository->delete($id);
         return response()->json(['message' => 'Comment deleted successfully']);
     }
+    /**
+     * Tìm kiếm bình luận
+     * @param \App\Http\Requests\PostComments\SearchCommentRequest $request
+     * @param mixed $postId
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+     */
+    public function search(SearchCommentRequest $request, $postId)
+    {
+        $keyword = $request->input('search', '');
+        $perPage = $request->input('per_page', 10);
+
+        $comments = $this->commentRepository->searchComments($keyword, $postId, $perPage);
+
+        return PostCommentResource::collection($comments);
+    }
+        
 }

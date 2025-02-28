@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\ChangePasswordRequest;
+use App\Http\Requests\Customer\SearchCustomerRequest;
 use App\Http\Requests\Customer\StoreCustomerRequest;
 use App\Http\Requests\Customer\UpdateCustomerRequest;
+use App\Http\Requests\Customer\IndexCustomerRequest;
 use App\Http\Resources\CustomerResource;
 use App\Repositories\Contracts\CustomerRepositoryInterface;
 use Illuminate\Http\JsonResponse;
@@ -21,15 +23,24 @@ class CustomerController extends Controller
 
     /**
      * Lấy danh sách khách hàng.
+     * @param \App\Http\Requests\Customer\IndexCustomerRequest $request
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
      */
-    public function index()
+    public function index(IndexCustomerRequest $request)
     {
-        $customers = $this->customerRepository->getAll();
+        $perPage = $request->input('per_page', 10);
+        $sortBy = $request->input('sort_by', 'created_at');
+        $sortDirection = $request->input('sort_direction', 'desc');
+
+        $customers = $this->customerRepository->getAll($sortBy, $sortDirection, $perPage)
+        ->appends(request()->query());
         return CustomerResource::collection($customers);
     }
 
     /**
      * Thêm mới khách hàng.
+     * @param \App\Http\Requests\Customer\StoreCustomerRequest $request
+     * @return CustomerResource
      */
     public function store(StoreCustomerRequest $request)
     {
@@ -41,6 +52,8 @@ class CustomerController extends Controller
 
     /**
      * Hiển thị chi tiết khách hàng.
+     * @param mixed $id
+     * @return CustomerResource|JsonResponse|mixed
      */
     public function show($id)
     {
@@ -55,6 +68,9 @@ class CustomerController extends Controller
 
     /**
      * Cập nhật thông tin khách hàng.
+     * @param \App\Http\Requests\Customer\UpdateCustomerRequest $request
+     * @param mixed $id
+     * @return CustomerResource|JsonResponse|mixed
      */
     public function update(UpdateCustomerRequest $request, $id)
     {
@@ -71,6 +87,8 @@ class CustomerController extends Controller
 
     /**
      * Xóa khách hàng.
+     * @param mixed $id
+     * @return JsonResponse|mixed
      */
     public function destroy($id)
     {
@@ -81,6 +99,60 @@ class CustomerController extends Controller
         }
 
         return response()->json(['message' => 'Customer deleted successfully']);
+    }
+    /**
+     * Lấy danh sách khách hàng đã xóa mềm.
+     * 
+     * @param IndexCustomerRequest $request
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+     */
+    public function trashed(IndexCustomerRequest $request)
+    {
+        $perPage = $request->input('per_page', 10);
+        $sortBy = $request->input('sort_by', 'deleted_at');
+        $sortDirection = $request->input('sort_direction', 'desc');
+
+        $trashedUsers = $this->customerRepository->getTrashed(
+            sortBy: $sortBy,
+            sortDirection: $sortDirection,
+            perPage: $perPage
+        );
+
+        return CustomerResource::collection($trashedUsers);
+    }
+
+    /**
+     * Khôi phục khách hàng đã bị xóa.
+     *
+     * @param int $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function restore($id)
+    {
+        $restored = $this->customerRepository->restore($id);
+
+        if (!$restored) {
+            return response()->json(['message' => 'Customer not found or not trashed'], 404);
+        }
+
+        return response()->json(['message' => 'Customer restored successfully']);
+    }
+
+    /**
+     * Xóa vĩnh viễn khách hàng.
+     *
+     * @param int $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function forceDelete($id)
+    {
+        $deleted = $this->customerRepository->forceDelete($id);
+
+        if (!$deleted) {
+            return response()->json(['message' => 'Customer not found or not trashed'], 404);
+        }
+
+        return response()->json(['message' => 'Customer permanently deleted successfully']);
     }
     /**
      * Đổi mật khẩu khách hàng.
@@ -99,4 +171,20 @@ class CustomerController extends Controller
 
         return response()->json(['message' => 'Failed to change password.'], 400);
     }
+    /**
+     * Tìm kiếm khách hàng theo email, phone_number hoặc full_name.
+     * @param SearchCustomerRequest $request
+     * @return JsonResponse|mixed|\Illuminate\Http\Resources\Json\AnonymousResourceCollection
+     */
+    public function search(SearchCustomerRequest $request)
+    {
+        $sortBy = $request->query('sortBy', 'created_at');
+        $sortDirection = $request->query('sortDirection', 'desc');
+        $perPage = (int) $request->query('perPage', 10);
+        $filters = $request->only(['search']);
+
+        $customers = $this->customerRepository->search($sortBy, $sortDirection, $perPage, $filters);
+        return CustomerResource::collection($customers);
+    }
+
 }

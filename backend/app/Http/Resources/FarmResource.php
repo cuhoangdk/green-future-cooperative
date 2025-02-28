@@ -6,7 +6,7 @@ use Arr;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class UserResource extends JsonResource
+class FarmResource extends JsonResource
 {
     /**
      * Transform the resource into an array.

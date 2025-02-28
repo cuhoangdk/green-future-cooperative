@@ -1,22 +1,19 @@
 <?php
-
 namespace App\Repositories\Eloquent;
 
-use App\Models\Customer;
-use App\Repositories\Contracts\CustomerRepositoryInterface;
-use Hash;
-use Illuminate\Contracts\Database\Eloquent\Builder;
+use App\Models\Farm;
+use App\Repositories\Contracts\FarmRepositoryInterface;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\Paginator;
 
-class CustomerRepository implements CustomerRepositoryInterface
+class FarmRepository implements FarmRepositoryInterface
 {
     protected $model;
 
-    public function __construct(Customer $model)
+    public function __construct(Farm $farm)
     {
-        $this->model = $model;
+        $this->model = $farm;
     }
-
     public function getAll(string $sortBy = 'created_at', string $sortDirection = 'desc', int $perPage = 10)
     {
         return $this->model->orderBy($sortBy, $sortDirection)->paginate($perPage);
@@ -29,18 +26,37 @@ class CustomerRepository implements CustomerRepositoryInterface
 
     public function create(array $data)
     {
-        return $this->model->create($data);
+        
+        $addressData = $data['address'] ?? null;
+        unset($data['address']);
+        $farm = $this->model->create($data);
+        if ($addressData) {
+            $farm->address()->create($addressData);
+        }
+
+        return $farm;
     }
 
     public function update($id, array $data)
-    {
-        $customer = $this->model->find($id);
-        if ($customer) {
-            $customer->update($data);
-            return $customer;
+{
+    $farm = $this->model->find($id);
+
+    if ($farm) {
+        $addressData = $data['address'] ?? null;
+        unset($data['address']); 
+        $farm->update($data);
+        if ($addressData) {
+            $farm->address()->updateOrCreate(
+                ['addressable_id' => $farm->id, 'addressable_type' => get_class($farm)],
+                $addressData
+            );
         }
-        return null;
+
+        return $farm;
     }
+
+    return null;
+}
 
     public function delete($id)
     {
@@ -80,16 +96,7 @@ class CustomerRepository implements CustomerRepositoryInterface
         }
         return false;
     }
-    public function changePassword(int $id, array $data): bool
-    {
-        $customer = $this->model->find($id);
 
-        if (!$customer || !Hash::check($data['current_password'], $customer->password)) {
-            return false;
-        }
-
-        return $customer->update(['password' => $data['new_password']]);
-    }
     public function search(
         string $sortBy = 'created_at',
         string $sortDirection = 'desc',
@@ -98,11 +105,11 @@ class CustomerRepository implements CustomerRepositoryInterface
     ) {
         $query = $this->model->query();
 
+        // Lọc theo từ khóa tìm kiếm
         $query->when($filters['search'] ?? null, function (Builder $query, $search) {
             $query->where(function (Builder $q) use ($search) {
-                $q->where('full_name', 'like', "%{$search}%")
-                    ->orWhere('phone_number', 'like', "%{$search}%")
-                    ->orWhere('email', 'like', "%{$search}%");
+                $q->where('name', 'like', "%{$search}%")                    
+                    ->orWhere('street_address', 'like', "%{$search}%");
             });
         });
 
@@ -116,7 +123,7 @@ class CustomerRepository implements CustomerRepositoryInterface
 
     private function validateSortColumn(string $column): string
     {
-        $allowedColumns = ['full_name', 'email', 'phone_number', 'created_at','updated_at'];
+        $allowedColumns = ['name', 'province', 'district', 'ward', 'created_at','updated_at'];
         return in_array($column, $allowedColumns) ? $column : 'created_at';
     }
 
@@ -124,5 +131,4 @@ class CustomerRepository implements CustomerRepositoryInterface
     {
         return in_array(strtolower($direction), ['asc', 'desc']) ? $direction : 'desc';
     }
-
 }

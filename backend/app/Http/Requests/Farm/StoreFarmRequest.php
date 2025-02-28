@@ -1,18 +1,20 @@
 <?php
-
-namespace App\Http\Requests\Auth\User;
+namespace App\Http\Requests\Farm;
 
 use App\Helpers\LocationHelper;
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateProfileUserRequest extends FormRequest
+class StoreFarmRequest extends FormRequest
 {
-    public function rules()
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    public function rules(): array
     {
         return [
-            'full_name' => 'nullable|string|max:255',
-            'phone_number' => 'nullable|string|max:15',
-            'date_of_birth' => 'required|date|before:today',
+            'name' => 'required|string|max:255',
             'address' => 'required|array',
             'address.province' => [
                 'required',
@@ -44,11 +46,12 @@ class UpdateProfileUserRequest extends FormRequest
                 },
             ],
             'address.street_address' => 'nullable|string|max:500',
-            'bio' => 'nullable|string|max:1000',
-            'avatar_url' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'bank_account_number' => 'nullable|string|max:20',
-            'bank_name' => 'nullable|string|max:255',
-            
+            'description' => 'nullable|string',
+            'farm_size' => 'nullable|numeric|min:0',
+            'soil_type' => 'nullable|string|max:255',
+            'irrigation_method' => 'nullable|string|max:255',
+            'latitude' => 'nullable|numeric',
+            'longitude' => 'nullable|numeric',
         ];
     }
 }

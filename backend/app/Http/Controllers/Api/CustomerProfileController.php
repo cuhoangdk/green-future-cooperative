@@ -83,7 +83,7 @@ class CustomerProfileController extends Controller
         $customer = auth('api_customers')->user();
         $addresses = $this->profileRepository->getAddresses($customer->id);
 
-        return CustomerAddressResource::collection($addresses);
+        return CustomerAddressResource::collection($addresses->load('address'));
     }
 
     /**
@@ -99,7 +99,7 @@ class CustomerProfileController extends Controller
 
         return response()->json([
             'message' => 'Address added successfully',
-            'data' => new CustomerAddressResource($address),
+            'data' => new CustomerAddressResource($address->load('address')),
         ]);
     }
 
@@ -116,7 +116,7 @@ class CustomerProfileController extends Controller
 
         return response()->json([
             'message' => 'Address updated successfully',
-            'data' => new CustomerAddressResource($address),
+            'data' => new CustomerAddressResource($address->load('address')),
         ]);
     }
 

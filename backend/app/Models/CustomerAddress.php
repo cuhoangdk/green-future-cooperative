@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Http;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -14,23 +15,21 @@ class CustomerAddress extends Model
         'customer_id',
         'full_name',
         'phone_number',
-        'address_type',
-        'province',
-        'district',
-        'ward',
-        'street_address',
+        'address_type',        
         'is_default',
     ];
 
     protected $casts = [
         'is_default' => 'boolean',
+        'province' => 'string',
+        'district' => 'string',
+        'ward' => 'string',
     ];
 
     public function customer()
     {
         return $this->belongsTo(Customer::class);
     }
-
     /**
      * Boot method để kiểm tra `is_default` duy nhất cho mỗi khách hàng.
      */
@@ -47,4 +46,9 @@ class CustomerAddress extends Model
             }
         });
     }
+    public function address()
+    {
+        return $this->morphOne(Address::class, 'addressable');
+    }
+
 }

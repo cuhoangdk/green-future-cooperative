@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use Http;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Arr;
@@ -19,6 +20,7 @@ class CustomerAddressResource extends JsonResource
 
         // Bỏ các trường không mong muốn
         $data = Arr::except($data, ['deleted_at']);
+        $data['address'] = new AddressResource($this->whenLoaded('address'));
         
         return $data;
     }

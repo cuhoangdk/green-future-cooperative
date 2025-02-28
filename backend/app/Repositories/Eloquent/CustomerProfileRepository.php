@@ -76,11 +76,29 @@ class CustomerProfileRepository implements CustomerProfileRepositoryInterface
      */
     public function storeAddress($customerId, array $data)
     {
+        // Tách dữ liệu địa chỉ
+        $addressData = [
+            'province' => $data['address']['province'] ?? null,
+            'district' => $data['address']['district'] ?? null,
+            'ward' => $data['address']['ward'] ?? null,
+            'street_address' => $data['address']['street_address'] ?? null,
+        ];
+        unset($data['address']); // Loại bỏ address khỏi dữ liệu chính
+
+        // Nếu is_default = true, cập nhật các địa chỉ khác
         if (isset($data['is_default']) && $data['is_default']) {
             $this->updateIsDefault($customerId);
         }
 
-        return $this->addressModel->create(array_merge($data, ['customer_id' => $customerId]));
+        // Tạo bản ghi CustomerAddress
+        $customerAddress = $this->addressModel->create(array_merge($data, ['customer_id' => $customerId]));
+
+        // Tạo bản ghi Address liên quan
+        if ($addressData) {
+            $customerAddress->address()->create($addressData);
+        }
+
+        return $customerAddress;
     }
 
     /**
@@ -94,11 +112,30 @@ class CustomerProfileRepository implements CustomerProfileRepositoryInterface
     {
         $address = $this->addressModel->findOrFail($addressId);
 
+        // Tách dữ liệu địa chỉ
+        $addressData = [
+            'province' => $data['address']['province'] ?? null,
+            'district' => $data['address']['district'] ?? null,
+            'ward' => $data['address']['ward'] ?? null,
+            'street_address' => $data['address']['street_address'] ?? null,
+        ];
+        unset($data['address']); // Loại bỏ address khỏi dữ liệu chính
+
+        // Nếu is_default = true, cập nhật các địa chỉ khác
         if (isset($data['is_default']) && $data['is_default']) {
             $this->updateIsDefault($address->customer_id);
         }
 
+        // Cập nhật CustomerAddress
         $address->update($data);
+
+        // Cập nhật hoặc tạo Address liên quan
+        if ($addressData) {
+            $address->address()->updateOrCreate(
+                ['addressable_id' => $address->id, 'addressable_type' => get_class($address)],
+                $addressData
+            );
+        }
 
         return $address;
     }

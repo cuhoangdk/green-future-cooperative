@@ -25,16 +25,14 @@ class User extends Authenticatable
         'email', 
         'password', 
         'full_name', 
+        'bank_account_number', 
+        'bank_name',
         'date_of_birth',
         'phone_number', 
         'avatar_url', 
         'bio',         
         'is_super_admin', 
-        'is_banned',        
-        'province', 
-        'district', 
-        'ward', 
-        'street_address',
+        'is_banned',          
         'usercode', 
         'last_login_at',
         'gender',
@@ -58,7 +56,10 @@ class User extends Authenticatable
         'is_super_admin' => 'boolean',
         'is_banned' => 'boolean',
         'last_login_at' => 'datetime',
-    ];
+        'province' => 'string',
+        'district' => 'string',
+        'ward' => 'string',
+    ];    
 
     /**
      * Quan hệ với bài viết (posts).
@@ -90,4 +91,9 @@ class User extends Authenticatable
 
         return $this->role && $this->role->permissions->contains('name', $permission);
     }
+    public function address()
+    {
+        return $this->morphOne(Address::class, 'addressable');
+    }
+
 }

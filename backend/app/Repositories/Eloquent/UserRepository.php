@@ -134,20 +134,17 @@ class UserRepository implements UserRepositoryInterface
                     ->orWhere('phone_number', 'like', "%{$search}%")
                     ->orWhere('email', 'like', "%{$search}%")
                     ->orWhere('usercode', 'like', "%{$search}%")
-                    ->orWhere('province', 'like', "%{$search}%")
-                    ->orWhere('district', 'like', "%{$search}%")
-                    ->orWhere('ward', 'like', "%{$search}%")
                     ->orWhere('street_address', 'like', "%{$search}%");
             });
         });
        
-        $query->when($filters['is_super_admin'] ?? null, fn($query, $isSuperAdmin) => $query->where('is_super_admin', $isSuperAdmin));
-        $query->when($filters['is_banned'] ?? null, fn($query, $isBanned) => $query->where('is_banned', $isBanned));
+        $query->when(isset($filters['is_super_admin']), fn($query) => $query->where('is_super_admin', $filters['is_super_admin']));
+        $query->when(isset($filters['is_banned']), fn($query) => $query->where('is_banned', $filters['is_banned']));
 
-        // Lọc theo địa chỉ (province, district, ward)
-        $query->when($filters['province'] ?? null, fn($query, $province) => $query->where('province', 'like', "%{$province}%"));
-        $query->when($filters['district'] ?? null, fn($query, $district) => $query->where('district', 'like', "%{$district}%"));
-        $query->when($filters['ward'] ?? null, fn($query, $ward) => $query->where('ward', 'like', "%{$ward}%"));
+        // Lọc theo địa phương (province, district, ward phải là số)
+        $query->when(isset($filters['province']), fn($query) => $query->where('province', $filters['province']));
+        $query->when(isset($filters['district']), fn($query) => $query->where('district', $filters['district']));
+        $query->when(isset($filters['ward']), fn($query) => $query->where('ward', $filters['ward']));
 
         $query->orderBy(
             $this->validateSortColumn($sortBy),
@@ -174,9 +171,6 @@ class UserRepository implements UserRepositoryInterface
                     ->orWhere('phone_number', 'like', "%{$search}%")
                     ->orWhere('email', 'like', "%{$search}%")
                     ->orWhere('usercode', 'like', "%{$search}%")
-                    ->orWhere('province', 'like', "%{$search}%")
-                    ->orWhere('district', 'like', "%{$search}%")
-                    ->orWhere('ward', 'like', "%{$search}%")
                     ->orWhere('street_address', 'like', "%{$search}%");
             });
         });

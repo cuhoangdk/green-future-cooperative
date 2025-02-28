@@ -88,4 +88,11 @@ class PostCommentRepository implements PostCommentRepositoryInterface
     {
         return $this->model->where('post_id', $postId)->with('customer')->latest()->get();
     }
+    public function searchComments(string $keyword, int $postId, int $perPage = 10)
+    {
+        return $this->model->where('post_id', $postId)
+            ->where('content', 'like', "%{$keyword}%")
+            ->latest()
+            ->paginate($perPage);
+    }
 }
