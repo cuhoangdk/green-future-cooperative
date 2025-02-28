@@ -1,26 +1,16 @@
-<script setup lang="ts">
-import { ref } from "vue";
-import type { Post } from "~/types/post";
-import { useRuntimeConfig } from "#app";
-const config = useRuntimeConfig();
-const backendUrl = config.public.backendUrl;
-
-const props = defineProps<{ post: Post }>();
-
-const currentImage = ref(`${backendUrl}${props.post.featured_image}`);
-
-const handleImageError = () => {
-    // Sử dụng path từ thư mục public
-    currentImage.value = "/img/banner.png";
-};
-</script>
-
 <template>
     <NuxtLink :to="`/posts/${post.slug}`"
         class="bg-white border border-green-100 shadow-sm rounded-lg overflow-hidden hover:shadow-md hover:-translate-y-1 duration-200 relative z-0 h-full flex flex-col">
-        <NuxtImg :src="`${currentImage}`" :alt="post.title"
-            class="rounded-lg rounded-b-none object-cover relative w-full aspect-video" loading="lazy"
-            @error="handleImageError" />
+        <!-- Khu vực ảnh với category name nổi -->
+        <div class="relative w-full aspect-video">
+            <img :src="`${img}`" :alt="post.title" class="rounded-lg aspect-video rounded-b-none object-cover w-full"
+                loading="lazy" @error="() => { img = config.public.placeholderImage; }" />
+            <!-- Category name nổi ở góc dưới bên trái -->
+            <div v-if="post.category?.name"
+                class="absolute bottom-2 left-2 bg-green-600 text-white text-xs font-semibold px-2 py-1 rounded">
+                {{ post.category.name }}
+            </div>
+        </div>
 
         <div class="text-left mt-3 px-3 pb-3 flex-1 flex flex-col justify-between">
             <div>
@@ -28,7 +18,6 @@ const handleImageError = () => {
                 <p class="text-gray-600 text-sm line-clamp-3">{{ post.summary }}</p>
             </div>
 
-            <!-- Cố định ở đáy -->
             <div class="flex justify-between mt-auto">
                 <div class="text-sm text-green-500 hover:text-green-600 font-semibold">
                     Đọc thêm
@@ -46,3 +35,17 @@ const handleImageError = () => {
         </div>
     </NuxtLink>
 </template>
+
+<script setup lang="ts">
+import type { Post } from "~/types/post";
+import { useRuntimeConfig } from "#app";
+
+interface Props {
+    post: Post;
+}
+
+const config = useRuntimeConfig();
+const backendUrl = config.public.backendUrl;
+const props = defineProps<Props>();
+const img = ref(`${backendUrl}${props.post.featured_image}`);
+</script>

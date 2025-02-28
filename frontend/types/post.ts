@@ -1,4 +1,3 @@
-import type { PostCategory } from "./postcategory";
 import type { User } from "./user";
 
 export interface Post {
@@ -20,6 +19,18 @@ export interface Post {
     meta_description: string;
     views: number;
     published_at: string;
-    created_at: string;
-    updated_at: string;
+    created_at: Date;
+    updated_at: Date;
+    deleted_at: Date | null;
+}
+
+export interface PostCategory {
+    id: number;
+    name: string;
+    slug: string;
+    description: string;
+    is_active: boolean;
+    created_at: Date;
+    updated_at: Date;
+    deleted_at: Date | null;
 }

@@ -1,21 +1,23 @@
 export interface User {
     id: number;
-    username: string;
-    slug: string;
     email: string;
     full_name: string;
+    gender: string;
+    date_of_birth: Date | null;
     phone_number: string;
-    address: string;
-    farm_location: string;
-    farm_size: string;
-    bank_account_number: string;
-    bank_name: string;
     avatar_url: string;
     bio: string;
-    is_active: boolean;
-    verified_at: string;
-    joined_at: string;
-    last_login_at: string | null;
-    created_at: string;
-    updated_at: string;
+    last_login_at: Date | null;
+    created_at: Date;
+    updated_at: Date;
+    usercode: string;
+    is_super_admin: boolean;
+    is_banned: boolean;
+    province: string | null;
+    district: string | null;
+    ward: string | null;
+    street_address: string | null;
+    deleted_at: Date | null;
+    remember_token: string | null;
+    role_id: number | null;
 }

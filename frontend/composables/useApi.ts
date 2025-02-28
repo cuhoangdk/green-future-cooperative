@@ -1,98 +1,59 @@
-import type { ApiResponse } from "~/types/api"
-
-interface RequestOptions {
-  useAuth?: boolean;
-  customHeaders?: Record<string, string>;
-}
+import type { ApiResponse } from '../types/api'
 
 export const useApi = () => {
-    const config = useRuntimeConfig()
-    const baseUrl = config.public.apiBase
+  const config = useRuntimeConfig()
+  const baseURL = config.public.apiBaseUrl || 'http://localhost:3000/api'
 
-    const getHeaders = (options?: RequestOptions) => {
-        const headers: Record<string, string> = {
-            'Accept': 'application/json',
-            ...options?.customHeaders
-        }
-
-        if (options?.useAuth) {
-            const token = localStorage.getItem('access_token')
-            if (token) {
-                headers.Authorization = `Bearer ${token}`
-            }
-        }
-
-        return headers
+  const apiFetch = async <T>(
+    method: 'GET' | 'HEAD' | 'PATCH' | 'POST' | 'PUT' | 'DELETE' | 'CONNECT' | 'OPTIONS' | 'TRACE' | 'get' | 'head' | 'patch' | 'post' | 'put' | 'delete' | 'connect' | 'options' | 'trace',
+    endpoint: string,
+    options = {}
+  ) => {
+    const {
+      body = null,
+      params = {} as Record<string, any>,
+      useToken = true,
+      customHeaders = {} as Record<string, string>,
+      lazy = true, // Mặc định lazy là true
+    } = options as {
+      body?: any
+      params?: Record<string, any>
+      useToken?: boolean
+      customHeaders?: Record<string, string>
+      lazy?: boolean // Thêm tùy chọn lazy
     }
 
-    const get = async <T>(
-        endpoint: string, 
-        params?: Record<string, any>,
-        options?: RequestOptions
-    ): Promise<ApiResponse<T>> => {
-        const url = new URL(`${baseUrl}${endpoint}`)
-        if (params) {
-            Object.keys(params).forEach(key => url.searchParams.append(key, params[key]))
-        }
-        return await $fetch<ApiResponse<T>>(url.toString(), {
-            method: 'GET',
-            headers: getHeaders(options)
-        })
+    // Chỉ truy cập localStorage ở phía client
+    const token = import.meta.client ? localStorage.getItem('auth_token') : null
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      ...customHeaders,
     }
 
-    const post = async <T>(
-        endpoint: string, 
-        body: any, 
-        params?: Record<string, any>,
-        options?: RequestOptions
-    ): Promise<ApiResponse<T>> => {
-        const url = new URL(`${baseUrl}${endpoint}`)
-        if (params) {
-            Object.keys(params).forEach(key => url.searchParams.append(key, params[key]))
-        }
-        return await $fetch<ApiResponse<T>>(url.toString(), {
-            method: 'POST',
-            body,
-            headers: getHeaders(options)
-        })
+    if (useToken && token) {
+      headers['Authorization'] = `Bearer ${token}`
     }
 
-    const put = async <T>(
-        endpoint: string, 
-        body: any, 
-        params?: Record<string, any>,
-        options?: RequestOptions
-    ): Promise<ApiResponse<T>> => {
-        const url = new URL(`${baseUrl}${endpoint}`)
-        if (params) {
-            Object.keys(params).forEach(key => url.searchParams.append(key, params[key]))
-        }
-        return await $fetch<ApiResponse<T>>(url.toString(), {
-            method: 'PUT',
-            body,
-            headers: getHeaders(options)
-        })
-    }
+    const url = `${baseURL}${endpoint}`
+    const { data, status, error, refresh } = await useAsyncData(
+      `${method}-${endpoint}`,
+      () =>
+        $fetch<ApiResponse<T>>(url, {
+          method,
+          headers,
+          body: body ? JSON.stringify(body) : undefined,
+          query: params,
+        }),
+      { lazy } // Truyền tùy chọn lazy
+    )
 
-    const del = async <T>(
-        endpoint: string, 
-        params?: Record<string, any>,
-        options?: RequestOptions
-    ): Promise<ApiResponse<T>> => {
-        const url = new URL(`${baseUrl}${endpoint}`)
-        if (params) {
-            Object.keys(params).forEach(key => url.searchParams.append(key, params[key]))
-        }
-        return await $fetch<ApiResponse<T>>(url.toString(), {
-            method: 'DELETE',
-            headers: getHeaders(options)
-        })
-    }
+    return { data, status, error, refresh }
+  }
 
-    return {
-        get,
-        post,
-        put,
-        del,
-    }
+  return {
+    get: <T>(endpoint: string, options = {}) => apiFetch<T>('GET', endpoint, options),
+    post: <T>(endpoint: string, body: any, options = {}) => apiFetch<T>('POST', endpoint, { body, ...options }),
+    put: <T>(endpoint: string, body: any, options = {}) => apiFetch<T>('PUT', endpoint, { body, ...options }),
+    del: <T>(endpoint: string, options = {}) => apiFetch<T>('DELETE', endpoint, options),
+  }
 }

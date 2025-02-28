@@ -1,104 +1,16 @@
-<script setup lang="ts">
-definePageMeta({
-    layout: "customer",
-});
-
-import { ref, onMounted } from "vue";
-import type { Post } from "~/types/post";
-import type { PaginationMeta, PaginationLinks } from "~/types/api";
-import { useRuntimeConfig } from "#app";
-
-interface RelatedPosts {
-    posts: Post[];
-    meta: PaginationMeta | null;
-    links: PaginationLinks | null;
-}
-
-const route = useRoute();
-const isLoadingPost = ref(true);
-const isLoadingRelatedPosts = ref(true);
-const isLoadingFeaturedPosts = ref(true);
-const post = ref<Post | null>(null);
-const relatedPosts = ref<RelatedPosts | null>(null);
-const featuredPosts = ref<Post[]>([]);
-const config = useRuntimeConfig();
-const backendUrl = config.public.backendUrl;
-const defaultImage = config.defaultImage;
-
-const { fetchPostBySlug, fetchPostByCategoryId, fetchFeaturedPosts } =
-    usePosts();
-
-const loadPost = async () => {
-    try {
-        isLoadingPost.value = true;
-        const postResponse = await fetchPostBySlug(route.params.slug as string);
-        post.value = postResponse.data as Post;
-    } catch (error) {
-        console.error("Error loading post:", error);
-    } finally {
-        isLoadingPost.value = false;
-    }
-};
-
-const loadRelatedPosts = async (page: number = 1) => {
-    if (post.value?.category) {
-        try {
-            const response = await fetchPostByCategoryId(
-                post.value.category.id,
-                page,
-                4
-            );
-            relatedPosts.value = {
-                posts: response.data,
-                meta: response.meta || null,
-                links: response.links || null,
-            };
-        } catch (error) {
-            console.error("Error loading related posts:", error);
-        } finally {
-            isLoadingRelatedPosts.value = false;
-        }
-    }
-};
-
-const loadFeaturedPosts = async () => {
-    try {
-        isLoadingFeaturedPosts.value = true;
-        const featuredResponse = await fetchFeaturedPosts();
-        featuredPosts.value = featuredResponse.data;
-    } catch (error) {
-        console.error("Error loading featured posts:", error);
-    } finally {
-        isLoadingFeaturedPosts.value = false;
-    }
-};
-
-const handlePageChange = (page: number, perPage: number) => {
-    loadRelatedPosts(page);
-};
-
-const loadData = async () => {
-    await loadPost();
-    await loadFeaturedPosts();
-    await loadRelatedPosts();
-};
-
-onMounted(loadData);
-</script>
-
 <template>
-    <main class="min-h-screen bg-white items-center flex flex-col mt-16 pb-5 lg:mt-0">
-        <div v-if="isLoadingPost" class="w-11/12 max-w-7xl mt-5">
-            <div class="animate-pulse">
-                <div class="h-12 bg-gray-300 rounded w-3/4 mb-2 mt-8 ml-18"></div>
-                <div class="h-4 bg-gray-300 rounded w-1/2 mb-4 ml-18"></div>
-                <div class="h-64 bg-gray-300 rounded mb-4 mt-10"></div>
-                <div class="h-4 bg-gray-300 rounded w-full mb-2"></div>
-                <div class="h-4 bg-gray-300 rounded w-5/6 mb-2"></div>
-                <div class="h-4 bg-gray-300 rounded w-4/6 mb-2"></div>
-            </div>
+    <div class="min-h-screen items-center flex flex-col mt-16 pb-5 lg:mt-0">
+        <!-- Skeleton khi tải bài chính -->
+        <div v-if="postStatus === 'pending'" class="w-11/12 max-w-7xl mt-5">
+            <div class="skeleton h-12 bg-gray-300 rounded w-3/4 mb-2 mt-8"></div>
+            <div class="skeleton h-4 bg-gray-300 rounded w-1/2 mb-4"></div>
+            <div class="skeleton h-64 bg-gray-300 rounded mb-4 mt-10"></div>
+            <div class="skeleton h-4 bg-gray-300 rounded w-full mb-2"></div>
+            <div class="skeleton h-4 bg-gray-300 rounded w-5/6 mb-2"></div>
+            <div class="skeleton h-4 bg-gray-300 rounded w-4/6 mb-2"></div>
         </div>
 
+        <!-- Nội dung khi có bài viết -->
         <template v-else-if="post">
             <!-- Tiêu đề bài viết -->
             <div class="lg:w-full w-11/12 max-w-7xl mt-5 flex flex-col justify-center items-center">
@@ -122,29 +34,26 @@ onMounted(loadData);
                 <hr class="border-gray-300 w-full mt-4" />
             </div>
 
-            <!--nội dung bài viết-->
+            <!-- Nội dung bài viết -->
             <div class="w-11/12 max-w-7xl flex flex-col lg:flex-row justify-between items-start gap-x-5 mt-5">
                 <!-- Nội dung chính -->
-                <div class="lg:w-[73%] w-full max-w-7xl mt-5">
+                <div class="lg:w-3/4 w-full max-w-7xl mt-5">
                     <div v-html="post.content" class="text-left"></div>
                     <div v-html="`<em>${post.user?.full_name}</em>`" class="mt-3 font-bold text-green-800"></div>
                 </div>
 
-                <!-- Bài viết nổi bật-->
-                <div class="lg:w-[27%] w-full max-w-7xl mt-5">
+                <!-- Bài viết nổi bật -->
+                <div class="lg:w-1/4 w-full max-w-7xl mt-5">
                     <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-left text-xl font-bold text-green-800">
-                            Bài viết nổi bật
-                        </h2>
+                        <h2 class="text-left text-xl font-bold text-green-800">Bài viết nổi bật</h2>
                         <div class="flex-1 h-[3px] bg-green-300 mx-4"></div>
                     </div>
-
-                    <div v-if="isLoadingFeaturedPosts" class="space-y-4">
-                        <div v-for="n in 3" :key="n" class="flex animate-pulse space-x-4">
-                            <div class="w-1/2 h-24 bg-gray-300 rounded"></div>
+                    <div v-if="featuredPostsStatus === 'pending'" class="space-y-4">
+                        <div v-for="n in 3" :key="n" class="flex space-x-4">
+                            <div class="skeleton w-1/2 h-24 bg-gray-300 rounded"></div>
                             <div class="w-1/2 space-y-2">
-                                <div class="h-4 bg-gray-300 rounded w-3/4"></div>
-                                <div class="h-4 bg-gray-300 rounded w-1/2"></div>
+                                <div class="skeleton h-4 bg-gray-300 rounded w-3/4"></div>
+                                <div class="skeleton h-4 bg-gray-300 rounded w-1/2"></div>
                             </div>
                         </div>
                     </div>
@@ -154,10 +63,10 @@ onMounted(loadData);
                             class="bg-[#FFFFFF] overflow-hidden duration-200 flex items-start mt-3">
                             <div class="w-1/2 h-full border border-green-100 rounded overflow-hidden">
                                 <img :src="`${backendUrl}${featuredPost.featured_image}`" :alt="featuredPost.title"
-                                    class="min-h-24 w-full rounded  aspect-video object-cover transition-transform duration-200 hover:scale-105" loading="lazy"
-                                    @error="event => { const target = event.target as HTMLImageElement; if (target) target.src = defaultImage; }" />
+                                    class="min-h-24 w-full rounded aspect-video object-cover transition-transform duration-200 hover:scale-105"
+                                    loading="lazy"
+                                    @error="event => { const target = event.target as HTMLImageElement; if (target) target.src = defaultImage as string; }" />
                             </div>
-
                             <div class="w-1/2 px-2 py-0">
                                 <h3 class="text-left font-semibold text-green-800 hover:text-green-600 duration-200">
                                     {{ featuredPost.title }}
@@ -169,20 +78,95 @@ onMounted(loadData);
             </div>
 
             <!-- Bài viết liên quan -->
-            <div class="w-11/12 max-w-7xl">
-                <div v-if="isLoadingRelatedPosts" class="mt-5">
-                    <PostLoadingCard />
+            <div class="w-11/12 max-w-7xl flex gap-5">
+                <div class="w-3/4">
+                    <div v-if="isLoadingRelatedPost" class="mt-5">
+                        <PostSkeletonCard />
+                    </div>
+                    <PostList v-else title="Bài viết liên quan" :posts="relatedPosts.posts" :meta="relatedPosts.meta"
+                        :links="relatedPosts.links" @page-change="handlePageChange" />
                 </div>
-                <div v-else>
-                    <PostList v-if="relatedPosts && relatedPosts.posts.length > 0" title="Bài viết liên quan"
-                        :posts="relatedPosts.posts" :meta="relatedPosts.meta" :links="relatedPosts.links" :maxCols="4"
-                        @page-change="handlePageChange" />
+                <div class="w-1/4 mt-5">
+                    <PostCategoryList />
                 </div>
             </div>
         </template>
 
+        <!-- Không tìm thấy bài viết -->
         <div v-else class="flex justify-center items-center min-h-[400px]">
             <p class="text-gray-600">Không tìm thấy bài viết</p>
         </div>
-    </main>
+    </div>
 </template>
+
+<script setup lang="ts">
+import { computed, ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
+import type { Post } from '~/types/post'
+import type { PaginationMeta, PaginationLinks } from '~/types/api'
+import { useRuntimeConfig } from '#app'
+import { usePosts } from '~/composables/usePosts'
+
+// Runtime config
+const { public: { backendUrl, defaultImage } } = useRuntimeConfig()
+const route = useRoute()
+const slug = String(route.params.slug)
+const perPage = 6 // Số bài viết mỗi trang
+const currentPage = ref(1) // Trang hiện tại
+
+// Khởi tạo usePosts
+const { getPostBySlug, getFeaturedPosts, getPostsByCategoryId } = usePosts()
+
+// Lấy bài đăng chính
+const { data: postData, status: postStatus, error: postError } = await getPostBySlug(slug)
+const post = computed<Post | null>(() =>Array.isArray(postData.value?.data) ? postData.value.data[0] : postData.value?.data || null)
+
+// Lấy bài viết nổi bật
+const { data: featuredPostsData, status: featuredPostsStatus, error: featuredPostsError } = await getFeaturedPosts()
+const featuredPosts = computed<Post[]>(() =>Array.isArray(featuredPostsData.value?.data) ? featuredPostsData.value.data : featuredPostsData.value?.data ? [featuredPostsData.value.data] : [])
+
+// Lấy bài viết liên quan (dựa trên category của bài chính)
+const relatedPostsData = ref<any>(null) // Lưu trữ dữ liệu liên quan
+const fetchRelatedPosts = async (categoryId: number, page: number) => {
+    const { data, status, error } = await getPostsByCategoryId(categoryId, page, perPage)
+    relatedPostsData.value = data.value
+    if (error.value) {
+        console.error('Failed to load related posts:', error.value)
+    }
+}
+
+// Tải bài viết liên quan khi post sẵn sàng
+watch(
+    () => post.value?.category?.id,
+    async (categoryId) => {
+        if (categoryId) {
+            await fetchRelatedPosts(categoryId, currentPage.value)
+        }
+    },
+    { immediate: true }
+)
+
+// Computed properties cho bài viết liên quan
+const relatedPosts = computed<{ posts: Post[]; meta: PaginationMeta | null; links: PaginationLinks | null }>(() => ({
+    posts: Array.isArray(relatedPostsData.value?.data) ? relatedPostsData.value.data : relatedPostsData.value?.data ? [relatedPostsData.value.data] : [],
+    meta: relatedPostsData.value?.meta ?? null,
+    links: relatedPostsData.value?.links ?? null
+}))
+const isLoadingRelatedPost = computed(() => !relatedPostsData.value || relatedPostsData.value === null)
+
+// Xử lý sự kiện thay đổi trang
+const handlePageChange = async (page: number) => {
+    currentPage.value = page
+    if (post.value?.category?.id) {
+        await fetchRelatedPosts(post.value.category.id, page)
+    }
+}
+
+// Log lỗi ban đầu
+if (postError.value) {
+    console.error('Failed to load post:', postError.value)
+}
+if (featuredPostsError.value) {
+    console.error('Failed to load featured posts:', featuredPostsError.value)
+}
+</script>

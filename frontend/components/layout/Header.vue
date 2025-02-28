@@ -37,8 +37,7 @@
                             class="hidden lg:block bg-white font-semibold text-green-600 px-4 py-2 rounded-full hover:bg-green-100 transition-colors duration-200">
                             Đăng nhập
                         </button>
-
-                        <button @click="toggleMobileMenu" class="lg:hidden z-50 p-2 rounded-lg bg-green-500 text-white">
+                        <button @click="toggleMobileMenu" :class="['lg:hidden z-50 p-2 rounded-lg text-white transition-colors duration-200', isMobileMenuOpen ? 'bg-green-500' : 'hover:bg-green-500']">
                             <Menu class="w-6 h-6" />
                         </button>
                     </div>
@@ -58,7 +57,7 @@
         </nav>
 
         <!-- Mobile Navigation Menu -->
-        <nav :class="['fixed inset-0 top-16 p-4 bg-white z-40 lg:hidden transform transition-transform duration-300',
+        <nav :class="['fixed inset-0 top-14 p-4 bg-white z-40 lg:hidden transform transition-transform duration-100',
             isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full']">
             <div class="text-left flex flex-col items-start justify-start h-full space-y-3">
                 <NuxtLink v-for="link in mobileNavLinks" :key="link.path" :to="link.path"

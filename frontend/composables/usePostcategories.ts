@@ -1,35 +1,45 @@
 import { useApi } from './useApi'
-import type { PostCategory } from '~/types/postcategory'
-import type { ApiResponse } from '~/types/api'
+import type { PostCategory } from '~/types/post'
 
-export const usePostcategories = () => {
-    const { get, post, put, del } = useApi()
+export const usePostCategories = () => {
+  const { get, post, put, del} = useApi() // Đổi 'del' thành 'deleteRequest' để tránh từ khóa 'delete'
 
-    const fetchAllPostCategories = async (page: number = 1, per_page: number = 10): Promise<ApiResponse<PostCategory[]>> => {
-        return await get<PostCategory[]>('/post-categories', { page, per_page });
-    }
+  // Lấy tất cả danh mục bài viết
+  const getAllPostCategories = async () => {
+    return await get<PostCategory>('/post-categories')
+  }
 
-    const fetchPostCategoryById = async (id: string) => {
-        return await get(`/post-categories/${id}`)
-    }
+  // Lấy danh mục bài viết theo ID
+  const getPostCategoryById = async (categoryId: string) => {
+    return await get<PostCategory>(`/post-categories/${categoryId}`)
+  }
 
-    const createPostCategory = async (postData: PostCategory)=> {
-        return await post('/post-categories', postData)
-    }
+  // Tạo danh mục bài viết mới
+  const createPostCategory = async (categoryData: PostCategory) => {
+    return await post('/post-categories', categoryData, {
+      useToken: true, // Mặc định yêu cầu token cho hành động tạo
+    })
+  }
 
-    const updatePostCategory = async (id: string, postData: PostCategory)=> {
-        return await put(`/post-categories/${id}`, postData)
-    }
+  // Cập nhật danh mục bài viết
+  const updatePostCategory = async (categoryId: string, categoryData: PostCategory) => {
+    return await put(`/post-categories/${categoryId}`, categoryData, {
+      useToken: true, // Mặc định yêu cầu token cho hành động cập nhật
+    })
+  }
 
-    const deletePostCategory = async (id: string)=> {
-        return await del(`/post-categories/${id}`)
-    }
+  // Xóa danh mục bài viết
+  const deletePostCategory = async (categoryId: string) => {
+    return await del(`/post-categories/${categoryId}`, {
+      useToken: true, // Mặc định yêu cầu token cho hành động xóa
+    })
+  }
 
-    return {
-        fetchAllPostCategories,
-        fetchPostCategoryById,
-        createPostCategory,
-        updatePostCategory,
-        deletePostCategory,
-    }
+  return {
+    getAllPostCategories,
+    getPostCategoryById,
+    createPostCategory,
+    updatePostCategory,
+    deletePostCategory,
+  }
 }
