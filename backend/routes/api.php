@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\FarmController;
+use App\Http\Controllers\Api\ProductUnitController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\UserAuthController;
 use App\Http\Controllers\Api\PostController;
@@ -13,6 +14,22 @@ use App\Http\Controllers\Api\CustomerController;
 use App\Http\Controllers\Api\CustomerAddressController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\PermissionController;
+
+// Quản lý khách hàng (Chỉ Admin hoặc User có quyền)
+Route::prefix('product-unit')->group(function () {
+    Route::get('/', [ProductUnitController::class, 'index'])->name('product-unit.index');
+    Route::middleware(['auth:api_users', 'permission'])->group(function (){
+        Route::post('/', [ProductUnitController::class, 'store'])->name('product-unit.store');
+        Route::get('/trashed', [ProductUnitController::class, 'trashed'])->name('product-unit.trashed'); // GET /api/uscustomersers/trashed
+    });   
+    Route::get('/{id}', [ProductUnitController::class, 'show'])->name('product-unit.show'); 
+    Route::middleware(['auth:api_users', 'permission'])->group(function (){
+        Route::put('/{id}', [ProductUnitController::class, 'update'])->name('product-unit.update');
+        Route::delete('/{id}', [ProductUnitController::class, 'destroy'])->name('product-unit.destroy');
+        Route::patch('/restore/{id}', [ProductUnitController::class, 'restore'])->name('product-unit.restore'); // PATCH /api/customers/restore/{id}
+        Route::delete('/force-delete/{id}', [ProductUnitController::class, 'forceDelete'])->name('product-unit.forceDelete'); // DELETE /api/customers/force-delete/{id}
+    });  
+});
 
 // Quản lý nông trại (Chỉ người dùng có quyền)
 Route::middleware(['auth:api_users', 'permission'])->prefix('farms')->group(function () {
@@ -46,7 +63,7 @@ Route::middleware(['auth:api_users', 'permission'])->prefix('customers')->group(
     Route::get('/', [CustomerController::class, 'index'])->name('customers.index');
     Route::post('/', [CustomerController::class, 'store'])->name('customers.store');
     Route::get('/search', [CustomerController::class, 'search'])->name('customers.search');
-    Route::get('/trashed', [CustomerController::class, 'trashed'])->name('customers.trashed'); // GET /api/uscustomersers/trashed
+    Route::get('/trashed', [CustomerController::class, 'trashed'])->name('customers.trashed'); // GET /api/customers/trashed
     Route::get('/{id}', [CustomerController::class, 'show'])->name('customers.show');
     Route::put('/{id}', [CustomerController::class, 'update'])->name('customers.update');
     Route::delete('/{id}', [CustomerController::class, 'destroy'])->name('customers.destroy');
