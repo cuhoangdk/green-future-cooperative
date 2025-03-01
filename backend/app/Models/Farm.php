@@ -24,5 +24,8 @@ class Farm extends Model
     {
         return $this->morphOne(Address::class, 'addressable');
     }
-
+    public function products()
+    {
+        return $this->hasMany(Product::class, 'farm_id');
+    }
 }

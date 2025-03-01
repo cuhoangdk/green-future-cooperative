@@ -60,7 +60,7 @@ class Post extends Model
 
         static::updating(function ($post) {
             // Kiểm tra xem tiêu đề có thay đổi và slug chưa có, nếu đúng thì tạo lại slug
-            if ($post->isDirty('title') && empty($post->slug)) {
+            if ($post->isDirty('title')) {
                 $post->slug = static::generateUniqueSlug($post->title, static::class);
             }
         });

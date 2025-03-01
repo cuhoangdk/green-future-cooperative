@@ -51,7 +51,7 @@ class PostCategory extends Model
         });
 
         static::updating(function ($postCategory) {
-            if ($postCategory->isDirty('name') && empty($post->slug)) {
+            if ($postCategory->isDirty('name')) {
                 $postCategory->slug = static::generateUniqueSlug($postCategory->name, static::class);
             }
         });

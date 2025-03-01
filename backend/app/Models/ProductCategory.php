@@ -5,10 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Traits\GeneratesSlug;
 
 class ProductCategory extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, GeneratesSlug;
 
     protected $fillable = [
         'name',
@@ -28,7 +29,7 @@ class ProductCategory extends Model
 
         static::updating(function ($productCategory) {
             // Kiểm tra xem tiêu đề có thay đổi và slug chưa có, nếu đúng thì tạo lại slug
-            if ($productCategory->isDirty('name') && empty($productCategory->slug)) {
+            if ($productCategory->isDirty('name')) {
                 $productCategory->slug = static::generateUniqueSlug($productCategory->name, static::class);
             }
         });

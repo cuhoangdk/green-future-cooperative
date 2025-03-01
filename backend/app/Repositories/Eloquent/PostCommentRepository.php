@@ -43,6 +43,7 @@ class PostCommentRepository implements PostCommentRepositoryInterface
 
     public function update($id, array $data)
     {
+        unset($data['user_id']);
         $comment = $this->model->find($id);
         if ($comment) {
             $comment->update($data);

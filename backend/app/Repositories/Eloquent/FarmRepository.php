@@ -38,25 +38,25 @@ class FarmRepository implements FarmRepositoryInterface
     }
 
     public function update($id, array $data)
-{
-    $farm = $this->model->find($id);
+    {
+        $farm = $this->model->find($id);
+        unset($data['user_id']);
+        if ($farm) {
+            $addressData = $data['address'] ?? null;
+            unset($data['address']); 
+            $farm->update($data);
+            if ($addressData) {
+                $farm->address()->updateOrCreate(
+                    ['addressable_id' => $farm->id, 'addressable_type' => get_class($farm)],
+                    $addressData
+                );
+            }
 
-    if ($farm) {
-        $addressData = $data['address'] ?? null;
-        unset($data['address']); 
-        $farm->update($data);
-        if ($addressData) {
-            $farm->address()->updateOrCreate(
-                ['addressable_id' => $farm->id, 'addressable_type' => get_class($farm)],
-                $addressData
-            );
+            return $farm;
         }
 
-        return $farm;
+        return null;
     }
-
-    return null;
-}
 
     public function delete($id)
     {
