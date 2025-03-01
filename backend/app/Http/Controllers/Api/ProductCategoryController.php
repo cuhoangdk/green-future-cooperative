@@ -7,13 +7,13 @@ use App\Http\Requests\ProductCategory\IndexProductCategoryRequest;
 use App\Http\Requests\ProductCategory\StoreProductCategoryRequest;
 use App\Http\Requests\ProductCategory\UpdateProductCategoryRequest;
 use App\Http\Resources\ProductCategoryResource;
-use App\Repositories\Contracts\PostCategoryRepositoryInterface;
+use App\Repositories\Contracts\ProductCatogoryRepositoryInterface;
 
 class ProductCategoryController extends Controller
 {
     protected $productCategoryRepository;
 
-    public function __construct(PostCategoryRepositoryInterface $productCategoryRepository)
+    public function __construct(ProductCatogoryRepositoryInterface $productCategoryRepository)
     {
         $this->productCategoryRepository = $productCategoryRepository;
     }
