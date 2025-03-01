@@ -3,23 +3,21 @@
 namespace App\Repositories\Eloquent;
 
 use App\Models\PostCategory;
-use App\Repositories\Contracts\PostCategoryRepositoryInterface;
-use Illuminate\Contracts\Pagination\Paginator;
+use App\Models\ProductCategory;
+use App\Repositories\Contracts\ProductCatogoryRepositoryInterface;
 
-class PostCategoryRepository implements PostCategoryRepositoryInterface
+class ProductCategoryRepository implements ProductCatogoryRepositoryInterface
 {
     protected $model;
 
-    public function __construct(PostCategory $model)
+    public function __construct(ProductCategory $model)
     {
         $this->model = $model;
     }
 
     public function getAll(string $sortBy = 'created_at', string $sortDirection = 'desc', int $perPage = null)
     {
-        $query = $this->model->when(!auth('api_users')->check(), function ($query) {
-            $query->where('is_active', true);
-        })->orderBy($this->validateSortColumn($sortBy), $this->validateSortDirection($sortDirection));
+        $query = $this->model->orderBy($this->validateSortColumn($sortBy), $this->validateSortDirection($sortDirection));
 
         // Nếu $perPage không được cung cấp, trả về danh sách không phân trang
         return $perPage ? $query->paginate($perPage) : $query->get();
@@ -28,9 +26,7 @@ class PostCategoryRepository implements PostCategoryRepositoryInterface
 
     public function getById($id)
 {
-    return $this->model->when(!auth('api_users')->check(), function ($query) {
-        $query->where('is_active', true);
-    })->find($id); 
+    return $this->model->find($id); 
 }
 
     public function create(array $data)
@@ -40,28 +36,26 @@ class PostCategoryRepository implements PostCategoryRepositoryInterface
 
     public function update($id, array $data)
     {
-        $category = $this->model->find($id);
-        if ($category) {
-            $category->update($data);
-            return $category;
+        $productCategory = $this->model->find($id);
+        if ($productCategory) {
+            $productCategory->update($data);
+            return $productCategory;
         }
         return null;
     }
 
     public function delete($id): bool
     {
-        $category = $this->model->find($id);
-        if ($category) {
-            $category->delete();
+        $productCategory = $this->model->find($id);
+        if ($productCategory) {
+            $productCategory->delete();
             return true;
         }
         return false;
     }
     public function getBySlug($slug)
     {
-        return $this->model->when(!auth('api_users')->check(), function ($query) {
-            $query->where('is_active', true);
-        })->where('slug', $slug)->first();
+        return $this->model->where('slug', $slug)->first();
     }
     public function getTrashed(
         string $sortBy = 'deleted_at',
@@ -97,30 +91,7 @@ class PostCategoryRepository implements PostCategoryRepositoryInterface
         }
         return false;
     }
-    public function getFilteredCategories(
-        string $sortBy = 'created_at',
-        string $sortDirection = 'desc',
-        int $perPage = 10,
-        array $filters = []
-    ) {
-        $query = PostCategory::query();
-        $query->when(!auth('api_users')->check(), function ($query) {
-            $query->where('is_active', true);
-        });
-        // Tìm kiếm theo tên
-        if (!empty($filters['search'])) {
-            $query->where('name', 'like', "%{$filters['search']}%");
-        }
-    
-        // Sắp xếp
-        $query->orderBy(
-            $this->validateSortColumn($sortBy), 
-            $this->validateSortDirection($sortDirection)
-        );
-    
-        return $query->paginate($perPage);
-    }
-    
+        
     private function validateSortColumn(string $column): string
     {
         $allowedColumns = ['name', 'created_at', 'updated_at'];

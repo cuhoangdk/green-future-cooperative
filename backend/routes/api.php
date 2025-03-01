@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\FarmController;
+use App\Http\Controllers\Api\ProductCategoryController;
 use App\Http\Controllers\Api\ProductUnitController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\UserAuthController;
@@ -15,33 +16,56 @@ use App\Http\Controllers\Api\CustomerAddressController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\PermissionController;
 
-// Quản lý khách hàng (Chỉ Admin hoặc User có quyền)
-Route::prefix('product-unit')->group(function () {
-    Route::get('/', [ProductUnitController::class, 'index'])->name('product-unit.index');
+// Quản lý đợn vị sản phẩm (Chỉ người dùng có quyền)
+Route::prefix('product-categories')->group(function () {
+    Route::get('/', [ProductCategoryController::class, 'index'])->name('product-categories.index');
     Route::middleware(['auth:api_users', 'permission'])->group(function (){
-        Route::post('/', [ProductUnitController::class, 'store'])->name('product-unit.store');
-        Route::get('/trashed', [ProductUnitController::class, 'trashed'])->name('product-unit.trashed'); // GET /api/uscustomersers/trashed
+        Route::post('/', [ProductCategoryController::class, 'store'])->name('product-categories.store');
+        Route::get('/trashed', [ProductCategoryController::class, 'trashed'])->name('product-categories.trashed'); // GET /api/product-categories/trashed
     });   
-    Route::get('/{id}', [ProductUnitController::class, 'show'])->name('product-unit.show'); 
+    Route::get('/{id}', [ProductCategoryController::class, 'show'])->name('product-categories.show'); 
+    Route::get('/slug/{slug}', [ProductCategoryController::class, 'getBySlug'])->name('product-categories.get-by-slug'); // GET /api/product-categories/slug/{slug}
     Route::middleware(['auth:api_users', 'permission'])->group(function (){
-        Route::put('/{id}', [ProductUnitController::class, 'update'])->name('product-unit.update');
-        Route::delete('/{id}', [ProductUnitController::class, 'destroy'])->name('product-unit.destroy');
-        Route::patch('/restore/{id}', [ProductUnitController::class, 'restore'])->name('product-unit.restore'); // PATCH /api/customers/restore/{id}
-        Route::delete('/force-delete/{id}', [ProductUnitController::class, 'forceDelete'])->name('product-unit.forceDelete'); // DELETE /api/customers/force-delete/{id}
+        Route::put('/{id}', [ProductCategoryController::class, 'update'])->name('product-categories.update');
+        Route::delete('/{id}', [ProductCategoryController::class, 'destroy'])->name('product-categories.destroy');
+        Route::patch('/restore/{id}', [ProductCategoryController::class, 'restore'])->name('product-categories.restore'); // PATCH /api/product-categories/restore/{id}
+        Route::delete('/force-delete/{id}', [ProductCategoryController::class, 'forceDelete'])->name('product-categories.forceDelete'); // DELETE /api/product-categories/force-delete/{id}
+    });  
+});
+
+
+
+// Quản lý đợn vị sản phẩm (Chỉ người dùng có quyền)
+Route::prefix('product-units')->group(function () {
+    Route::get('/', [ProductUnitController::class, 'index'])->name('product-units.index');
+    Route::middleware(['auth:api_users', 'permission'])->group(function (){
+        Route::post('/', [ProductUnitController::class, 'store'])->name('product-units.store');
+        Route::get('/trashed', [ProductUnitController::class, 'trashed'])->name('product-units.trashed'); // GET /api/product-units/trashed
+    });   
+    Route::get('/{id}', [ProductUnitController::class, 'show'])->name('product-units.show'); 
+    Route::middleware(['auth:api_users', 'permission'])->group(function (){
+        Route::put('/{id}', [ProductUnitController::class, 'update'])->name('product-units.update');
+        Route::delete('/{id}', [ProductUnitController::class, 'destroy'])->name('product-units.destroy');
+        Route::patch('/restore/{id}', [ProductUnitController::class, 'restore'])->name('product-units.restore'); // PATCH /api/product-units/restore/{id}
+        Route::delete('/force-delete/{id}', [ProductUnitController::class, 'forceDelete'])->name('product-units.forceDelete'); // DELETE /api/product-units/force-delete/{id}
     });  
 });
 
 // Quản lý nông trại (Chỉ người dùng có quyền)
-Route::middleware(['auth:api_users', 'permission'])->prefix('farms')->group(function () {
+Route::prefix('farms')->group(function () {
     Route::get('/', [FarmController::class, 'index'])->name('farms.index');
-    Route::post('/', [FarmController::class, 'store'])->name('farms.store');
-    Route::get('/search', [FarmController::class, 'search'])->name('farms.search');
-    Route::get('/trashed', [FarmController::class, 'trashed'])->name('farms.trashed'); // GET /api/farms/trashed
+    Route::middleware(['auth:api_users', 'permission'])->group(function () {
+        Route::post('/', [FarmController::class, 'store'])->name('farms.store');
+        Route::get('/search', [FarmController::class, 'search'])->name('farms.search');
+        Route::get('/trashed', [FarmController::class, 'trashed'])->name('farms.trashed');// GET /api/farms/trashed
+    }); 
     Route::get('/{id}', [FarmController::class, 'show'])->name('farms.show');
-    Route::put('/{id}', [FarmController::class, 'update'])->name('farms.update');
-    Route::delete('/{id}', [FarmController::class, 'destroy'])->name('farms.destroy');    
-    Route::patch('/restore/{id}', [FarmController::class, 'restore'])->name('farms.restore'); // PATCH /api/farms/restore/{id}
-    Route::delete('/force-delete/{id}', [FarmController::class, 'forceDelete'])->name('farms.forceDelete'); // DELETE /api/farms/force-delete/{id}
+    Route::middleware(['auth:api_users', 'permission'])->group(function () {
+        Route::put('/{id}', [FarmController::class, 'update'])->name('farms.update');
+        Route::delete('/{id}', [FarmController::class, 'destroy'])->name('farms.destroy');    
+        Route::patch('/restore/{id}', [FarmController::class, 'restore'])->name('farms.restore'); // PATCH /api/farms/restore/{id}
+        Route::delete('/force-delete/{id}', [FarmController::class, 'forceDelete'])->name('farms.forceDelete'); // DELETE /api/farms/force-delete/{id}
+    }); 
 });
 
 

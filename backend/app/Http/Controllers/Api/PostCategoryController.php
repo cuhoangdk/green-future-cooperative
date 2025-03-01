@@ -73,7 +73,7 @@ class PostCategoryController extends Controller
         $category = $this->categoryRepository->getById($id);
 
         if (!$category) {
-            return response()->json(['message' => 'Category not found'], 404);
+            return response()->json(['message' => 'Post category not found'], 404);
         }
 
         return new PostCategoryResource($category);
@@ -103,7 +103,7 @@ class PostCategoryController extends Controller
 
         $category = $this->categoryRepository->update($id, $validated);
         if (!$category) {
-            return response()->json(['message' => 'Category not found'], 404);
+            return response()->json(['message' => 'Post category not found'], 404);
         }
 
         return new PostCategoryResource($category);
@@ -118,9 +118,9 @@ class PostCategoryController extends Controller
     {
         $deleted = $this->categoryRepository->delete($id);
         if (!$deleted) {
-            return response()->json(['message' => 'Category not found'], 404);
+            return response()->json(['message' => 'Post category not found'], 404);
         }
-        return response()->json(['message' => 'Category deleted successfully']);
+        return response()->json(['message' => 'Post category deleted successfully']);
     }
     /**
      * Lấy danh sách các loại bài viết đã xóa mềm.
@@ -154,15 +154,15 @@ class PostCategoryController extends Controller
         $category = $this->categoryRepository->getTrashedById($id);
 
         if (!$category) {
-            return response()->json(['message' => 'Category not found or not trashed'], 404);
+            return response()->json(['message' => 'Post category not found or not trashed'], 404);
         }
 
         $restored = $this->categoryRepository->restore($id);
         if (!$restored) {
-            return response()->json(['message' => 'Failed to restore category'], 500);
+            return response()->json(['message' => 'Failed to restore post category'], 500);
         }
 
-        return response()->json(['message' => 'Category restored successfully']);
+        return response()->json(['message' => 'Post category restored successfully']);
     }
     /**
      * Xóa vĩnh viễn loại bài viết.
@@ -175,14 +175,28 @@ class PostCategoryController extends Controller
         $category = $this->categoryRepository->getTrashedById($id);
 
         if (!$category) {
-            return response()->json(['message' => 'Category not found or not trashed'], 404);
+            return response()->json(['message' => 'Post category not found or not trashed'], 404);
         }
 
         $deleted = $this->categoryRepository->forceDelete($id);
         if (!$deleted) {
-            return response()->json(['message' => 'Failed to permanently delete category'], 500);
+            return response()->json(['message' => 'Failed to permanently delete post category'], 500);
         }
 
-        return response()->json(['message' => 'Category permanently deleted successfully']);
+        return response()->json(['message' => 'Post category permanently deleted successfully']);
+    }
+    /**
+     * Lấy loại bài viết bằng slug
+     * @param mixed $slug
+     * @return mixed|PostCategoryResource|\Illuminate\Http\JsonResponse
+     */
+    public function getBySlug($slug)
+    {
+        $category = $this->categoryRepository->getBySlug($slug);
+
+        if (!$category) {
+            return response()->json(['message' => 'Post category not found'], 404);
+        }
+        return new PostCategoryResource($category);
     }
 }

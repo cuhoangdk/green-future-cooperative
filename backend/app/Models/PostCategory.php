@@ -44,15 +44,15 @@ class PostCategory extends Model
     {
         parent::boot();
 
-        static::creating(function ($post) {
-            if (empty($post->slug)) {
-                $post->slug = static::generateUniqueSlug($post->name, static::class);
+        static::creating(function ($postCategory) {
+            if (empty($postCategory->slug)) {
+                $postCategory->slug = static::generateUniqueSlug($postCategory->name, static::class);
             }
         });
 
-        static::updating(function ($post) {
-            if ($post->isDirty('name') && empty($post->slug)) {
-                $post->slug = static::generateUniqueSlug($post->name, static::class);
+        static::updating(function ($postCategory) {
+            if ($postCategory->isDirty('name') && empty($post->slug)) {
+                $postCategory->slug = static::generateUniqueSlug($postCategory->name, static::class);
             }
         });
     }

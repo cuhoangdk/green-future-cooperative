@@ -23,35 +23,35 @@ class ProductUnitController extends Controller
         $sortBy = $request->input('sort_by', 'created_at');
         $sortDirection = $request->input('sort_direction', 'desc');
         
-        $farms = $this->productUnitRepository->getAll($sortBy, $sortDirection, $perPage)
+        $productUnit = $this->productUnitRepository->getAll($sortBy, $sortDirection, $perPage)
         ->appends(request()->query());
-        return ProductUnitResource::collection($farms);
+        return ProductUnitResource::collection($productUnit);
     }
 
     public function store(StoreProductUnitRequest $request)
     {
         $data = $request->validated();
         $data['user_id'] = auth('api_users')->id(); // Gán user_id từ người dùng hiện tại
-        $farm = $this->productUnitRepository->create($data);
-        return new ProductUnitResource($farm);
+        $productUnit = $this->productUnitRepository->create($data);
+        return new ProductUnitResource($productUnit);
     }
 
     public function show($id)
     {
-        $farm = $this->productUnitRepository->getById($id);
-        if (!$farm) {
+        $productUnit = $this->productUnitRepository->getById($id);
+        if (!$productUnit) {
             return response()->json(['message' => 'Product unit not found'], 404);
         }
-        return new ProductUnitResource($farm);
+        return new ProductUnitResource($productUnit);
     }
 
     public function update(UpdateProductUnitRequest $request, $id)
     {
-        $farm = $this->productUnitRepository->update($id, $request->validated());
-        if (!$farm) {
+        $productUnit = $this->productUnitRepository->update($id, $request->validated());
+        if (!$productUnit) {
             return response()->json(['message' => 'Product unit not found'], 404);
         }
-        return new ProductUnitResource($farm);
+        return new ProductUnitResource($productUnit);
     }
 
     public function destroy($id)
