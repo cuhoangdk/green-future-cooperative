@@ -7,6 +7,7 @@ use App\Repositories\Contracts\CustomerRepositoryInterface;
 use App\Repositories\Contracts\FarmRepositoryInterface;
 use App\Repositories\Contracts\PostCommentRepositoryInterface;
 use App\Repositories\Contracts\ProductCatogoryRepositoryInterface;
+use App\Repositories\Contracts\ProductRepositoryInterface;
 use App\Repositories\Contracts\ProductUnitRepositoryInterface;
 use App\Repositories\Contracts\RoleRepositoryInterface;
 use App\Repositories\Contracts\UserRepositoryInterface;
@@ -15,6 +16,7 @@ use App\Repositories\Eloquent\CustomerRepository;
 use App\Repositories\Eloquent\FarmRepository;
 use App\Repositories\Eloquent\PostCommentRepository;
 use App\Repositories\Eloquent\ProductCategoryRepository;
+use App\Repositories\Eloquent\ProductRepository;
 use App\Repositories\Eloquent\ProductUnitRepository;
 use App\Repositories\Eloquent\RoleRepository;
 use App\Repositories\Eloquent\UserRepository;
@@ -42,6 +44,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(FarmRepositoryInterface::class, FarmRepository::class);
         $this->app->bind(ProductUnitRepositoryInterface::class, ProductUnitRepository::class);
         $this->app->bind(ProductCatogoryRepositoryInterface::class, ProductCategoryRepository::class);
+        $this->app->bind(ProductRepositoryInterface::class, ProductRepository::class);
     }
 
     /**

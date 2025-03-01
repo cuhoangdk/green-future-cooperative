@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\FarmController;
 use App\Http\Controllers\Api\ProductCategoryController;
 use App\Http\Controllers\Api\ProductUnitController;
+use App\Http\Controllers\Api\ProductController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\UserAuthController;
 use App\Http\Controllers\Api\PostController;
@@ -15,6 +16,29 @@ use App\Http\Controllers\Api\CustomerController;
 use App\Http\Controllers\Api\CustomerAddressController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\PermissionController;
+Route::prefix('products')->group(function () {
+    Route::get('/', [ProductController::class, 'index'])->name('products.index');
+    Route::get('/search', [ProductController::class, 'searchByName'])->name('products.search');
+    Route::get('/search-with-filters', [ProductController::class, 'filter'])->name('products.search-with-filter');
+    Route::middleware(['auth:api_users', 'permission'])->group(function () {
+        Route::post('/', [ProductController::class, 'store'])->name('products.store');
+        Route::get('/trashed', [ProductController::class, 'trashed'])->name('products.trashed');
+    });    
+    Route::get('/code/{productCode}', [ProductController::class, 'getByProductCode'])->name('products.get-by-product-code');
+    Route::get('/{id}/qrcode', [ProductController::class, 'getQrCode'])->name('products.qrcode');
+    
+    Route::middleware(['auth:api_users', 'permission'])->group(function () {
+        Route::post('/', [ProductController::class, 'store'])->name('products.store');
+        Route::get('/trashed', [ProductController::class, 'trashed'])->name('products.trashed');
+        Route::put('/{id}', [ProductController::class, 'update'])->name('products.update');
+        Route::delete('/{id}', [ProductController::class, 'destroy'])->name('products.destroy');
+        Route::patch('/restore/{id}', [ProductController::class, 'restore'])->name('products.restore');
+        Route::delete('/force-delete/{id}', [ProductController::class, 'forceDelete'])->name('products.forceDelete');
+    });
+    
+    Route::get('/{id}', [ProductController::class, 'show'])->name('products.show');
+    Route::get('/slug/{slug}', [ProductController::class, 'getBySlug'])->name('products.get-by-slug');
+});
 
 // Quản lý đợn vị sản phẩm (Chỉ người dùng có quyền)
 Route::prefix('product-categories')->group(function () {

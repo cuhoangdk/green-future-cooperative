@@ -20,7 +20,7 @@ class ProductCategoryFactory extends Factory
         $name = $this->faker->word;
         return [
             'name' => $name,
-            'slug' => GeneratesSlug::generateUniqueSlug($name, PostCategoryFactory::class),
+            'slug' => GeneratesSlug::generateUniqueSlug($name, ProductCategoryFactory::class),
             'description' => $this->faker->paragraph,
         ];
     }
