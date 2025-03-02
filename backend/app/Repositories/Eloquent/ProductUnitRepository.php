@@ -14,7 +14,7 @@ class ProductUnitRepository implements ProductUnitRepositoryInterface
         $this->model = $model;
     }
 
-    public function getAll(string $sortBy = 'created_at', string $sortDirection = 'desc', int $perPage = 10)
+    public function getAll(string $sortBy = 'created_at', string $sortDirection = 'desc', int $perPage = null)
     {
         return $this->model->orderBy($sortBy, $sortDirection)->paginate($perPage);
     }

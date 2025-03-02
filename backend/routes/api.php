@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\CultivationLogController;
 use App\Http\Controllers\Api\FarmController;
 use App\Http\Controllers\Api\ProductCategoryController;
 use App\Http\Controllers\Api\ProductUnitController;
@@ -23,13 +24,20 @@ Route::prefix('products')->group(function () {
     Route::middleware(['auth:api_users', 'permission'])->group(function () {
         Route::post('/', [ProductController::class, 'store'])->name('products.store');
         Route::get('/trashed', [ProductController::class, 'trashed'])->name('products.trashed');
-    });    
-    Route::get('/code/{productCode}', [ProductController::class, 'getByProductCode'])->name('products.get-by-product-code');
+    });        
+    Route::prefix('{product_id}/cultivation-logs')->group(function () {
+        Route::get('/', [CultivationLogController::class, 'index'])->name('cultivation-logs.index');
+        Route::middleware(['auth:api_users', 'permission'])->group(function () {
+            Route::post('/', [CultivationLogController::class, 'store'])->name('cultivation-logs.store');
+            Route::get('/{id}', [CultivationLogController::class, 'show'])->name('cultivation-logs.show');
+            Route::put('/{id}', [CultivationLogController::class, 'update'])->name('cultivation-logs.update');
+            Route::delete('/{id}', [CultivationLogController::class, 'destroy'])->name('cultivation-logs.destroy');
+        });
+    });
+    Route::get('/code/{productCode}', [ProductController::class, 'getByProductCode'])->name('products.get-by-product-code'); 
     Route::get('/{id}/qrcode', [ProductController::class, 'getQrCode'])->name('products.qrcode');
     
     Route::middleware(['auth:api_users', 'permission'])->group(function () {
-        Route::post('/', [ProductController::class, 'store'])->name('products.store');
-        Route::get('/trashed', [ProductController::class, 'trashed'])->name('products.trashed');
         Route::put('/{id}', [ProductController::class, 'update'])->name('products.update');
         Route::delete('/{id}', [ProductController::class, 'destroy'])->name('products.destroy');
         Route::patch('/restore/{id}', [ProductController::class, 'restore'])->name('products.restore');

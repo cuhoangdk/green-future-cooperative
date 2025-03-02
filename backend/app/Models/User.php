@@ -37,6 +37,7 @@ class User extends Authenticatable
         'last_login_at',
         'gender',
         'role_id',
+        'youtube_token',
     ];
 
     /**
@@ -59,6 +60,7 @@ class User extends Authenticatable
         'province' => 'string',
         'district' => 'string',
         'ward' => 'string',
+        'youtube_token' => 'array',
     ];    
 
     /**
@@ -99,5 +101,8 @@ class User extends Authenticatable
     {
         return $this->hasMany(Product::class, 'user_id');
     }
-
+    public function cultivationLogs()
+    {
+        return $this->hasManyThrough(CultivationLog::class, Product::class);
+    }
 }

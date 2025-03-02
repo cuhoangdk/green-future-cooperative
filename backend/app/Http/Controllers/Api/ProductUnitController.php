@@ -19,7 +19,7 @@ class ProductUnitController extends Controller
 
     public function index(IndexProductUnitRequest $request)
     {
-        $perPage = $request->input('per_page', 10);
+        $perPage = $request->input('per_page');
         $sortBy = $request->input('sort_by', 'created_at');
         $sortDirection = $request->input('sort_direction', 'desc');
         

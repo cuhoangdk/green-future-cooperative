@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Repositories\Contracts\CultivationLogRepositoryInterface;
 use App\Repositories\Contracts\CustomerProfileRepositoryInterface;
 use App\Repositories\Contracts\CustomerRepositoryInterface;
 use App\Repositories\Contracts\FarmRepositoryInterface;
@@ -11,6 +12,7 @@ use App\Repositories\Contracts\ProductRepositoryInterface;
 use App\Repositories\Contracts\ProductUnitRepositoryInterface;
 use App\Repositories\Contracts\RoleRepositoryInterface;
 use App\Repositories\Contracts\UserRepositoryInterface;
+use App\Repositories\Eloquent\CultivationLogRepository;
 use App\Repositories\Eloquent\CustomerProfileRepository;
 use App\Repositories\Eloquent\CustomerRepository;
 use App\Repositories\Eloquent\FarmRepository;
@@ -45,6 +47,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(ProductUnitRepositoryInterface::class, ProductUnitRepository::class);
         $this->app->bind(ProductCatogoryRepositoryInterface::class, ProductCategoryRepository::class);
         $this->app->bind(ProductRepositoryInterface::class, ProductRepository::class);
+        $this->app->bind(CultivationLogRepositoryInterface::class, CultivationLogRepository::class);
     }
 
     /**
