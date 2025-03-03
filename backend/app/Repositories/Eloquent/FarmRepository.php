@@ -114,21 +114,12 @@ class FarmRepository implements FarmRepositoryInterface
         });
 
         $query->orderBy(
-            $this->validateSortColumn($sortBy),
-            $this->validateSortDirection($sortDirection)
+            $sortBy,
+            $sortDirection
         );
 
         return $query->paginate($perPage);
     }
 
-    private function validateSortColumn(string $column): string
-    {
-        $allowedColumns = ['name', 'province', 'district', 'ward', 'created_at','updated_at'];
-        return in_array($column, $allowedColumns) ? $column : 'created_at';
-    }
-
-    private function validateSortDirection(string $direction): string
-    {
-        return in_array(strtolower($direction), ['asc', 'desc']) ? $direction : 'desc';
-    }
+    
 }

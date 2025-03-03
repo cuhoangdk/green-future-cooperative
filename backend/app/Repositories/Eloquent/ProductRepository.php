@@ -21,8 +21,8 @@ class ProductRepository implements ProductRepositoryInterface
         return $this->model->when(!auth('api_users')->check(), function ($query) {
             $query->where('is_active', true);
         })->with(['category', 'unit', 'user'])
-            ->orderBy($this->validateSortColumn($sortBy),
-            $this->validateSortDirection($sortDirection))
+            ->orderBy($sortBy,
+            $sortDirection)
             ->paginate($perPage);
     }
 
@@ -33,8 +33,8 @@ class ProductRepository implements ProductRepositoryInterface
     ): LengthAwarePaginator {
         return $this->model->onlyTrashed()
             ->with(['category', 'unit', 'user'])
-            ->orderBy($this->validateSortColumn($sortBy),
-            $this->validateSortDirection($sortDirection))
+            ->orderBy($sortBy,
+            $sortDirection)
             ->paginate($perPage);
     }
 
@@ -169,8 +169,8 @@ class ProductRepository implements ProductRepositoryInterface
 
         return $query->when(!auth('api_users')->check(), function ($query) {
             $query->where('is_active', true);
-        })->orderBy($this->validateSortColumn($sortBy),
-        $this->validateSortDirection($sortDirection))
+        })->orderBy($sortBy,
+        $sortDirection)
             ->paginate($perPage);
     }
     public function searchByName(
@@ -186,21 +186,8 @@ class ProductRepository implements ProductRepositoryInterface
                 $q->where('name', 'like', "%{$query}%")
                   ->orWhere('product_code', '=', $query);
             })
-            ->orderBy($this->validateSortColumn($sortBy),
-            $this->validateSortDirection($sortDirection))
+            ->orderBy($sortBy,
+            $sortDirection)
             ->paginate($perPage);
-    }
-    private function validateSortColumn(string $column): string
-    {
-        $allowedColumns = [
-            'created_at','name','base_price','stock_quantity','views','sold_quantity'
-        ];
-
-        return in_array($column, $allowedColumns) ? $column : 'created_at';
-    }
-
-    private function validateSortDirection(string $direction): string
-    {
-        return in_array(strtolower($direction), ['asc', 'desc']) ? $direction : 'desc';
-    }
+    }   
 }

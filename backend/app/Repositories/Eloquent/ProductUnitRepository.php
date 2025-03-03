@@ -78,15 +78,5 @@ class ProductUnitRepository implements ProductUnitRepositoryInterface
         return false;
     }    
 
-    private function validateSortColumn(string $column): string
-    {
-        $allowedColumns = ['name', 'created_at','updated_at'];
-        return in_array($column, $allowedColumns) ? $column : 'created_at';
-    }
-
-    private function validateSortDirection(string $direction): string
-    {
-        return in_array(strtolower($direction), ['asc', 'desc']) ? $direction : 'desc';
-    }
 
 }

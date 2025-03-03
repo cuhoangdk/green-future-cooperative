@@ -21,7 +21,7 @@ class PostRepository implements PostRepositoryInterface
         return $this->model->when(!auth('api_users')->check(), function ($query) {
             $query->where('post_status', 'published');
         })->with(['category', 'user'])
-            ->orderBy($this->validateSortColumn($sortBy), $this->validateSortDirection($sortDirection))
+            ->orderBy($sortBy, $sortDirection)
             ->paginate($perPage);
     }
 
@@ -188,8 +188,8 @@ class PostRepository implements PostRepositoryInterface
     
         // Sắp xếp và phân trang
         $query->orderBy(
-            $this->validateSortColumn($sortBy),
-            $this->validateSortDirection($sortDirection)
+            $sortBy,
+            $sortDirection
         );
     
         return $query->paginate($perPage);
@@ -224,23 +224,5 @@ class PostRepository implements PostRepositoryInterface
         return PostCategory::where('slug', $slug)->when(!auth('api_users')->check(), function ($query) {
             $query->where('is_active', true);
         })->first();
-    }
-
-    private function validateSortColumn(string $column): string
-    {
-        $allowedColumns = [
-            'title',
-            'created_at',
-            'updated_at',
-            'published_at',
-            'post_status'
-        ];
-
-        return in_array($column, $allowedColumns) ? $column : 'created_at';
-    }
-
-    private function validateSortDirection(string $direction): string
-    {
-        return in_array(strtolower($direction), ['asc', 'desc']) ? $direction : 'desc';
     }
 }

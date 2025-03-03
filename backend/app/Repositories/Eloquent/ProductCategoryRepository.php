@@ -17,7 +17,7 @@ class ProductCategoryRepository implements ProductCatogoryRepositoryInterface
 
     public function getAll(string $sortBy = 'created_at', string $sortDirection = 'desc', int $perPage = null)
     {
-        $query = $this->model->orderBy($this->validateSortColumn($sortBy), $this->validateSortDirection($sortDirection));
+        $query = $this->model->orderBy($sortBy, $sortDirection);
 
         // Nếu $perPage không được cung cấp, trả về danh sách không phân trang
         return $perPage ? $query->paginate($perPage) : $query->get();
@@ -92,15 +92,6 @@ class ProductCategoryRepository implements ProductCatogoryRepositoryInterface
         return false;
     }
         
-    private function validateSortColumn(string $column): string
-    {
-        $allowedColumns = ['name', 'created_at', 'updated_at'];
-        return in_array($column, $allowedColumns) ? $column : 'created_at';
-    }
     
-    private function validateSortDirection(string $direction): string
-    {
-        return in_array(strtolower($direction), ['asc', 'desc']) ? $direction : 'desc';
-    }
     
 }

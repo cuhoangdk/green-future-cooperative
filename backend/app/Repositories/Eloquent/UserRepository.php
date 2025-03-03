@@ -22,7 +22,7 @@ class UserRepository implements UserRepositoryInterface
     public function getAll(string $sortBy = 'created_at', string $sortDirection = 'desc', int $perPage = 10): Paginator
     {
         return $this->model
-            ->orderBy($this->validateSortColumn($sortBy), $this->validateSortDirection($sortDirection))
+            ->orderBy($sortBy, $sortDirection)
             ->paginate($perPage);
     }
 
@@ -147,8 +147,8 @@ class UserRepository implements UserRepositoryInterface
         $query->when(isset($filters['ward']), fn($query) => $query->where('ward', $filters['ward']));
 
         $query->orderBy(
-            $this->validateSortColumn($sortBy),
-            $this->validateSortDirection($sortDirection)
+            $sortBy,
+            $sortDirection
         );
 
         return $query->paginate($perPage);
@@ -176,30 +176,10 @@ class UserRepository implements UserRepositoryInterface
         });
 
         $query->orderBy(
-            $this->validateSortColumn($sortBy),
-            $this->validateSortDirection($sortDirection)
+            $sortBy,
+            $sortDirection
         );
 
         return $query->paginate($perPage);
-    }
-
-    /**
-     * Validate cột để sắp xếp.
-     */
-    private function validateSortColumn(string $column): string
-    {
-        $allowedColumns = [
-            'full_name', 'email', 'usercode', 'created_at', 'updated_at', 'province', 'district', 'ward'
-        ];
-
-        return in_array($column, $allowedColumns) ? $column : 'created_at';
-    }
-
-    /**
-     * Validate hướng sắp xếp (asc hoặc desc).
-     */
-    private function validateSortDirection(string $direction): string
-    {
-        return in_array(strtolower($direction), ['asc', 'desc']) ? $direction : 'desc';
     }
 }
