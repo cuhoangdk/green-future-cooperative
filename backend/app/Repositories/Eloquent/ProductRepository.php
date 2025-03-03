@@ -92,11 +92,18 @@ class ProductRepository implements ProductRepositoryInterface
 
     public function getBySlug($slug)
     {
-        return $this->model->with(['category', 'unit', 'user'])->when(!auth('api_users')->check(), function ($query) {
-            $query->where('is_active', true);
-        })
+        $product = $this->model->with(['category', 'unit', 'user'])
+            ->when(!auth('api_users')->check(), function ($query) {
+                $query->where('is_active', true);
+            })
             ->where('slug', $slug)
             ->firstOrFail();
+        
+        if (!auth('api_users')->check()) {
+            $product->increment('views');
+        }
+        
+        return $product;
     }
 
     public function getByProductCode($productCode)

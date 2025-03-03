@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\CultivationLogController;
 use App\Http\Controllers\Api\FarmController;
 use App\Http\Controllers\Api\ProductCategoryController;
+use App\Http\Controllers\Api\ProductQuantityPriceController;
 use App\Http\Controllers\Api\ProductUnitController;
 use App\Http\Controllers\Api\ProductController;
 use Illuminate\Support\Facades\Route;
@@ -32,6 +33,19 @@ Route::prefix('products')->group(function () {
             Route::get('/{id}', [CultivationLogController::class, 'show'])->name('cultivation-logs.show');
             Route::put('/{id}', [CultivationLogController::class, 'update'])->name('cultivation-logs.update');
             Route::delete('/{id}', [CultivationLogController::class, 'destroy'])->name('cultivation-logs.destroy');
+        });
+    });
+    // Product Quantity Prices
+    Route::prefix('{product_id}/quantity-prices')->group(function () {
+        Route::get('/', [ProductQuantityPriceController::class, 'index'])->name('quantity-prices.index');
+        Route::middleware(['auth:api_users', 'permission'])->group(function () {
+            Route::post('/', [ProductQuantityPriceController::class, 'store'])->name('quantity-prices.store');
+            Route::get('/trashed', [ProductQuantityPriceController::class, 'trashed'])->name('quantity-prices.trashed');
+            Route::get('/{id}', [ProductQuantityPriceController::class, 'show'])->name('quantity-prices.show');
+            Route::put('/{id}', [ProductQuantityPriceController::class, 'update'])->name('quantity-prices.update');
+            Route::delete('/{id}', [ProductQuantityPriceController::class, 'destroy'])->name('quantity-prices.destroy');            
+            Route::patch('/restore/{id}', [ProductQuantityPriceController::class, 'restore'])->name('quantity-prices.restore');
+            Route::delete('/force-delete/{id}', [ProductQuantityPriceController::class, 'forceDelete'])->name('quantity-prices.forceDelete');
         });
     });
     Route::get('/code/{productCode}', [ProductController::class, 'getByProductCode'])->name('products.get-by-product-code'); 

@@ -8,6 +8,7 @@ use App\Repositories\Contracts\CustomerRepositoryInterface;
 use App\Repositories\Contracts\FarmRepositoryInterface;
 use App\Repositories\Contracts\PostCommentRepositoryInterface;
 use App\Repositories\Contracts\ProductCatogoryRepositoryInterface;
+use App\Repositories\Contracts\ProductQuantityPriceRepositoryInterface;
 use App\Repositories\Contracts\ProductRepositoryInterface;
 use App\Repositories\Contracts\ProductUnitRepositoryInterface;
 use App\Repositories\Contracts\RoleRepositoryInterface;
@@ -18,6 +19,7 @@ use App\Repositories\Eloquent\CustomerRepository;
 use App\Repositories\Eloquent\FarmRepository;
 use App\Repositories\Eloquent\PostCommentRepository;
 use App\Repositories\Eloquent\ProductCategoryRepository;
+use App\Repositories\Eloquent\ProductQuantityPriceRepository;
 use App\Repositories\Eloquent\ProductRepository;
 use App\Repositories\Eloquent\ProductUnitRepository;
 use App\Repositories\Eloquent\RoleRepository;
@@ -48,6 +50,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(ProductCatogoryRepositoryInterface::class, ProductCategoryRepository::class);
         $this->app->bind(ProductRepositoryInterface::class, ProductRepository::class);
         $this->app->bind(CultivationLogRepositoryInterface::class, CultivationLogRepository::class);
+        $this->app->bind(ProductQuantityPriceRepositoryInterface::class, ProductQuantityPriceRepository::class);
     }
 
     /**

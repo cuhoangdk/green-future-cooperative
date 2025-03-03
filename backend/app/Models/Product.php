@@ -55,6 +55,10 @@ class Product extends Model
     {
         return $this->belongsTo(Farm::class); 
     }
+    public function quantityPrices()
+    {
+        return $this->hasMany(ProductQuantityPrice::class);
+    }
     
     protected static function boot()
     {
