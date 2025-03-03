@@ -4,7 +4,6 @@ namespace Database\Factories;
 
 use App\Models\Address;
 use App\Models\User;
-use Http;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 

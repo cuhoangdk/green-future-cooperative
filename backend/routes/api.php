@@ -166,9 +166,9 @@ Route::prefix('customer-auth')->group(function () {
     Route::post('/forgot-password', [CustomerAuthController::class, 'forgotPassword'])->name('customer-auth.forgot-password'); // POST /api/customer-auth/forgot-password
     Route::post('/reset-password', [CustomerAuthController::class, 'resetPassword'])->name('customer-auth.reset-password'); // POST /api/customer-auth/reset-password
     Route::post('/verify-account', [CustomerAuthController::class, 'verifyAccount'])->name('customer-auth.verify-account'); // POST /api/customer-auth/verify-account
+    Route::post('/refresh-token', [CustomerAuthController::class, 'refreshToken'])->name('customer-auth.refresh-token'); // POST /api/customer-auth/refresh-token
     Route::middleware('auth:api_customers')->group(function () {
         Route::put('/change-password', [CustomerAuthController::class, 'changePassword'])->name('customer-auth.change-password'); // PUT /api/customer-auth/change-password
-        Route::post('/refresh-token', [CustomerAuthController::class, 'refreshToken'])->name('customer-auth.refresh-token'); // POST /api/customer-auth/refresh-token
         Route::post('/logout', [CustomerAuthController::class, 'logout'])->name('customer-auth.logout'); // POST /api/customer-auth/logout
     });
 });
@@ -199,9 +199,9 @@ Route::prefix('user-auth')->group(function () {
     Route::post('/login', [UserAuthController::class, 'login'])->name('user-auth.login'); // POST /api/user-auth/login
     Route::post('/forgot-password', [UserAuthController::class, 'sendResetLink'])->name('user-auth.forgot-password'); // POST /api/user-auth/forgot-password
     Route::post('/reset-password', [UserAuthController::class, 'resetPassword'])->name('user-auth.reset-password'); // POST /api/user-auth/reset-password
+    Route::post('/refresh-token', [UserAuthController::class, 'refreshToken'])->name('user-auth.refresh-token'); // POST /api/user-auth/refresh-token
     Route::middleware('auth:api_users')->group(function () {
         Route::put('/change-password', [UserAuthController::class, 'changePassword'])->name('user-auth.change-password'); // PUT /api/user-auth/change-password
-        Route::post('/refresh-token', [UserAuthController::class, 'refreshToken'])->name('user-auth.refresh-token'); // POST /api/user-auth/refresh-token
         Route::post('/logout', [UserAuthController::class, 'logout'])->name('user-auth.logout'); // POST /api/user-auth/logout
     });
 });
