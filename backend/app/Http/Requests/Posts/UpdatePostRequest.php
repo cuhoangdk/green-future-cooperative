@@ -33,6 +33,11 @@ class UpdatePostRequest extends FormRequest
             'published_at' => 'nullable|date',
             'is_hot' => 'boolean',
             'is_featured' => 'boolean',
+            'tags' => 'nullable|string|max:255', 
+            'meta_title' => 'nullable|string|max:255', 
+            'meta_description' => 'nullable|string|max:500',
+            'hot_order' => 'nullable|integer|min:0',
+            'featured_order' => 'nullable|integer|min:0',
         ];
     }
 
