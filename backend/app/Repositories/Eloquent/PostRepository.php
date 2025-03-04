@@ -140,13 +140,13 @@ class PostRepository implements PostRepositoryInterface
     
         // Tìm kiếm
         $query->when($filters['search'] ?? null, function ($query, $search) {
-            $searchableColumns = ['title', 'slug', 'summary', 'content']; // Các cột có thể tìm kiếm.
+            $searchableColumns = ['title', 'slug', 'summary', 'content'];
             $query->where(function ($query) use ($search, $searchableColumns) {
                 foreach ($searchableColumns as $column) {
                     $query->orWhere($column, 'like', "%{$search}%");
                 }
                 $query->orWhereHas('user', function ($userQuery) use ($search) {
-                    $userQuery->where('full_name', 'like', "%{$search}%"); // Tìm trong bảng liên kết user.
+                    $userQuery->where('full_name', 'like', "%{$search}%");
                 });
             });
         });
@@ -168,7 +168,7 @@ class PostRepository implements PostRepositoryInterface
             ]);
         });
     
-        // Lọc theo từng mốc ngày riêng lẻ (nếu không có cả start_date và end_date)
+        // Lọc theo từng mốc ngày riêng lẻ
         $query->when($filters['start_date'] ?? null, fn($query, $startDate) => 
             $query->where('created_at', '>=', Carbon::parse($startDate)->startOfDay())
         );
@@ -176,24 +176,23 @@ class PostRepository implements PostRepositoryInterface
             $query->where('created_at', '<=', Carbon::parse($endDate)->endOfDay())
         );
     
-        // Lọc bài viết hot
-        $query->when(isset($filters['is_hot']) && $filters['is_hot'] !== null, fn($query) => 
-            $query->where('is_hot', $filters['is_hot'])
+        // Lọc bài viết hot - Chỉ áp dụng khi tham số được gửi rõ ràng
+        $query->when(
+            array_key_exists('is_hot', $filters) && $filters['is_hot'] !== null,
+            fn($query) => $query->where('is_hot', $filters['is_hot'])
         );
     
-        // Lọc bài viết nổi bật
-        $query->when(isset($filters['is_featured']) && $filters['is_featured'] !== null, fn($query) => 
-            $query->where('is_featured', $filters['is_featured'])
+        // Lọc bài viết nổi bật - Chỉ áp dụng khi tham số được gửi rõ ràng
+        $query->when(
+            array_key_exists('is_featured', $filters) && $filters['is_featured'] !== null,
+            fn($query) => $query->where('is_featured', $filters['is_featured'])
         );
     
         // Sắp xếp và phân trang
-        $query->orderBy(
-            $sortBy,
-            $sortDirection
-        );
+        $query->orderBy($sortBy, $sortDirection);
     
         return $query->paginate($perPage);
-    }    
+    }
 
     public function getHotPosts(int $limit = 5)
     {

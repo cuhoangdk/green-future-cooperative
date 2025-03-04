@@ -54,18 +54,19 @@ class PostController extends Controller
         $sortBy = $request->input('sort_by', 'created_at');
         $sortDirection = $request->input('sort_direction', 'desc');
 
-        $filters = [
+        $filters = array_filter([
             'search' => $request->input('search'),
             'user' => $request->input('user_id'),
             'category' => $request->input('category_id'),
             'status' => $request->input('status'),
             'start_date' => $request->input('start_date'),
             'end_date' => $request->input('end_date'),
-            'is_hot' => $request->boolean('is_hot'),
-            'is_featured' => $request->boolean('is_featured'),
-        ];
+            'is_hot' => $request->has('is_hot') ? $request->boolean('is_hot') : null,
+            'is_featured' => $request->has('is_featured') ? $request->boolean('is_featured') : null,
+        ], fn($value) => $value !== null);
 
-        $posts = $this->postRepository->getFilteredPosts($sortBy, $sortDirection, $perPage, $filters)->appends(request()->query());
+        $posts = $this->postRepository->getFilteredPosts($sortBy, $sortDirection, $perPage, $filters)
+            ->appends(request()->query());
 
         return PostResource::collection($posts);
     }
