@@ -21,7 +21,7 @@ class SearchProductRequest extends FormRequest
     {
         return [
             'search' => 'sometimes|string|max:255', // $query từ route
-            'sort_by' => 'sometimes|in:created_at,name,base_price,stock_quantity,views,sold_quantity',
+            'sort_by' => 'sometimes|in:created_at,name,stock_quantity,views,sold_quantity',
             'sort_direction' => 'sometimes|in:asc,desc',
             'per_page' => 'sometimes|integer|min:1|max:100',
         ];

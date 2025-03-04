@@ -145,7 +145,7 @@ class ProductController extends Controller
     {
         $filters = $request->only([
             'name', 'product_code', 'description', 'category_id', 'unit_id', 'user_id', 'farm_id',
-            'pricing_type', 'is_active', 'base_price_min', 'base_price_max', 'stock_quantity_min',
+            'pricing_type', 'is_active', 'stock_quantity_min',
             'stock_quantity_max', 'sown_at_from', 'sown_at_to', 'harvested_at_from', 'harvested_at_to'
         ]);
 

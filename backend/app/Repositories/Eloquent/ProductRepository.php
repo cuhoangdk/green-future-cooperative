@@ -144,13 +144,7 @@ class ProductRepository implements ProductRepositoryInterface
                             break;
                         case 'is_active':
                             $query->where($key, filter_var($value, FILTER_VALIDATE_BOOLEAN));
-                            break;
-                        case 'base_price_min':
-                            $query->where('base_price', '>=', $value);
-                            break;
-                        case 'base_price_max':
-                            $query->where('base_price', '<=', $value);
-                            break;
+                            break;                        
                         case 'stock_quantity_min':
                             $query->where('stock_quantity', '>=', $value);
                             break;

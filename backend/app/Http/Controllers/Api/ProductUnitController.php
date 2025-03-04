@@ -47,11 +47,37 @@ class ProductUnitController extends Controller
 
     public function update(UpdateProductUnitRequest $request, $id)
     {
-        $productUnit = $this->productUnitRepository->update($id, $request->validated());
+        $productUnit = $this->productUnitRepository->getById($id);
         if (!$productUnit) {
             return response()->json(['message' => 'Product unit not found'], 404);
         }
-        return new ProductUnitResource($productUnit);
+
+        $data = $request->validated();
+
+        // Kiểm tra nếu allow_decimal thay đổi từ true thành false
+        if (isset($data['allow_decimal']) && !$data['allow_decimal'] && $productUnit->allow_decimal) {
+            $hasDecimal = $productUnit->products()
+                ->with(['quantityPrices' => function ($query) {
+                    $query->whereRaw('FLOOR(quantity) != quantity');
+                }])
+                ->whereHas('quantityPrices', function ($query) {
+                    $query->whereRaw('FLOOR(quantity) != quantity');
+                })
+                ->exists();
+
+            if ($hasDecimal) {
+                return response()->json([
+                    'error' => 'Cannot disable decimal quantities because existing quantity prices for this unit have decimal values.'
+                ], 422);
+            }
+        }
+
+        $updatedProductUnit = $this->productUnitRepository->update($id, $data);
+        if (!$updatedProductUnit) {
+            return response()->json(['message' => 'Product unit update failed'], 500);
+        }
+
+        return new ProductUnitResource($updatedProductUnit);
     }
 
     public function destroy($id)

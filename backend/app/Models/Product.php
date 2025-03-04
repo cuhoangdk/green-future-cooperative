@@ -26,7 +26,6 @@ class Product extends Model
         'sown_at',
         'harvested_at',
         'pricing_type',
-        'base_price',
         'stock_quantity',
         'is_active',
         'sold_quantity',

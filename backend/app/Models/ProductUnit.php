@@ -12,8 +12,11 @@ class ProductUnit extends Model
     protected $fillable = [
         'name',
         'description',
+        'allow_decimal',
     ];
-
+    protected $casts = [
+        'allow_decimal' => 'boolean', // Ép kiểu sang boolean
+    ];
     public function products()
     {
         return $this->hasMany(Product::class, 'unit_id');
