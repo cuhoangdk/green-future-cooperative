@@ -32,7 +32,7 @@ class PostController extends Controller
     public function index(IndexPostRequest $request)
     {
         $perPage = $request->input('per_page', 10);
-        $sortBy = $request->input('sort_by', 'created_at');
+        $sortBy = $request->input('sort_by', 'updated_at');
         $sortDirection = $request->input('sort_direction', 'desc');
 
         $posts = $this->postRepository
@@ -51,7 +51,7 @@ class PostController extends Controller
     public function search(SearchPostRequest $request)
     {
         $perPage = $request->input('per_page', 10);
-        $sortBy = $request->input('sort_by', 'created_at');
+        $sortBy = $request->input('sort_by', 'updated_at');
         $sortDirection = $request->input('sort_direction', 'desc');
 
         $filters = array_filter([
