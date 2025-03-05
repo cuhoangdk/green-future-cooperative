@@ -19,11 +19,14 @@ class CustomerAuthRepository implements CustomerAuthRepositoryInterface
 {
     public function login(array $credentials)
     {
-        // Lấy thông tin khách hàng dựa trên email
-        $customer = Customer::where('email', $credentials['email'])->first();
+        $email = trim($credentials['email']);
+        // Lấy thông tin khách hàng dựa trên email        
+        $customer = Customer::where('email', $email)->first();
 
         // Kiểm tra khách hàng có tồn tại không
         if (!$customer) {
+            $allEmails = Customer::pluck('email')->toArray();
+            \Log::info('Email not found: ' . $email . '. Available emails: ' . implode(', ', $allEmails));
             return response()->json(['message' => 'Invalid email'], 401);
         }
         // Kiểm tra xem khách hàng có được verify chưa

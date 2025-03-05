@@ -1,5 +1,6 @@
 <?php
-
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\CartItemController;
 use App\Http\Controllers\Api\CultivationLogController;
 use App\Http\Controllers\Api\FarmController;
 use App\Http\Controllers\Api\ProductCategoryController;
@@ -7,7 +8,6 @@ use App\Http\Controllers\Api\ProductImageController;
 use App\Http\Controllers\Api\ProductQuantityPriceController;
 use App\Http\Controllers\Api\ProductUnitController;
 use App\Http\Controllers\Api\ProductController;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\UserAuthController;
 use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\PostCategoryController;
@@ -19,6 +19,14 @@ use App\Http\Controllers\Api\CustomerController;
 use App\Http\Controllers\Api\CustomerAddressController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\PermissionController;
+
+Route::prefix('cart')->namespace('Api')->middleware(['auth:api_customers'])->group(function () {
+    Route::get('/', [CartItemController::class, 'index'])->name('cart.index');
+    Route::post('/', [CartItemController::class, 'store'])->name('cart.store');
+    Route::get('/{id}', [CartItemController::class, 'show'])->name('cart.show');
+    Route::put('/{id}', [CartItemController::class, 'update'])->name('cart.update');
+    Route::delete('/{id}', [CartItemController::class, 'destroy'])->name('cart.destroy');
+});
 Route::prefix('products')->group(function () {
     Route::get('/', [ProductController::class, 'index'])->name('products.index');
     Route::get('/search', [ProductController::class, 'searchByName'])->name('products.search');
