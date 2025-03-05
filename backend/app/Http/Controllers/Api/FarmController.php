@@ -31,8 +31,7 @@ class FarmController extends Controller
 
     public function store(StoreFarmRequest $request)
     {
-        $data = $request->validated();
-        $data['user_id'] = auth('api_users')->id(); // Gán user_id từ người dùng hiện tại
+        $data = $request->validated();        
         $farm = $this->farmRepository->create($data);
         return new FarmResource($farm->load('address', 'user'));
     }
