@@ -18,7 +18,7 @@ class StoreUserRequest extends FormRequest
             'email' => 'required|email|unique:customers,email|unique:users,email',
             'password' => 'required|min:6|confirmed',
             'full_name' => 'required|string|max:255',
-            'phone_number' => 'required|string|max:20|unique:users,phone_number',
+            'phone_number' => 'required|string|max:20|unique:customers,phone_number|unique:users,phone_number',
             'date_of_birth' => 'required|date|before:today',
             'address' => 'required|array',
             'address.province' => [

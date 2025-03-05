@@ -4,18 +4,27 @@ namespace App\Http\Requests\Auth\User;
 
 use App\Helpers\LocationHelper;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateProfileUserRequest extends FormRequest
 {
     public function rules()
     {
+        $id = auth('api_users')->id();
         return [
             'full_name' => 'nullable|string|max:255',
-            'phone_number' => 'nullable|string|max:15',
-            'date_of_birth' => 'required|date|before:today',
-            'address' => 'required|array',
+            'phone_number' => [
+                'nullable',
+                'string',
+                'max:15',
+                // Kiểm tra unique trong bảng users và customers, ngoại trừ user hiện tại
+                Rule::unique('users', 'phone_number')->ignore($id),
+                Rule::unique('customers', 'phone_number'), // Giả sử bảng customers có cột phone_number
+            ],          
+            'date_of_birth' => 'nullable|date|before:today',
+            'address' => 'nullable|array',
             'address.province' => [
-                'required',
+                'nullable',
                 'string',
                 function ($attribute, $value, $fail) {
                     if (!LocationHelper::isValidProvince($value)) {
@@ -24,7 +33,7 @@ class UpdateProfileUserRequest extends FormRequest
                 },
             ],
             'address.district' => [
-                'required',
+                'nullable',
                 'string',
                 function ($attribute, $value, $fail) {
                     $province = $this->input('address.province');
@@ -34,7 +43,7 @@ class UpdateProfileUserRequest extends FormRequest
                 },
             ],
             'address.ward' => [
-                'required',
+                'nullable',
                 'string',
                 function ($attribute, $value, $fail) {
                     $district = $this->input('address.district');

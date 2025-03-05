@@ -25,15 +25,15 @@ class ProductImageController extends Controller
 
     public function index(int $productId, IndexProductImageRequest $request)
     {
-        $perPage = $request->input('per_page'); // Bỏ giá trị mặc định
+        $perPage = $request->input('per_page');
         $sortBy = $request->input('sort_by', 'created_at');
         $sortDirection = $request->input('sort_direction', 'desc');
 
-        // Gọi repository để lấy dữ liệu (có hoặc không phân trang)
+        
         $images = $this->repository->getAll(productId: $productId,
             sortBy: $sortBy,
             sortDirection: $sortDirection,
-            perPage: $perPage // Nếu null, repository sẽ trả về danh sách không phân trang
+            perPage: $perPage 
         );        
         return ProductImageResource::collection($images);
     }
