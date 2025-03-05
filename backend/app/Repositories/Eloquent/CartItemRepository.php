@@ -15,11 +15,10 @@ class CartItemRepository implements CartItemRepositoryInterface
         $this->model = $model;
     }
 
-    public function getAll(int $customerId, int $perPage = 10)
+    public function getAll(int $customerId)
     {
         return $this->model->where('customer_id', $customerId)
-            ->with('product')
-            ->paginate($perPage);
+            ->with('product');
     }
 
     public function getById(int $customerId, $id)
