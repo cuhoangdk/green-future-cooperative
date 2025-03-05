@@ -15,11 +15,12 @@ class ProductImageRepository implements ProductImageRepositoryInterface
         $this->model = $model;
     }
 
-    public function getAll(int $productId, string $sortBy = 'sort_order', string $sortDirection = 'asc', int $perPage = 10)
+    public function getAll(int $productId, string $sortBy = 'sort_order', string $sortDirection = 'asc', int $perPage = null)
     {
-        return $this->model->where('product_id', $productId)
-            ->orderBy($sortBy, $sortDirection)
-            ->paginate($perPage);
+        $query = $this->model->where('product_id', $productId)->orderBy($sortBy, $sortDirection);
+
+        // Nếu $perPage không được cung cấp, trả về danh sách không phân trang
+        return $perPage ? $query->paginate($perPage) : $query->get();        
     }
 
     public function getById(int $productId, $id)

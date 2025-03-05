@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ProductImage\IndexProductImageRequest;
 use App\Http\Requests\ProductImage\StoreProductImageRequest;
 use App\Http\Requests\ProductImage\UpdateProductImageRequest;
 use App\Http\Resources\ProductImageResource;
@@ -22,9 +23,18 @@ class ProductImageController extends Controller
         $this->uploadFileService = $uploadFileService;
     }
 
-    public function index(int $productId)
+    public function index(int $productId, IndexProductImageRequest $request)
     {
-        $images = $this->repository->getAll($productId);
+        $perPage = $request->input('per_page'); // Bỏ giá trị mặc định
+        $sortBy = $request->input('sort_by', 'created_at');
+        $sortDirection = $request->input('sort_direction', 'desc');
+
+        // Gọi repository để lấy dữ liệu (có hoặc không phân trang)
+        $images = $this->repository->getAll(productId: $productId,
+            sortBy: $sortBy,
+            sortDirection: $sortDirection,
+            perPage: $perPage // Nếu null, repository sẽ trả về danh sách không phân trang
+        );        
         return ProductImageResource::collection($images);
     }
 
