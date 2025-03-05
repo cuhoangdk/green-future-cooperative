@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\CultivationLogController;
 use App\Http\Controllers\Api\FarmController;
 use App\Http\Controllers\Api\ProductCategoryController;
+use App\Http\Controllers\Api\ProductImageController;
 use App\Http\Controllers\Api\ProductQuantityPriceController;
 use App\Http\Controllers\Api\ProductUnitController;
 use App\Http\Controllers\Api\ProductController;
@@ -46,6 +47,15 @@ Route::prefix('products')->group(function () {
             Route::delete('/{id}', [ProductQuantityPriceController::class, 'destroy'])->name('quantity-prices.destroy');            
             Route::patch('/restore/{id}', [ProductQuantityPriceController::class, 'restore'])->name('quantity-prices.restore');
             Route::delete('/force-delete/{id}', [ProductQuantityPriceController::class, 'forceDelete'])->name('quantity-prices.forceDelete');
+        });
+    });
+    Route::prefix('{product_id}/images')->group(function () {
+        Route::get('/', [ProductImageController::class, 'index'])->name('product-images.index');
+        Route::middleware(['auth:api_users', 'permission'])->group(function () {
+            Route::post('/', [ProductImageController::class, 'store'])->name('product-images.store');
+            Route::get('/{id}', [ProductImageController::class, 'show'])->name('product-images.show');
+            Route::put('/{id}', [ProductImageController::class, 'update'])->name('product-images.update');
+            Route::delete('/{id}', [ProductImageController::class, 'destroy'])->name('product-images.destroy');
         });
     });
     Route::get('/code/{productCode}', [ProductController::class, 'getByProductCode'])->name('products.get-by-product-code'); 

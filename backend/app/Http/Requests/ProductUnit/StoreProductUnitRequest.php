@@ -15,6 +15,7 @@ class StoreProductUnitRequest extends FormRequest
         return [
             'name' => 'required|string|max:50|unique:product_units,name',
             'description' => 'nullable|string',
+            'allow_decimal' => 'required|boolean',
         ];
     }
 }

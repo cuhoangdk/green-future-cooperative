@@ -16,6 +16,7 @@ class UpdateProductUnitRequest extends FormRequest
         return [
             'name' => 'sometimes|string|max:50|unique:product_units,name,' . $this->product_unit,
             'description' => 'nullable|string',
+            'allow_decimal' => 'required|boolean',
         ];
     }
 }
