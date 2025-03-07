@@ -57,7 +57,7 @@ class UpdateProfileUserRequest extends FormRequest
             'avatar_url' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'bank_account_number' => 'nullable|string|max:20',
             'bank_name' => 'nullable|string|max:255',
-            
+            'gender' => 'nullable|string|in:male,female,other',
         ];
     }
 }

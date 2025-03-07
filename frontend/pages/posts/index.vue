@@ -37,7 +37,6 @@ import { useRuntimeConfig } from '#app'
 import { usePosts } from '~/composables/usePosts'
 
 // Runtime config
-const { public: { backendUrl } } = useRuntimeConfig()
 const perPage = 9 // Số bài viết mỗi trang
 
 // Khởi tạo usePosts
@@ -45,7 +44,7 @@ const { getPosts } = usePosts()
 
 // State cho phân trang
 const currentPage = ref(1)
-const { data, status, error } = await getPosts(currentPage.value, perPage, false)
+const { data, status, error } = await getPosts(currentPage.value, perPage, AuthType.Guest)
 
 // Computed properties
 const posts = computed<Post[]>(() => Array.isArray(data.value?.data) ? data.value.data : data.value?.data ? [data.value.data] : [])
@@ -56,7 +55,7 @@ const isLoading = computed(() => status.value === 'pending')
 // Xử lý sự kiện thay đổi trang
 const handlePageChange = async (page: number) => {
     currentPage.value = page
-    await getPosts(page, perPage, false)
+    await getPosts(page, perPage, AuthType.Guest)
 }
 
 // Log lỗi ban đầu nếu có

@@ -23,7 +23,7 @@ class IndexPostRequest extends FormRequest
     {
         return [
             'per_page'       => 'nullable|integer|min:1|max:100', 
-            'sort_by'        => 'nullable|string|in:title,created_at,updated_at,published_at,post_status', 
+            'sort_by'        => 'nullable|string|in:title,created_at,updated_at,published_at', 
             'sort_direction' => 'nullable|string|in:asc,desc', 
         ];
     }

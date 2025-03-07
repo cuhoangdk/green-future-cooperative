@@ -3,6 +3,7 @@ export default defineNuxtConfig({
   compatibilityDate: '2024-11-01',
   devtools: { enabled: true },
   modules: ['@nuxtjs/tailwindcss', '@pinia/nuxt', '@vesp/nuxt-fontawesome', '@nuxt/image'],
+  css: ['sweetalert2/dist/sweetalert2.min.css'],
   // css: ['~/assets/css/tailwind.css'],
   app: {
     head: {
@@ -22,4 +23,10 @@ export default defineNuxtConfig({
       placeholderImage: process.env.PLACEHOLDER_IMAGE || '/images/banner.png', // Ảnh placeholder mặc định
     },
   },
+  routeRules: {
+    '/admin/**': { ssr: false}, // Tắt SSR cho tất cả các route trong /admin
+  },
+  plugins: [
+    { src: '~/plugins/toast.client.ts', mode: 'client' }
+  ]
 })

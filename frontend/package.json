@@ -13,17 +13,21 @@
     "@nuxt/image": "^1.9.0",
     "@pinia/nuxt": "^0.10.1",
     "@vesp/nuxt-fontawesome": "^1.2.1",
+    "lodash-es": "^4.17.21",
     "lucide-vue-next": "^0.475.0",
     "nuxt": "^3.15.4",
     "pinia": "^3.0.1",
+    "sweetalert2": "^11.17.2",
     "vue": "latest",
-    "vue-router": "latest"
+    "vue-router": "latest",
+    "vue-toastification": "^2.0.0-rc.5"
   },
   "devDependencies": {
     "@fortawesome/free-brands-svg-icons": "^6.7.2",
     "@fortawesome/free-regular-svg-icons": "^6.7.2",
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@nuxtjs/tailwindcss": "^6.13.1",
+    "@types/lodash-es": "^4.17.12",
     "autoprefixer": "^10.4.20",
     "daisyui": "^4.12.23",
     "postcss": "^8.5.3",

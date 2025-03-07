@@ -1,6 +1,10 @@
+import type { Address } from "./address";
+
 export interface User {
     id: number;
     email: string;
+    bank_account_number: string;
+    bank_name: string;
     full_name: string;
     gender: string;
     date_of_birth: Date | null;
@@ -13,10 +17,7 @@ export interface User {
     usercode: string;
     is_super_admin: boolean;
     is_banned: boolean;
-    province: string | null;
-    district: string | null;
-    ward: string | null;
-    street_address: string | null;
+    address: Address;
     deleted_at: Date | null;
     remember_token: string | null;
     role_id: number | null;

@@ -22,4 +22,5 @@ export interface ApiResponse<T> {
     meta?: PaginationMeta;
     message?: string;
     status?: string;
+    // [key: string]: any;
 }

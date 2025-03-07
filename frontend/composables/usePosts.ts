@@ -1,4 +1,4 @@
-import { useApi } from './useApi'
+import { useApi, AuthType } from './useApi';
 import type { Post } from '~/types/post'
 
 export const usePosts = () => {
@@ -8,11 +8,11 @@ export const usePosts = () => {
   const getPosts = async (
     page: number = 1,
     perPage: number = 10,
-    useToken: boolean = false
+    authType: AuthType = AuthType.Guest
   ) => {
     return await get<Post>('/posts', {
       params: { page, per_page: perPage },
-      useToken,
+      authType,
     })
   }
 
@@ -61,23 +61,42 @@ export const usePosts = () => {
   // Tạo bài viết mới
   const createPost = async (postData: FormData) => {
     return await post('/posts', postData, {
-      useToken: true,
-      customHeaders: { 'Content-Type': 'multipart/form-data' }, // Nếu dùng FormData
+      authType: AuthType.User,
     })
   }
 
   // Cập nhật bài viết
   const updatePost = async (postId: number, postData: FormData) => {
     return await put(`/posts/${postId}`, postData, {
-      useToken: true,
-      customHeaders: { 'Content-Type': 'multipart/form-data' }, // Nếu dùng FormData
+      authType: AuthType.User,
     })
   }
 
   // Xóa bài viết
   const deletePost = async (postId: number) => {
     return await del(`/posts/${postId}`, {
-      useToken: true,
+      authType: AuthType.User, // Mặc định yêu cầu token cho hành động tạo
+    })
+  }
+
+  // Tìm kiếm bài viết theo các tiêu chí lọc
+  const searchPosts = async (filters: {
+    page?: number,
+    per_page?: number,
+    sort_by?: string,
+    sort_direction?: string,
+    search?: string,
+    user_id?: number,
+    category_id?: number,
+    status?: string,
+    start_date?: string,
+    end_date?: string,
+    is_hot?: number,
+    is_featured?: number,
+  }, authType: AuthType = AuthType.User) => {
+    return await get<Post>('/posts/search', {
+      params: { ...filters, sort_by: filters.sort_by ?? 'updated_at' },
+      authType,
     })
   }
 
@@ -92,5 +111,6 @@ export const usePosts = () => {
     createPost,
     updatePost,
     deletePost,
+    searchPosts,
   }
 }

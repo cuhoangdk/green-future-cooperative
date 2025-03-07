@@ -46,7 +46,7 @@ const getPageNumbers = () => {
 </script>
 
 <template>
-  <div v-if="meta && links" class="flex space-x-1 mt-4 items-center">
+  <div v-if="meta && links" class="flex space-x-1 mt-3 items-center">
     <!-- Nút về đầu -->
     <button
       v-if="showFirstLast"

@@ -14,7 +14,7 @@ export interface Post {
     hot_order: number | null;
     is_featured: boolean;
     featured_order: number | null;
-    tags: string[];
+    tags: string;
     meta_title: string;
     meta_description: string;
     views: number;

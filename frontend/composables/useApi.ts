@@ -1,5 +1,12 @@
 import type { ApiResponse } from '../types/api'
 
+// Định nghĩa enum cho authType
+export enum AuthType {
+  User = 'user',
+  Customer = 'customer',
+  Guest = 'guest',
+}
+
 export const useApi = () => {
   const config = useRuntimeConfig()
   const baseURL = config.public.apiBaseUrl || 'http://localhost:3000/api'
@@ -12,25 +19,31 @@ export const useApi = () => {
     const {
       body = null,
       params = {} as Record<string, any>,
-      useToken = true,
+      authType = AuthType.User, // Mặc định là 'user'
       customHeaders = {} as Record<string, string>,
       lazy = true, // Mặc định lazy là true
     } = options as {
       body?: any
       params?: Record<string, any>
-      useToken?: boolean
+      authType?: AuthType
       customHeaders?: Record<string, string>
-      lazy?: boolean // Thêm tùy chọn lazy
+      lazy?: boolean
     }
 
-    // Chỉ truy cập localStorage ở phía client
-    const token = import.meta.client ? localStorage.getItem('auth_token') : null
+    // Lấy token dựa trên authType
+    let token: string | null = null
+    if (import.meta.client) {
+      if (authType === AuthType.User || authType === AuthType.Customer) {
+        token = useCookie('user_access_token', { maxAge: 7200 }).value || null
+      }
+    }
+
     const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
+      ...(body instanceof FormData ? {} : { 'Content-Type': 'application/json' }), // Chỉ thêm nếu không phải FormData
       ...customHeaders,
     }
 
-    if (useToken && token) {
+    if (token && authType !== AuthType.Guest) {
       headers['Authorization'] = `Bearer ${token}`
     }
 
@@ -41,10 +54,10 @@ export const useApi = () => {
         $fetch<ApiResponse<T>>(url, {
           method,
           headers,
-          body: body ? JSON.stringify(body) : undefined,
+          body: body instanceof FormData ? body : body ? JSON.stringify(body) : undefined,
           query: params,
         }),
-      { lazy } // Truyền tùy chọn lazy
+      { lazy }
     )
 
     return { data, status, error, refresh }
@@ -53,7 +66,18 @@ export const useApi = () => {
   return {
     get: <T>(endpoint: string, options = {}) => apiFetch<T>('GET', endpoint, options),
     post: <T>(endpoint: string, body: any, options = {}) => apiFetch<T>('POST', endpoint, { body, ...options }),
-    put: <T>(endpoint: string, body: any, options = {}) => apiFetch<T>('PUT', endpoint, { body, ...options }),
+    put: <T>(endpoint: string, body: any, options = {}) => {
+      // Chuyển PUT thành POST với _method=PUT
+      const updatedBody = body instanceof FormData
+        ? body // Nếu là FormData, thêm trực tiếp vào FormData
+        : { ...body, _method: 'PUT' } // Nếu là object, thêm _method vào body
+      
+      if (body instanceof FormData) {
+        updatedBody.append('_method', 'PUT')
+      }
+
+      return apiFetch<T>('POST', endpoint, { body: updatedBody, ...options })
+    },
     del: <T>(endpoint: string, options = {}) => apiFetch<T>('DELETE', endpoint, options),
   }
 }

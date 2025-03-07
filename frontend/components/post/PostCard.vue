@@ -4,7 +4,7 @@
         <!-- Khu vực ảnh với category name nổi -->
         <div class="relative w-full aspect-video">
             <img :src="`${img}`" :alt="post.title" class="rounded-lg aspect-video rounded-b-none object-cover w-full"
-                loading="lazy" @error="() => { img = config.public.placeholderImage; }" />
+                loading="lazy" @error="() => { img = placeholderImage; }" />
             <!-- Category name nổi ở góc dưới bên trái -->
             <div v-if="post.category?.name"
                 class="absolute bottom-2 left-2 bg-green-600 text-white text-xs font-semibold px-2 py-1 rounded">
@@ -14,7 +14,7 @@
 
         <div class="text-left mt-3 px-3 pb-3 flex-1 flex flex-col justify-between">
             <div>
-                <h3 class="text-xl font-bold text-green-800 mb-2">{{ post.title }}</h3>
+                <h3 class="text-xl font-bold text-green-800 mb-2 line-clamp-3">{{ post.title }}</h3>
                 <p class="text-gray-600 text-sm line-clamp-3">{{ post.summary }}</p>
             </div>
 
@@ -45,6 +45,7 @@ interface Props {
 }
 
 const config = useRuntimeConfig();
+const placeholderImage = config.public.placeholderImage;
 const backendUrl = config.public.backendUrl;
 const props = defineProps<Props>();
 const img = ref(`${backendUrl}${props.post.featured_image}`);

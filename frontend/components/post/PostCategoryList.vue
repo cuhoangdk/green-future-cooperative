@@ -32,7 +32,7 @@ import { usePostCategories } from '~/composables/usePostCategories'
 const { getAllPostCategories } = usePostCategories()
 
 // Gọi API để lấy danh mục
-const { data, status, error } = await getAllPostCategories()
+const { data, status, error } = await getAllPostCategories(AuthType.Guest)
 
 // Xử lý danh mục và trạng thái loading
 const categories = computed<PostCategory[]>(() => Array.isArray(data.value?.data) ? data.value.data : data.value ? [data.value.data] : [])
