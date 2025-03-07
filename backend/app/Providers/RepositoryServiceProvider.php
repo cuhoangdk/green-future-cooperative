@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\ProductImage;
+use App\Repositories\Contracts\CartItemRepositoryInterface;
 use App\Repositories\Contracts\CultivationLogRepositoryInterface;
 use App\Repositories\Contracts\CustomerProfileRepositoryInterface;
 use App\Repositories\Contracts\CustomerRepositoryInterface;
@@ -15,6 +16,7 @@ use App\Repositories\Contracts\ProductRepositoryInterface;
 use App\Repositories\Contracts\ProductUnitRepositoryInterface;
 use App\Repositories\Contracts\RoleRepositoryInterface;
 use App\Repositories\Contracts\UserRepositoryInterface;
+use App\Repositories\Eloquent\CartItemRepository;
 use App\Repositories\Eloquent\CultivationLogRepository;
 use App\Repositories\Eloquent\CustomerProfileRepository;
 use App\Repositories\Eloquent\CustomerRepository;
@@ -55,6 +57,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(CultivationLogRepositoryInterface::class, CultivationLogRepository::class);
         $this->app->bind(ProductQuantityPriceRepositoryInterface::class, ProductQuantityPriceRepository::class);
         $this->app->bind(ProductImageRepositoryInterface::class, ProductImageRepository::class);
+        $this->app->bind(CartItemRepositoryInterface::class, CartItemRepository::class);
     }
 
     /**

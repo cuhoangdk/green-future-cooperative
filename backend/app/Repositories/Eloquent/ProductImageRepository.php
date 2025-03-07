@@ -33,6 +33,11 @@ class ProductImageRepository implements ProductImageRepositoryInterface
     {
         return DB::transaction(function () use ($productId, $data) {
             $data['product_id'] = $productId;
+            if (isset($data['is_primary']) && $data['is_primary']) {
+                $this->model->where('product_id', $productId)
+                    ->where('is_primary', true)
+                    ->update(['is_primary' => false]);
+            }
             return $this->model->create($data);
         });
     }
@@ -41,6 +46,12 @@ class ProductImageRepository implements ProductImageRepositoryInterface
     {
         return DB::transaction(function () use ($productId, $id, $data) {
             $image = $this->getById($productId, $id);
+            if (isset($data['is_primary']) && $data['is_primary'] && !$image->is_primary) {
+                $this->model->where('product_id', $productId)
+                    ->where('is_primary', true)
+                    ->where('id', '!=', $id)
+                    ->update(['is_primary' => false]);
+            }
             $image->update($data);
             return $image;
         });
