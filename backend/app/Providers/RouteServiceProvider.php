@@ -2,8 +2,11 @@
 
 namespace App\Providers;
 
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
+use Str;
 
 class RouteServiceProvider extends ServiceProvider
 {
@@ -48,5 +51,22 @@ class RouteServiceProvider extends ServiceProvider
         Route::middleware('web')
             ->namespace($this->namespace)
             ->group(base_path('routes/web.php'));
+    }
+    public function boot()
+    {
+        RateLimiter::for('emailLogin', function (Request $request) {
+            $email = Str::lower($request->input('email')); // Lấy email từ request và chuyển về chữ thường
+            if (!$email) {
+                // Nếu không có email trong request, không áp dụng giới hạn này
+                return \Illuminate\Cache\RateLimiting\Limit::none();
+            }
+            
+            $key = 'login:email:' . $email; // Key duy nhất dựa trên email
+            return new \Illuminate\Cache\RateLimiting\Limit(
+                $key, // Key cho rate limiter
+                5,    // Giới hạn 5 lần
+                1     // Trong 1 phút
+            );
+        });
     }
 }

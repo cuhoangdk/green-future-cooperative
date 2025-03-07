@@ -4,7 +4,6 @@ namespace App\Jobs;
 
 use App\Models\Customer;
 use App\Notifications\CustomerResetPasswordNotification;
-use Carbon\Traits\Serialization;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Foundation\Queue\Queueable;
@@ -12,7 +11,7 @@ use Illuminate\Queue\InteractsWithQueue;
 
 class CustomerSendResetPasswordEmail implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, Serialization;
+    use Dispatchable, InteractsWithQueue, Queueable;
 
     protected $customer;
     protected $token;

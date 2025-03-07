@@ -8,6 +8,8 @@ use App\Repositories\Contracts\CultivationLogRepositoryInterface;
 use App\Repositories\Contracts\CustomerProfileRepositoryInterface;
 use App\Repositories\Contracts\CustomerRepositoryInterface;
 use App\Repositories\Contracts\FarmRepositoryInterface;
+use App\Repositories\Contracts\OrderItemRepositoryInterface;
+use App\Repositories\Contracts\OrderRepositoryInterface;
 use App\Repositories\Contracts\PostCommentRepositoryInterface;
 use App\Repositories\Contracts\ProductCatogoryRepositoryInterface;
 use App\Repositories\Contracts\ProductImageRepositoryInterface;
@@ -21,6 +23,8 @@ use App\Repositories\Eloquent\CultivationLogRepository;
 use App\Repositories\Eloquent\CustomerProfileRepository;
 use App\Repositories\Eloquent\CustomerRepository;
 use App\Repositories\Eloquent\FarmRepository;
+use App\Repositories\Eloquent\OrderItemRepository;
+use App\Repositories\Eloquent\OrderRepository;
 use App\Repositories\Eloquent\PostCommentRepository;
 use App\Repositories\Eloquent\ProductCategoryRepository;
 use App\Repositories\Eloquent\ProductImageRepository;
@@ -58,6 +62,8 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(ProductQuantityPriceRepositoryInterface::class, ProductQuantityPriceRepository::class);
         $this->app->bind(ProductImageRepositoryInterface::class, ProductImageRepository::class);
         $this->app->bind(CartItemRepositoryInterface::class, CartItemRepository::class);
+        $this->app->bind(OrderRepositoryInterface::class, OrderRepository::class);
+        $this->app->bind(OrderItemRepositoryInterface::class, OrderItemRepository::class);
     }
 
     /**

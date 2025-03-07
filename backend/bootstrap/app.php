@@ -5,6 +5,7 @@ use App\Http\Middleware\ForceJsonResponse;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -22,5 +23,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->append(ForceJsonResponse::class); // Buộc trả về JSON
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        $exceptions->render(function (TooManyRequestsHttpException $e) {
+            return response()->json([
+                'message' => 'Too many attempts. Please try again later.',
+                'retry_after' => $e->getHeaders()['Retry-After'] ?? 60,
+            ], 429);
+        });
     })->create();

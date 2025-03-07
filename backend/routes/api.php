@@ -1,4 +1,6 @@
 <?php
+use App\Http\Controllers\Api\AdminOrderController;
+use App\Http\Controllers\Api\OrderController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\CartItemController;
 use App\Http\Controllers\Api\CultivationLogController;
@@ -20,6 +22,20 @@ use App\Http\Controllers\Api\CustomerAddressController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\PermissionController;
 
+Route::prefix('orders')->namespace('Api')->middleware(['auth:api_customers'])->group(function () {
+    Route::get('/', [OrderController::class, 'index'])->name('orders.index');
+    Route::post('/', [OrderController::class, 'store'])->name('orders.store');
+    Route::get('/{id}', [OrderController::class, 'show'])->name('orders.show');
+    Route::post('/{id}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
+});
+
+Route::prefix('admin/orders')->namespace('Api')->middleware(['auth:api_users'])->group(function () {
+    Route::get('/', [AdminOrderController::class, 'index'])->name('admin.orders.index');
+    Route::post('/', [AdminOrderController::class, 'store'])->name('admin.orders.store');
+    Route::get('/{id}', [AdminOrderController::class, 'show'])->name('admin.orders.show');
+    Route::put('/{id}', [AdminOrderController::class, 'update'])->name('admin.orders.update');
+    Route::post('/{id}/cancel', [AdminOrderController::class, 'cancel'])->name('admin.orders.cancel');
+});
 Route::prefix('cart')->namespace('Api')->middleware(['auth:api_customers'])->group(function () {
     Route::get('/', [CartItemController::class, 'index'])->name('cart.index');
     Route::post('/', [CartItemController::class, 'store'])->name('cart.store');
@@ -192,9 +208,9 @@ Route::prefix('customer-profile')->middleware('auth:api_customers')->group(funct
 });
 
 // Route xác thực khách hàng
-Route::prefix('customer-auth')->group(function () {
-    Route::post('/login', [CustomerAuthController::class, 'login'])->name('customer-auth.login'); // POST /api/customer-auth/login
-    Route::post('/register', [CustomerAuthController::class, 'register'])->name('customer-auth.register'); // POST /api/customer-auth/register
+Route::prefix('customer-auth')->group(function () {    
+    Route::post('/login', [CustomerAuthController::class, 'login'])->name('customer-auth.login')->middleware(['throttle:15,1', 'throttle:emailLogin']); // POST /api/customer-auth/login
+    Route::post('/register', [CustomerAuthController::class, 'register'])->name('customer-auth.register')->middleware('throttle:500,1'); // POST /api/customer-auth/register
     Route::post('/forgot-password', [CustomerAuthController::class, 'forgotPassword'])->name('customer-auth.forgot-password'); // POST /api/customer-auth/forgot-password
     Route::post('/reset-password', [CustomerAuthController::class, 'resetPassword'])->name('customer-auth.reset-password'); // POST /api/customer-auth/reset-password
     Route::post('/verify-account', [CustomerAuthController::class, 'verifyAccount'])->name('customer-auth.verify-account'); // POST /api/customer-auth/verify-account
@@ -228,7 +244,7 @@ Route::middleware(['auth:api_users'])->group(function () {
 
 // Routes dành cho xác thực người dùng
 Route::prefix('user-auth')->group(function () {
-    Route::post('/login', [UserAuthController::class, 'login'])->name('user-auth.login'); // POST /api/user-auth/login
+    Route::post('/login', [UserAuthController::class, 'login'])->name('user-auth.login')->middleware(['throttle:15,1', 'throttle:emailLogin']);; // POST /api/user-auth/login
     Route::post('/forgot-password', [UserAuthController::class, 'sendResetLink'])->name('user-auth.forgot-password'); // POST /api/user-auth/forgot-password
     Route::post('/reset-password', [UserAuthController::class, 'resetPassword'])->name('user-auth.reset-password'); // POST /api/user-auth/reset-password
     Route::post('/refresh-token', [UserAuthController::class, 'refreshToken'])->name('user-auth.refresh-token'); // POST /api/user-auth/refresh-token
@@ -244,7 +260,7 @@ Route::prefix('posts')->group(function () {
     Route::get('/hot', [PostController::class, 'getHotPosts'])->name('posts.hot'); // GET /api/posts/hot
     Route::get('/featured', [PostController::class, 'getFeaturedPosts'])->name('posts.featured'); // GET /api/posts/featured
     Route::get('/search', [PostController::class, 'search'])->name('posts.search'); // GET /api/posts/search
-    Route::middleware('auth:api_users')->group(function () {
+    Route::middleware(['auth:api_users', 'permission'])->group(function () {
         Route::post('/', [PostController::class, 'store'])->name('posts.store'); // POST /api/posts
         Route::get('/trashed', [PostController::class, 'trashed'])->name('posts.trashed'); // GET /api/posts/trashed
     });
@@ -252,7 +268,7 @@ Route::prefix('posts')->group(function () {
     Route::get('/slug/{slug}', [PostController::class, 'getBySlug'])->name('posts.get-by-slug'); // GET /api/posts/slug/{slug}
     Route::get('/category-slug/{slug}', [PostController::class, 'getByCategorySlug'])->name('posts.get-by-category-slug'); // GET /api/posts/category-slug/{slug}
     Route::get('/category/{categoryId}', [PostController::class, 'getByCategory'])->name('posts.get-by-category'); // GET /api/posts/category/{categoryId}
-    Route::middleware('auth:api_users')->group(function () {
+    Route::middleware(['auth:api_users', 'permission'])->group(function () {
         Route::put('/{id}', [PostController::class, 'update'])->name('posts.update'); // PUT /api/posts/{id}
         Route::delete('/{id}', [PostController::class, 'destroy'])->name('posts.destroy'); // DELETE /api/posts/{id}
         Route::post('/restore/{id}', [PostController::class, 'restore'])->name('posts.restore'); // POST /api/posts/restore/{id}
