@@ -1,6 +1,8 @@
 <?php
 use App\Http\Controllers\Api\AdminOrderController;
+use App\Http\Controllers\Api\ContactInformationController;
 use App\Http\Controllers\Api\OrderController;
+use App\Http\Controllers\Api\SliderImageController;
 use App\Http\Controllers\Api\SocialLinkController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\CartItemController;
@@ -22,6 +24,30 @@ use App\Http\Controllers\Api\CustomerController;
 use App\Http\Controllers\Api\CustomerAddressController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\PermissionController;
+
+// Slider Images
+Route::prefix('slider-images')->group(function () {
+    Route::get('/', [SliderImageController::class, 'index'])->name('slider-images.index');
+    Route::get('/{id}', [SliderImageController::class, 'show'])->name('slider-images.show');
+    
+    Route::middleware(['auth:api_users', 'permission'])->group(function () {
+        Route::post('/', [SliderImageController::class, 'store'])->name('slider-images.store');
+        Route::put('/{id}', [SliderImageController::class, 'update'])->name('slider-images.update');
+        Route::delete('/{id}', [SliderImageController::class, 'destroy'])->name('slider-images.destroy');
+    });
+});
+
+// Contact Informations
+Route::prefix('contact-informations')->group(function () {
+    Route::get('/', [ContactInformationController::class, 'index'])->name('contact-informations.index');
+    Route::get('/{id}', [ContactInformationController::class, 'show'])->name('contact-informations.show');
+    
+    Route::middleware(['auth:api_users', 'permission'])->group(function () {
+        Route::post('/', [ContactInformationController::class, 'store'])->name('contact-informations.store');
+        Route::put('/{id}', [ContactInformationController::class, 'update'])->name('contact-informations.update');
+        Route::delete('/{id}', [ContactInformationController::class, 'destroy'])->name('contact-informations.destroy');
+    });
+});
 
 Route::prefix('social-links')->group(function (){
     Route::get('/', [SocialLinkController::class, 'index'])->name('social-links.index');    

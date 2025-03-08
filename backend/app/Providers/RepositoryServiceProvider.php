@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Models\ProductImage;
 use App\Repositories\Contracts\CartItemRepositoryInterface;
+use App\Repositories\Contracts\ContactInformationRepositoryInterface;
 use App\Repositories\Contracts\CultivationLogRepositoryInterface;
 use App\Repositories\Contracts\CustomerProfileRepositoryInterface;
 use App\Repositories\Contracts\CustomerRepositoryInterface;
@@ -17,9 +18,11 @@ use App\Repositories\Contracts\ProductQuantityPriceRepositoryInterface;
 use App\Repositories\Contracts\ProductRepositoryInterface;
 use App\Repositories\Contracts\ProductUnitRepositoryInterface;
 use App\Repositories\Contracts\RoleRepositoryInterface;
+use App\Repositories\Contracts\SliderImageRepositoryInterface;
 use App\Repositories\Contracts\SocialLinkRepositoryInterface;
 use App\Repositories\Contracts\UserRepositoryInterface;
 use App\Repositories\Eloquent\CartItemRepository;
+use App\Repositories\Eloquent\ContactInformationRepository;
 use App\Repositories\Eloquent\CultivationLogRepository;
 use App\Repositories\Eloquent\CustomerProfileRepository;
 use App\Repositories\Eloquent\CustomerRepository;
@@ -33,6 +36,7 @@ use App\Repositories\Eloquent\ProductQuantityPriceRepository;
 use App\Repositories\Eloquent\ProductRepository;
 use App\Repositories\Eloquent\ProductUnitRepository;
 use App\Repositories\Eloquent\RoleRepository;
+use App\Repositories\Eloquent\SliderImageRepository;
 use App\Repositories\Eloquent\SocialLinkRepository;
 use App\Repositories\Eloquent\UserRepository;
 use Illuminate\Support\ServiceProvider;
@@ -67,6 +71,8 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(OrderRepositoryInterface::class, OrderRepository::class);
         $this->app->bind(OrderItemRepositoryInterface::class, OrderItemRepository::class);
         $this->app->bind(SocialLinkRepositoryInterface::class, SocialLinkRepository::class);
+        $this->app->bind(SliderImageRepositoryInterface::class, SliderImageRepository::class);
+        $this->app->bind(ContactInformationRepositoryInterface::class, ContactInformationRepository::class);
     }
 
     /**

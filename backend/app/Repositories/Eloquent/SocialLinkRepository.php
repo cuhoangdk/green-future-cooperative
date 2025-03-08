@@ -11,10 +11,14 @@ class SocialLinkRepository implements SocialLinkRepositoryInterface{
         $this->model=$model;
     }
     public function getAll(){
-        return $this->model->get();
+        return $this->model->when(!auth('api_users')->check(), function ($query) {
+            $query->where('is_active', true);
+        })->get();
     }
     public function getById($id){
-        return $this->model->findOrFail($id);
+        return $this->model->when(!auth('api_users')->check(), function ($query) {
+            $query->where('is_active', true);
+        })->findOrFail($id);
     }
     public function create(array $data){
         return $this->model->create($data);
