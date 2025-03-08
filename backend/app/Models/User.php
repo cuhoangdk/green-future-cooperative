@@ -36,8 +36,7 @@ class User extends Authenticatable
         'usercode', 
         'last_login_at',
         'gender',
-        'role_id',
-        'youtube_token',
+        'role_id',        
     ];
 
     /**
@@ -59,8 +58,7 @@ class User extends Authenticatable
         'last_login_at' => 'datetime',
         'province' => 'string',
         'district' => 'string',
-        'ward' => 'string',
-        'youtube_token' => 'array',
+        'ward' => 'string',        
     ];    
 
     /**
