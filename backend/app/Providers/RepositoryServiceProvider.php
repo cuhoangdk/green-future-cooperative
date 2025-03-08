@@ -17,6 +17,7 @@ use App\Repositories\Contracts\ProductQuantityPriceRepositoryInterface;
 use App\Repositories\Contracts\ProductRepositoryInterface;
 use App\Repositories\Contracts\ProductUnitRepositoryInterface;
 use App\Repositories\Contracts\RoleRepositoryInterface;
+use App\Repositories\Contracts\SocialLinkRepositoryInterface;
 use App\Repositories\Contracts\UserRepositoryInterface;
 use App\Repositories\Eloquent\CartItemRepository;
 use App\Repositories\Eloquent\CultivationLogRepository;
@@ -32,6 +33,7 @@ use App\Repositories\Eloquent\ProductQuantityPriceRepository;
 use App\Repositories\Eloquent\ProductRepository;
 use App\Repositories\Eloquent\ProductUnitRepository;
 use App\Repositories\Eloquent\RoleRepository;
+use App\Repositories\Eloquent\SocialLinkRepository;
 use App\Repositories\Eloquent\UserRepository;
 use Illuminate\Support\ServiceProvider;
 use App\Repositories\Contracts\PostRepositoryInterface;
@@ -64,6 +66,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(CartItemRepositoryInterface::class, CartItemRepository::class);
         $this->app->bind(OrderRepositoryInterface::class, OrderRepository::class);
         $this->app->bind(OrderItemRepositoryInterface::class, OrderItemRepository::class);
+        $this->app->bind(SocialLinkRepositoryInterface::class, SocialLinkRepository::class);
     }
 
     /**

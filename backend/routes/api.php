@@ -1,6 +1,7 @@
 <?php
 use App\Http\Controllers\Api\AdminOrderController;
 use App\Http\Controllers\Api\OrderController;
+use App\Http\Controllers\Api\SocialLinkController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\CartItemController;
 use App\Http\Controllers\Api\CultivationLogController;
@@ -22,21 +23,33 @@ use App\Http\Controllers\Api\CustomerAddressController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\PermissionController;
 
-Route::prefix('orders')->namespace('Api')->middleware(['auth:api_customers'])->group(function () {
+Route::prefix('social-links')->group(function (){
+    Route::get('/', [SocialLinkController::class, 'index'])->name('social-links.index');    
+    Route::middleware(['auth:api_users', 'permission'])->group(function (){
+        Route::post('/', [SocialLinkController::class, 'store'])->name('social-links.store');       
+    });   
+    Route::get('/{id}', [SocialLinkController::class, 'show'])->name('social-links.show'); 
+    Route::middleware(['auth:api_users', 'permission'])->group(function (){
+        Route::put('/{id}', [SocialLinkController::class, 'update'])->name('social-links.update');
+        Route::delete('/{id}', [SocialLinkController::class, 'destroy'])->name('social-links.destroy');
+    }); 
+});
+
+Route::prefix('orders')->middleware(['auth:api_customers'])->group(function () {
     Route::get('/', [OrderController::class, 'index'])->name('orders.index');
     Route::post('/', [OrderController::class, 'store'])->name('orders.store');
     Route::get('/{id}', [OrderController::class, 'show'])->name('orders.show');
     Route::post('/{id}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
 });
 
-Route::prefix('admin/orders')->namespace('Api')->middleware(['auth:api_users'])->group(function () {
+Route::prefix('admin/orders')->middleware(['auth:api_users'])->group(function () {
     Route::get('/', [AdminOrderController::class, 'index'])->name('admin.orders.index');
     Route::post('/', [AdminOrderController::class, 'store'])->name('admin.orders.store');
     Route::get('/{id}', [AdminOrderController::class, 'show'])->name('admin.orders.show');
     Route::put('/{id}', [AdminOrderController::class, 'update'])->name('admin.orders.update');
     Route::post('/{id}/cancel', [AdminOrderController::class, 'cancel'])->name('admin.orders.cancel');
 });
-Route::prefix('cart')->namespace('Api')->middleware(['auth:api_customers'])->group(function () {
+Route::prefix('cart')->middleware(['auth:api_customers'])->group(function () {
     Route::get('/', [CartItemController::class, 'index'])->name('cart.index');
     Route::post('/', [CartItemController::class, 'store'])->name('cart.store');
     Route::get('/{id}', [CartItemController::class, 'show'])->name('cart.show');
