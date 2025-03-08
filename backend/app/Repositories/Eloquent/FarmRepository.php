@@ -3,6 +3,7 @@ namespace App\Repositories\Eloquent;
 
 use App\Models\Farm;
 use App\Repositories\Contracts\FarmRepositoryInterface;
+use Auth;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\Paginator;
 
@@ -27,8 +28,13 @@ class FarmRepository implements FarmRepositoryInterface
     public function create(array $data)
     {
         
-        $addressData = $data['address'] ?? null;
+        $addressData = $data['address'] ?? null;        
         unset($data['address']);
+        // Kiểm tra quyền super admin nếu có thay đổi user_id
+        $user = Auth::guard('api_users')->user();
+        if ($user && !$user->is_super_admin) {
+            $data['user_id'] = $user->id;
+        }
         $farm = $this->model->create($data);
         if ($addressData) {
             $farm->address()->create($addressData);
@@ -39,11 +45,14 @@ class FarmRepository implements FarmRepositoryInterface
 
     public function update($id, array $data)
     {
-        $farm = $this->model->find($id);
-        unset($data['user_id']);
+        $farm = $this->model->find($id);        
         if ($farm) {
             $addressData = $data['address'] ?? null;
             unset($data['address']); 
+            $user = Auth::guard('api_users')->user();
+            if ($user && !$user->is_super_admin) {
+                $data['user_id'] = $user->id;
+            }
             $farm->update($data);
             if ($addressData) {
                 $farm->address()->updateOrCreate(
