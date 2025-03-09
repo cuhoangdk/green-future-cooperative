@@ -18,11 +18,15 @@ class ActivityLogController extends Controller
 
     public function index(IndexActivityLogRequest $request)
     {
-        $perPage = $request->input('per_page'); // Bỏ giá trị mặc định
+        $perPage = $request->input('per_page', 10); // Bỏ giá trị mặc định
         $sortBy = $request->input('sort_by', 'created_at');
         $sortDirection = $request->input('sort_direction', 'desc');
 
-        $logs = $this->repository->getAll();
+        $logs = $this->repository->getAll(
+            sortBy: $sortBy,
+            sortDirection: $sortDirection,
+            perPage: $perPage 
+        );        
         return ActivityLogResource::collection($logs);
     }
 
