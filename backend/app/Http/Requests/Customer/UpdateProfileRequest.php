@@ -19,7 +19,7 @@ class UpdateProfileRequest extends FormRequest
             'email' => 'required|email|unique:users,email|unique:customers,email,' . $id,
             'password' => 'nullable|min:6|confirmed',
             'full_name' => 'required|string|max:255',
-            'phone_number' => 'required|string|max:20|unique:customers,phone_number,' . $id,
+            'phone_number' => 'required|string|max:20|unique:users,phone_number|unique:customers,phone_number,' . $id,
             'gender' => 'required|string|in:male,female,other',
             'date_of_birth' => 'required|date|before:today',
             'avatar_url' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',

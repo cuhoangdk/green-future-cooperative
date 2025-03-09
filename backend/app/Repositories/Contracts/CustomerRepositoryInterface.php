@@ -10,6 +10,4 @@ interface CustomerRepositoryInterface extends BaseRepositoryInterface{
     string $sortDirection = 'desc',
     int $perPage = 10,
     array $filters = []);
-
-
 }

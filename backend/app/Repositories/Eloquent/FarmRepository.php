@@ -117,8 +117,7 @@ class FarmRepository implements FarmRepositoryInterface
         // Lọc theo từ khóa tìm kiếm
         $query->when($filters['search'] ?? null, function (Builder $query, $search) {
             $query->where(function (Builder $q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")                    
-                    ->orWhere('street_address', 'like', "%{$search}%");
+                $q->where('name', 'like', "%{$search}%");
             });
         });
 
