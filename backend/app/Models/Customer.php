@@ -29,7 +29,7 @@ class Customer extends Authenticatable
         'verified_at',
     ];
 
-    protected $hidden = ['password'];
+    protected $hidden = ['password', 'remember_token',];
 
     protected $casts = [
         'date_of_birth' => 'date',

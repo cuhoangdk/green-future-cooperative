@@ -16,6 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
             'permission' => \App\Http\Middleware\CheckPermission::class,
+            'log.activity' => \App\Http\Middleware\LogActivity::class,
         ]);
         $middleware->append(CorsMiddleware::class);
         // $middleware->append(\Illuminate\Http\Middleware\TrustHosts::class); // Bảo vệ hostname        

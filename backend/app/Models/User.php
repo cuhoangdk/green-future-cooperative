@@ -44,7 +44,7 @@ class User extends Authenticatable
      *
      * @var array
      */
-    protected $hidden = ['password'];
+    protected $hidden = ['password', 'remember_token',];
 
     /**
      * Các cột sẽ được cast sang kiểu dữ liệu mong muốn.
