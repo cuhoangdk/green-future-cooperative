@@ -4,6 +4,7 @@ namespace App\Repositories\Eloquent;
 
 use App\Models\Product;
 use App\Repositories\Contracts\ProductRepositoryInterface;
+use Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -18,12 +19,17 @@ class ProductRepository implements ProductRepositoryInterface
 
     public function getAll(string $sortBy = 'created_at', string $sortDirection = 'desc', int $perPage = 10): LengthAwarePaginator
     {
-        return $this->model->when(!auth('api_users')->check(), function ($query) {
+        $query = $this->model->with(['category', 'unit', 'user'])->when(!auth('api_users')->check(), function ($query) {
             $query->where('is_active', true);
-        })->with(['category', 'unit', 'user'])
-            ->orderBy($sortBy,
-            $sortDirection)
-            ->paginate($perPage);
+        });
+
+        // Chỉ áp dụng giới hạn cho user (api_users) không phải super_admin
+        $user = Auth::guard('api_users')->user();
+        if ($user && !$user->is_super_admin) {
+            $query->where('user_id', $user->id);
+        }
+
+        return $query->orderBy($sortBy, $sortDirection)->paginate($perPage);        
     }
 
     public function getTrashed(
@@ -31,24 +37,41 @@ class ProductRepository implements ProductRepositoryInterface
         string $sortDirection = 'desc',
         int $perPage = 10
     ): LengthAwarePaginator {
-        return $this->model->onlyTrashed()
-            ->with(['category', 'unit', 'user'])
-            ->orderBy($sortBy,
-            $sortDirection)
-            ->paginate($perPage);
+        $query = $this->model->onlyTrashed()->with(['category', 'unit', 'user']);
+
+        // Chỉ giới hạn cho user không phải super_admin
+        $user = Auth::guard('api_users')->user();
+        if ($user && !$user->is_super_admin) {
+            $query->where('user_id', $user->id);
+        }
+
+        return $query->orderBy($sortBy, $sortDirection)->paginate($perPage);
     }
 
     public function getById($id)
     {
-        return $this->model->when(!auth('api_users')->check(), function ($query) {
+        $product = $this->model->when(!auth('api_users')->check(), function ($query) {
             $query->where('is_active', true);
-        })->with(['category', 'unit', 'user'])
-            ->findOrFail($id);
+        })->with(['category', 'unit', 'user'])->find($id);
+
+        // Chỉ giới hạn cho user không phải super_admin
+        $user = Auth::guard('api_users')->user();
+        if ($user && !$user->is_super_admin && $product && $product->user_id !== $user->id) {
+            return null; // Hoặc throw exception nếu cần
+        }
+
+        return $product ?: null; // Trả về null nếu không tìm thấy thay vì throw exception
     }
 
     public function create(array $data)
     {
         return DB::transaction(function () use ($data) {
+            // Kiểm tra quyền super admin nếu có thay đổi user_id
+            $user = Auth::guard('api_users')->user();
+            if ($user && !$user->is_super_admin) {
+                $data['user_id'] = $user->id;
+            }
+
             return $this->model->create($data);
         });
     }
@@ -57,37 +80,79 @@ class ProductRepository implements ProductRepositoryInterface
     {
         return DB::transaction(function () use ($id, $data) {
             $product = $this->getById($id);
-            $product->update($data);
-            return $product;
+            if ($product) {
+                // Kiểm tra quyền chỉnh sửa product
+                $user = Auth::guard('api_users')->user();
+                if ($user && !$user->is_super_admin && $product->user_id !== $user->id) {
+                    return null; // Hoặc throw exception nếu cần
+                }
+
+                if ($user && !$user->is_super_admin) {
+                    $data['user_id'] = $user->id;
+                }
+                $product->update($data);
+                return $product;
+            }
+            return null;
         });
     }
 
     public function delete($id)
     {
         $product = $this->getById($id);
-        $product->delete();
-        return $product;
+        if ($product) {
+            // Kiểm tra quyền xóa product
+            $user = Auth::guard('api_users')->user();
+            if ($user && !$user->is_super_admin && $product->user_id !== $user->id) {
+                return false;
+            }
+            $product->delete();
+            return $product;
+        }
+        return false;
     }
 
     public function getTrashedById($id)
     {
-        return $this->model->onlyTrashed()
-            ->with(['category', 'unit', 'user'])
-            ->findOrFail($id);
+        $product = $this->model->onlyTrashed()->with(['category', 'unit', 'user'])->find($id);
+
+        // Kiểm tra quyền truy cập product đã xóa
+        $user = Auth::guard('api_users')->user();
+        if ($user && !$user->is_super_admin && $product && $product->user_id !== $user->id) {
+            return null;
+        }
+
+        return $product ?: null; // Trả về null nếu không tìm thấy
     }
 
     public function restore($id)
     {
         $product = $this->getTrashedById($id);
-        $product->restore();
-        return $product;
+        if ($product) {
+            // Kiểm tra quyền khôi phục product
+            $user = Auth::guard('api_users')->user();
+            if ($user && !$user->is_super_admin && $product->user_id !== $user->id) {
+                return false;
+            }
+            $product->restore();
+            return $product;
+        }
+        return false;
     }
 
     public function forceDelete($id)
     {
         $product = $this->getTrashedById($id);
-        $product->forceDelete();
-        return true;
+        if ($product) {
+            // Kiểm tra quyền xóa vĩnh viễn product
+            $user = Auth::guard('api_users')->user();
+            if ($user && !$user->is_super_admin && $product->user_id !== $user->id) {
+                return false;
+            }
+            $product->forceDelete();
+            return true;
+        }
+        return false;
     }
 
     public function getBySlug($slug)
@@ -97,22 +162,37 @@ class ProductRepository implements ProductRepositoryInterface
                 $query->where('is_active', true);
             })
             ->where('slug', $slug)
-            ->firstOrFail();
-        
-        if (!auth('api_users')->check()) {
+            ->first();
+
+        // Chỉ giới hạn cho user không phải super_admin
+        $user = Auth::guard('api_users')->user();
+        if ($user && !$user->is_super_admin && $product && $product->user_id !== $user->id) {
+            return null; // Hoặc throw exception nếu cần
+        }
+
+        if ($product && !auth('api_users')->check()) {
             $product->increment('views');
         }
-        
-        return $product;
+
+        return $product ?: null; // Trả về null nếu không tìm thấy
     }
 
     public function getByProductCode($productCode)
     {
-        return $this->model->with(['category', 'unit', 'user'])->when(!auth('api_users')->check(), function ($query) {
-            $query->where('is_active', true);
-        })
+        $product = $this->model->with(['category', 'unit', 'user'])
+            ->when(!auth('api_users')->check(), function ($query) {
+                $query->where('is_active', true);
+            })
             ->where('product_code', $productCode)
-            ->firstOrFail();
+            ->first();
+
+        // Chỉ giới hạn cho user không phải super_admin
+        $user = Auth::guard('api_users')->user();
+        if ($user && !$user->is_super_admin && $product && $product->user_id !== $user->id) {
+            return null; // Hoặc throw exception nếu cần
+        }
+
+        return $product ?: null; // Trả về null nếu không tìm thấy
     }
 
     public function getFilteredProduct(
@@ -122,6 +202,12 @@ class ProductRepository implements ProductRepositoryInterface
         array $filters = []
     ): LengthAwarePaginator {
         $query = $this->model->with(['category', 'unit', 'user']);
+
+        // Chỉ áp dụng giới hạn cho user không phải super_admin
+        $user = Auth::guard('api_users')->user();
+        if ($user && !$user->is_super_admin) {
+            $query->where('user_id', $user->id);
+        }
 
         // Áp dụng các bộ lọc nếu có
         if (!empty($filters)) {
@@ -170,25 +256,28 @@ class ProductRepository implements ProductRepositoryInterface
 
         return $query->when(!auth('api_users')->check(), function ($query) {
             $query->where('is_active', true);
-        })->orderBy($sortBy,
-        $sortDirection)
-            ->paginate($perPage);
+        })->orderBy($sortBy, $sortDirection)->paginate($perPage);
     }
+
     public function searchByName(
         string $query,
         string $sortBy = 'created_at',
         string $sortDirection = 'desc',
         int $perPage = 10
     ): LengthAwarePaginator {
-        return $this->model->when(!auth('api_users')->check(), function ($query) {
+        $searchQuery = $this->model->when(!auth('api_users')->check(), function ($query) {
             $query->where('is_active', true);
-        })->with(['category', 'unit', 'user'])
-            ->where(function ($q) use ($query) {
-                $q->where('name', 'like', "%{$query}%")
-                  ->orWhere('product_code', '=', $query);
-            })
-            ->orderBy($sortBy,
-            $sortDirection)
-            ->paginate($perPage);
+        })->with(['category', 'unit', 'user']);
+
+        // Chỉ áp dụng giới hạn cho user không phải super_admin
+        $user = Auth::guard('api_users')->user();
+        if ($user && !$user->is_super_admin) {
+            $searchQuery->where('user_id', $user->id);
+        }
+
+        return $searchQuery->where(function ($q) use ($query) {
+            $q->where('name', 'like', "%{$query}%")
+              ->orWhere('product_code', '=', $query);
+        })->orderBy($sortBy, $sortDirection)->paginate($perPage);
     }   
 }

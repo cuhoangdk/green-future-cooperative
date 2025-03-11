@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Repositories\Eloquent;
 
 use App\Models\Farm;
@@ -15,26 +16,43 @@ class FarmRepository implements FarmRepositoryInterface
     {
         $this->model = $farm;
     }
+
     public function getAll(string $sortBy = 'created_at', string $sortDirection = 'desc', int $perPage = 10)
     {
-        return $this->model->with('address', 'user')->orderBy($sortBy, $sortDirection)->paginate($perPage);
+        $query = $this->model->with('address', 'user');
+        
+        $user = Auth::guard('api_users')->user();
+        if ($user && !$user->is_super_admin) {
+            $query->where('user_id', $user->id);
+        }
+        
+        return $query->orderBy($sortBy, $sortDirection)->paginate($perPage);
     }
 
     public function getById($id)
     {
-        return $this->model->with('address', 'user')->find($id);
+        $farm = $this->model->with('address', 'user')->find($id);
+
+        
+        $user = Auth::guard('api_users')->user();
+        if ($user && !$user->is_super_admin && $farm && $farm->user_id !== $user->id) {
+            return null; 
+        }        
+
+        return $farm;
     }
 
     public function create(array $data)
     {
-        
         $addressData = $data['address'] ?? null;        
         unset($data['address']);
+        
         // Kiểm tra quyền super admin nếu có thay đổi user_id
         $user = Auth::guard('api_users')->user();
         if ($user && !$user->is_super_admin) {
             $data['user_id'] = $user->id;
         }
+        
         $farm = $this->model->create($data);
         if ($addressData) {
             $farm->address()->create($addressData);
@@ -47,9 +65,14 @@ class FarmRepository implements FarmRepositoryInterface
     {
         $farm = $this->model->find($id);        
         if ($farm) {
+            // Kiểm tra quyền chỉnh sửa farm
+            $user = Auth::guard('api_users')->user();
+            if ($user && !$user->is_super_admin && $farm->user_id !== $user->id) {
+                return null; // Hoặc throw exception nếu cần
+            }
+
             $addressData = $data['address'] ?? null;
             unset($data['address']); 
-            $user = Auth::guard('api_users')->user();
             if ($user && !$user->is_super_admin) {
                 $data['user_id'] = $user->id;
             }
@@ -69,28 +92,57 @@ class FarmRepository implements FarmRepositoryInterface
 
     public function delete($id)
     {
-        return $this->model->where('id', $id)->delete();
+        $farm = $this->model->find($id);
+        if ($farm) {
+            // Kiểm tra quyền xóa farm
+            $user = Auth::guard('api_users')->user();
+            if ($user && !$user->is_super_admin && $farm->user_id !== $user->id) {
+                return false;
+            }
+            return $farm->delete();
+        }
+        return false;
     }
+
     public function getTrashed(
         string $sortBy = 'deleted_at',
         string $sortDirection = 'desc',
         int $perPage = 10
     ) {
-        return $this->model->with('address', 'user')->onlyTrashed()
-            ->orderBy($sortBy, $sortDirection)
-            ->paginate($perPage);
+        $query = $this->model->with('address', 'user')->onlyTrashed();
+
+        // Chỉ giới hạn cho user không phải super_admin
+        $user = Auth::guard('api_users')->user();
+        if ($user && !$user->is_super_admin) {
+            $query->where('user_id', $user->id);
+        }
+
+        return $query->orderBy($sortBy, $sortDirection)->paginate($perPage);
     }
     
     public function getTrashedById($id)
     {
-        return $this->model->onlyTrashed()->find($id);
+        $farm = $this->model->onlyTrashed()->find($id);
+
+        // Kiểm tra quyền truy cập farm đã xóa
+        $user = Auth::guard('api_users')->user();
+        if ($user && !$user->is_super_admin && $farm && $farm->user_id !== $user->id) {
+            return null;
+        }
+
+        return $farm;
     }
 
     public function restore($id): bool
     {
-        $category = $this->model->onlyTrashed()->find($id);
-        if ($category) {
-            $category->restore();
+        $farm = $this->model->onlyTrashed()->find($id);
+        if ($farm) {
+            // Kiểm tra quyền khôi phục farm
+            $user = Auth::guard('api_users')->user();
+            if ($user && !$user->is_super_admin && $farm->user_id !== $user->id) {
+                return false;
+            }
+            $farm->restore();
             return true;
         }
         return false;
@@ -98,9 +150,14 @@ class FarmRepository implements FarmRepositoryInterface
 
     public function forceDelete($id): bool
     {
-        $category = $this->model->onlyTrashed()->find($id);
-        if ($category) {
-            $category->forceDelete();
+        $farm = $this->model->onlyTrashed()->find($id);
+        if ($farm) {
+            // Kiểm tra quyền xóa vĩnh viễn farm
+            $user = Auth::guard('api_users')->user();
+            if ($user && !$user->is_super_admin && $farm->user_id !== $user->id) {
+                return false;
+            }
+            $farm->forceDelete();
             return true;
         }
         return false;
@@ -114,6 +171,12 @@ class FarmRepository implements FarmRepositoryInterface
     ) {
         $query = $this->model->query();
 
+        // Chỉ giới hạn cho user không phải super_admin
+        $user = Auth::guard('api_users')->user();
+        if ($user && !$user->is_super_admin) {
+            $query->where('user_id', $user->id);
+        }
+
         // Lọc theo từ khóa tìm kiếm
         $query->when($filters['search'] ?? null, function (Builder $query, $search) {
             $query->where(function (Builder $q) use ($search) {
@@ -121,13 +184,8 @@ class FarmRepository implements FarmRepositoryInterface
             });
         });
 
-        $query->with('address', 'user')->orderBy(
-            $sortBy,
-            $sortDirection
-        );
+        $query->with('address', 'user')->orderBy($sortBy, $sortDirection);
 
         return $query->paginate($perPage);
     }
-
-    
 }
