@@ -17,12 +17,12 @@ class FarmRepository implements FarmRepositoryInterface
     }
     public function getAll(string $sortBy = 'created_at', string $sortDirection = 'desc', int $perPage = 10)
     {
-        return $this->model->orderBy($sortBy, $sortDirection)->paginate($perPage);
+        return $this->model->with('address', 'user')->orderBy($sortBy, $sortDirection)->paginate($perPage);
     }
 
     public function getById($id)
     {
-        return $this->model->find($id);
+        return $this->model->with('address', 'user')->find($id);
     }
 
     public function create(array $data)
@@ -76,7 +76,7 @@ class FarmRepository implements FarmRepositoryInterface
         string $sortDirection = 'desc',
         int $perPage = 10
     ) {
-        return $this->model->onlyTrashed()
+        return $this->model->with('address', 'user')->onlyTrashed()
             ->orderBy($sortBy, $sortDirection)
             ->paginate($perPage);
     }
@@ -121,7 +121,7 @@ class FarmRepository implements FarmRepositoryInterface
             });
         });
 
-        $query->orderBy(
+        $query->with('address', 'user')->orderBy(
             $sortBy,
             $sortDirection
         );

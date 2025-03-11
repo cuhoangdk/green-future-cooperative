@@ -19,7 +19,7 @@ class FarmResource extends JsonResource
         $data = parent::toArray($request);
 
         // Bỏ các trường không mong muốn
-        $data = Arr::except($data, ['deleted_at', 'user.remember_token']);
+        $data = Arr::except($data, ['deleted_at']);
         $data['address'] = new AddressResource($this->whenLoaded('address'));
         return $data;
     }
