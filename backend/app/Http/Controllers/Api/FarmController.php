@@ -81,7 +81,7 @@ class FarmController extends Controller
             perPage: $perPage
         );
 
-        return FarmResource::collection($trashedUsers->load('address', 'user'));
+        return FarmResource::collection($trashedUsers);
     }
 
     /**
