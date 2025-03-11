@@ -2,6 +2,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Farm\SearchFarmRequest;
 use App\Http\Requests\Farm\StoreFarmRequest;
 use App\Http\Requests\Farm\UpdateFarmRequest;
 use App\Http\Requests\Farm\IndexFarmRequest;
@@ -117,11 +118,11 @@ class FarmController extends Controller
         return response()->json(['message' => 'Farm permanently deleted successfully']);
     }
 
-    public function search(Request $request)
+    public function search(SearchFarmRequest $request)
     {
-        $sortBy = $request->query('sortBy', 'created_at');
-        $sortDirection = $request->query('sortDirection', 'desc');
-        $perPage = (int) $request->query('perPage', 10);
+        $perPage = $request->input('per_page', 10);
+        $sortBy = $request->input('sort_by', 'created_at');
+        $sortDirection = $request->input('sort_direction', 'desc');
         $filters = $request->only(['search']);
 
         $farms = $this->farmRepository->search($sortBy, $sortDirection, $perPage, $filters);
