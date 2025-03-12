@@ -1,7 +1,7 @@
 <template>
     <div class="border border-gray-200 rounded-lg p-4 sm:p-5">
-        <form @submit.prevent="handleSubmit" class="space-y-4">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <form @submit.prevent="handleSubmit" class="space">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-x-4">
                 <div class="flex flex-col items-center md:col-span-1">
                     <!-- Avatar Section -->
                     <div class="w-60 h-60 mb-4 cursor-pointer" @click="triggerFileInput">
@@ -13,7 +13,7 @@
                     <label class="text-gray-700 font-semibold mt-2">Ảnh đại diện</label>
                 </div>
                 <!-- Profile Details Section -->
-                <div class="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-x-4">
                     <!-- User Code (Read Only) -->
                     <div class="sm:col-span-2">
                         <label class="text-gray-700 font-semibold">Mã thành viên</label>
