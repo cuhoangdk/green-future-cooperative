@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
@@ -27,10 +26,10 @@ class VerifyCustomerAccount extends Notification
         $url = config('app.url') . "/api/customer-auth/verify-account?token={$this->token}&email={$notifiable->email}";
 
         return (new MailMessage)
-            ->subject('Verify Your Account')
-            ->greeting('Hello!')
-            ->line('Thank you for registering. Please verify your email address.')
-            ->action('Verify Email', $url)
-            ->line('If you did not create an account, no further action is required.');
+            ->subject('Xác Minh Tài Khoản Của Bạn')
+            ->view(
+                'emails.verify-account', // Tên view
+                ['url' => $url] // Dữ liệu truyền vào view
+            );
     }
 }

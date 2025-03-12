@@ -28,6 +28,10 @@
             'cancelled' => 'Đã hủy'
         ];
         $translatedStatus = $statusTranslations[$order->status] ?? $order->status;
+        use App\Helpers\LocationHelper;      
+        
+        // Lấy tên phường/xã
+        $addressName = LocationHelper::getLocationName("https://esgoo.net/api-tinhthanh/5/{$order->ward}.htm");
     ?>
 
     @if ($recipientType === 'customer')
@@ -80,14 +84,14 @@
     </ul>
 
     <h2>Địa Chỉ Giao Hàng</h2>
-    <p>{{ $order->street_address }}, {{ $order->ward }}, {{ $order->district }}, {{ $order->province }}</p>
+    <p>{{ $order->street_address }}, {{ $addressName }}</p>
 
     @if ($order->status === 'cancelled' && $order->cancelled_reason)
         <h2>Lý Do Hủy</h2>
         <p>{{ $order->cancelled_reason }}</p>
     @endif
 
-    <p>Xin cảm ơn,</p>
-    <p>Đội ngũ của bạn</p>
+    <p>Trân trọng,</p>
+    <p>Green Future Cooperative</p>
 </body>
 </html>
