@@ -90,8 +90,8 @@ class AdminOrderController extends Controller
             'type' => 'order_status',            
         ]);
 
-        // Thông báo cho users liên quan đến sản phẩm
-        $productUserIds = $order->products->pluck('user_id')->unique();
+        // Thông báo cho users liên quan đến sản phẩm (dựa trên items)
+        $productUserIds = collect($order->items)->pluck('product.user_id')->unique();
         foreach ($productUserIds as $userId) {
             $this->notificationRepository->create([
                 'user_type' => 'member',

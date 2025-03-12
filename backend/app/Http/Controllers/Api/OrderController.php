@@ -74,19 +74,17 @@ class OrderController extends Controller
             'user_type' => 'customer',
             'user_id' => $order->customer_id,
             'title' => "Đơn hàng #{$order->id} đã được {$status}",
-            'type' => 'order_status',
-            
+            'type' => 'order_status',            
         ]);
 
-        // Thông báo cho users liên quan đến sản phẩm
-        $productUserIds = $order->products->pluck('user_id')->unique();
+        // Thông báo cho users liên quan đến sản phẩm (dựa trên items)
+        $productUserIds = collect($order->items)->pluck('product.user_id')->unique();
         foreach ($productUserIds as $userId) {
             $this->notificationRepository->create([
                 'user_type' => 'member',
                 'user_id' => $userId,
                 'title' => "Đơn hàng #{$order->id} chứa sản phẩm của bạn đã được {$status}",
-                'type' => 'order_status',
-                
+                'type' => 'order_status',                
             ]);
         }
 
