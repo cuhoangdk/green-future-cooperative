@@ -7,20 +7,26 @@ use App\Http\Requests\Order\StoreOrderRequest;
 use App\Http\Requests\Order\CancelOrderRequest;
 use App\Http\Resources\OrderResource;
 use App\Repositories\Contracts\OrderRepositoryInterface;
+use App\Repositories\Contracts\NotificationRepositoryInterface;
+use App\Models\User;
 
 class OrderController extends Controller
 {
-    protected $repository;
+    protected $orderRepository;
+    protected $notificationRepository;
 
-    public function __construct(OrderRepositoryInterface $repository)
-    {
-        $this->repository = $repository;
+    public function __construct(
+        OrderRepositoryInterface $orderRepository,
+        NotificationRepositoryInterface $notificationRepository
+    ) {
+        $this->orderRepository = $orderRepository;
+        $this->notificationRepository = $notificationRepository;
     }
 
     public function index()
     {
         $customerId = auth('api_customers')->id();
-        $orders = $this->repository->getAll($customerId);
+        $orders = $this->orderRepository->getAll($customerId);
         return OrderResource::collection($orders);
     }
 
@@ -28,7 +34,11 @@ class OrderController extends Controller
     {
         $customerId = auth('api_customers')->id();
         try {
-            $order = $this->repository->createForCustomer($customerId, $request->validated());
+            $order = $this->orderRepository->createForCustomer($customerId, $request->validated());
+
+            // Gửi thông báo
+            $this->sendOrderNotifications($order, 'created');
+
             return new OrderResource($order);
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], 422);
@@ -38,7 +48,7 @@ class OrderController extends Controller
     public function show($id)
     {
         $customerId = auth('api_customers')->id();
-        $order = $this->repository->getById($customerId, $id);
+        $order = $this->orderRepository->getById($customerId, $id);
         return new OrderResource($order);
     }
 
@@ -46,10 +56,47 @@ class OrderController extends Controller
     {
         $customerId = auth('api_customers')->id();
         try {
-            $order = $this->repository->cancel($customerId, $id, $request->validated());
+            $order = $this->orderRepository->cancel($customerId, $id, $request->validated());
+
+            // Gửi thông báo
+            $this->sendOrderNotifications($order, 'cancelled');
+
             return new OrderResource($order);
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], 422);
+        }
+    }
+
+    protected function sendOrderNotifications($order, $status)
+    {
+        // Thông báo cho customer
+        $this->notificationRepository->create([
+            'user_type' => 'customer',
+            'user_id' => $order->customer_id,
+            'title' => "Đơn hàng #{$order->id} đã được {$status}",
+            'type' => 'order_status',            
+        ]);
+
+        // Thông báo cho users liên quan đến sản phẩm (dựa trên items)
+        $productUserIds = collect($order->items)->pluck('product.user_id')->unique();
+        foreach ($productUserIds as $userId) {
+            $this->notificationRepository->create([
+                'user_type' => 'member',
+                'user_id' => $userId,
+                'title' => "Đơn hàng #{$order->id} chứa sản phẩm của bạn đã được {$status}",
+                'type' => 'order_status',                
+            ]);
+        }
+
+        // Thông báo cho super admins
+        $superAdmins = User::where('is_super_admin', true)->get();
+        foreach ($superAdmins as $superAdmin) {
+            $this->notificationRepository->create([
+                'user_type' => 'member',
+                'user_id' => $superAdmin->id,
+                'title' => "Đơn hàng #{$order->id} đã được {$status}",
+                'type' => 'order_status',                
+            ]);
         }
     }
 }

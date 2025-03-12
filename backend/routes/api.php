@@ -25,10 +25,21 @@ use App\Http\Controllers\Api\CustomerController;
 use App\Http\Controllers\Api\CustomerAddressController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\PermissionController;
-
+use App\Http\Controllers\Api\NotificationController;
 use Illuminate\Support\Facades\Route;
 
+
+
 Route::middleware('log.activity')->group(function () {
+    Route::middleware(['auth:api_users,api_customers'])->group(function () {
+        Route::prefix('notifications')->group(function () {
+            Route::get('/', [NotificationController::class, 'index'])->name('notifications.index');
+            Route::put('/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.read-all');
+            Route::get('/{id}', [NotificationController::class, 'show'])->name('notifications.show');
+            Route::put('/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');        
+            Route::delete('/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
+        });
+    });
     Route::prefix('activity-logs')->middleware(['auth:api_users', 'permission'])->group(function () {   
         Route::get('/', [ActivityLogController::class, 'index'])->name('activity-logs.index');
         Route::get('/{id}', [ActivityLogController::class, 'show'])->name('activity-logs.show');

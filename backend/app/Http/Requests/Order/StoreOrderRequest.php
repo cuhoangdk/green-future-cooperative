@@ -33,7 +33,7 @@ class StoreOrderRequest extends FormRequest
                 'required_without:customer_address_id',
                 'string',
                 function ($attribute, $value, $fail) {
-                    $province = $this->input('address.province');
+                    $province = $this->input('province');
                     if (!$province || !LocationHelper::isValidDistrict($province, $value)) {
                         $fail('Mã quận/huyện không hợp lệ.');
                     }
@@ -43,7 +43,7 @@ class StoreOrderRequest extends FormRequest
                 'required_without:customer_address_id',
                 'string',
                 function ($attribute, $value, $fail) {
-                    $district = $this->input('address.district');
+                    $district = $this->input('district');
                     if (!$district || !LocationHelper::isValidWard($district, $value)) {
                         $fail('Mã phường/xã không hợp lệ.');
                     }

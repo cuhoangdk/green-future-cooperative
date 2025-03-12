@@ -103,4 +103,8 @@ class User extends Authenticatable
     {
         return $this->hasManyThrough(CultivationLog::class, Product::class);
     }
+    public function notifications()
+    {
+        return $this->morphMany(Notification::class, 'user', 'user_type', 'user_id');
+    }
 }

@@ -9,6 +9,8 @@ use App\Http\Requests\Product\StoreProductRequest;
 use App\Http\Requests\Product\UpdateProductRequest;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ProductResource;
+use App\Models\User;
+use App\Repositories\Contracts\NotificationRepositoryInterface;
 use App\Repositories\Contracts\ProductRepositoryInterface;
 use Endroid\QrCode\Logo\Logo;
 use Endroid\QrCode\QrCode;
@@ -44,6 +46,16 @@ class ProductController extends Controller
     {
         $data = $request->validated();
         $product = $this->repository->create($data);
+        $notificationRepo = app(NotificationRepositoryInterface::class);
+        $superAdmins = User::where('is_super_admin', true)->get();
+        foreach ($superAdmins as $superAdmin) {
+            $notificationRepo->create([
+                'user_type' => 'member',
+                'user_id' => $superAdmin->id,
+                'title' => "Sản phẩm mới được thêm: {$product->name}",
+                'type' => 'new_product',                
+            ]);
+        }
         return new ProductResource($product);
     }
 

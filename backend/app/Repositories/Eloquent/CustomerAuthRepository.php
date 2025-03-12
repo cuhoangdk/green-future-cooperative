@@ -91,10 +91,7 @@ class CustomerAuthRepository implements CustomerAuthRepositoryInterface
         // Gửi email xác minh
         dispatch(new SendVerificationEmail($customer));
     
-        return response()->json([
-            'message' => 'Customer registered successfully. Please verify your email.',
-            'customer' => $customer,
-        ], 201);
+        return $customer;
     }
     
 

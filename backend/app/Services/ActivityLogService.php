@@ -74,12 +74,13 @@ class ActivityLogService
 
     protected function mapEntityTypeToModel($entityType)
     {
+        \Log::info("Entity Type: " . $entityType); // Ghi log để kiểm tra
         $map = [
             'social-links' => 'App\\Models\\SocialLink',
             'slider-images' => 'App\\Models\\SliderImage',
             'contact-informations' => 'App\\Models\\ContactInformation',
             'orders' => 'App\\Models\\Order',
-            'admin/orders' => 'App\\Models\\Order',
+            'admin' => 'App\\Models\\Order',
             'cart' => 'App\\Models\\CartItem',
             'products' => 'App\\Models\\Product',
             'product-categories' => 'App\\Models\\ProductCategory',
