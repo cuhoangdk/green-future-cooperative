@@ -68,7 +68,7 @@
                                     @error="event => { const target = event.target as HTMLImageElement; if (target) target.src = defaultImage as string; }" />
                             </div>
                             <div class="w-1/2 px-2 py-0">
-                                <h3 class="text-left font-semibold text-green-800 hover:text-green-600 duration-200">
+                                <h3 class="text-left font-semibold text-green-800 hover:text-green-600 duration-200 line-clamp-4">
                                     {{ featuredPost.title }}
                                 </h3>
                             </div>

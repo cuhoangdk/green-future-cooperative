@@ -34,7 +34,7 @@
       <!-- Nội dung -->
       <div>
         <label class="text-gray-700 font-semibold">Nội dung</label>
-        <textarea v-model="form.content" rows="30" class="textarea textarea-primary h-[1000px] w-full mt-1"
+        <textarea v-model="form.content" rows="30" class="textarea textarea-primary h-[700px] w-full mt-1"
           placeholder="..." required />
       </div>
 
@@ -170,7 +170,7 @@ const { getAllPostCategories } = usePostCategories()
 // Lấy ID từ route params
 const postId = route.params.id
 // Lấy dữ liệu bài viết hiện tại
-const { data: postData, error: postError, refresh: postRefresh } = await getPostById(postId as string)
+const { data: postData, error: postError, refresh: postRefresh } = await getPostById(Number(postId))
 const post = computed<Post | null>(() => Array.isArray(postData.value?.data) ? postData.value.data[0] : postData.value?.data || null)
 // Preview ảnh bìa hiện tại
 const previewImage = ref<string | null>(post.value?.featured_image ? `${useRuntimeConfig().public.backendUrl}${post.value.featured_image}` : null)

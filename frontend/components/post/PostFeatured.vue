@@ -17,7 +17,7 @@
                     :style="{ backgroundImage: `linear-gradient(to top, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0)), url(${backendUrl + posts[0].featured_image})` }">
                 </div>
             </div>
-            <div class="absolute bottom-0 left-0 text-white p-3 w-full">
+            <div class="absolute bottom-0 left-0 text-white p-3 w-full line-clamp-3">
                 <h3 class="text-2xl text-left font-bold">{{ posts[0]?.title }}</h3>
             </div>
         </NuxtLink>
@@ -44,7 +44,7 @@
                     </div>
                 </div>
                 <div class="absolute bottom-0 left-0 text-white p-1.5 w-full">
-                    <h3 class="text-left font-semibold">{{ post.title }}</h3>
+                    <h3 class="text-left font-semibold line-clamp-3">{{ post.title }}</h3>
                 </div>
             </NuxtLink>
         </div>

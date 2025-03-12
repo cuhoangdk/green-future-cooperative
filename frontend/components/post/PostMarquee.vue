@@ -6,9 +6,9 @@
         <p v-if="status === 'pending'" class="skeleton text-sm lg:ml-5 text-gray-500 px-3">
             Đang tải...
         </p>
-        <p v-else class="text-sm lg:ml-5">
+        <p v-else class="text-sm lg:ml-5 w-11/12">
             <a :href="'/posts/' + posts[currentIndex].slug"
-                class="text-green-600 hover:text-green-400 transition-colors duration-200">
+                class="text-green-600 hover:text-green-400 transition-colors duration-200 line-clamp-1">
                 {{ posts[currentIndex].title }}</a>
         </p>
     </div>

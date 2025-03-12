@@ -49,7 +49,7 @@ export const usePosts = () => {
   }
 
   // Lấy bài viết theo ID
-  const getPostById = async (postId: string) => {
+  const getPostById = async (postId: number) => {
     return await get(`/posts/${postId}`)
   }
 

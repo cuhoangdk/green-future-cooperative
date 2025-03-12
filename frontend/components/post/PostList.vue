@@ -28,7 +28,7 @@ const onPageChange = (page: number) => {
       <div class="flex-1 h-[3px] bg-green-500 ml-4"></div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 gap-3">
+    <div class="grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 gap-3 mb-4">
       <PostCard v-for="post in posts" :key="post.id" :post="post" />
     </div>
 

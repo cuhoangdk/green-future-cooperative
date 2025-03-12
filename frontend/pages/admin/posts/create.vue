@@ -19,7 +19,7 @@
             <!-- Nội dung -->
             <div>
                 <label class="text-gray-700 font-semibold">Nội dung</label>
-                <textarea v-model="form.content" class="textarea textarea-primary h-[1000px] w-full mt-1"
+                <textarea v-model="form.content" class="textarea textarea-primary h-[700px] w-full mt-1"
                     placeholder="..." required></textarea>
             </div>
 
