@@ -60,4 +60,8 @@ class Customer extends Authenticatable
             }
         });
     }
+    public function notifications()
+    {
+        return $this->morphMany(Notification::class, 'user', 'user_type', 'user_id');
+    }
 }

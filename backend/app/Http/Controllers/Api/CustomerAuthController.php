@@ -10,7 +10,10 @@ use App\Http\Requests\Auth\VerifyRequest;
 use App\Http\Requests\Auth\RefreshTokenRequest;
 use App\Http\Requests\Auth\Customer\ResetPasswordCustomerRequest;
 use App\Http\Requests\Auth\Customer\ForgotPasswordCustomerRequest;
+use App\Models\User;
 use App\Repositories\Contracts\CustomerAuthRepositoryInterface;
+use App\Repositories\Contracts\NotificationRepositoryInterface;
+use App\Repositories\Eloquent\NotificationRepository;
 use Illuminate\Http\Request;
 
 class CustomerAuthController extends Controller
@@ -59,10 +62,30 @@ class CustomerAuthController extends Controller
      */
     public function register(RegisterRequest $request)
     {
-        $data = $request->validated();
-        $customer = $this->authRepository->register($data);
+        try {
+            $data = $request->validated();
+            $customer = $this->authRepository->register($data); // $customer là instance của Customer
 
-        return response()->json(['message' => 'Registration successful', 'customer' => $customer], 201);
+            // Tạo thông báo cho super admins
+            $notificationRepo = app(NotificationRepositoryInterface::class);
+            $superAdmins = User::where('is_super_admin', true)->get();
+            foreach ($superAdmins as $superAdmin) {
+                $notificationRepo->create([
+                    'user_type' => 'member',
+                    'user_id' => $superAdmin->id,
+                    'title' => "Khách hàng mới đăng ký: {$customer->email}",
+                    'type' => 'new_customer',                    
+                ]);
+            }
+
+            return response()->json([
+                'message' => 'Customer registered successfully. Please verify your email.',
+                'customer' => $customer,
+            ], 201);
+
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], $e->getCode() ?: 422);
+        }
     }
     /**
      * Xác minh tài khoản khách hàng.
