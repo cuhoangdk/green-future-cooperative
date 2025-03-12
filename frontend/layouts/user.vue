@@ -109,6 +109,10 @@ const menus = ref([
     { label: 'Dashboard', route: '/admin', icon: 'fas fa-home' },
     { label: 'Users', route: '/admin/users', icon: 'fas fa-users' },
     { label: 'Posts', route: '/admin/posts', icon: 'NewspaperIcon' },
+    { label: 'Farms', route: '/admin/farms', icon: 'fas fa-cog' },
+    { label: 'Units', route: '/admin/units', icon: 'fas fa-cog' },
+    { label: 'Product Categories', route: '/admin/product-categories', icon: 'fas fa-cog' },
+    // { label: 'Settings', route: '/admin/settings', icon: 'fas fa-cog' },
     // Add more menu items as needed
 ])
 

@@ -1,6 +1,3 @@
-import { ref } from 'vue';
-import { useAsyncData } from '#app';
-
 // Định nghĩa interface cho dữ liệu trả về từ API
 interface AddressItem {
   id: string;
@@ -40,6 +37,7 @@ export const useVietnamAddress = () => {
   const provinces = ref<AddressItem[]>([]);
   const districts = ref<AddressItem[]>([]);
   const wards = ref<AddressItem[]>([]);
+  const addressDetail = ref<AddressItem | null>(null);
 
   // Lấy danh sách tỉnh/thành phố
   const fetchProvinces = async () => {
@@ -78,10 +76,22 @@ export const useVietnamAddress = () => {
     }
   };
 
+  const getAddressNameById  = async (id: string) => {
+    try {
+      const addressData = await fetchAddressData(5, id);
+      addressDetail.value = addressData.length > 0 ? addressData[0] : null;
+      return addressDetail.value?.full_name;
+    } catch (error) {
+      console.error('Error fetching provinces:', error);
+    }
+  }
+
+
   return {
     provinces,
     districts,
     wards,
+    getAddressNameById,
     fetchProvinces,
     fetchDistricts,
     fetchWards,
