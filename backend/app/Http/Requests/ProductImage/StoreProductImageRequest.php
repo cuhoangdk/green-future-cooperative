@@ -14,7 +14,8 @@ class StoreProductImageRequest extends FormRequest
     public function rules()
     {
         return [
-            'image_url' => 'required|file|image|max:10240', // Tối đa 10MB
+            'image_urls' => 'required|array',
+            'image_urls.*' => 'image|mimes:jpeg,png,jpg,gif|max:4096', // Max 4MB
             'sort_order' => 'sometimes|integer|min:0',
             'is_primary' => 'sometimes|boolean',
             'alt_text' => 'nullable|string|max:255',

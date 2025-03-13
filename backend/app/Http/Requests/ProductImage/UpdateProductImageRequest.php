@@ -14,7 +14,8 @@ class UpdateProductImageRequest extends FormRequest
     public function rules()
     {
         return [
-            'image_url' => 'sometimes|file|image|max:10240',
+            'image_urls' => 'sometimes|array',
+            'image_urls.*' => 'image|mimes:jpeg,png,jpg,gif|max:4096',
             'sort_order' => 'sometimes|integer|min:0',
             'is_primary' => 'sometimes|boolean',
             'alt_text' => 'nullable|string|max:255',
