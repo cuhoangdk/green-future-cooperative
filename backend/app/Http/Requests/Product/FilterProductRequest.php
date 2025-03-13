@@ -20,15 +20,13 @@ class FilterProductRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'sometimes|string|max:255',
-            'product_code' => 'sometimes|string|max:255',
-            'description' => 'sometimes|string',
+            'search' => 'sometimes|string|max:255',
             'category_id' => 'sometimes|exists:product_categories,id',
             'unit_id' => 'sometimes|exists:product_units,id',
             'user_id' => 'sometimes|exists:users,id',
             'farm_id' => 'sometimes|exists:farms,id',
             'pricing_type' => 'sometimes|in:fix,flexible,contact',
-            'is_active' => 'sometimes|boolean',
+            'status' => 'in:growing,selling,stopped',
             'base_price_min' => 'sometimes|numeric|min:0',
             'base_price_max' => 'sometimes|numeric|min:0',
             'stock_quantity_min' => 'sometimes|numeric|min:0',

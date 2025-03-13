@@ -27,7 +27,7 @@ class Product extends Model
         'harvested_at',
         'pricing_type',
         'stock_quantity',
-        'is_active',
+        'status',
         'sold_quantity',
         'views',
         'meta_title',

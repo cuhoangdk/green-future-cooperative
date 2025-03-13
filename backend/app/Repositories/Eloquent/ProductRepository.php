@@ -20,7 +20,7 @@ class ProductRepository implements ProductRepositoryInterface
     public function getAll(string $sortBy = 'created_at', string $sortDirection = 'desc', int $perPage = 10): LengthAwarePaginator
     {
         $query = $this->model->with(['category', 'unit', 'user', 'images', 'prices'])->when(!auth('api_users')->check(), function ($query) {
-            $query->where('is_active', true);
+            $query->where('status', 'selling');
         });
 
         // Chỉ áp dụng giới hạn cho user (api_users) không phải super_admin
@@ -51,8 +51,9 @@ class ProductRepository implements ProductRepositoryInterface
     public function getById($id)
     {
         $product = $this->model->when(!auth('api_users')->check(), function ($query) {
-            $query->where('is_active', true);
+            $query->where('status', 'selling');
         })->with(['category', 'unit', 'user', 'images', 'prices'])->find($id);
+
 
         // Chỉ giới hạn cho user không phải super_admin
         $user = Auth::guard('api_users')->user();
@@ -159,7 +160,7 @@ class ProductRepository implements ProductRepositoryInterface
     {
         $product = $this->model->with(['category', 'unit', 'user', 'images', 'prices'])
             ->when(!auth('api_users')->check(), function ($query) {
-                $query->where('is_active', true);
+                $query->where('status', 'selling');
             })
             ->where('slug', $slug)
             ->first();
@@ -181,7 +182,7 @@ class ProductRepository implements ProductRepositoryInterface
     {
         $product = $this->model->with(['category', 'unit', 'user', 'images', 'prices'])
             ->when(!auth('api_users')->check(), function ($query) {
-                $query->where('is_active', true);
+                $query->where('status', 'selling');
             })
             ->where('product_code', $productCode)
             ->first();
@@ -202,22 +203,24 @@ class ProductRepository implements ProductRepositoryInterface
         array $filters = []
     ): LengthAwarePaginator {
         $query = $this->model->with(['category', 'unit', 'user', 'images', 'prices']);
-
+    
         // Chỉ áp dụng giới hạn cho user không phải super_admin
         $user = Auth::guard('api_users')->user();
         if ($user && !$user->is_super_admin) {
             $query->where('user_id', $user->id);
         }
-
+    
         // Áp dụng các bộ lọc nếu có
         if (!empty($filters)) {
             foreach ($filters as $key => $value) {
                 if ($value !== null) {
                     switch ($key) {
-                        case 'name':
-                        case 'product_code':
-                        case 'description':
-                            $query->where($key, 'like', "%{$value}%");
+                        case 'search':
+                            $query->where(function ($q) use ($value) {
+                                $q->where('name', 'like', "%{$value}%")
+                                //   ->orWhere('product_code', '=', "$value")
+                                  ->orWhere('description', 'like', "%{$value}%");
+                            });
                             break;
                         case 'category_id':
                         case 'unit_id':
@@ -228,9 +231,9 @@ class ProductRepository implements ProductRepositoryInterface
                         case 'pricing_type':
                             $query->whereIn($key, (array)$value);
                             break;
-                        case 'is_active':
-                            $query->where($key, filter_var($value, FILTER_VALIDATE_BOOLEAN));
-                            break;                        
+                        case 'status':
+                            $query->where('status', $value);
+                            break;
                         case 'stock_quantity_min':
                             $query->where('stock_quantity', '>=', $value);
                             break;
@@ -253,9 +256,9 @@ class ProductRepository implements ProductRepositoryInterface
                 }
             }
         }
-
+    
         return $query->when(!auth('api_users')->check(), function ($query) {
-            $query->where('is_active', true);
+            $query->where('status', 'selling');
         })->orderBy($sortBy, $sortDirection)->paginate($perPage);
     }
 
@@ -266,7 +269,7 @@ class ProductRepository implements ProductRepositoryInterface
         int $perPage = 10
     ): LengthAwarePaginator {
         $searchQuery = $this->model->when(!auth('api_users')->check(), function ($query) {
-            $query->where('is_active', true);
+            $query->where('status', 'selling');
         })->with(['category', 'unit', 'user', 'images', 'prices']);
 
         // Chỉ áp dụng giới hạn cho user không phải super_admin

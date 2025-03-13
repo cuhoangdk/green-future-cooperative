@@ -69,6 +69,9 @@ class OrderRepository implements OrderRepositoryInterface
             }
 
             foreach ($cartItems as $item) {
+                if ($item->product->status !== 'selling') {
+                    throw new \Exception("Product {$item->product->name} is not available for sale (current status: {$item->product->status}).");
+                }
                 if ($item->quantity > $item->product->stock_quantity) {
                     throw new \Exception("Insufficient stock for product ID {$item->product_id}. Available: {$item->product->stock_quantity}, Requested: {$item->quantity}");
                 }
@@ -129,7 +132,6 @@ class OrderRepository implements OrderRepositoryInterface
                 $item->delete();
             }
 
-            // Gửi email sau khi tạo đơn (pending)
             $order->load('customer', 'items.product.user');
             $this->sendOrderStatusEmails($order);
 
@@ -143,6 +145,10 @@ class OrderRepository implements OrderRepositoryInterface
             $items = collect($data['items'])->map(function ($item) {
                 $product = Product::with('unit')->findOrFail($item['product_id']);
                 
+                if ($product->status !== 'selling') {
+                    throw new \Exception("Product {$product->name} is not available for sale (current status: {$product->status}).");
+                }
+
                 if ($product->unit && !$product->unit->allow_decimal && floor($item['quantity']) != $item['quantity']) {
                     throw new \Exception("Quantity for product ID {$product->id} must be an integer (e.g., 1, 2, etc.).");
                 }
@@ -212,7 +218,6 @@ class OrderRepository implements OrderRepositoryInterface
                 $item->product->decrement('stock_quantity', $item->quantity);
             }
 
-            // Gửi email sau khi tạo đơn (pending)
             $order->load('customer', 'items.product.user');
             $this->sendOrderStatusEmails($order);
 
@@ -222,16 +227,14 @@ class OrderRepository implements OrderRepositoryInterface
 
     public function update(?int $customerId = null, $id, array $data)
     {
-        $order = $this->getById($customerId, $id); // Lấy Order instance
+        $order = $this->getById($customerId, $id);
         $oldStatus = $order->status;
 
         $order->update($data);
 
-        // Gửi email nếu status thay đổi sang pending, processing, delivered, hoặc cancelled
         if (isset($data['status']) && $data['status'] !== $oldStatus && in_array($data['status'], ['pending', 'processing', 'delivered', 'cancelled'])) {
-            // Tải quan hệ cần thiết nhưng đảm bảo $order vẫn là model
             $order->load('customer', 'items.product.user');
-            if ($order instanceof Order) { // Kiểm tra chắc chắn
+            if ($order instanceof Order) {
                 $this->sendOrderStatusEmails($order);
             }
         }
@@ -258,7 +261,6 @@ class OrderRepository implements OrderRepositoryInterface
                 $item->product->increment('stock_quantity', $item->quantity);
             }
 
-            // Gửi email khi hủy đơn (cancelled)
             $order->load('customer', 'items.product.user');
             $this->sendOrderStatusEmails($order);
 

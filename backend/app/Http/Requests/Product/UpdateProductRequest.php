@@ -26,7 +26,7 @@ class UpdateProductRequest extends FormRequest
             'harvested_at' => 'nullable|date|after_or_equal:sown_at',
             'pricing_type' => 'sometimes|in:fix,flexible,contact',
             'stock_quantity' => 'sometimes|numeric|min:0',
-            'is_active' => 'sometimes|boolean',
+            'status' => 'sometimes|in:growing,selling,stopped',
             'meta_title' => 'nullable|string|max:255',
             'meta_description' => 'nullable|string',
             'meta_keyword' => 'nullable|string',

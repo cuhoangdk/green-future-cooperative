@@ -32,11 +32,17 @@ class CartItemRepository implements CartItemRepositoryInterface
         return DB::transaction(function () use ($customerId, $data) {
             $data['customer_id'] = $customerId;
 
+            $product = \App\Models\Product::findOrFail($data['product_id']);
+            
+            // Kiểm tra status của sản phẩm
+            if ($product->status !== 'selling') {
+                throw new \Exception("Product {$product->name} is not available for sale (current status: {$product->status}).");
+            }
+
             $existingItem = $this->model->where('customer_id', $customerId)
                 ->where('product_id', $data['product_id'])
                 ->first();
 
-            $product = \App\Models\Product::findOrFail($data['product_id']);
             $currentQuantity = $existingItem ? $existingItem->quantity : 0;
             $newQuantity = $currentQuantity + $data['quantity'];
 
@@ -59,6 +65,11 @@ class CartItemRepository implements CartItemRepositoryInterface
         return DB::transaction(function () use ($customerId, $id, $data) {
             $item = $this->getById($customerId, $id);
             $product = $item->product;
+
+            // Kiểm tra status của sản phẩm
+            if ($product->status !== 'selling') {
+                throw new \Exception("Product {$product->name} is not available for sale (current status: {$product->status}).");
+            }
 
             if (isset($data['quantity']) && $data['quantity'] > $product->stock_quantity) {
                 throw new \Exception("The quantity ({$data['quantity']}) exceeds the available stock ({$product->stock_quantity}).");

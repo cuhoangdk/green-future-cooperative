@@ -26,7 +26,7 @@ class StoreProductRequest extends FormRequest
             'harvested_at' => 'nullable|date|after_or_equal:sown_at',
             'pricing_type' => 'required|in:fix,flexible,contact',
             'stock_quantity' => 'required|numeric|min:0',
-            'is_active' => 'boolean',
+            'status' => 'in:growing,selling,stopped',
             'meta_title' => 'nullable|string|max:255',
             'meta_description' => 'nullable|string',
             'meta_keyword' => 'nullable|string',
