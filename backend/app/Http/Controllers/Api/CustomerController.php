@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\ChangePasswordRequest;
+use App\Http\Requests\Auth\ForceChangePasswordRequest;
 use App\Http\Requests\Customer\SearchCustomerRequest;
 use App\Http\Requests\Customer\StoreCustomerRequest;
 use App\Http\Requests\Customer\UpdateCustomerRequest;
@@ -157,11 +158,11 @@ class CustomerController extends Controller
     /**
      * Đổi mật khẩu khách hàng.
      * 
-     * @param ChangePasswordRequest $request
+     * @param ForceChangePasswordRequest $request
      * @param int $id
      * @return JsonResponse
      */
-    public function changePassword(ChangePasswordRequest $request, $id): JsonResponse
+    public function changePassword(ForceChangePasswordRequest $request, $id): JsonResponse
     {
         $result = $this->customerRepository->changePassword($id, $request->validated());
 

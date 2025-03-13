@@ -15,12 +15,12 @@ class UpdateAddressRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'full_name' => 'required|string|max:255',
-            'phone_number' => 'required|string|max:20',
-            'address_type' => 'required|in:home,work,other',
-            'address' => 'required|array',
+            'full_name' => 'sometimes|string|max:255',
+            'phone_number' => 'sometimes|string|max:20',
+            'address_type' => 'sometimes|in:home,work,other',
+            'address' => 'sometimes|array',
             'address.province' => [
-                'required',
+                'sometimes',
                 'string',
                 function ($attribute, $value, $fail) {
                     if (!LocationHelper::isValidProvince($value)) {
@@ -29,7 +29,7 @@ class UpdateAddressRequest extends FormRequest
                 },
             ],
             'address.district' => [
-                'required',
+                'sometimes',
                 'string',
                 function ($attribute, $value, $fail) {
                     $province = $this->input('address.province');
@@ -39,7 +39,7 @@ class UpdateAddressRequest extends FormRequest
                 },
             ],
             'address.ward' => [
-                'required',
+                'sometimes',
                 'string',
                 function ($attribute, $value, $fail) {
                     $district = $this->input('address.district');
@@ -48,7 +48,7 @@ class UpdateAddressRequest extends FormRequest
                     }
                 },
             ],
-            'address.street_address' => 'nullable|string|max:500',
+            'address.street_address' => 'sometimes|string|max:500',
             'is_default' => 'boolean',
         ];
     }

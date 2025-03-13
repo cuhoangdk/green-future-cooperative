@@ -46,7 +46,7 @@ class StoreFarmRequest extends FormRequest
                     }
                 },
             ],
-            'address.street_address' => 'nullable|string|max:500',
+            'address.street_address' => 'required|string|max:500',
             'description' => 'nullable|string',
             'farm_size' => 'nullable|numeric|min:0',
             'soil_type' => 'nullable|string|max:255',

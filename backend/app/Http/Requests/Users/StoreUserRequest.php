@@ -50,10 +50,9 @@ class StoreUserRequest extends FormRequest
                     }
                 },
             ],
-            'address.street_address' => 'nullable|string|max:500',
+            'address.street_address' => 'required|string|max:500',
             'bank_account_number' => 'nullable|string|max:20',
-            'bank_name' => 'nullable|string|max:255',
-            'street_address' => 'required|string',
+            'bank_name' => 'nullable|string|max:255',            
             'avatar_url' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'bio' => 'nullable|string|max:1000',
             'is_super_admin' => 'nullable|boolean',

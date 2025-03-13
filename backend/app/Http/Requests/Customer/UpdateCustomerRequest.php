@@ -9,7 +9,7 @@ class UpdateCustomerRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => 'required|email|unique:users,email|unique:customers,email,' . $this->id,
+            'email' => 'sometimes|email|unique:users,email|unique:customers,email,' . $this->id,
             'full_name' => 'sometimes|string|max:255',
             'phone_number' => 'sometimes|string|max:20|unique:users,phone_number|unique:customers,phone_number,' . $this->id,
             'gender' => 'sometimes|string|in:male,female,other',

@@ -12,19 +12,19 @@ class UpdateProfileUserRequest extends FormRequest
     {
         $id = auth('api_users')->id();
         return [
-            'full_name' => 'nullable|string|max:255',
+            'full_name' => 'sometimes|string|max:255',
             'phone_number' => [
-                'nullable',
+                'sometimes',
                 'string',
                 'max:15',
                 // Kiểm tra unique trong bảng users và customers, ngoại trừ user hiện tại
                 Rule::unique('users', 'phone_number')->ignore($id),
                 Rule::unique('customers', 'phone_number'), // Giả sử bảng customers có cột phone_number
             ],          
-            'date_of_birth' => 'nullable|date|before:today',
-            'address' => 'nullable|array',
+            'date_of_birth' => 'sometimes|date|before:today',
+            'address' => 'sometimes|array',
             'address.province' => [
-                'nullable',
+                'sometimes',
                 'string',
                 function ($attribute, $value, $fail) {
                     if (!LocationHelper::isValidProvince($value)) {
@@ -33,7 +33,7 @@ class UpdateProfileUserRequest extends FormRequest
                 },
             ],
             'address.district' => [
-                'nullable',
+                'sometimes',
                 'string',
                 function ($attribute, $value, $fail) {
                     $province = $this->input('address.province');
@@ -43,7 +43,7 @@ class UpdateProfileUserRequest extends FormRequest
                 },
             ],
             'address.ward' => [
-                'nullable',
+                'sometimes',
                 'string',
                 function ($attribute, $value, $fail) {
                     $district = $this->input('address.district');
@@ -57,7 +57,7 @@ class UpdateProfileUserRequest extends FormRequest
             'avatar_url' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'bank_account_number' => 'nullable|string|max:20',
             'bank_name' => 'nullable|string|max:255',
-            'gender' => 'nullable|string|in:male,female,other',
+            'gender' => 'sometimes|string|in:male,female,other',
         ];
     }
 }

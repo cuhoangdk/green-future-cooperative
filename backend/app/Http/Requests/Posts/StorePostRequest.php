@@ -30,7 +30,6 @@ class StorePostRequest extends FormRequest
             'featured_image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'category_id' => 'required|exists:post_categories,id',
             'post_status' => 'in:draft,published,archived',
-            'published_at' => 'nullable|date',
             'is_hot' => 'boolean',
             'is_featured' => 'boolean',
             'tags' => 'nullable|string|max:255', 

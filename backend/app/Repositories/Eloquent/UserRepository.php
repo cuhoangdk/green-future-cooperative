@@ -4,6 +4,7 @@ namespace App\Repositories\Eloquent;
 
 use App\Models\User;
 use App\Repositories\Contracts\UserRepositoryInterface;
+use Hash;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -181,5 +182,11 @@ class UserRepository implements UserRepositoryInterface
         );
 
         return $query->paginate($perPage);
+    }
+    public function changePassword(int $id, array $data): bool
+    {
+        $customer = $this->model->find($id);       
+
+        return $customer->update(['password' => Hash::make($data['password'])]);
     }
 }

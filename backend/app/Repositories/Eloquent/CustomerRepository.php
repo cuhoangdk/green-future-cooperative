@@ -82,13 +82,9 @@ class CustomerRepository implements CustomerRepositoryInterface
     }
     public function changePassword(int $id, array $data): bool
     {
-        $customer = $this->model->find($id);
+        $customer = $this->model->find($id);       
 
-        if (!$customer || !Hash::check($data['current_password'], $customer->password)) {
-            return false;
-        }
-
-        return $customer->update(['password' => $data['new_password']]);
+        return $customer->update(['password' => $data['password']]);
     }
     public function search(
         string $sortBy = 'created_at',

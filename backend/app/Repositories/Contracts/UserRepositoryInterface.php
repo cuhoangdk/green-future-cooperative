@@ -4,6 +4,7 @@ namespace App\Repositories\Contracts;
 use Illuminate\Contracts\Pagination\Paginator;
 interface UserRepositoryInterface extends BaseRepositoryInterface
 {    
+    public function changePassword(int $id, array $data);
     public function getByUsercode($usercode);
     public function getSearchUsers(
         string $sortBy = 'created_at',

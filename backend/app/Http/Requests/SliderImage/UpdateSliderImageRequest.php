@@ -16,11 +16,11 @@ class UpdateSliderImageRequest extends FormRequest
         return [
             'title' => 'sometimes|string|max:255',
             'image_url' => 'sometimes|url|max:255',
-            'link_url' => 'sometimes|nullable|url|max:255',
+            'link_url' => 'nullable|nullable|url|max:255',
             'sort_order' => 'sometimes|integer|min:0',
             'is_active' => 'sometimes|boolean',
-            'start_date' => 'sometimes|nullable|date',
-            'end_date' => 'sometimes|nullable|date|after_or_equal:start_date',
+            'start_date' => 'nullable|nullable|date',
+            'end_date' => 'nullable|nullable|date|after_or_equal:start_date',
         ];
     }
 }

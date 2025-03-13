@@ -17,14 +17,13 @@ class UpdateUserRequest extends FormRequest
         $id = $this->route('id');
 
         return [
-            'email' => 'required|email|unique:users,email,' . $id. '|unique:customers,email',
-            'password' => 'nullable|min:6|confirmed',
-            'full_name' => 'required|string|max:255',
-            'phone_number' => 'required|string|max:20|unique:users,phone_number,' . $id,
-            'date_of_birth' => 'required|date|before:today',
-            'address' => 'required|array',
+            'email' => 'sometimes|email|unique:users,email,' . $id. '|unique:customers,email',            
+            'full_name' => 'sometimes|string|max:255',
+            'phone_number' => 'sometimes|string|max:20|unique:users,phone_number,' . $id,
+            'date_of_birth' => 'sometimes|date|before:today',
+            'address' => 'sometimes|array',
             'address.province' => [
-                'required',
+                'sometimes',
                 'string',
                 function ($attribute, $value, $fail) {
                     if (!LocationHelper::isValidProvince($value)) {
@@ -33,7 +32,7 @@ class UpdateUserRequest extends FormRequest
                 },
             ],
             'address.district' => [
-                'required',
+                'sometimes',
                 'string',
                 function ($attribute, $value, $fail) {
                     $province = $this->input('address.province');
@@ -43,7 +42,7 @@ class UpdateUserRequest extends FormRequest
                 },
             ],
             'address.ward' => [
-                'required',
+                'sometimes',
                 'string',
                 function ($attribute, $value, $fail) {
                     $district = $this->input('address.district');
@@ -52,15 +51,14 @@ class UpdateUserRequest extends FormRequest
                     }
                 },
             ],
-            'address.street_address' => 'nullable|string|max:500',
+            'address.street_address' => 'sometimes|string|max:500',
             'bank_account_number' => 'nullable|string|max:20',
             'bank_name' => 'nullable|string|max:255',
-            'street_address' => 'required|string',
             'avatar_url' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'bio' => 'nullable|string|max:1000',
             'is_super_admin' => 'nullable|boolean',
             'is_banned' => 'nullable|boolean',
-            'gender' => 'required|string|in:male,female,other',
+            'gender' => 'sometimes|string|in:male,female,other',
             
         ];
     }

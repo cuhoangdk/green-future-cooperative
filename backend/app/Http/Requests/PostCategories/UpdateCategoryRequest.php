@@ -24,7 +24,7 @@ class UpdateCategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'nullable|string|max:255', // Không bắt buộc
+            'name' => 'sometimes|string|max:255', // Không bắt buộc
             'description' => 'nullable|string|max:500',
         ];
     }

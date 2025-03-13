@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Requests\Auth\ForceChangePasswordRequest;
 use App\Http\Requests\Users\SearchUserRequest;
 use App\Http\Requests\Users\SearchUserWithFiltersRequest;
 use App\Http\Requests\Users\StoreUserRequest;
@@ -206,5 +207,14 @@ class UserController extends Controller
 
         return UserResource::collection($users);
     }
+    public function changePassword(ForceChangePasswordRequest $request, $id)
+    {
+        $result = $this->userRepository->changePassword($id, $request->validated());
 
+        if ($result) {
+            return response()->json(['message' => 'Password changed successfully.'], 200);
+        }
+
+        return response()->json(['message' => 'Failed to change password.'], 400);
+    }
 }

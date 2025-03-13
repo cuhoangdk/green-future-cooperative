@@ -21,6 +21,7 @@ class SearchUserWithFiltersRequest extends FormRequest
             'province' => 'nullable|string|max:255',
             'district' => 'nullable|string|max:255',
             'ward' => 'nullable|string|max:255',
+            'street_address' => 'nullable|string|max:255',
             'per_page' => 'nullable|integer|min:1|max:100',
             'sort_by' => 'nullable|string|in:created_at,updated_at,email,full_name',
             'sort_direction' => 'nullable|string|in:asc,desc',

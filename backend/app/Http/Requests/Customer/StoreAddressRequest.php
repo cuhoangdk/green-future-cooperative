@@ -48,7 +48,7 @@ class StoreAddressRequest extends FormRequest
                     }
                 },
             ],
-            'address.street_address' => 'nullable|string|max:500',
+            'address.street_address' => 'required|string|max:500',
             'is_default' => 'boolean',
         ];
     }
