@@ -19,7 +19,7 @@ class ProductRepository implements ProductRepositoryInterface
 
     public function getAll(string $sortBy = 'created_at', string $sortDirection = 'desc', int $perPage = 10): LengthAwarePaginator
     {
-        $query = $this->model->with(['category', 'unit', 'user', 'image'])->when(!auth('api_users')->check(), function ($query) {
+        $query = $this->model->with(['category', 'unit', 'user', 'images', 'prices'])->when(!auth('api_users')->check(), function ($query) {
             $query->where('is_active', true);
         });
 
@@ -37,7 +37,7 @@ class ProductRepository implements ProductRepositoryInterface
         string $sortDirection = 'desc',
         int $perPage = 10
     ): LengthAwarePaginator {
-        $query = $this->model->onlyTrashed()->with(['category', 'unit', 'user', 'image']);
+        $query = $this->model->onlyTrashed()->with(['category', 'unit', 'user', 'images', 'prices']);
 
         // Chỉ giới hạn cho user không phải super_admin
         $user = Auth::guard('api_users')->user();
@@ -52,7 +52,7 @@ class ProductRepository implements ProductRepositoryInterface
     {
         $product = $this->model->when(!auth('api_users')->check(), function ($query) {
             $query->where('is_active', true);
-        })->with(['category', 'unit', 'user', 'image'])->find($id);
+        })->with(['category', 'unit', 'user', 'images', 'prices'])->find($id);
 
         // Chỉ giới hạn cho user không phải super_admin
         $user = Auth::guard('api_users')->user();
@@ -114,7 +114,7 @@ class ProductRepository implements ProductRepositoryInterface
 
     public function getTrashedById($id)
     {
-        $product = $this->model->onlyTrashed()->with(['category', 'unit', 'user', 'image'])->find($id);
+        $product = $this->model->onlyTrashed()->with(['category', 'unit', 'user', 'images', 'prices'])->find($id);
 
         // Kiểm tra quyền truy cập product đã xóa
         $user = Auth::guard('api_users')->user();
@@ -157,7 +157,7 @@ class ProductRepository implements ProductRepositoryInterface
 
     public function getBySlug($slug)
     {
-        $product = $this->model->with(['category', 'unit', 'user', 'image'])
+        $product = $this->model->with(['category', 'unit', 'user', 'images', 'prices'])
             ->when(!auth('api_users')->check(), function ($query) {
                 $query->where('is_active', true);
             })
@@ -179,7 +179,7 @@ class ProductRepository implements ProductRepositoryInterface
 
     public function getByProductCode($productCode)
     {
-        $product = $this->model->with(['category', 'unit', 'user', 'image'])
+        $product = $this->model->with(['category', 'unit', 'user', 'images', 'prices'])
             ->when(!auth('api_users')->check(), function ($query) {
                 $query->where('is_active', true);
             })
@@ -201,7 +201,7 @@ class ProductRepository implements ProductRepositoryInterface
         int $perPage = 10,
         array $filters = []
     ): LengthAwarePaginator {
-        $query = $this->model->with(['category', 'unit', 'user', 'image']);
+        $query = $this->model->with(['category', 'unit', 'user', 'images', 'prices']);
 
         // Chỉ áp dụng giới hạn cho user không phải super_admin
         $user = Auth::guard('api_users')->user();
@@ -267,7 +267,7 @@ class ProductRepository implements ProductRepositoryInterface
     ): LengthAwarePaginator {
         $searchQuery = $this->model->when(!auth('api_users')->check(), function ($query) {
             $query->where('is_active', true);
-        })->with(['category', 'unit', 'user', 'image']);
+        })->with(['category', 'unit', 'user', 'images', 'prices']);
 
         // Chỉ áp dụng giới hạn cho user không phải super_admin
         $user = Auth::guard('api_users')->user();

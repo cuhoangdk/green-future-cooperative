@@ -59,9 +59,13 @@ class Product extends Model
         return $this->hasMany(ProductQuantityPrice::class);
     }
     
-    public function image()
+    public function images()
     {
         return $this->hasMany(ProductImage::class);
+    }
+
+    public function prices(){
+        return $this->hasMany(ProductQuantityPrice::class);
     }
     protected static function boot()
     {

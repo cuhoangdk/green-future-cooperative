@@ -37,7 +37,7 @@ class FilterProductRequest extends FormRequest
             'sown_at_to' => 'sometimes|date|after_or_equal:sown_at_from',
             'harvested_at_from' => 'sometimes|date',
             'harvested_at_to' => 'sometimes|date|after_or_equal:harvested_at_from',
-            'sort_by' => 'sometimes|in:created_at,name,stock_quantity,views,sold_quantity',
+            'sort_by' => 'sometimes|in:created_at,updated_at,name,stock_quantity,views,sold_quantity',
             'sort_direction' => 'sometimes|in:asc,desc',
             'per_page' => 'sometimes|integer|min:1|max:100',
         ];
