@@ -28,7 +28,7 @@ class AdminOrderController extends Controller
     public function index(Request $request)
     {
         $perPage = $request->query('per_page', 10);
-        $orders = $this->orderRepository->getAll(null, $perPage);
+        $orders = $this->orderRepository->getAll(null, $perPage)->appends(request()->query());
         return OrderResource::collection($orders);
     }
 

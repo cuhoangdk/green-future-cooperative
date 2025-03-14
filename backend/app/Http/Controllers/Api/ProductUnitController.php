@@ -104,7 +104,7 @@ class ProductUnitController extends Controller
             sortBy: $sortBy,
             sortDirection: $sortDirection,
             perPage: $perPage
-        );
+        )->appends(request()->query());
 
         return ProductUnitResource::collection($trashedUsers);
     }

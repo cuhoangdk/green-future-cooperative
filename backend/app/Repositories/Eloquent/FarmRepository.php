@@ -183,6 +183,10 @@ class FarmRepository implements FarmRepositoryInterface
                 $q->where('name', 'like', "%{$search}%");
             });
         });
+        // Lọc theo user_id nếu là super_admin và có tham số user_id
+        $query->when($user && $user->is_super_admin && isset($filters['user_id']), function (Builder $query) use ($filters) {
+            $query->where('user_id', $filters['user_id']);
+        });
 
         $query->with('address', 'user')->orderBy($sortBy, $sortDirection);
 

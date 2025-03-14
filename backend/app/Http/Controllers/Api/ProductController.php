@@ -35,7 +35,7 @@ class ProductController extends Controller
             $request->get('sort_by', 'created_at'),
             $request->get('sort_direction', 'desc'),
             $request->get('per_page', 10)
-        );
+        )->appends(request()->query());
         return ProductResource::collection($products);
     }
 
@@ -96,7 +96,7 @@ class ProductController extends Controller
             $request->get('sort_by', 'deleted_at'),
             $request->get('sort_direction', 'desc'),
             $request->get('per_page', 10)
-        );
+        )->appends(request()->query());
         return ProductResource::collection($trashed);
     }
 
@@ -146,7 +146,7 @@ class ProductController extends Controller
             $request->get('sort_by', 'created_at'),
             $request->get('sort_direction', 'desc'),
             $request->get('per_page', 10)
-        );
+        )->appends(request()->query());
         return ProductResource::collection($products);
     }
 
@@ -166,7 +166,7 @@ class ProductController extends Controller
             $request->get('sort_direction', 'desc'),
             $request->get('per_page', 10),
             $filters
-        );
+        )->appends(request()->query());
         return ProductResource::collection($products);
     }
 

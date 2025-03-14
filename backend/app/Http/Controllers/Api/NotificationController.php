@@ -26,7 +26,7 @@ class NotificationController extends Controller
             return response()->json(['message' => 'Unauthorized'], 401);
         }
 
-        $notifications = $this->repository->getAllForUser($userType, $userId, $request->get('per_page', 10));
+        $notifications = $this->repository->getAllForUser($userType, $userId, $request->get('per_page', 10))->appends(request()->query());
         return NotificationResource::collection($notifications);
     }
 

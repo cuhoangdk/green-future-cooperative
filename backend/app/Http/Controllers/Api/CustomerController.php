@@ -117,7 +117,7 @@ class CustomerController extends Controller
             sortBy: $sortBy,
             sortDirection: $sortDirection,
             perPage: $perPage
-        );
+        )->appends(request()->query());
 
         return CustomerResource::collection($trashedUsers);
     }
@@ -179,12 +179,12 @@ class CustomerController extends Controller
      */
     public function search(SearchCustomerRequest $request)
     {
-        $sortBy = $request->query('sortBy', 'created_at');
-        $sortDirection = $request->query('sortDirection', 'desc');
-        $perPage = (int) $request->query('perPage', 10);
+        $sortBy = $request->query('sort_by', 'created_at');
+        $sortDirection = $request->query('sort_direction', 'desc');
+        $perPage = (int) $request->query('per_page', 10);
         $filters = $request->only(['search']);
 
-        $customers = $this->customerRepository->search($sortBy, $sortDirection, $perPage, $filters);
+        $customers = $this->customerRepository->search($sortBy, $sortDirection, $perPage, $filters)->appends(request()->query());
         return CustomerResource::collection($customers);
     }
 

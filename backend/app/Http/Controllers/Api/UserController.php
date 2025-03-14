@@ -125,7 +125,7 @@ class UserController extends Controller
             sortBy: $sortBy,
             sortDirection: $sortDirection,
             perPage: $perPage
-        );
+        )->appends(request()->query());
 
         return UserResource::collection($trashedUsers);
     }
@@ -177,7 +177,7 @@ class UserController extends Controller
 
         $searchKeyword = $request->input('search'); // Từ khóa tìm kiếm
 
-        $users = $this->userRepository->getSearchUsers($sortBy, $sortDirection, $perPage, $searchKeyword);
+        $users = $this->userRepository->getSearchUsers($sortBy, $sortDirection, $perPage, $searchKeyword)->appends(request()->query());
 
         return UserResource::collection($users);
     }
@@ -203,7 +203,7 @@ class UserController extends Controller
             'ward' => $request->input('ward'),
         ];
 
-        $users = $this->userRepository->getFilteredUsers($sortBy, $sortDirection, $perPage, $filters);
+        $users = $this->userRepository->getFilteredUsers($sortBy, $sortDirection, $perPage, $filters)->appends(request()->query());
 
         return UserResource::collection($users);
     }

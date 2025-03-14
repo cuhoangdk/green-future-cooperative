@@ -32,7 +32,7 @@ class CultivationLogController extends Controller
             $request->get('sort_by', 'created_at'),
             $request->get('sort_direction', 'desc'),
             $request->get('per_page')
-        );
+        )->appends(request()->query());
         return CultivationLogResource::collection($logs);
     }
 

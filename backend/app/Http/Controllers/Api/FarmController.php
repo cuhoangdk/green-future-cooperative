@@ -79,7 +79,7 @@ class FarmController extends Controller
             sortBy: $sortBy,
             sortDirection: $sortDirection,
             perPage: $perPage
-        );
+        )->appends(request()->query());
 
         return FarmResource::collection($trashedUsers);
     }
@@ -123,9 +123,9 @@ class FarmController extends Controller
         $perPage = $request->input('per_page', 10);
         $sortBy = $request->input('sort_by', 'created_at');
         $sortDirection = $request->input('sort_direction', 'desc');
-        $filters = $request->only(['search']);
+        $filters = $request->only(['search', 'user_id']);
 
-        $farms = $this->farmRepository->search($sortBy, $sortDirection, $perPage, $filters);
+        $farms = $this->farmRepository->search($sortBy, $sortDirection, $perPage, $filters)->appends(request()->query());
         return FarmResource::collection($farms);
     }
 }

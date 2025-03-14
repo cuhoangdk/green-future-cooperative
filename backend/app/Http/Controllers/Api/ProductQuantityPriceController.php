@@ -25,7 +25,7 @@ class ProductQuantityPriceController extends Controller
             $request->get('sort_by', 'quantity'),
             $request->get('sort_direction', 'asc'),
             $request->get('per_page')
-        );
+        )->appends(request()->query());
         return ProductQuantityPriceResource::collection($prices);
     }
 
@@ -62,7 +62,7 @@ class ProductQuantityPriceController extends Controller
             $request->get('sort_by', 'deleted_at'),
             $request->get('sort_direction', 'desc'),
             $request->get('per_page',10)
-        );
+        )->appends(request()->query());
         return ProductQuantityPriceResource::collection($prices);
     }
 

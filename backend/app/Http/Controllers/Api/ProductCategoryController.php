@@ -34,7 +34,7 @@ class ProductCategoryController extends Controller
             sortBy: $sortBy,
             sortDirection: $sortDirection,
             perPage: $perPage // Nếu null, repository sẽ trả về danh sách không phân trang
-        );
+        )->appends(request()->query());
 
         return ProductCategoryResource::collection($productCategory);
     }
@@ -114,7 +114,7 @@ class ProductCategoryController extends Controller
             sortBy: $sortBy,
             sortDirection: $sortDirection,
             perPage: $perPage
-        );
+        )->appends(request()->query());
 
         return ProductCategoryResource::collection($trashedCategories);
     }

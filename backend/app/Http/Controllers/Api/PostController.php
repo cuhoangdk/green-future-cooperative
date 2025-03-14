@@ -192,7 +192,7 @@ class PostController extends Controller
             sortBy: $sortBy,
             sortDirection: $sortDirection,
             perPage: $perPage
-        );
+        )->appends(request()->query());
 
         return PostResource::collection($trashedPosts);
     }

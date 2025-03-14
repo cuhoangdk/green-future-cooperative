@@ -97,7 +97,7 @@ class PostCommentController extends Controller
         $keyword = $request->input('search', '');
         $perPage = $request->input('per_page', 10);
 
-        $comments = $this->commentRepository->searchComments($keyword, $postId, $perPage);
+        $comments = $this->commentRepository->searchComments($keyword, $postId, $perPage)->appends(request()->query());
 
         return PostCommentResource::collection($comments);
     }
