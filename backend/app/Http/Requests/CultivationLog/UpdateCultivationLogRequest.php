@@ -18,8 +18,18 @@ class UpdateCultivationLogRequest extends FormRequest
             'activity' => 'sometimes|string|max:255',
             'fertilizer_used' => 'nullable|string|max:255',
             'pesticide_used' => 'nullable|string|max:255',
-            'image_url' => 'nullable|file|image|max:10240',
-            'video_url' => ['nullable', 'string', 'max:255', new YouTubeUrl],
+            'image_url' => ['sometimes','file','image','max:10240',
+            function ($attribute, $value, $fail) {                
+                if (!request()->has('video_url') && empty($value)) {
+                    $fail('Bắt buộc có hình ảnh nếu ko có video.');
+                }                
+            },],
+            'video_url' => ['sometimes', 'string', 'max:255', new YouTubeUrl, 
+            function ($attribute, $value, $fail) {                
+                if (!request()->has('video_url') && empty($value)) {
+                    $fail('Bắt buộc có video nếu ko có hình ảnh.');
+                }                
+            },],
             'notes' => 'nullable|string',
         ];
     }

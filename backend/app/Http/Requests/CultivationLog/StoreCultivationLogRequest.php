@@ -18,8 +18,8 @@ class StoreCultivationLogRequest extends FormRequest
             'activity' => 'required|string|max:255',
             'fertilizer_used' => 'nullable|string|max:255',
             'pesticide_used' => 'nullable|string|max:255',
-            'image_url' => 'nullable|file|image|max:10240',
-            'video_url' => ['nullable', 'string', 'max:255', new YouTubeUrl],
+            'image_url' => 'required_without:video_url|file|image|max:10240',
+            'video_url' => ['required_without:image_url', 'string', 'max:255', new YouTubeUrl],
             'notes' => 'nullable|string',
         ];
     }
