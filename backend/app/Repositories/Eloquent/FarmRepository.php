@@ -181,6 +181,9 @@ class FarmRepository implements FarmRepositoryInterface
         $query->when($filters['search'] ?? null, function (Builder $query, $search) {
             $query->where(function (Builder $q) use ($search) {
                 $q->where('name', 'like', "%{$search}%");
+                $q->orWhereHas('user', function ($userQuery) use ($search) {
+                    $userQuery->where('full_name', 'like', "%{$search}%");
+                });
             });
         });
         // Lọc theo user_id nếu là super_admin và có tham số user_id
