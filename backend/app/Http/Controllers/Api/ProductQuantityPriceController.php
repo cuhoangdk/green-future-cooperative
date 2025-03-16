@@ -34,19 +34,16 @@ class ProductQuantityPriceController extends Controller
         $data = $request->validated();
         $prices = [];
 
-        // Xử lý mảng các đối tượng prices
         foreach ($data['prices'] as $priceData) {
-            // Tạo dữ liệu để lưu vào repository
             $priceRecord = [
                 'quantity' => $priceData['quantity'],
                 'price' => $priceData['price'],
             ];
-
-            // Lưu vào repository
-            $price = $this->repository->create($productId, $priceRecord);
+            $price = $this->repository->create($productId, $priceRecord); // Trả về model instance
             $prices[] = $price;
-        }        
-        return new ProductQuantityPriceResource($prices);
+        }
+
+        return ProductQuantityPriceResource::collection($prices); // $prices là mảng các model
     }
 
     public function show(int $productId, $id)
