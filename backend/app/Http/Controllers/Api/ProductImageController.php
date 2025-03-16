@@ -43,21 +43,25 @@ class ProductImageController extends Controller
         $data = $request->validated();
         $images = [];
 
-        // Kiểm tra nếu có nhiều file được upload
-        if ($request->hasFile('image_urls')) {
-            $uploadedFiles = $request->file('image_urls');
-            // Đảm bảo uploadedFiles là mảng
-            $uploadedFiles = is_array($uploadedFiles) ? $uploadedFiles : [$uploadedFiles];
+        // Xử lý mảng các đối tượng images
+        foreach ($data['images'] as $imageData) {
+            // Upload file ảnh và lấy URL
+            $imageUrl = $this->uploadFileService->uploadImage(
+                $imageData['image_url'], // File ảnh từ request
+                'product_images'
+            );
 
-            foreach ($uploadedFiles as $file) {
-                $imageData = $data; // Copy dữ liệu validated
-                $imageData['image_url'] = $this->uploadFileService->uploadImage(
-                    $file,
-                    'product_images'
-                );
-                $image = $this->repository->create($productId, $imageData);
-                $images[] = $image;
-            }
+            // Tạo dữ liệu để lưu vào repository
+            $imageRecord = [
+                'image_url' => $imageUrl,
+                'sort_order' => $imageData['sort_order'] ?? 0, // Giá trị mặc định nếu không có
+                'is_primary' => $imageData['is_primary'] ?? false,                
+                'title' => $imageData['title'] ?? null,
+            ];
+
+            // Lưu vào repository
+            $image = $this->repository->create($productId, $imageRecord);
+            $images[] = $image;
         }
 
         return ProductImageResource::collection($images);

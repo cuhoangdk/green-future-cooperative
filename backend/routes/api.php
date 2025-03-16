@@ -146,10 +146,11 @@ Route::middleware('log.activity')->group(function () {
             // sometimes: sort_by, sort_direction, per_page
             Route::get('/', [ProductQuantityPriceController::class, 'index'])->name('quantity-prices.index');
             Route::middleware(['auth:api_users', 'permission'])->group(function () {
-                // required: quantity, price
+                // required: prices[], prices.*.quantity, prices.*.price
                 Route::post('/', [ProductQuantityPriceController::class, 'store'])->name('quantity-prices.store');
                 Route::get('/trashed', [ProductQuantityPriceController::class, 'trashed'])->name('quantity-prices.trashed');
                 Route::get('/{id}', [ProductQuantityPriceController::class, 'show'])->name('quantity-prices.show');
+                // sometimes: quantity, price
                 Route::put('/{id}', [ProductQuantityPriceController::class, 'update'])->name('quantity-prices.update');
                 Route::delete('/{id}', [ProductQuantityPriceController::class, 'destroy'])->name('quantity-prices.destroy');            
                 Route::patch('/restore/{id}', [ProductQuantityPriceController::class, 'restore'])->name('quantity-prices.restore');
@@ -160,9 +161,9 @@ Route::middleware('log.activity')->group(function () {
             // sometimes: sort_by, sort_direction, per_page
             Route::get('/', [ProductImageController::class, 'index'])->name('product-images.index');
             Route::middleware(['auth:api_users', 'permission'])->group(function () {
-                // required: image_urls[],
-                // nullable: alt_text, title
-                // sometimes: sort_order, is_primary
+                // required: images[],images[].*.image_url
+                // nullable: images[].*.title
+                // sometimes: images[].*.sort_order, images[].*.is_primary
                 Route::post('/', [ProductImageController::class, 'store'])->name('product-images.store');
                 Route::get('/{id}', [ProductImageController::class, 'show'])->name('product-images.show');
                 // Route::put('/{id}', [ProductImageController::class, 'update'])->name('product-images.update');

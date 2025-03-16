@@ -17,8 +17,7 @@ class UpdateProductImageRequest extends FormRequest
             'image_urls' => 'sometimes|array',
             'image_urls.*' => 'image|mimes:jpeg,png,jpg,gif|max:4096',
             'sort_order' => 'sometimes|integer|min:0',
-            'is_primary' => 'sometimes|boolean',
-            'alt_text' => 'nullable|string|max:255',
+            'is_primary' => 'sometimes|boolean',            
             'title' => 'nullable|string|max:255',
         ];
     }

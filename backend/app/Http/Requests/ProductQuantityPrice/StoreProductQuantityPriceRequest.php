@@ -15,8 +15,9 @@ class StoreProductQuantityPriceRequest extends FormRequest
     public function rules()
     {
         return [
-            'quantity' => 'required|numeric|min:0',
-            'price' => 'required|numeric|min:0',
+            'prices' => 'required|array|min:1', // Mảng prices, ít nhất 1 phần tử
+            'prices.*.quantity' => 'required|numeric|min:0', // Quantity cho mỗi phần tử
+            'prices.*.price' => 'required|numeric|min:0', // Price cho mỗi phần tử
         ];
     }
 

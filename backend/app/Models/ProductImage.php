@@ -14,7 +14,7 @@ class ProductImage extends Model
         'image_url',
         'sort_order',
         'is_primary',
-        'alt_text',
+        'title',
     ];
 
     protected $casts = [

@@ -8,18 +8,17 @@ class StoreProductImageRequest extends FormRequest
 {
     public function authorize()
     {
-        return true;
+        return true; // Điều chỉnh theo logic phân quyền nếu cần
     }
 
     public function rules()
     {
         return [
-            'image_urls' => 'required|array',
-            'image_urls.*' => 'image|mimes:jpeg,png,jpg,gif|max:4096', // Max 4MB
-            'sort_order' => 'sometimes|integer|min:0',
-            'is_primary' => 'sometimes|boolean',
-            'alt_text' => 'nullable|string|max:255',
-            'title' => 'nullable|string|max:255',
+            'images' => 'required|array|min:1', // Tên mới: 'images' thay vì 'image_urls'
+            'images.*.image_url' => 'required|image|mimes:jpeg,png,jpg,gif|max:4096', // File ảnh
+            'images.*.sort_order' => 'sometimes|integer|min:0',
+            'images.*.is_primary' => 'sometimes|boolean',
+            'images.*.title' => 'nullable|string|max:255',
         ];
     }
 
