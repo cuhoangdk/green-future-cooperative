@@ -7,6 +7,7 @@ use App\Models\CartItem;
 use App\Models\CustomerAddress;
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\ProductQuantityPrice;
 use App\Repositories\Contracts\OrderRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -75,6 +76,12 @@ class OrderRepository implements OrderRepositoryInterface
                 if ($item->quantity > $item->product->stock_quantity) {
                     throw new \Exception("Insufficient stock for product ID {$item->product_id}. Available: {$item->product->stock_quantity}, Requested: {$item->quantity}");
                 }
+                // Lấy giá từ product_quantity_prices dựa trên quantity
+                $price = $this->getPriceForQuantity($item->product_id, $item->quantity);
+                if ($price === null) {
+                    throw new \Exception("No price defined for product ID {$item->product_id} with quantity {$item->quantity}");
+                }
+                $item->calculated_price = $price; // Lưu giá tạm thời vào item để dùng sau
             }
 
             if (isset($data['customer_address_id'])) {
@@ -111,9 +118,9 @@ class OrderRepository implements OrderRepositoryInterface
                 'order_code' => $orderCode,
                 'customer_id' => $customerId,
                 'status' => 'pending',
-                'total_price' => $cartItems->sum(fn($item) => $item->quantity * $item->product->price),
+                'total_price' => $cartItems->sum(fn($item) => $item->quantity * $item->calculated_price),
                 'shipping_fee' => $data['shipping_fee'] ?? 0,
-                'final_total_amount' => $cartItems->sum(fn($item) => $item->quantity * $item->product->price) + ($data['shipping_fee'] ?? 0),
+                'final_total_amount' => $cartItems->sum(fn($item) => $item->quantity * $item->calculated_price) + ($data['shipping_fee'] ?? 0),
                 'notes' => $data['notes'] ?? null,
                 'expected_delivery_date' => $data['expected_delivery_date'] ?? null,
             ]);
@@ -125,8 +132,8 @@ class OrderRepository implements OrderRepositoryInterface
                     'product_id' => $item->product_id,
                     'product_snapshot' => $item->product->toArray(),
                     'quantity' => $item->quantity,
-                    'price' => $item->product->price,
-                    'total_item_price' => $item->quantity * $item->product->price,
+                    'price' => $item->product->calculated_price,
+                    'total_item_price' => $item->quantity * $item->product->calculated_price,
                 ]);
                 $item->product->decrement('stock_quantity', $item->quantity);
                 $item->delete();
@@ -157,10 +164,16 @@ class OrderRepository implements OrderRepositoryInterface
                     throw new \Exception("Insufficient stock for product ID {$product->id}. Available: {$product->stock_quantity}, Requested: {$item['quantity']}");
                 }
 
+                $price = $this->getPriceForQuantity($product->id, $item['quantity']);
+                if ($price === null) {
+                    throw new \Exception("No price defined for product ID {$product->id} with quantity {$item['quantity']}");
+                }
+
                 return (object) [
                     'product_id' => $product->id,
                     'product' => $product,
                     'quantity' => $item['quantity'],
+                    'calculated_price' => $price,
                 ];
             });
 
@@ -198,9 +211,9 @@ class OrderRepository implements OrderRepositoryInterface
                 'order_code' => $orderCode,
                 'customer_id' => $customerId,
                 'status' => 'pending',
-                'total_price' => $items->sum(fn($item) => $item->quantity * $item->product->price),
+                'total_price' => $items->sum(fn($item) => $item->quantity * $item->calculated_price),
                 'shipping_fee' => $data['shipping_fee'] ?? 0,
-                'final_total_amount' => $items->sum(fn($item) => $item->quantity * $item->product->price) + ($data['shipping_fee'] ?? 0),
+                'final_total_amount' => $items->sum(fn($item) => $item->quantity * $item->calculated_price) + ($data['shipping_fee'] ?? 0),
                 'notes' => $data['notes'] ?? null,
                 'expected_delivery_date' => $data['expected_delivery_date'] ?? null,
             ]);
@@ -212,8 +225,8 @@ class OrderRepository implements OrderRepositoryInterface
                     'product_id' => $item->product_id,
                     'product_snapshot' => $item->product->toArray(),
                     'quantity' => $item->quantity,
-                    'price' => $item->product->price,
-                    'total_item_price' => $item->quantity * $item->product->price,
+                    'price' => $item->product->calculated_price,
+                    'total_item_price' => $item->quantity * $item->product->calculated_price,
                 ]);
                 $item->product->decrement('stock_quantity', $item->quantity);
             }
@@ -266,5 +279,22 @@ class OrderRepository implements OrderRepositoryInterface
 
             return $order;
         });
+    }    
+    protected function getPriceForQuantity(int $productId, float $quantity)
+    {
+        // Lấy ngưỡng nhỏ nhất cho product_id
+        $minQuantity = ProductQuantityPrice::where('product_id', $productId)
+            ->min('quantity');
+
+        // Nếu quantity nhỏ hơn ngưỡng nhỏ nhất, báo lỗi
+        if ($minQuantity !== null && $quantity < $minQuantity) {
+            throw new \Exception("Quantity {$quantity} for product ID {$productId} is below the minimum allowed quantity ({$minQuantity})");
+        }
+        $priceRecord = ProductQuantityPrice::where('product_id', $productId)
+            ->where('quantity', '<=', $quantity) // Lấy ngưỡng nhỏ hơn hoặc bằng quantity
+            ->orderBy('quantity', 'desc') // Sắp xếp giảm dần để lấy ngưỡng cao nhất phù hợp
+            ->first();
+
+        return $priceRecord ? $priceRecord->price : null;
     }
 }
