@@ -8,7 +8,7 @@
 
     <!-- Loading skeleton -->
     <template v-if="status === 'pending'">
-      <hr v-for="i in 5" :key="i" class="skeleton h-6 bg-gray-200 rounded w-3/4 my-5" />
+      <div v-for="i in 5" :key="i" class="skeleton h-6 bg-gray-200 rounded w-3/4 my-5"></div>
     </template>
 
     <!-- Danh mục -->
