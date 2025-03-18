@@ -115,7 +115,7 @@ class Product extends Model
 
         // Tạo số thứ tự 4 chữ số
         $latestProduct = static::where('product_code', 'like', "{$prefix}_%")
-            ->orderBy('product_code', 'desc')
+            ->orderBy('product_code', 'desc')->withTrashed()
             ->first();
 
         $sequence = 1;
