@@ -35,7 +35,7 @@ class PostCategoryController extends Controller
             sortBy: $sortBy,
             sortDirection: $sortDirection,
             perPage: $perPage // Nếu null, repository sẽ trả về danh sách không phân trang
-        )->appends(request()->query());
+        );
 
         return PostCategoryResource::collection($categories);
     }
