@@ -21,7 +21,8 @@ class CultivationLogRepository implements CultivationLogRepositoryInterface
         string $sortDirection = 'desc',
         int $perPage = null
     ) {
-        $query = $this->model->with('product')
+        $query = $this->model
+        // ->with('product')
         ->where('product_id', $productId)->orderBy($sortBy, $sortDirection);
 
         return $perPage ? $query->paginate($perPage) : $query->get();
