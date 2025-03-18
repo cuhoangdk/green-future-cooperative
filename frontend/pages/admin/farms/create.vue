@@ -111,7 +111,7 @@
 
 <script setup lang="ts">
 definePageMeta({
-    title: 'Tạo nông trại',
+    title: 'Thêm nông trại',
     layout: 'user',
 })
 
@@ -137,7 +137,7 @@ const users = computed<User[]>(() =>
 // Khởi tạo form với các giá trị mặc định
 const form = ref({
     name: '',
-    user_id: '',
+    user_id: currentUser.value?.id || '',
     description: '',
     farm_size: null as number | null,
     soil_type: '',

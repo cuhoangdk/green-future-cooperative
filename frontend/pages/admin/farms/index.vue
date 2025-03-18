@@ -41,23 +41,18 @@
                             <td class="py-2">{{ farm.id }}</td>
                             <td class="py-2">{{ farm.name }}</td>
                             <td class="py-2">{{ farm.user.full_name }}</td>
-                            <td class="py-2">{{ farm.address }}</td>
+                            <!-- <td class="py-2">{{ farm.address }}</td> -->
                         </tr>
                         <tr v-if="expandedRows.has(farm.id)" class="bg-gray-50">
                             <td colspan="5" class="p-3">
                                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 text-sm">
-                                    <div><span class="font-semibold">Tóm tắt:</span>
-                                        <p class="text-gray-600 line-clamp-2">{{ farm.description }}</p>
-                                    </div>
-                                    <div><span class="font-semibold">Ngày tạo:</span> {{ new
-                                        Date(farm.created_at).toLocaleString("vi-VN") }}</div>
+                                    <div><span class="font-semibold">Mô tả:</span><p class="text-gray-600 line-clamp-2">{{ farm.description }}</p></div>
+                                    <div><span class="font-semibold">Phương pháp canh tác:</span><p class="text-gray-600 line-clamp-2">{{farm.irrigation_method || "Chưa xác định" }}</p></div>
                                     <div><span class="font-semibold">Chủ sở hữu:</span> {{ farm.user?.full_name }}</div>
-                                    <div><span class="font-semibold">Địa chỉ:</span> {{ farm.address.street_address }}
-                                    </div>
+                                    <div><span class="font-semibold">Địa chỉ:</span> {{ farm.address.street_address }}</div>
                                     <div><span class="font-semibold">Loại đất:</span> {{ farm.soil_type || "Chưa xác định" }}</div>
-                                    <div><span class="font-semibold">Phương pháp canh tác:</span> {{
-                                        farm.irrigation_method || "Chưa xác định" }}</div>
                                     <div><span class="font-semibold">Kích thước:</span> {{ farm.farm_size || "Chưa xác định" }}</div>
+                                    <div><span class="font-semibold">Ngày tạo:</span> {{ new Date(farm.created_at).toLocaleDateString("vi-VN") }}</div>
                                     <div>
                                         <span class="font-semibold">Kinh độ:</span> {{ farm.latitude || "Chưa xác định"
                                         }}<br>

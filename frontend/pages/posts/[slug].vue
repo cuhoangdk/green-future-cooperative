@@ -64,8 +64,7 @@
                             <div class="w-1/2 h-full border border-green-100 rounded overflow-hidden">
                                 <img :src="`${backendUrl}${featuredPost.featured_image}`" :alt="featuredPost.title"
                                     class="min-h-24 w-full rounded aspect-video object-cover transition-transform duration-200 hover:scale-105"
-                                    loading="lazy"
-                                    @error="event => { const target = event.target as HTMLImageElement; if (target) target.src = defaultImage as string; }" />
+                                    loading="lazy" />
                             </div>
                             <div class="w-1/2 px-2 py-0">
                                 <h3 class="text-left font-semibold text-green-800 hover:text-green-600 duration-200 line-clamp-4">
@@ -100,15 +99,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
-import { useRoute } from 'vue-router'
 import type { Post } from '~/types/post'
 import type { PaginationMeta, PaginationLinks } from '~/types/api'
-import { useRuntimeConfig } from '#app'
 import { usePosts } from '~/composables/usePosts'
 
-// Runtime config
-const { public: { backendUrl, defaultImage } } = useRuntimeConfig()
+const config = useRuntimeConfig();
+const placeholderImage = config.public.placeholderImage;
+const backendUrl = config.public.backendUrl;
 const route = useRoute()
 const slug = String(route.params.slug)
 const perPage = 6 // Số bài viết mỗi trang
