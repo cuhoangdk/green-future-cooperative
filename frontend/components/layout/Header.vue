@@ -37,7 +37,8 @@
                             class="hidden lg:block bg-white font-semibold text-green-600 px-4 py-2 rounded-full hover:bg-green-100 transition-colors duration-200">
                             Đăng nhập
                         </button>
-                        <button @click="toggleMobileMenu" :class="['lg:hidden z-50 p-2 rounded-lg text-white transition-colors duration-200', isMobileMenuOpen ? 'bg-green-500' : 'hover:bg-green-500']">
+                        <button @click="toggleMobileMenu"
+                            :class="['lg:hidden z-50 p-2 rounded-lg text-white transition-colors duration-200', isMobileMenuOpen ? 'bg-green-500' : 'hover:bg-green-500']">
                             <Menu class="w-6 h-6" />
                         </button>
                     </div>
@@ -48,20 +49,20 @@
         <!-- Desktop Navigation -->
         <nav class="hidden lg:block max-w-7xl mx-auto px-4 lg:px-8 py-3">
             <div class="flex justify-center space-x-6 font-semibold">
-                <NuxtLink to="/" class="text-green-500 transition-colors duration-200">Trang chủ</NuxtLink>
-                <NuxtLink to="/products" class="text-gray-600 hover:text-green-500 transition-colors duration-200">Sản phẩm</NuxtLink>
-                <NuxtLink to="/posts" class="text-gray-600 hover:text-green-500 transition-colors duration-200">Bài viết</NuxtLink>
-                <NuxtLink to="/about" class="text-gray-600 hover:text-green-500 transition-colors duration-200">Về chúng tôi</NuxtLink>
-                <NuxtLink to="/contact" class="text-gray-600 hover:text-green-500 transition-colors duration-200">Liên hệ</NuxtLink>
+                <NuxtLink v-for="link in navLinks" :key="link.path" :to="link.path"
+                    :class="['transition-colors duration-200', isActive(link.path) ? 'text-green-500' : 'text-gray-600 hover:text-green-500']">
+                    {{ link.text }}
+                </NuxtLink>
             </div>
         </nav>
 
         <!-- Mobile Navigation Menu -->
-        <nav :class="['fixed inset-0 top-14 p-4 bg-white z-40 lg:hidden transform transition-transform duration-100',
+        <nav :class="['fixed top-14 right-0 p-4 bg-white z-40 lg:hidden transform transition-transform duration-300 w-2/3 h-full shadow-lg',
             isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full']">
             <div class="text-left flex flex-col items-start justify-start h-full space-y-3">
                 <NuxtLink v-for="link in mobileNavLinks" :key="link.path" :to="link.path"
-                    class="text-gray-600 hover:text-green-500 text-2xl font-semibold transition-colors duration-200 bg-gray-100 p-2 rounded-lg hover:bg-gray-200 w-full">
+                    @click="closeMobileMenu"
+                    :class="['text-2xl font-semibold transition-colors duration-200 bg-gray-100 p-2 rounded-lg w-full', isActive(link.path) ? 'text-green-500 bg-green-100' : 'text-gray-600 hover:text-green-500 hover:bg-gray-200']">
                     {{ link.text }}
                 </NuxtLink>
             </div>
@@ -70,21 +71,38 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { useRoute } from 'vue-router'
 import { Menu, ShoppingCart, Search as SearchIcon } from 'lucide-vue-next'
 
+const route = useRoute()
 const isMobileMenuOpen = ref(false)
 
-const mobileNavLinks = [
+// Danh sách link cho cả desktop và mobile
+const navLinks = [
     { path: '/', text: 'Trang chủ' },
     { path: '/products', text: 'Sản phẩm' },
     { path: '/posts', text: 'Bài viết' },
     { path: '/about', text: 'Về chúng tôi' },
     { path: '/contact', text: 'Liên hệ' },
+]
+
+const mobileNavLinks = [
+    ...navLinks,
     { path: '/login', text: 'Đăng nhập / Đăng ký' }
 ]
 
+// Hàm kiểm tra trang đang active
+const isActive = (path: string) => {
+    return route.path === path || (path !== '/' && route.path.startsWith(path))
+}
+
+// Toggle menu mobile
 const toggleMobileMenu = () => {
     isMobileMenuOpen.value = !isMobileMenuOpen.value
+}
+
+// Đóng menu mobile khi chuyển trang
+const closeMobileMenu = () => {
+    isMobileMenuOpen.value = false
 }
 </script>
