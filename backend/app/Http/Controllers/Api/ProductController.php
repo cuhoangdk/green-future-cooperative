@@ -185,8 +185,8 @@ class ProductController extends Controller
         ->setErrorCorrectionLevel(ErrorCorrectionLevel::High); // Tăng số chấm
         // Tạo logo
         $logo = Logo::create(public_path('logo.jpg')) // Đường dẫn đến logo
-            ->setResizeToWidth(80) // Chiều rộng logo
-            ->setResizeToHeight(80); // Chiều cao logo
+            ->setResizeToWidth(100) // Chiều rộng logo
+            ->setResizeToHeight(100); // Chiều cao logo
 
         // Tạo writer và gắn logo
         $writer = new PngWriter();
