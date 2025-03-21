@@ -30,6 +30,7 @@ class UpdateProductRequest extends FormRequest
             'meta_title' => 'nullable|string|max:255',
             'meta_description' => 'nullable|string',
             'meta_keyword' => 'nullable|string',
+            'expired' => 'nullable|integer|min:1',
         ];
     }
 }

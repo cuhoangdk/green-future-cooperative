@@ -28,6 +28,7 @@ class ProductFactory extends Factory
             'is_active' => $this->faker->boolean,
             'sold_quantity' => $this->faker->numberBetween(0, 500),
             'views' => $this->faker->numberBetween(0, 10000),
+            'expired' => $this->faker->numberBetween(0, 30),
             'meta_title' => $this->faker->sentence,
             'meta_description' => $this->faker->paragraph,
             'meta_keyword' => $this->faker->word,

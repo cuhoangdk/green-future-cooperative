@@ -33,6 +33,7 @@ class Product extends Model
         'meta_title',
         'meta_description',
         'meta_keyword',
+        'expired',
     ];
 
     protected $dates = ['sown_at', 'harvested_at', 'deleted_at'];
