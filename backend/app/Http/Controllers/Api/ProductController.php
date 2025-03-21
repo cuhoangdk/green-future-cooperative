@@ -194,8 +194,11 @@ class ProductController extends Controller
             $qrCode,
             $logo // Thêm logo vào QR
         );
+        $base64String = base64_encode($result->getString());
 
-        return response($result->getString(), 200)
-            ->header('Content-Type', 'image/png');
+        return response()->json([
+            'data' => $base64String,
+            'mime_type' => 'image/png'
+        ], 200);
     }
 }
