@@ -1,3 +1,44 @@
+<template>
+  <div v-if="meta && links" class="flex space-x-1 items-center">
+    <!-- Nút về đầu -->
+    <button v-if="showFirstLast" @click="goToPage(1)" :disabled="meta.current_page === 1"
+      class="border-[1px] p-1 border-green-600 bg-transparent text-green-600 rounded-md hover:bg-green-600 hover:text-white transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+      <ChevronsLeft class="w-4 h-4" />
+    </button>
+
+    <!-- Nút trang trước -->
+    <button @click="goToPage(meta.current_page - 1)" :disabled="!links.prev"
+      class="border-[1px] p-1 border-green-600 bg-transparent text-green-600 rounded-md hover:bg-green-600 hover:text-white transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+      <ChevronLeft class="w-4 h-4" />
+    </button>
+
+    <!-- Số trang -->
+    <template v-if="showNumbers">
+      <template v-for="(page, index) in getPageNumbers()" :key="index">
+        <button v-if="page !== '...'" @click="goToPage(page as number)" :class="{
+          'bg-green-600 text-white': page === meta.current_page,
+          'border-green-600 text-green-600 hover:bg-green-600 hover:text-white': page !== meta.current_page
+        }" class="border-[1px] px-3 py-1 rounded-md transition-colors duration-200">
+          {{ page }}
+        </button>
+        <span v-else class="px-2 text-gray-500">...</span>
+      </template>
+    </template>
+
+    <!-- Nút trang sau -->
+    <button @click="goToPage(meta.current_page + 1)" :disabled="!links.next"
+      class="border-[1px] p-1 border-green-600 bg-transparent text-green-600 rounded-md hover:bg-green-600 hover:text-white transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+      <ChevronRight class="w-4 h-4" />
+    </button>
+
+    <!-- Nút về cuối -->
+    <button v-if="showFirstLast" @click="goToPage(meta.last_page)" :disabled="meta.current_page === meta.last_page"
+      class="border-[1px] p-1 border-green-600 bg-transparent text-green-600 rounded-md hover:bg-green-600 hover:text-white transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+      <ChevronsRight class="w-4 h-4" />
+    </button>
+  </div>
+</template>
+
 <script setup lang="ts">
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-vue-next'
 import type { PaginationMeta, PaginationLinks } from '~/types/api'
@@ -44,63 +85,3 @@ const getPageNumbers = () => {
   return pageNumbers
 }
 </script>
-
-<template>
-  <div v-if="meta && links" class="flex space-x-1 items-center">
-    <!-- Nút về đầu -->
-    <button
-      v-if="showFirstLast"
-      @click="goToPage(1)"
-      :disabled="meta.current_page === 1"
-      class="border-[1px] p-1 border-green-600 bg-transparent text-green-600 rounded-md hover:bg-green-600 hover:text-white transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-    >
-      <ChevronsLeft class="w-4 h-4" />
-    </button>
-
-    <!-- Nút trang trước -->
-    <button
-      @click="goToPage(meta.current_page - 1)"
-      :disabled="!links.prev"
-      class="border-[1px] p-1 border-green-600 bg-transparent text-green-600 rounded-md hover:bg-green-600 hover:text-white transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-    >
-      <ChevronLeft class="w-4 h-4" />
-    </button>
-
-    <!-- Số trang -->
-    <template v-if="showNumbers">
-      <template v-for="(page, index) in getPageNumbers()" :key="index">
-        <button
-          v-if="page !== '...'"
-          @click="goToPage(page as number)"
-          :class="{
-            'bg-green-600 text-white': page === meta.current_page,
-            'border-green-600 text-green-600 hover:bg-green-600 hover:text-white': page !== meta.current_page
-          }"
-          class="border-[1px] px-3 py-1 rounded-md transition-colors duration-200"
-        >
-          {{ page }}
-        </button>
-        <span v-else class="px-2 text-gray-500">...</span>
-      </template>
-    </template>
-
-    <!-- Nút trang sau -->
-    <button
-      @click="goToPage(meta.current_page + 1)"
-      :disabled="!links.next"
-      class="border-[1px] p-1 border-green-600 bg-transparent text-green-600 rounded-md hover:bg-green-600 hover:text-white transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-    >
-      <ChevronRight class="w-4 h-4" />
-    </button>
-
-    <!-- Nút về cuối -->
-    <button
-      v-if="showFirstLast"
-      @click="goToPage(meta.last_page)"
-      :disabled="meta.current_page === meta.last_page"
-      class="border-[1px] p-1 border-green-600 bg-transparent text-green-600 rounded-md hover:bg-green-600 hover:text-white transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-    >
-      <ChevronsRight class="w-4 h-4" />
-    </button>
-  </div>
-</template>

@@ -1,11 +1,7 @@
 <template>
     <section class="w-full"> <!-- Thêm relative để overlay có thể định vị -->
-        <div class="divider divider-primary divider-start text-xl font-semibold text-green-600">
-            {{ title }}
-        </div>
-
         <!-- Hiển thị sản phẩm sau khi load xong -->
-        <div :class="['grid gap-3 mb-4 relative grid-cols-2 md:grid-cols-3 lg:grid-cols-4']">
+        <div :class="['grid gap-3 mb-4 relative grid-cols-2 md:grid-cols-3 lg:grid-cols-5']">
             <ProductCard v-for="product in products" :key="product.id" :product="product" />
             <!-- Overlay loading -->
             <div v-if="status === 'pending'"
@@ -25,7 +21,6 @@ import type { Product } from '~/types/product';
 import type { PaginationMeta, PaginationLinks } from '~/types/api';
 
 interface Props {
-    title: string;
     products: Product[];
     meta: PaginationMeta | null;
     links: PaginationLinks | null;

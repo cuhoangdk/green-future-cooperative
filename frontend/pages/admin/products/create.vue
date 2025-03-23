@@ -12,7 +12,7 @@
             <div v-if="currentUser?.is_super_admin">
                 <label class="text-gray-700 font-semibold">Thành viên</label>
                 <select @change="(event) => searchFarms({ user_id: Number((event.target as HTMLSelectElement).value) })"
-                v-model="form.user_id" class="select select-primary w-full mt-1" required>
+                    v-model="form.user_id" class="select select-primary w-full mt-1" required>
                     <option value="" disabled selected>Chọn chủ của sản phẩm</option>
                     <option v-for="user in users" :key="user.id" :value="user.id">
                         {{ user.full_name }}
@@ -20,7 +20,7 @@
                 </select>
             </div>
             <!-- Farm Details -->
-            <div class="flex space-x-4">
+            <div class="flex gap-2">
                 <!-- Farm -->
                 <div class="w-1/3">
                     <label class="text-gray-700 font-semibold">Nông trại</label>
@@ -63,13 +63,13 @@
             </div>
 
             <!-- Farm Details -->
-            <div class="flex space-x-4">
-                <div class="w-1/2">
+            <div class="flex flex-col md:flex-row gap-2">
+                <div class="w-full md:w-1/2">
                     <label class="text-gray-700 font-semibold">Ngày gieo hạt</label>
                     <input v-model="form.sown_at" type="date" class="input input-primary w-full mt-1"
                         placeholder="dd/mm/yyyy" />
                 </div>
-                <div class="w-1/2">
+                <div class="w-full md:w-1/2">
                     <label class="text-gray-700 font-semibold">Nhà cung cấp giống</label>
                     <input v-model="form.seed_supplier" class="input input-primary w-full mt-1"
                         placeholder="Cửa hàng..." />
@@ -77,24 +77,31 @@
             </div>
 
             <!-- Location -->
-            <div class="flex space-x-4">
-                <div class="w-1/2">
+            <div class="flex flex-col md:flex-row gap-2">
+                <div class="w-full md:w-1/2">
                     <label class="text-gray-700 font-semibold">Diện tích trồng (mét vuông)</label>
                     <input v-model="form.cultivated_area" type="number" step="0.01"
                         class="input input-primary w-full mt-1" placeholder="700" />
                 </div>
-                <div class="w-1/2">
-                    <label class="text-gray-700 font-semibold">Sản lượng dự kiến</label>
+                <div class="w-full md:w-1/2">
+                    <label class="text-gray-700 font-semibold">Sản lượng dự kiến{{ units.find(unit => unit.id === Number(form.unit_id))?.name ? ` (${units.find(unit => unit.id === Number(form.unit_id))?.name})` : '' }}</label>
                     <input v-model="form.stock_quantity" type="number" step="0.1"
                         class="input input-primary w-full mt-1" placeholder="300" />
                 </div>
+            </div>
+
+            <!-- Expired -->
+            <div class="w-full md:w-1/2">
+                <label class="text-gray-700 font-semibold">Hạn sử dụng (ngày từ khi thu hoạch)</label>
+                <input v-model="form.expired" type="number" step="1" class="input input-primary w-full mt-1"
+                    placeholder="7" />
             </div>
 
             <!-- Submit Button -->
             <div class="flex justify-end">
                 <button type="submit" class="btn btn-primary" :disabled="status === 'pending'">
                     <span v-if="status === 'pending'" class="loading loading-spinner loading-md"></span>
-                    <span>Tạo nông trại</span>
+                    <span>Thêm</span>
                 </button>
             </div>
         </form>
@@ -134,6 +141,7 @@ const form = ref({
     cultivated_area: null as number | null,
     sown_at: new Date().toISOString().split('T')[0] as string | null,
     stock_quantity: null as number | null,
+    expired: 4,
     meta_title: '',
     meta_description: '',
     meta_keywords: '',
@@ -174,6 +182,7 @@ const handleSubmit = async () => {
         formData.append('meta_description', form.value.meta_description || '')
         formData.append('meta_keywords', form.value.meta_keywords || '')
         formData.append('pricing_type', 'flexible')
+        formData.append('expired', form.value.expired?.toString() || '')
 
         const { error } = await createProduct(formData)
 

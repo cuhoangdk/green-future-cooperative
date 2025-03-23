@@ -67,9 +67,19 @@ export const useUsers = () => {
     // Lấy thông tin một người dùng theo usercode
     const getUserByCode = async (
         usercode: string,
-        authType: AuthType = AuthType.Guest
+        authType: AuthType = AuthType.User
     ) => {
         return await get<User>(`/users/${usercode}`, {
+            authType,
+        });
+    };
+
+    // Lấy thông tin một người dùng theo id
+    const getUserById = async (
+        id: number,
+        authType: AuthType = AuthType.User
+    ) => {
+        return await get<User>(`/users/${id}`, {
             authType,
         });
     };
@@ -105,15 +115,15 @@ export const useUsers = () => {
         });
     };
 
-    // // Khôi phục người dùng từ thùng rác
-    // const restoreUser = async (
-    //     id: number,
-    //     authType: AuthType = AuthType.User
-    // ) => {
-    //     return await put<User>(`/users/restore/${id}`, null, {
-    //         authType,
-    //     });
-    // };
+    // Khôi phục người dùng từ thùng rác
+    const restoreUser = async (
+        id: number,
+        authType: AuthType = AuthType.User
+    ) => {
+        return await put<User>(`/users/restore/${id}`, null, {
+            authType,
+        });
+    };
 
     // Xóa vĩnh viễn người dùng
     const forceDeleteUser = async (
@@ -134,7 +144,8 @@ export const useUsers = () => {
         createUser,
         updateUser,
         deleteUser,
-        // restoreUser,
+        restoreUser,
         forceDeleteUser,
+        getUserById,
     };
 };

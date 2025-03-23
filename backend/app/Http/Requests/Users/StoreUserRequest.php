@@ -19,10 +19,10 @@ class StoreUserRequest extends FormRequest
             'password' => 'required|min:6|confirmed',
             'full_name' => 'required|string|max:255',
             'phone_number' => 'required|string|max:20|unique:customers,phone_number|unique:users,phone_number',
-            'date_of_birth' => 'required|date|before:today',
-            'address' => 'required|array',
+            'date_of_birth' => 'nullable|date|before:today',
+            'address' => 'nullable|array',
             'address.province' => [
-                'required',
+                'nullable',
                 'string',
                 function ($attribute, $value, $fail) {
                     if (!LocationHelper::isValidProvince($value)) {
@@ -31,7 +31,7 @@ class StoreUserRequest extends FormRequest
                 },
             ],
             'address.district' => [
-                'required',
+                'nullable',
                 'string',
                 function ($attribute, $value, $fail) {
                     $province = $this->input('address.province');
@@ -41,7 +41,7 @@ class StoreUserRequest extends FormRequest
                 },
             ],
             'address.ward' => [
-                'required',
+                'nullable',
                 'string',
                 function ($attribute, $value, $fail) {
                     $district = $this->input('address.district');
@@ -50,7 +50,7 @@ class StoreUserRequest extends FormRequest
                     }
                 },
             ],
-            'address.street_address' => 'required|string|max:500',
+            'address.street_address' => 'nullable|string|max:500',
             'bank_account_number' => 'nullable|string|max:20',
             'bank_name' => 'nullable|string|max:255',            
             'avatar_url' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
@@ -58,7 +58,6 @@ class StoreUserRequest extends FormRequest
             'is_super_admin' => 'nullable|boolean',
             'is_banned' => 'nullable|boolean',
             'gender' => 'nullable|string|in:male,female,other',
-            
         ];
     }
 }

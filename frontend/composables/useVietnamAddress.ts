@@ -37,7 +37,6 @@ export const useVietnamAddress = () => {
   const provinces = ref<AddressItem[]>([]);
   const districts = ref<AddressItem[]>([]);
   const wards = ref<AddressItem[]>([]);
-  const addressDetail = ref<AddressItem | null>(null);
 
   // Lấy danh sách tỉnh/thành phố
   const fetchProvinces = async () => {
@@ -76,24 +75,33 @@ export const useVietnamAddress = () => {
     }
   };
 
-  const getAddressNameById  = async (id: string) => {
+  // Lấy tên đầy đủ của địa điểm theo ID phường/xã
+  const getFullAddressName = async (wardId: string) => {
     try {
-      const addressData = await fetchAddressData(5, id);
-      addressDetail.value = addressData.length > 0 ? addressData[0] : null;
-      return addressDetail.value?.full_name;
+      if (!wardId) return '';
+      
+      const response = await fetch(`https://esgoo.net/api-tinhthanh/5/${wardId}.htm`);
+      const data = await response.json();
+
+      if (!response.ok || data.error !== 0) {
+        throw new Error(data.error_text || 'Failed to fetch address name');
+      }
+
+      return data.data.full_name;
     } catch (error) {
-      console.error('Error fetching provinces:', error);
+      console.error('Error fetching address name:', error);
+      return '';
     }
-  }
+  };
 
 
   return {
     provinces,
     districts,
     wards,
-    getAddressNameById,
     fetchProvinces,
     fetchDistricts,
     fetchWards,
+    getFullAddressName,
   };
 };

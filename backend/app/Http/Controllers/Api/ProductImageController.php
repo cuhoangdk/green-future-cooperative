@@ -73,33 +73,33 @@ class ProductImageController extends Controller
         return new ProductImageResource($image);
     }
 
-    // public function update(int $productId, $id, UpdateProductImageRequest $request)
-    // {
-    //     $data = $request->validated();
+    public function update(int $productId, $id, UpdateProductImageRequest $request)
+    {
+        $data = $request->validated();
         
-    //     // Lấy image hiện tại
-    //     $image = $this->repository->getById($productId, $id);
+        // Lấy image hiện tại
+        $image = $this->repository->getById($productId, $id);
 
-    //     // Xử lý khi có file mới được upload
-    //     if ($request->hasFile('image_urls')) {
-    //         // Xóa ảnh cũ nếu tồn tại
-    //         if ($image->image_url) {
-    //             $this->uploadFileService->deleteImage($image->image_url);
-    //         }
+        // Xử lý khi có file mới được upload
+        if ($request->hasFile('image_urls')) {
+            // Xóa ảnh cũ nếu tồn tại
+            if ($image->image_url) {
+                $this->uploadFileService->deleteImage($image->image_url);
+            }
             
-    //         $uploadedFiles = $request->file('image_urls');
-    //         // Lấy file đầu tiên trong mảng (nếu muốn hỗ trợ nhiều ảnh thì cần tạo record mới)
-    //         $file = is_array($uploadedFiles) ? $uploadedFiles[0] : $uploadedFiles;
+            $uploadedFiles = $request->file('image_urls');
+            // Lấy file đầu tiên trong mảng (nếu muốn hỗ trợ nhiều ảnh thì cần tạo record mới)
+            $file = is_array($uploadedFiles) ? $uploadedFiles[0] : $uploadedFiles;
             
-    //         $data['image_url'] = $this->uploadFileService->uploadImage(
-    //             $file,
-    //             'product_images'
-    //         );
-    //     }
+            $data['image_url'] = $this->uploadFileService->uploadImage(
+                $file,
+                'product_images'
+            );
+        }
 
-    //     $updatedImage = $this->repository->update($productId, $id, $data);
-    //     return new ProductImageResource($updatedImage);
-    // }
+        $updatedImage = $this->repository->update($productId, $id, $data);
+        return new ProductImageResource($updatedImage);
+    }
 
     public function destroy(int $productId, $id)
     {

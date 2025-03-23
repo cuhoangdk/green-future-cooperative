@@ -69,6 +69,12 @@ export const useProducts = () => {
             authType: AuthType.User,
         });
     };
+    // Lấy QR code của sản phẩm
+    const getProductQRCode = async (productId: number) => {
+        return await get<string>(`/products/${productId}/qrcode`, {
+            authType: AuthType.User,
+        });
+    };
 
     // Tìm kiếm sản phẩm theo các tiêu chí lọc
     const searchProducts = async (filters: {
@@ -110,5 +116,6 @@ export const useProducts = () => {
         updateProduct,
         deleteProduct,
         searchProducts,
+        getProductQRCode,
     };
 };

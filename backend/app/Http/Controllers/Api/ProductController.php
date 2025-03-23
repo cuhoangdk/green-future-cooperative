@@ -155,12 +155,7 @@ class ProductController extends Controller
      */
     public function filter(FilterProductRequest $request)
     {
-        $filters = $request->only([
-            'search', 'category_id', 'unit_id', 'user_id', 'farm_id',
-            'pricing_type', 'is_active', 'stock_quantity_min',
-            'stock_quantity_max', 'sown_at_from', 'sown_at_to', 'harvested_at_from', 'harvested_at_to'
-        ]);
-
+        $filters = $request->validated();
         $products = $this->repository->getFilteredProduct(
             $request->get('sort_by', 'created_at'),
             $request->get('sort_direction', 'desc'),
@@ -176,7 +171,7 @@ class ProductController extends Controller
     public function getQrCode($id)
     {
         $product = $this->repository->getById($id);
-        $url = "http://127.0.0.1:3000/products/{$product->slug}";
+        $url = env('FRONTEND_URL') . "/products/{$product->slug}";
 
         // Tạo mã QR
         $qrCode = QrCode::create($url)

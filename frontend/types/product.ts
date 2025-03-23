@@ -39,9 +39,10 @@ export interface Product {
     harvested_at?: Date;
     pricing_type: string;
     stock_quantity: number;
-    is_active: boolean;
+    status: string;
     sold_quantity: number;
     views: number;
+    expired: number;
     meta_title?: string;
     meta_description?: string;
     meta_keyword?: string;

@@ -30,10 +30,10 @@ class Product extends Model
         'status',
         'sold_quantity',
         'views',
+        'expired',
         'meta_title',
         'meta_description',
         'meta_keyword',
-        'expired',
     ];
 
     protected $dates = ['sown_at', 'harvested_at', 'deleted_at'];

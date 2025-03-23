@@ -23,6 +23,7 @@ class UserRepository implements UserRepositoryInterface
     public function getAll(string $sortBy = 'created_at', string $sortDirection = 'desc', int $perPage = 10): Paginator
     {
         return $this->model
+            ->with('address')
             ->orderBy($sortBy, $sortDirection)
             ->paginate($perPage);
     }
@@ -32,7 +33,7 @@ class UserRepository implements UserRepositoryInterface
      */
     public function getById($id)
     {
-        return $this->model->find($id);
+        return $this->model->with('address')->find($id);
     }
 
     /**
@@ -40,7 +41,7 @@ class UserRepository implements UserRepositoryInterface
      */
     public function getByUsercode($usercode)
     {
-        return $this->model->where('usercode', $usercode)->first();
+        return $this->model->with('address')->where('usercode', $usercode)->first();
     }
 
     /**
@@ -82,6 +83,7 @@ class UserRepository implements UserRepositoryInterface
         int $perPage = 10
     ) {
         return $this->model->onlyTrashed()
+            ->with('address')
             ->orderBy($sortBy, $sortDirection)
             ->paginate($perPage);
     }
@@ -91,7 +93,7 @@ class UserRepository implements UserRepositoryInterface
      */
     public function getTrashedById($id)
     {
-        return $this->model->onlyTrashed()->find($id);
+        return $this->model->with('address')->onlyTrashed()->find($id);
     }
 
     /**
@@ -127,7 +129,7 @@ class UserRepository implements UserRepositoryInterface
         int $perPage = 10,
         array $filters = []
     ): Paginator {
-        $query = $this->model->query();
+        $query = $this->model->with('address');
 
         $query->when($filters['search'] ?? null, function (Builder $query, $search) {
             $query->where(function (Builder $q) use ($search) {
@@ -164,7 +166,7 @@ class UserRepository implements UserRepositoryInterface
         int $perPage = 10,
         array $filters = []
     ): Paginator {
-        $query = $this->model->query();
+        $query = $this->model->with('address');
 
         $query->when($filters['search'] ?? null, function (Builder $query, $search) {
             $query->where(function (Builder $q) use ($search) {

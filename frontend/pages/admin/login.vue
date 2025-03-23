@@ -23,7 +23,10 @@
                             placeholder="••••••••" required />
                     </div>
                     <div>
-                        <button type="submit" class="btn btn-primary w-full">Đăng nhập</button>
+                        <button type="submit" class="btn btn-primary w-full" :disabled="status === 'pending'">
+                            <span v-if="status === 'pending'" class="loading loading-spinner loading-md"></span>
+                            <span>Đăng nhập</span>
+                        </button>
                     </div>
                 </form>
             </div>
@@ -47,15 +50,19 @@ const form = reactive({
     password: ''
 })
 
+const status = ref<'idle' | 'pending' | 'success' | 'error'>('idle')
 const { login, currentUser, isAuthenticated, accessToken, refreshToken } = useUserAuth()
 const router = useRouter()
 
 const handleSubmit = async () => {
     try {
+        status.value = 'pending'
         await login(form.email, form.password)
+        status.value = 'success'
         // Redirect to admin dashboard after successful login
         await router.push('/admin')
     } catch (error) {
+        status.value = 'error'
         console.error('Login failed:', error)
         // Handle login error (e.g., show an error message to the user)
     }

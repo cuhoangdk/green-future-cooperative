@@ -26,7 +26,6 @@
                         <th class="py-2 w-[3%]">ID</th>
                         <th class="py-2 w-[15%] text-left">Tên</th>
                         <th class="py-2 w-[15%] text-left">Chủ sở hữu</th>
-                        <th class="py-2 w-[40%] text-left">Địa chỉ</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -41,29 +40,28 @@
                             <td class="py-2">{{ farm.id }}</td>
                             <td class="py-2">{{ farm.name }}</td>
                             <td class="py-2">{{ farm.user.full_name }}</td>
-                            <!-- <td class="py-2">{{ farm.address }}</td> -->
                         </tr>
                         <tr v-if="expandedRows.has(farm.id)" class="bg-gray-50">
                             <td colspan="5" class="p-3">
-                                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 text-sm">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-2 gap-y-1 text-sm">
                                     <div><span class="font-semibold">Mô tả:</span><p class="text-gray-600 line-clamp-2">{{ farm.description }}</p></div>
                                     <div><span class="font-semibold">Phương pháp canh tác:</span><p class="text-gray-600 line-clamp-2">{{farm.irrigation_method || "Chưa xác định" }}</p></div>
                                     <div><span class="font-semibold">Chủ sở hữu:</span> {{ farm.user?.full_name }}</div>
-                                    <div><span class="font-semibold">Địa chỉ:</span> {{ farm.address.street_address }}</div>
+                                    <div><span class="font-semibold">Địa chỉ:</span> {{ addressData[farm.id]+', '+farm.address?.street_address }}</div>
                                     <div><span class="font-semibold">Loại đất:</span> {{ farm.soil_type || "Chưa xác định" }}</div>
-                                    <div><span class="font-semibold">Kích thước:</span> {{ farm.farm_size || "Chưa xác định" }}</div>
+                                    <div><span class="font-semibold">Kích thước (m2):</span> {{ farm.farm_size || "Chưa xác định" }}</div>
                                     <div><span class="font-semibold">Ngày tạo:</span> {{ new Date(farm.created_at).toLocaleDateString("vi-VN") }}</div>
-                                    <div>
+                                    <div class="flex gap-x-2 gap-y-1">
                                         <span class="font-semibold">Kinh độ:</span> {{ farm.latitude || "Chưa xác định"
                                         }}<br>
                                         <span class="font-semibold">Vĩ độ:</span> {{ farm.longitude || "Chưa xác định"
                                         }}
                                     </div>
                                     <div class="flex space-x-2 mt-2 sm:col-span-2 lg:col-span-4">
-                                        <button @click.stop="$router.push(`/admin/farms/${farm.id}`)"
-                                            class="btn btn-sm btn-primary">Sửa</button>
                                         <button @click.stop="handleDeleteFarm(farm.id)"
                                             class="btn btn-sm btn-error">Xóa</button>
+                                        <button @click.stop="$router.push(`/admin/farms/${farm.id}`)"
+                                            class="btn btn-sm btn-primary">Sửa</button>
                                     </div>
                                 </div>
                             </td>
@@ -75,7 +73,7 @@
             <!-- Pagination -->
             <div class="flex flex-col sm:flex-row justify-between items-center m-4 gap-2">
                 <div class="flex items-center space-x-2">
-                    <p class="text-sm text-gray-600">{{ farms.farms.length }} / {{ farms.meta?.total }} bài viết</p>
+                    <p class="text-sm text-gray-600 w-24">{{ farms.farms.length }} / {{ farms.meta?.total }}</p>
                     <select v-model="perPage" class="select select-sm select-primary" @change="search">
                         <option v-for="n in [10, 25, 50, 100]" :value="n" :key="n">{{ n }}</option>
                     </select>
@@ -88,7 +86,7 @@
 </template>
 
 <script setup lang="ts">
-definePageMeta({ layout: 'user', title: 'Quản lý nông trại' })
+definePageMeta({ layout: 'user', title: 'Nông trại', description: 'Quản lý nông trại trên trang web' })
 
 import { ChevronDown, ChevronRight, Search, Plus } from 'lucide-vue-next'
 import { debounce } from 'lodash-es'
@@ -97,6 +95,7 @@ import type { Farm } from '~/types/farm'
 import type { PaginationMeta, PaginationLinks } from '~/types/api'
 
 const { searchFarms, deleteFarm } = useFarms()
+const { getFullAddressName } = useVietnamAddress()
 const toast = useToast()
 const swal = useSwal()
 
@@ -107,19 +106,20 @@ const expandedRows = ref(new Set<number>())
 const debouncedSearch = debounce(search, 500)
 
 const { data } = await searchFarms({ page: currentPage.value, per_page: perPage.value }, AuthType.User)
-const farms = computed(() => ({
+const farms = computed<{ farms: Farm[], meta: PaginationMeta | null, links: PaginationLinks | null }>(() => ({
     farms: Array.isArray(data.value?.data) ? data.value.data : data.value?.data ? [data.value.data] : [],
     meta: data.value?.meta ?? null,
     links: data.value?.links ?? null,
 }))
 
-// watch(data, (newData) => {
-//     farms.value = {
-//         farms: Array.isArray(newData?.data) ? newData.data : newData?.data ? [newData.data] : [],
-//         meta: newData?.meta ?? null,
-//         links: newData?.links ?? null,
-//     }
-// })
+const addressData = ref<{[key: number]: string}>({})
+watch(() => farms.value.farms, async (newFarms) => {
+    for (const farm of newFarms) {
+        if (farm.address?.ward) {
+            addressData.value[farm.id] = await getFullAddressName(farm.address.ward)
+        }
+    }
+}, { immediate: true })
 
 async function search() {
     const filters: { page?: number; per_page?: number; search?: string } = {

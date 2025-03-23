@@ -98,7 +98,7 @@
       <div class="flex justify-end mt-6">
         <button type="submit" class="btn btn-primary mt-1" :disabled="submitStatus === 'pending'">
           <span v-if="submitStatus === 'pending'" class="loading loading-spinner loading-md"></span>
-          <span>Cập nhật nông trại</span>
+          <span>Cập nhật</span>
         </button>
       </div>
     </form>

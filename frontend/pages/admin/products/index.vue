@@ -13,8 +13,30 @@
                 <input v-model="searchQuery" type="search" placeholder="Tìm kiếm sản phẩm..."
                     class="input input-sm input-primary w-full pl-10" @input="debouncedSearch" />
             </div>
+            <select v-model="selectedCategory" class="select select-sm select-primary" @change="search">
+                <option value="">Tất cả danh mục</option>
+                <option v-for="category in categories" :key="category.id" :value="category.id">{{ category.name }}</option>
+            </select>
+            <select v-model="selectedStatus" class="select select-sm select-primary" @change="search">
+                <option value="">Tất cả trạng thái</option>
+                <option value="growing">Đang trồng</option>
+                <option value="selling">Đang bán</option>
+                <option value="stopped">Ngừng hoạt động</option>
+            </select>
+            <select v-model="selectedOwner" class="select select-sm select-primary" @change="search">
+                <option value="">Tất cả chủ sở hữu</option>
+                <option v-for="owner in owners" :key="owner.id" :value="owner.id">{{ owner.full_name }}</option>
+            </select>
+            <select v-model="sortBy" class="select select-sm select-primary" @change="search">
+                <option value="">Sắp xếp theo</option>
+                <option value="sown_at+desc">Mới nhất</option>
+                <option value="sown_at+asc">Cũ nhất</option>
+                <option value="stock_quantity+desc">Tồn nhiều nhất</option>
+                <option value="stock_quantity+asc">Tồn ít nhất</option>
+                <option value="name">Theo tên</option>
+            </select>
         </div>
-        <div class="w-full overflow-x-auto">
+        <div class="w-full max-w-[90vw] overflow-x-auto">
             <table class="table w-full border-collapse bg-white border border-gray-200">
                 <thead>
                     <tr class="bg-gray-100 text-gray-700">
@@ -38,10 +60,10 @@
                             <td class="py-2">{{ product.product_code }}</td>
                             <td class="py-2">{{ product.name }}</td>
                             <td class="py-2">
-                                {{ product.prices.length > 0 
-                                    ? (product.prices[0].price_type === 'contact' 
-                                        ? 'Liên hệ' 
-                                        : product.prices[0].price) 
+                                {{ product.prices && product.prices.length > 0
+                                    ? (product.pricing_type === 'contact'
+                                        ? 'Liên hệ'
+                                        : product.prices[0].price)
                                     : 'Chưa bán' }}
                             </td>
                             <td class="py-2">{{ product.stock_quantity }}</td>
@@ -54,21 +76,29 @@
                         <tr v-if="expandedRows.has(product.id)" class="bg-gray-50">
                             <td colspan="7" class="p-3">
                                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 text-sm">
-                                    <div><span class="font-semibold">Mô tả:</span> <p class="text-gray-600 line-clamp-2">{{ product.description || "Chưa xác định" }}</p></div>
-                                    <div><span class="font-semibold">Ngày gieo:</span> {{ new Date(product.sown_at).toLocaleDateString('vi-VN') }}</div>
-                                    <div><span class="font-semibold">Người trồng:</span> {{ product.user?.full_name }}</div>
-                                    <div><span class="font-semibold">Ngày thu hoạch:</span> {{ product.harvested_at ? new
-                                                    Date(product.harvested_at).toLocaleString('vi-VN') : 'Chưa thu hoạch' }}</div>
+                                    <div><span class="font-semibold">Mô tả:</span>
+                                        <p class="text-gray-600 line-clamp-2">{{ product.description || "Chưa xác định"
+                                            }}</p>
+                                    </div>
+                                    <div><span class="font-semibold">Ngày gieo:</span> {{ product.sown_at ? new
+                                        Date(product.sown_at).toLocaleDateString('vi-VN') : 'Chưa xác định' }}</div>
+                                    <div><span class="font-semibold">Người trồng:</span> {{ product.user?.full_name }}
+                                    </div>
+                                    <div><span class="font-semibold">Ngày thu hoạch:</span> {{ product.harvested_at ?
+                                        new
+                                            Date(product.harvested_at).toLocaleString('vi-VN') : 'Chưa thu hoạch' }}</div>
                                 </div>
-                                <div class="flex space-x-4 mt-auto justify-end">
-                                    <button @click="goToLogs(product)"
-                                    class="btn btn-sm btn-neutral px-4">Nhật ký chăm sóc</button>
+                                <div class="flex space-x-3 mt-2">
+                                    <button @click.stop="handleDeleteProduct(product.id)"
+                                    class="btn btn-sm btn-error px-4">Xóa</button>
+                                    <button @click.stop="$router.push(`/admin/products/${product.id}/qrcode`)" class="btn btn-sm btn-info px-4">QR Code</button>
                                     <button @click.stop="$router.push(`/admin/products/${product.id}/publish`)"
-                                    class="btn btn-sm btn-accent px-4">Mở bán</button>
+                                        v-if="product.status === 'growing'" class="btn btn-sm btn-accent px-4">Mở
+                                        bán</button>
                                     <button @click.stop="$router.push(`/admin/products/${product.id}`)"
                                         class="btn btn-sm btn-primary px-4">Sửa</button>
-                                    <button @click.stop="handleDeleteProduct(product.id)"
-                                        class="btn btn-sm btn-error px-4">Xóa</button>
+                                        <button @click="goToLogs(product)" class="btn btn-sm btn-neutral px-4">Nhật ký chăm
+                                            sóc</button>
                                 </div>
                             </td>
                         </tr>
@@ -77,7 +107,7 @@
             </table>
 
             <!-- Pagination -->
-            <div class="flex justify-between items-center m-4">
+            <div class="flex justify-between items-center gap-2 m-4">
                 <div class="flex items-center space-x-2">
                     <p class="text-sm text-gray-600 w-32">{{ products.products.length }} / {{ products.meta?.total }} SP
                     </p>
@@ -93,7 +123,7 @@
 </template>
 
 <script setup lang="ts">
-definePageMeta({ layout: 'user', title: 'Quản lý sản phẩm', description: 'Quản lý sản phẩm trên trang web' })
+definePageMeta({ layout: 'user', title: 'Sản phẩm', description: 'Quản lý sản phẩm trên trang web' })
 
 import { ChevronDown, ChevronRight, Search, Plus } from 'lucide-vue-next'
 import { debounce } from 'lodash-es'
@@ -101,23 +131,40 @@ import { useSwal } from '~/composables/useSwal'
 import { useToast } from 'vue-toastification'
 import type { PaginationMeta, PaginationLinks } from '~/types/api'
 import type { Product, ProductCategory } from '~/types/product'
+import type { User } from '~/types/user'
 
 const { searchProducts, deleteProduct } = useProducts()
 const { getProductCategories } = useProductCategories()
-const { getUnits } = useUnits()
+const { getUsers } = useUsers()
 const swal = useSwal()
 const toast = useToast()
 const productStore = useProductStore()
 const router = useRouter()
 
-const currentPage = ref(1)
+const currentPage = ref(Number(useRoute().query.page) || 1)
 const perPage = ref(10)
 const searchQuery = ref('')
+const selectedStatus = ref('')
+const selectedCategory = ref('')
+const selectedOwner = ref('')
+const sortBy = ref('')
 const expandedRows = ref(new Set<number>())
 const debouncedSearch = debounce(search, 500)
 
+// Lấy danh sách danh mục
+const { data: categoryData } = await getProductCategories()
+const categories = computed<ProductCategory[]>(() =>
+    Array.isArray(categoryData.value?.data) ? categoryData.value.data : categoryData.value?.data ? [categoryData.value.data] : []
+)
+
+// Lấy danh sách người dùng
+const { data: userData } = await getUsers()
+const owners = computed<User[]>(() =>
+    Array.isArray(userData.value?.data) ? userData.value.data : userData.value?.data ? [userData.value.data] : []
+)
+
 const { data } = await searchProducts({ page: currentPage.value, per_page: perPage.value }, AuthType.User)
-const products = computed(() => ({
+const products = computed<{ products: Product[], meta: PaginationMeta | null, links: PaginationLinks | null }>(() => ({
     products: Array.isArray(data.value?.data) ? data.value.data : data.value?.data ? [data.value.data] : [],
     meta: data.value?.meta ?? null,
     links: data.value?.links ?? null,
@@ -132,18 +179,17 @@ async function search() {
         page: currentPage.value,
         per_page: perPage.value,
         ...(searchQuery.value && { search: searchQuery.value }),
-        // ...(selectedStatus.value && { status: selectedStatus.value }),
-        // ...(selectedCategory.value && { category_id: Number(selectedCategory.value) }),
-        // ...(checkboxIsHot.value && { is_hot: 1 }),
-        // ...(checkboxIsFeatured.value && { is_featured: 1 }),
-        // ...(sortBy.value && {
-        //     sort_by: sortBy.value.startsWith('created_') ? 'created_at' : sortBy.value,
-        //     sort_direction: sortBy.value === 'created_desc' ? 'desc' : 'asc'
-        // }),
+        ...(selectedStatus.value && { status: selectedStatus.value }),
+        ...(selectedCategory.value && { category_id: Number(selectedCategory.value) }),
+        ...(selectedOwner.value && { user_id: Number(selectedOwner.value) }),
+        ...(sortBy.value && {
+            sort_by: sortBy.value.includes('+') ? sortBy.value.split('+')[0] : sortBy.value,
+            sort_direction: sortBy.value.endsWith('+desc') ? 'desc' : 'asc'
+        }),
     }
 
     const { data, error } = await searchProducts(filters, AuthType.User)
-    if (error.value) swal.fire('Lỗi', 'Không thể tải danh sách bài viết!', 'error')
+    if (error.value) swal.fire('Lỗi', 'Không thể tải danh sách sản phẩm!', 'error')
 }
 
 const handlePageChange = (page: number) => {
@@ -151,7 +197,7 @@ const handlePageChange = (page: number) => {
     search()
 }
 
-async function handleDeleteProduct(postId: number) {
+async function handleDeleteProduct(productId: number) {
     const result = await swal.fire({
         title: 'Xác nhận xóa',
         text: 'Bạn có chắc muốn xóa sản phẩm này không?',
@@ -163,10 +209,10 @@ async function handleDeleteProduct(postId: number) {
 
     if (result.isConfirmed) {
         try {
-            const { error } = await deleteProduct(postId)
+            const { error } = await deleteProduct(productId)
             if (error.value) throw new Error(error.value.message)
-            products.value.products = products.value.products.filter((post: Product) => post.id !== postId)
-            expandedRows.value.delete(postId)
+            products.value.products = products.value.products.filter((product: Product) => product.id !== productId)
+            expandedRows.value.delete(productId)
             toast.success('Sản phẩm đã được xóa!')
         } catch (err) {
             toast.error(`Xóa thất bại: ${(err as Error).message || 'Unknown error'}`)
@@ -175,7 +221,7 @@ async function handleDeleteProduct(postId: number) {
 }
 
 function goToLogs(product: Product) {
-  productStore.setSelectedProduct(product)
-  router.push(`products/${product.id}/logs`)
+    productStore.setSelectedProduct(product)
+    router.push(`products/${product.id}/logs`)
 }
 </script>

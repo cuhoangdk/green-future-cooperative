@@ -166,7 +166,7 @@ Route::middleware('log.activity')->group(function () {
                 // sometimes: images[].*.sort_order, images[].*.is_primary
                 Route::post('/', [ProductImageController::class, 'store'])->name('product-images.store');
                 Route::get('/{id}', [ProductImageController::class, 'show'])->name('product-images.show');
-                // Route::put('/{id}', [ProductImageController::class, 'update'])->name('product-images.update');
+                Route::put('/{id}', [ProductImageController::class, 'update'])->name('product-images.update');
                 Route::delete('/{id}', [ProductImageController::class, 'destroy'])->name('product-images.destroy');
             });
         });

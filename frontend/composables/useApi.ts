@@ -71,9 +71,21 @@ export const useApi = () => {
       const updatedBody = body instanceof FormData
         ? body // Nếu là FormData, thêm trực tiếp vào FormData
         : { ...body, _method: 'PUT' } // Nếu là object, thêm _method vào body
-      
+
       if (body instanceof FormData) {
         updatedBody.append('_method', 'PUT')
+      }
+
+      return apiFetch<T>('POST', endpoint, { body: updatedBody, ...options })
+    },
+    patch: <T>(endpoint: string, body: any, options = {}) => {
+      // Chuyển PATCH thành POST với _method=PATCH
+      const updatedBody = body instanceof FormData
+        ? body // Nếu là FormData, thêm trực tiếp vào FormData
+        : { ...body, _method: 'PATCH' } // Nếu là object, thêm _method vào body
+
+      if (body instanceof FormData) {
+        updatedBody.append('_method', 'PATCH')
       }
 
       return apiFetch<T>('POST', endpoint, { body: updatedBody, ...options })

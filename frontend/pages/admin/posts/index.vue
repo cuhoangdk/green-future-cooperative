@@ -1,6 +1,5 @@
 <template>
     <div class="border border-gray-200 rounded-lg">
-        <!-- Header -->
         <div class="flex justify-between items-center border-gray-200 px-3 pt-2">
             <h1 class="text-xl font-bold text-gray-800">Danh sách bài viết</h1>
             <button @click="$router.push('/admin/posts/create')" class="btn btn-sm btn-secondary">
@@ -8,7 +7,6 @@
             </button>
         </div>
 
-        <!-- Filters -->
         <div class="grid grid-cols-2 md:grid-cols-5 gap-2 px-3 py-3">
             <div class="relative">
                 <Search class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 z-10 w-5 h-5" />
@@ -48,15 +46,14 @@
         </div>
 
         <!-- Table -->
-        <div class="w-full overflow-x-auto">
+        <div class="w-full max-w-[90vw] overflow-x-auto">
             <table class="table w-full border-collapse bg-white border border-gray-200">
                 <thead>
                     <tr class="bg-gray-100 text-gray-700">
                         <th class="py-2 w-[3%]"></th>
                         <th class="py-2 w-[45%] text-left">Tiêu đề</th>
                         <th class="py-2 w-[15%] text-left">Danh mục</th>
-                        <th class="py-2 w-[20%] text-left">Đặc biệt</th>
-                        <th class="py-2 w-[10%] text-left">Trạng thái</th>
+                        <th class="py-2 w-[30%] text-left">Trạng thái</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -71,21 +68,21 @@
                             <td class="py-2">{{ post.title.length > 50 ? post.title.substring(0, 50) + '...' :
                                 post.title }}</td>
                             <td class="py-2">{{ post.category?.name }}</td>
-                            <td class="py-2">
-                                <span v-if="post.is_hot"
-                                    class="px-3 py-0.5 rounded-full text-xs bg-red-100 text-red-600">Hot</span>
-                                <span v-if="post.is_featured"
-                                    class="px-3 py-0.5 rounded-full text-xs bg-yellow-100 text-yellow-600">Nổi
-                                    bật</span>
-                            </td>
-                            <td class="py-2">
-                                <span class="px-3 py-0.5 rounded-full text-xs" :class="{
-                                    'bg-green-100 text-green-800': post.post_status === 'published',
-                                    'bg-yellow-100 text-yellow-800': post.post_status === 'draft',
-                                    'bg-gray-100 text-gray-800': post.post_status === 'archived'
-                                }">
-                                    {{ { published: 'Công khai', draft: 'Nháp', archived: 'Lưu trữ' }[post.post_status as 'published' | 'draft' | 'archived'] }}
-                                </span>
+                            <td class="py-2" colspan="2">
+                                <div class="flex gap-2">
+                                    <span class="px-3 py-0.5 rounded-full text-xs" :class="{
+                                        'bg-green-100 text-green-800': post.post_status === 'published',
+                                        'bg-yellow-100 text-yellow-800': post.post_status === 'draft',
+                                        'bg-gray-100 text-gray-800': post.post_status === 'archived'
+                                    }">
+                                        {{ { published: 'Công khai', draft: 'Nháp', archived: 'Lưu trữ' }[post.post_status as 'published' | 'draft' | 'archived'] }}
+                                    </span>
+                                    <span v-if="post.is_hot"
+                                        class="px-3 py-0.5 rounded-full text-xs bg-red-100 text-red-600">Hot</span>
+                                    <span v-if="post.is_featured"
+                                        class="px-3 py-0.5 rounded-full text-xs bg-yellow-100 text-yellow-600">Nổi
+                                        bật</span>
+                                </div>
                             </td>
                         </tr>
                         <tr v-if="expandedRows.has(post.id)" class="bg-gray-50">
@@ -116,11 +113,11 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="flex space-x-4 mt-auto">
-                                            <button @click.stop="$router.push(`/admin/posts/${post.id}`)"
-                                                class="btn btn-sm btn-primary">Sửa</button>
+                                        <div class="flex space-x-4 mt-2">
                                             <button @click.stop="handleDeletePost(post.id)"
                                                 class="btn btn-sm btn-error">Xóa</button>
+                                            <button @click.stop="$router.push(`/admin/posts/${post.id}`)"
+                                                class="btn btn-sm btn-primary">Sửa</button>
                                         </div>
                                     </div>
                                 </div>
@@ -146,7 +143,7 @@
 </template>
 
 <script setup lang="ts">
-definePageMeta({ layout: 'user', title: 'Quản lý bài viết', description: 'Quản lý bài viết trên trang web' })
+definePageMeta({ layout: 'user', title: 'Bài viết', description: 'Quản lý bài viết trên trang web' })
 
 import { ChevronDown, ChevronRight, Search, Plus } from 'lucide-vue-next'
 import { usePosts, usePostCategories } from '#imports'
@@ -180,19 +177,11 @@ const categories = computed<PostCategory[]>(() =>
 )
 
 const { data } = await searchPosts({ page: currentPage.value, per_page: perPage.value, status: selectedStatus.value }, AuthType.User)
-const posts = computed(() => ({
+const posts = computed<{ posts: Post[], meta: PaginationMeta | null, links: PaginationLinks | null }>(() => ({
     posts: Array.isArray(data.value?.data) ? data.value.data : data.value?.data ? [data.value.data] : [],
     meta: data.value?.meta ?? null,
     links: data.value?.links ?? null,
 }))
-
-// watch(data, (newData) => {
-//     posts.value = {
-//         posts: Array.isArray(newData?.data) ? newData.data : newData?.data ? [newData.data] : [],
-//         meta: newData?.meta ?? null,
-//         links: newData?.links ?? null,
-//     }
-// })
 
 async function search() {
     const filters: any = {

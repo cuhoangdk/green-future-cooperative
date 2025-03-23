@@ -204,10 +204,14 @@ class ProductRepository implements ProductRepositoryInterface
     ): LengthAwarePaginator {
         $query = $this->model->with(['category', 'unit', 'user', 'images', 'prices']);
     
-        // Chỉ áp dụng giới hạn cho user không phải super_admin
+        // Kiểm tra quyền truy cập
         $user = Auth::guard('api_users')->user();
         if ($user && !$user->is_super_admin) {
+            // Nếu là user thường, chỉ xem được sản phẩm của mình
             $query->where('user_id', $user->id);
+        } elseif (!auth('api_users')->check()) {
+            // Nếu chưa đăng nhập, chỉ xem được sản phẩm đang bán
+            $query->where('status', 'selling');
         }
     
         // Áp dụng các bộ lọc nếu có
@@ -218,7 +222,7 @@ class ProductRepository implements ProductRepositoryInterface
                         case 'search':
                             $query->where(function ($q) use ($value) {
                                 $q->where('name', 'like', "%{$value}%")
-                                //   ->orWhere('product_code', '=', "$value")
+                                  ->orWhere('product_code', '=', "$value")
                                   ->orWhere('description', 'like', "%{$value}%");
                             });
                             break;
@@ -257,9 +261,7 @@ class ProductRepository implements ProductRepositoryInterface
             }
         }
     
-        return $query->when(!auth('api_users')->check(), function ($query) {
-            $query->where('status', 'selling');
-        })->orderBy($sortBy, $sortDirection)->paginate($perPage);
+        return $query->orderBy($sortBy, $sortDirection)->paginate($perPage);
     }
 
     public function searchByName(

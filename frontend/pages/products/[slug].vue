@@ -1,7 +1,9 @@
 <template>
     <div class="min-h-screen items-center flex flex-col mt-16 pb-5 lg:mt-0">
-        <div class="w-11/12 flex max-w-7xl mt-5 gap-5">
-            <div class="w-1/2">
+        <div class="w-11/12 flex flex-col lg:flex-row max-w-7xl mt-5 gap-5">
+            <div v-if="productStatus === 'pending'" class="skeleton w-full lg:w-1/2 aspect-[4/3]">
+            </div>
+            <div v-else class="w-full lg:w-1/2">
                 <!-- Ảnh lớn -->
                 <div class="relative">
                     <img :src="activeImageUrl" :alt="product?.name"
@@ -9,11 +11,11 @@
                         @error="event => { const target = event.target as HTMLImageElement; if (target) target.src = placeholderImage as string; }" />
                     <!-- Nút điều hướng -->
                     <button v-if="product?.images && product.images.length > 1" @click="prevImage"
-                        class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-gray-600 bg-opacity-25 text-white p-2 rounded-full hover:bg-opacity-75">
+                        class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-gray-600 text-white p-2 rounded-full">
                         <ArrowLeft />
                     </button>
                     <button v-if="product?.images && product.images.length > 1" @click="nextImage"
-                        class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-gray-600 bg-opacity-25 text-white p-2 rounded-full hover:bg-opacity-75">
+                        class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-gray-600 text-white p-2 rounded-full">
                         <ArrowRight />
                     </button>
                 </div>
@@ -27,7 +29,9 @@
                         @error="event => { const target = event.target as HTMLImageElement; if (target) target.src = placeholderImage as string; }" />
                 </div>
             </div>
-            <div class="w-1/2">
+            <div v-if="productStatus === 'pending'" class="skeleton w-full lg:w-1/2 aspect-[4/3]">
+            </div>
+            <div v-else class="w-full lg:w-1/2">
                 <div class="max-w-7xl p-3 px-6 border border-gray-200 rounded-xl">
                     <div class="flex justify-between item-center mb-3">
                         <h1 class="text-2xl font-bold">{{ product?.name }}</h1>
@@ -56,7 +60,7 @@
                         </p>
                         <p class="w-1/2 text-sm text-gray-900"><span class="text-gray-500">Diện tích canh tác: </span>{{
                             product?.cultivated_area
-                        }} m²
+                            }} m²
                         </p>
                     </div>
                     <div class="flex mb-3">
@@ -73,7 +77,7 @@
                     <p class="w-1/2 text-sm text-gray-900 mb-1"><span class="text-gray-500">Người trồng: </span>{{
                         product?.user?.full_name }}</p>
                     <p class="w-1/2 text-sm text-gray-900 mb-1"><span class="text-gray-500">Nơi trồng: </span>{{
-                        farmAddress }}</p>
+                        address }}</p>
 
                     <div class="mt-4 flex gap-4">
                         <button class="bg-green-600 text-white font-semibold px-5 py-2 rounded-full hover:bg-green-700">
@@ -85,8 +89,10 @@
         </div>
         <div class="w-11/12 flex flex-col max-w-7xl mt-5 gap-5">
             <div class="w-full">
-                <div class="divider divider-primary divider-start text-xl font-semibold text-green-600">Quá trình chăm
-                    sóc</div>
+                <div class="flex justify-between items-center mb-4 gap-3">
+                    <h2 class="text-left text-xl font-bold text-green-800">Quá trình chăm sóc</h2>
+                    <div class="flex-1 h-[3px] bg-green-500"></div>
+                </div>
                 <div class="relative">
                     <div v-if="logs.status === 'pending'"
                         class="absolute inset-0 flex items-center justify-center bg-gray-100/20 z-10">
@@ -94,9 +100,9 @@
                     </div>
                 </div>
                 <div v-for="log in logs.logs" :key="log.id">
-                    <div class="collapse collapse-arrow bg-base-100 border-base-300 border my-1.5">
+                    <div class="collapse collapse-arrow bg-base-100 border-green-500 border my-1.5">
                         <input type="checkbox" />
-                        <div class="collapse-title font-semibold">
+                        <div class="collapse-title font-semibold flex items-center ">
                             {{
                                 log.created_at ? new Date(log.created_at).toLocaleString('vi-VN', {
                                     hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric'
@@ -136,9 +142,15 @@
                 <UiPagination class="mt-4" :links="logs.links" :meta="logs.meta" @page-change="handleLogsPageChange" />
             </div>
             <div class="w-full">
-                <ProductList title="Sản phẩm khác" :products="otherProducts.products" :meta="otherProducts.meta"
-                    :links="otherProducts.links" :status="otherProductsStatus"
-                    @page-change="handleProductsPageChange" />
+                <div class="flex justify-between items-center mb-4 gap-3">
+                    <h2 class="text-left text-xl font-bold text-green-800">Sản phẩm khác</h2>
+                    <div class="flex-1 h-[3px] bg-green-500"></div>
+                    <NuxtLink to="/products" class="bg-green-600 text-white font-semibold px-5 py-1 rounded-full hover:bg-green-700">
+                        Xem tất cả
+                    </NuxtLink>
+                </div>
+                <ProductList :products="otherProducts.products" :meta="otherProducts.meta" :links="otherProducts.links"
+                    :status="otherProductsStatus" @page-change="handleProductsPageChange" />
             </div>
         </div>
         11
@@ -161,7 +173,7 @@ const backendUrl = config.public.backendUrl
 const { getProductBySlug, getProducts } = useProducts()
 const { getFarmById } = useFarms()
 const { getLogs } = useCultivationLogs()
-const { getAddressNameById } = useVietnamAddress()
+const { getFullAddressName } = useVietnamAddress()
 const currentLogPage = ref(1)
 const perLogPage = 10
 
@@ -169,9 +181,20 @@ const { data: productData, status: productStatus, error: productError } = await 
 const product = computed<Product | null>(() => Array.isArray(productData.value?.data) ? productData.value.data[0] : productData.value?.data || null)
 
 // Lấy thông tin trang trại
-const { data: farmData } = await getFarmById(Number(product.value?.farm_id) || -1, AuthType.Guest)
-const farm = computed<Farm | null>(() => Array.isArray(farmData.value?.data) ? farmData.value.data[0] : farmData.value?.data || null)
-const farmAddress = await getAddressNameById(farm.value?.address.ward?.toString() || '-1')
+const farm = ref<Farm | null>(null)
+watch(product, async (newProduct) => {
+    if (newProduct?.farm_id) {
+        const {data} = await getFarmById(Number(newProduct.farm_id))
+        farm.value = data.value?.data || null
+    }
+}, { immediate: true })
+
+const address = ref('')
+watch(farm, async (newFarm) => {
+    if (newFarm?.address?.ward) {
+        address.value = await getFullAddressName(newFarm.address.ward)
+    }
+})
 // Lấy thông tin logs
 const logs = ref<{
     logs: CultivationLog[];

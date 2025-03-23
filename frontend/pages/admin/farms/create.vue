@@ -31,7 +31,7 @@
             <!-- Farm Details -->
             <div class="flex space-x-4">
                 <div class="w-1/2">
-                    <label class="text-gray-700 font-semibold">Kích thước (ha)</label>
+                    <label class="text-gray-700 font-semibold">Kích thước (m2)</label>
                     <input v-model="form.farm_size" type="number" step="0.01" class="input input-primary w-full mt-1"
                         placeholder="0.5" />
                 </div>
@@ -100,7 +100,7 @@
             <div class="flex justify-end">
                 <button type="submit" class="btn btn-primary" :disabled="status === 'pending'">
                     <span v-if="status === 'pending'" class="loading loading-spinner loading-md"></span>
-                    <span>Tạo nông trại</span>
+                    <span>Thêm</span>
                 </button>
             </div>
         </form>

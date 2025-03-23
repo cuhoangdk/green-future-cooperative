@@ -24,7 +24,9 @@ export default defineNuxtConfig({
     public: {
       apiBaseUrl: process.env.API_BASE_URL || 'http://127.0.0.1:8000/api', // URL backend mặc định
       backendUrl: process.env.BACKEND_URL || 'http://127.0.0.1:8000', // URL backend mặc định
+      baseUrl: process.env.BASE_URL || 'http://127.0.0.1:3000', // URL frontend mặc định
       placeholderImage: process.env.PLACEHOLDER_IMAGE || '/images/banner.png', // Ảnh placeholder mặc định
+      logo: process.env.LOGO || '/images/logo.png', // Logo mặc định
     },
   },
   routeRules: {
