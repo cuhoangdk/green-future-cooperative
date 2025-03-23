@@ -14,8 +14,7 @@ class SearchUserWithFiltersRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'search' => 'nullable|string|max:255',
-            'is_active' => 'nullable|boolean',
+            'search' => 'nullable|string|max:255',            
             'is_super_admin' => 'nullable|boolean',
             'is_banned' => 'nullable|boolean',
             'province' => 'nullable|string|max:255',

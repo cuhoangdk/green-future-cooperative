@@ -194,10 +194,9 @@ class UserController extends Controller
         $sortDirection = $request->input('sort_direction', 'desc');
 
         $filters = [
-            'search' => $request->input('search'), // Từ khóa tìm kiếm
-            'is_active' => $request->boolean('is_active'),
-            'is_super_admin' => $request->boolean('is_super_admin'),
-            'is_banned' => $request->boolean('is_banned'),
+            'search' => $request->input('search'), // Từ khóa tìm kiếm            
+            'is_super_admin' => $request->has('is_super_admin')? $request->boolean('is_super_admin'):null,
+            'is_banned' => $request->has('is_banned')? $request->boolean('is_banned'):null,
             'province' => $request->input('province'),
             'district' => $request->input('district'),
             'ward' => $request->input('ward'),
