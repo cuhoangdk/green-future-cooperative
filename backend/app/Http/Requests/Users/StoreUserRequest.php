@@ -57,7 +57,7 @@ class StoreUserRequest extends FormRequest
             'bio' => 'nullable|string|max:1000',
             'is_super_admin' => 'nullable|boolean',
             'is_banned' => 'nullable|boolean',
-            'gender' => 'required|string|in:male,female,other',
+            'gender' => 'nullable|string|in:male,female,other',
             
         ];
     }
