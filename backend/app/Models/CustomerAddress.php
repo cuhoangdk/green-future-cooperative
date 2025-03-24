@@ -21,9 +21,6 @@ class CustomerAddress extends Model
 
     protected $casts = [
         'is_default' => 'boolean',
-        'province' => 'string',
-        'district' => 'string',
-        'ward' => 'string',
     ];
 
     public function customer()

@@ -182,7 +182,7 @@ class CustomerController extends Controller
         $sortBy = $request->query('sort_by', 'created_at');
         $sortDirection = $request->query('sort_direction', 'desc');
         $perPage = (int) $request->query('per_page', 10);
-        $filters = $request->only(['search']);
+        $filters = $request->only(['search', 'province', 'district', 'ward']);
 
         $customers = $this->customerRepository->search($sortBy, $sortDirection, $perPage, $filters)->appends(request()->query());
         return CustomerResource::collection($customers);

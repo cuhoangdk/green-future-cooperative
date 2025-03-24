@@ -19,12 +19,12 @@ class CustomerRepository implements CustomerRepositoryInterface
 
     public function getAll(string $sortBy = 'created_at', string $sortDirection = 'desc', int $perPage = 10)
     {
-        return $this->model->orderBy($sortBy, $sortDirection)->paginate($perPage);
+        return $this->model->with(['addresses.address'])->orderBy($sortBy, $sortDirection)->paginate($perPage);
     }
 
     public function getById($id)
     {
-        return $this->model->find($id);
+        return $this->model->with(['addresses.address'])->find($id);
     }
 
     public function create(array $data)
@@ -51,14 +51,14 @@ class CustomerRepository implements CustomerRepositoryInterface
         string $sortDirection = 'desc',
         int $perPage = 10
     ) {
-        return $this->model->onlyTrashed()
+        return $this->model->onlyTrashed()->with(['addresses.address'])
             ->orderBy($sortBy, $sortDirection)
             ->paginate($perPage);
     }
     
     public function getTrashedById($id)
     {
-        return $this->model->onlyTrashed()->find($id);
+        return $this->model->with(['addresses.address'])->onlyTrashed()->find($id);
     }
 
     public function restore($id): bool
@@ -93,22 +93,44 @@ class CustomerRepository implements CustomerRepositoryInterface
         array $filters = []
     ) {
         $query = $this->model->query();
-
+    
         $query->when($filters['search'] ?? null, function (Builder $query, $search) {
             $query->where(function (Builder $q) use ($search) {
                 $q->where('full_name', 'like', "%{$search}%")
                     ->orWhere('phone_number', 'like', "%{$search}%")
-                    ->orWhere('email', 'like', "%{$search}%");
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhereHas('addresses', function (Builder $q) use ($search) {
+                        $q->whereHas('address', function (Builder $q) use ($search) {
+                              $q->where('street_address', 'like', "%{$search}%");
+                          });
+                    });
             });
         });
-
-        $query->orderBy(
+    
+        $query->when(isset($filters['province']), function ($query) use ($filters) {
+            $query->whereHas('addresses.address', function (Builder $q) use ($filters) {
+                $q->where('province', $filters['province']);
+            });
+        });
+    
+        $query->when(isset($filters['district']), function ($query) use ($filters) {
+            $query->whereHas('addresses.address', function (Builder $q) use ($filters) {
+                $q->where('district', $filters['district']);
+            });
+        });
+    
+        $query->when(isset($filters['ward']), function ($query) use ($filters) {
+            $query->whereHas('addresses.address', function (Builder $q) use ($filters) {
+                $q->where('ward', $filters['ward']);
+            });
+        });
+    
+        $query->with(['addresses.address'])->orderBy(
             $sortBy,
             $sortDirection
         );
-
+    
         return $query->paginate($perPage);
     }
-
     
 }
