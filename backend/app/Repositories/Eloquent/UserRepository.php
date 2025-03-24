@@ -49,7 +49,28 @@ class UserRepository implements UserRepositoryInterface
      */
     public function create(array $data)
     {
-        return $this->model->create($data);
+        // Tách dữ liệu address nếu có
+        $addressData = null;
+        if (isset($data['address'])) {
+            $addressData = [
+                'province' => $data['address']['province'] ?? null,
+                'district' => $data['address']['district'] ?? null,
+                'ward' => $data['address']['ward'] ?? null,
+                'street_address' => $data['address']['street_address'] ?? null,
+            ];
+            unset($data['address']); // Loại bỏ address khỏi data chính
+        }
+
+        // Tạo user mới
+        $user = $this->model->create($data);
+
+        // Tạo address nếu có
+        if ($addressData) {
+            $user->address()->create($addressData);
+        }
+
+        return $user;
+        
     }
 
     /**
@@ -59,7 +80,26 @@ class UserRepository implements UserRepositoryInterface
     {
         $user = $this->model->find($id);
         if ($user) {
+            // Tách dữ liệu address nếu có
+            $addressData = [
+                'province' => $data['address']['province'] ?? null,
+                'district' => $data['address']['district'] ?? null,
+                'ward' => $data['address']['ward'] ?? null,
+                'street_address' => $data['address']['street_address'] ?? null,
+            ];
+            unset($data['address']); // Loại bỏ address khỏi data chính
+
+            // Cập nhật thông tin user
             $user->update($data);
+
+            // Cập nhật hoặc tạo address nếu có
+            if ($addressData) {
+                $user->address()->updateOrCreate(
+                    ['addressable_id' => $user->id, 'addressable_type' => get_class($user)],
+                    $addressData
+                );
+            }
+
             return $user;
         }
         return null;

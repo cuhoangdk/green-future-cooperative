@@ -1,66 +1,74 @@
 <template>
     <div class="border border-gray-200 rounded-lg p-4 sm:p-5">
-        <form @submit.prevent="handleSubmit" class="space">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-x-4">
+        <form @submit.prevent="handleSubmit" class="space-y-6">
+            <!-- Phần 1: Thông tin cơ bản với avatar -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <!-- Avatar Section -->
                 <div class="flex flex-col items-center md:col-span-1">
-                    <!-- Avatar Section -->
-                    <div class="w-60 h-60 mb-4 cursor-pointer" @click="triggerFileInput">
+                    <div class="w-48 h-48 mb-3 cursor-pointer" @click="triggerFileInput">
                         <img :src="form.avatar_url || defaultAvatar" @error="form.avatar_url = defaultAvatar"
-                            class="w-full h-full object-cover rounded-full border" alt="Avatar" />
+                            class="w-full h-full object-cover rounded-full border shadow-sm" alt="Avatar" />
                     </div>
                     <input ref="fileInput" type="file" accept="image/*"
                         class="file-input file-input-primary w-full max-w-xs" @change="handleFileChange" hidden />
                     <label class="text-gray-700 font-semibold mt-2">Ảnh đại diện</label>
                 </div>
 
-                <!-- Profile Details Section -->
-                <div class="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <!-- Required Fields Section -->
-                    <div class="sm:col-span-2 p-4 border border-primary rounded-lg">
-                        <h3 class="text-lg font-semibold mb-4">Thông tin bắt buộc</h3>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <!-- Full Name -->
-                            <div>
-                                <label class="text-gray-700 font-semibold">Họ và tên <span class="text-red-500">*</span></label>
-                                <input v-model="form.full_name" class="input input-primary w-full mt-1"
-                                    placeholder="Nguyen Van A" required />
-                            </div>
-
-                            <!-- Email -->
-                            <div>
-                                <label class="text-gray-700 font-semibold">Email <span class="text-red-500">*</span></label>
-                                <input v-model="form.email" type="email" class="input input-primary w-full mt-1"
-                                    placeholder="example@email.com" required />
-                            </div>
-
-                            <!-- Phone Number -->
-                            <div>
-                                <label class="text-gray-700 font-semibold">Số điện thoại <span class="text-red-500">*</span></label>
-                                <input v-model="form.phone_number" type="tel" class="input input-primary w-full mt-1"
-                                    placeholder="0123-456-789" required />
-                            </div>
-
-                            <!-- Role -->
-                            <div>
-                                <label class="text-gray-700 font-semibold">Vai trò</label>
-                                <select v-model="form.is_super_admin" class="select select-primary w-full mt-1">
-                                    <option :value="true">Quản trị viên</option>
-                                    <option :value="false">Người dùng</option>
-                                </select>
-                            </div>
+                <!-- Thông tin cá nhân chính -->
+                <div class="md:col-span-3 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <!-- User Code - Luôn hiển thị đầu tiên -->
+                    <div class="sm:col-span-2">
+                        <label class="text-gray-700 font-semibold block mb-1">Mã thành viên</label>
+                        <div class="input input-bordered w-full flex items-center bg-gray-100 font-medium">
+                            {{ route.params.id }}
                         </div>
                     </div>
 
-                    <!-- Optional Fields -->
+                    <!-- Thông tin nhận dạng -->
                     <div>
-                        <label class="text-gray-700 font-semibold">Ngày sinh</label>
-                        <input v-model="form.date_of_birth" type="date" class="input input-primary w-full mt-1" />
+                        <label class="text-gray-700 font-semibold block mb-1">Họ và tên <span class="text-red-500">*</span></label>
+                        <input v-model="form.full_name" class="input input-bordered input-primary w-full"
+                            placeholder="Nguyen Van A" required />
                     </div>
 
-                    <!-- Status -->
                     <div>
-                        <label class="text-gray-700 font-semibold">Trạng thái</label>
-                        <select v-model="form.is_banned" class="select select-primary w-full mt-1">
+                        <label class="text-gray-700 font-semibold block mb-1">Email <span class="text-red-500">*</span></label>
+                        <input v-model="form.email" type="email" class="input input-bordered input-primary w-full"
+                            placeholder="example@email.com" required />
+                    </div>
+
+                    <div>
+                        <label class="text-gray-700 font-semibold block mb-1">Số điện thoại <span class="text-red-500">*</span></label>
+                        <input v-model="form.phone_number" type="tel" class="input input-bordered input-primary w-full"
+                            placeholder="0123-456-789" required />
+                    </div>
+
+                    <div>
+                        <label class="text-gray-700 font-semibold block mb-1">Giới tính</label>
+                        <select v-model="form.gender" class="select select-bordered select-primary w-full">
+                            <option value="">Chọn giới tính</option>
+                            <option value="male">Nam</option>
+                            <option value="female">Nữ</option>
+                            <option value="other">Khác</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="text-gray-700 font-semibold block mb-1">Ngày sinh</label>
+                        <input v-model="form.date_of_birth" type="date" class="input input-bordered input-primary w-full" />
+                    </div>
+
+                    <div>
+                        <label class="text-gray-700 font-semibold block mb-1">Vai trò</label>
+                        <select v-model="form.is_super_admin" class="select select-bordered select-primary w-full">
+                            <option :value="true">Quản trị viên</option>
+                            <option :value="false">Người dùng</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="text-gray-700 font-semibold block mb-1">Trạng thái</label>
+                        <select v-model="form.is_banned" class="select select-bordered select-primary w-full">
                             <option :value="false">Hoạt động</option>
                             <option :value="true">Đã bị cấm</option>
                         </select>
@@ -68,96 +76,91 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
-                <!-- Gender -->
-                <div>
-                    <label class="text-gray-700 font-semibold">Giới tính</label>
-                    <select v-model="form.gender" class="select select-primary w-full mt-1">
-                        <option value="">Chọn giới tính</option>
-                        <option value="male">Nam</option>
-                        <option value="female">Nữ</option>
-                        <option value="other">Khác</option>
-                    </select>
-                </div>
+            <!-- Phần 2: Thông tin địa chỉ -->
+            <div class="border-t border-gray-200 pt-5">
+                <h3 class="text-lg font-medium text-gray-800 mb-3">Thông tin địa chỉ</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <!-- Province -->
+                    <div>
+                        <label class="text-gray-700 font-semibold block mb-1">Tỉnh/Thành phố</label>
+                        <select v-model="form.address.province"
+                            @change="(event) => fetchDistricts((event.target as HTMLSelectElement).value)"
+                            class="select select-bordered select-primary w-full">
+                            <option value="" disabled>Chọn tỉnh/thành phố</option>
+                            <option v-for="p in provinces" :key="p.id" :value="p.id">
+                                {{ p.full_name }}
+                            </option>
+                        </select>
+                    </div>
 
-                <!-- Bank Name -->
-                <div>
-                    <label class="text-gray-700 font-semibold">Tên ngân hàng</label>
-                    <input v-model="form.bank_name" class="input input-primary w-full mt-1" placeholder="Techcombank" />
-                </div>
+                    <!-- District -->
+                    <div>
+                        <label class="text-gray-700 font-semibold block mb-1">Quận/Huyện</label>
+                        <select v-model="form.address.district"
+                            @change="(event) => fetchWards((event.target as HTMLSelectElement).value)"
+                            class="select select-bordered select-primary w-full">
+                            <option value="" disabled>Chọn quận/huyện</option>
+                            <option v-for="d in districts" :key="d.id" :value="d.id">
+                                {{ d.full_name }}
+                            </option>
+                        </select>
+                    </div>
 
-                <!-- Bank Account Number -->
-                <div>
-                    <label class="text-gray-700 font-semibold">Số tài khoản ngân hàng</label>
-                    <input v-model="form.bank_account_number" class="input input-primary w-full mt-1"
-                        placeholder="123456789" />
-                </div>
+                    <!-- Ward -->
+                    <div>
+                        <label class="text-gray-700 font-semibold block mb-1">Phường/Xã</label>
+                        <select v-model="form.address.ward" class="select select-bordered select-primary w-full">
+                            <option value="" disabled>Chọn phường/xã</option>
+                            <option v-for="w in wards" :key="w.id" :value="w.id">
+                                {{ w.full_name }}
+                            </option>
+                        </select>
+                    </div>
 
-                <!-- Bio (Full Width) -->
-                <div class="sm:col-span-3">
-                    <label class="text-gray-700 font-semibold">Tiểu sử</label>
-                    <textarea v-model="form.bio" class="textarea textarea-primary w-full h-24 mt-1"
-                        placeholder="Giới thiệu về bạn..." />
-                </div>
-
-                <!-- Address Section -->
-                <div class="sm:col-span-3">
-                    <h2 class="text-lg font-semibold mb-4">Địa chỉ</h2>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <!-- Province -->
-                        <div>
-                            <label class="text-gray-700 font-semibold">Tỉnh/Thành phố</label>
-                            <select v-model="form.address!.province"
-                                @change="handleProvinceChange"
-                                class="select select-primary w-full mt-1">
-                                <option value="" disabled>Chọn tỉnh/thành phố</option>
-                                <option v-for="p in provinces" :key="p.id" :value="p.id">
-                                    {{ p.full_name }}
-                                </option>
-                            </select>
-                        </div>
-
-                        <!-- District -->
-                        <div>
-                            <label class="text-gray-700 font-semibold">Quận/Huyện</label>
-                            <select v-model="form.address!.district"
-                                @change="handleDistrictChange"
-                                class="select select-primary w-full mt-1">
-                                <option value="" disabled>Chọn quận/huyện</option>
-                                <option v-for="d in districts" :key="d.id" :value="d.id">
-                                    {{ d.full_name }}
-                                </option>
-                            </select>
-                        </div>
-
-                        <!-- Ward -->
-                        <div>
-                            <label class="text-gray-700 font-semibold">Phường/Xã</label>
-                            <select v-model="form.address!.ward"
-                                class="select select-primary w-full mt-1">
-                                <option value="" disabled>Chọn phường/xã</option>
-                                <option v-for="w in wards" :key="w.id" :value="w.id">
-                                    {{ w.full_name }}
-                                </option>
-                            </select>
-                        </div>
-
-                        <!-- Street Address -->
-                        <div>
-                            <label class="text-gray-700 font-semibold">Địa chỉ chi tiết</label>
-                            <input v-model="form.address!.street_address" type="text" class="input input-primary w-full mt-1"
-                                placeholder="Số nhà, tên đường..." />
-                        </div>
+                    <!-- Street Address (Full Width) -->
+                    <div class="sm:col-span-3">
+                        <label class="text-gray-700 font-semibold block mb-1">Địa chỉ chi tiết</label>
+                        <input v-model="form.address.street_address" class="input input-bordered input-primary w-full"
+                            placeholder="Số nhà, tên đường..." />
                     </div>
                 </div>
             </div>
 
+            <!-- Phần 3: Thông tin tài chính và khác -->
+            <div class="border-t border-gray-200 pt-5">
+                <h3 class="text-lg font-medium text-gray-800 mb-3">Thông tin tài chính</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <!-- Bank Name -->
+                    <div>
+                        <label class="text-gray-700 font-semibold block mb-1">Tên ngân hàng</label>
+                        <input v-model="form.bank_name" class="input input-bordered input-primary w-full" placeholder="Techcombank" />
+                    </div>
+
+                    <!-- Bank Account Number -->
+                    <div>
+                        <label class="text-gray-700 font-semibold block mb-1">Số tài khoản ngân hàng</label>
+                        <input v-model="form.bank_account_number" class="input input-bordered input-primary w-full"
+                            placeholder="123456789" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phần 4: Tiểu sử -->
+            <div class="border-t border-gray-200 pt-5">
+                <h3 class="text-lg font-medium text-gray-800 mb-3">Thông tin bổ sung</h3>
+                <div>
+                    <label class="text-gray-700 font-semibold block mb-1">Tiểu sử</label>
+                    <textarea v-model="form.bio" class="textarea textarea-bordered textarea-primary w-full h-32"
+                        placeholder="Giới thiệu về bạn..." />
+                </div>
+            </div>
+
             <!-- Submit Button -->
-            <div class="flex justify-end mt-6">
+            <div class="border-t border-gray-200 pt-5 flex justify-end">
                 <button type="button" @click="$router.push('/admin/users')" class="btn btn-ghost mr-2">Hủy</button>
-                <button type="submit" class="btn btn-primary" :disabled="status === 'pending'">
+                <button type="submit" class="btn btn-primary px-6" :disabled="status === 'pending'">
                     <span v-if="status === 'pending'" class="loading loading-spinner loading-md"></span>
-                    <span>Cập nhật người dùng</span>
+                    Cập nhật người dùng
                 </button>
             </div>
         </form>
@@ -166,11 +169,10 @@
 
 <script setup lang="ts">
 definePageMeta({
-    title: 'Cập nhật thông tin người dùng',
+    title: 'Cập nhật thành viên',
     layout: 'user',
 })
 
-import { useUserAuth } from '#imports';
 import { useToast } from 'vue-toastification';
 import { useRuntimeConfig } from '#app';
 import { useVietnamAddress } from '#imports';
@@ -185,6 +187,7 @@ const router = useRouter();
 
 // Avatar mặc định nếu không có ảnh
 const defaultAvatar = useRuntimeConfig().public.placeholderImage;
+const backEndUrl = useRuntimeConfig().public.backendUrl;
 
 // Ref để tham chiếu đến input file và file được chọn
 const fileInput = ref<HTMLInputElement | null>(null);
@@ -196,7 +199,7 @@ const form = ref({
     full_name: '',
     email: '',
     phone_number: '',
-    date_of_birth: undefined as Date | undefined,
+    date_of_birth: '',
     gender: '',
     is_super_admin: false,
     is_banned: false,
@@ -213,7 +216,7 @@ const form = ref({
     }
 });
 
-const { data: userData, error } = await getUserByCode(route.params.id as string);
+const { data: userData, refresh } = await getUserByCode(route.params.id as string);
 const user = computed<User | null>(() => Array.isArray(userData.value?.data) ? userData.value.data[0] : userData.value?.data || null)
 
 watch(user, (newVal) => {
@@ -222,14 +225,14 @@ watch(user, (newVal) => {
             full_name: newVal.full_name,
             email: newVal.email,
             phone_number: newVal.phone_number,
-            date_of_birth: newVal.date_of_birth || undefined,
+            date_of_birth: newVal.date_of_birth ? new Date(newVal.date_of_birth).toISOString().split('T')[0] : '',
             gender: newVal.gender,
             is_super_admin: newVal.is_super_admin,
             is_banned: newVal.is_banned,
             bank_name: newVal.bank_name,
             bank_account_number: newVal.bank_account_number,
             bio: newVal.bio,
-            avatar_url: newVal.avatar_url || defaultAvatar,
+            avatar_url: newVal.avatar_url ? backEndUrl + newVal.avatar_url : defaultAvatar,
             address: {
                 id: newVal.address?.id || 0,
                 province: newVal.address?.province || '',
@@ -237,6 +240,18 @@ watch(user, (newVal) => {
                 ward: newVal.address?.ward || '',
                 street_address: newVal.address?.street_address || ''
             }
+        }
+    }
+});
+
+watch(user, async (newVal) => {
+    if (newVal) {
+        await fetchProvinces();
+        if (form.value.address.province) {
+            await fetchDistricts(form.value.address.province);
+        }
+        if (form.value.address.district) {
+            await fetchWards(form.value.address.district);
         }
     }
 });
@@ -258,37 +273,13 @@ const handleFileChange = (event: Event) => {
     }
 };
 
-// Xử lý khi chọn tỉnh/thành phố
-const handleProvinceChange = async () => {
-    if (form.value.address?.province) {
-        await fetchDistricts(form.value.address.province);
-        if (form.value.address) {
-            form.value.address.district = '';
-            form.value.address.ward = '';
-        }
-    }
-};
-
-// Xử lý khi chọn quận/huyện
-const handleDistrictChange = async () => {
-    if (form.value.address?.district) {
-        await fetchWards(form.value.address.district);
-        if (form.value.address) {
-            form.value.address.ward = '';
-        }
-    }
-};
-
-// Lấy danh sách tỉnh/thành phố khi component được tạo
-await fetchProvinces();
-
 // Xử lý submit form
 const handleSubmit = async () => {
     try {
         status.value = 'pending';
         // Tạo FormData để gửi dữ liệu multipart
         const formData = new FormData();
-        
+
         // Append form fields with type checking
         if (form.value.full_name) formData.append('full_name', form.value.full_name);
         if (form.value.email) formData.append('email', form.value.email);
@@ -315,13 +306,17 @@ const handleSubmit = async () => {
         }
 
         // Gửi request với FormData
-        const { error } = await updateUser(Number(route.params.id), formData);
+        const { error } = await updateUser(
+            Number(user?.value?.id),
+            formData
+        );
 
         if (error.value) {
             throw new Error(error.value.message);
         }
 
         toast.success('Cập nhật thông tin người dùng thành công!');
+        refresh();
         router.push('/admin/users');
     } catch (error: any) {
         toast.error(error.message || 'Cập nhật thông tin người dùng thất bại!');
