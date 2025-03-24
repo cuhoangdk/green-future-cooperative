@@ -96,7 +96,7 @@ class UserController extends Controller
         }
         if ($request->hasFile('avatar_url')) {
             // Xóa ảnh cũ trước khi upload ảnh mới
-            $this->uploadService->deleteImage($user->featured_image);
+            $this->uploadService->deleteImage($user->avatar_url);
 
             // Upload ảnh mới
             $validated['avatar_url'] = $this->uploadService->uploadImage($request->file('avatar_url'), 'users');
@@ -155,10 +155,15 @@ class UserController extends Controller
      */
     public function forceDelete($id)
     {
+        $user = $this->userRepository->getById($id);
+        if (!$user) {
+            return response()->json(['message' => 'User not found or not trashed'], 404);
+        }
+        $this->uploadService->deleteImage($user->avatar_url);
         $deleted = $this->userRepository->forceDelete($id);
 
         if (!$deleted) {
-            return response()->json(['message' => 'User not found or not trashed'], 404);
+            return response()->json(['message' => ' Failed to permanently delete user'], 500);
         }
 
         return response()->json(['message' => 'User permanently deleted successfully']);

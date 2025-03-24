@@ -268,6 +268,7 @@ class PostController extends Controller
         if (!$post) {
             return response()->json(['message' => 'Post not found or not trashed'], 404);
         }
+        $this->uploadService->deleteImage($post->featured_image);
 
         $deleted = $this->postRepository->forceDelete($id);
 

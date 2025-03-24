@@ -161,10 +161,17 @@ class CustomerController extends Controller
      */
     public function forceDelete($id)
     {
+        $customer = $this->customerRepository->getTrashedById($id);
+
+        if (!$customer) {
+            return response()->json(['message' => 'Customer not found or not trashed'], 404);
+        }
+        $this->uploadService->deleteImage($customer->avatar_url);
+
         $deleted = $this->customerRepository->forceDelete($id);
 
         if (!$deleted) {
-            return response()->json(['message' => 'Customer not found or not trashed'], 404);
+            return response()->json(['message' => 'Failed to permanently delete customer'], 500);
         }
 
         return response()->json(['message' => 'Customer permanently deleted successfully']);
