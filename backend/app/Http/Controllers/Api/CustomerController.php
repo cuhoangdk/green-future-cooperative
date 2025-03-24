@@ -11,15 +11,18 @@ use App\Http\Requests\Customer\UpdateCustomerRequest;
 use App\Http\Requests\Customer\IndexCustomerRequest;
 use App\Http\Resources\CustomerResource;
 use App\Repositories\Contracts\CustomerRepositoryInterface;
+use App\Services\UploadFileService;
 use Illuminate\Http\JsonResponse;
 
 class CustomerController extends Controller
 {
     protected $customerRepository;
+    protected $uploadService;
 
-    public function __construct(CustomerRepositoryInterface $customerRepository)
+    public function __construct(CustomerRepositoryInterface $customerRepository, UploadFileService $uploadService)
     {
         $this->customerRepository = $customerRepository;
+        $this->uploadService = $uploadService;
     }
 
     /**
@@ -47,6 +50,9 @@ class CustomerController extends Controller
     {
         $data = $request->validated();
         $data['verified_at'] = now();
+        if ($request->hasFile('avatar_url')) {
+            $data['avatar_url'] = $this->uploadService->uploadImage($request->file('avatar_url'), 'customers');
+        }
         $customer = $this->customerRepository->create($data);
         return new CustomerResource($customer);
     }
@@ -77,6 +83,14 @@ class CustomerController extends Controller
     {
         $data = $request->validated();
         $data['verified_at'] = now();
+        $customer = $this->customerRepository->getById($id);
+        if ($request->hasFile('avatar_url')) {
+            // Xóa ảnh cũ trước khi upload ảnh mới
+            $this->uploadService->deleteImage($customer->avatar_url);
+
+            // Upload ảnh mới
+            $data['avatar_url'] = $this->uploadService->uploadImage($request->file('avatar_url'), 'customers');
+        }
         $customer = $this->customerRepository->update($id, $data);
 
         if (!$customer) {
