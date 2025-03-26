@@ -52,14 +52,14 @@ class CustomerAuthRepository implements CustomerAuthRepositoryInterface
         ]);
 
         $response = app()->handle($tokenRequest);
-
-        // Kiểm tra xem token có được trả về không
-        if ($response->getStatusCode() !== 200) {
-            return response()->json(['message' => 'Unable to login, please try again later.'], 500);
+        $responseData = json_decode($response->getContent(), true);
+        // Kiểm tra lỗi trong phản hồi
+        if (isset($responseData['error'])) {
+            return response()->json(['message' => $responseData['error_description']], $response->getStatusCode());
         }
 
         // Trả về thông tin token
-        return json_decode($response->getContent(), true);
+        return response()->json($responseData);
     }
 
 
@@ -176,11 +176,13 @@ class CustomerAuthRepository implements CustomerAuthRepositoryInterface
 
         $response = app()->handle($tokenRequest);
 
-        if ($response->getStatusCode() !== 200) {
-            return null;
+        $responseData = json_decode($response->getContent(), true);
+
+        if (isset($responseData['error'])) {
+            return response()->json(['message' => $responseData['error_description']], $response->getStatusCode());
         }
 
-        return json_decode($response->getContent(), true);
+        return response()->json($responseData);
     }
 
 }
