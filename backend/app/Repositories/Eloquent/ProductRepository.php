@@ -19,7 +19,9 @@ class ProductRepository implements ProductRepositoryInterface
 
     public function getAll(string $sortBy = 'created_at', string $sortDirection = 'desc', int $perPage = 10): LengthAwarePaginator
     {
-        $query = $this->model->with(['category', 'unit', 'user', 'images', 'prices'])->when(!auth('api_users')->check(), function ($query) {
+        $query = $this->model->with(['category', 'unit', 'user', 'images' => function ($query) {
+            $query->orderBy('is_primary', 'desc'); // Sắp xếp để is_primary = true lên đầu
+        }, 'prices'])->when(!auth('api_users')->check(), function ($query) {
             $query->where('status', 'selling');
         });
 
@@ -37,7 +39,9 @@ class ProductRepository implements ProductRepositoryInterface
         string $sortDirection = 'desc',
         int $perPage = 10
     ): LengthAwarePaginator {
-        $query = $this->model->onlyTrashed()->with(['category', 'unit', 'user', 'images', 'prices']);
+        $query = $this->model->onlyTrashed()->with(['category', 'unit', 'user', 'images' => function ($query) {
+            $query->orderBy('is_primary', 'desc'); // Sắp xếp để is_primary = true lên đầu
+        }, 'prices']);
 
         // Chỉ giới hạn cho user không phải super_admin
         $user = Auth::guard('api_users')->user();
@@ -52,7 +56,9 @@ class ProductRepository implements ProductRepositoryInterface
     {
         $product = $this->model->when(!auth('api_users')->check(), function ($query) {
             $query->where('status', 'selling');
-        })->with(['category', 'unit', 'user', 'images', 'prices'])->find($id);
+        })->with(['category', 'unit', 'user', 'images' => function ($query) {
+            $query->orderBy('is_primary', 'desc'); // Sắp xếp để is_primary = true lên đầu
+        }, 'prices'])->find($id);
 
 
         // Chỉ giới hạn cho user không phải super_admin
@@ -115,7 +121,9 @@ class ProductRepository implements ProductRepositoryInterface
 
     public function getTrashedById($id)
     {
-        $product = $this->model->onlyTrashed()->with(['category', 'unit', 'user', 'images', 'prices'])->find($id);
+        $product = $this->model->onlyTrashed()->with(['category', 'unit', 'user', 'images' => function ($query) {
+            $query->orderBy('is_primary', 'desc'); // Sắp xếp để is_primary = true lên đầu
+        }, 'prices'])->find($id);
 
         // Kiểm tra quyền truy cập product đã xóa
         $user = Auth::guard('api_users')->user();
@@ -158,7 +166,9 @@ class ProductRepository implements ProductRepositoryInterface
 
     public function getBySlug($slug)
     {
-        $product = $this->model->with(['category', 'unit', 'user', 'images', 'prices'])
+        $product = $this->model->with(['category', 'unit', 'user', 'images' => function ($query) {
+            $query->orderBy('is_primary', 'desc'); // Sắp xếp để is_primary = true lên đầu
+        }, 'prices'])
             ->when(!auth('api_users')->check(), function ($query) {
                 $query->where('status', 'selling');
             })
@@ -180,7 +190,9 @@ class ProductRepository implements ProductRepositoryInterface
 
     public function getByProductCode($productCode)
     {
-        $product = $this->model->with(['category', 'unit', 'user', 'images', 'prices'])
+        $product = $this->model->with(['category', 'unit', 'user', 'images' => function ($query) {
+            $query->orderBy('is_primary', 'desc'); // Sắp xếp để is_primary = true lên đầu
+        }, 'prices'])
             ->when(!auth('api_users')->check(), function ($query) {
                 $query->where('status', 'selling');
             })
@@ -202,7 +214,9 @@ class ProductRepository implements ProductRepositoryInterface
         int $perPage = 10,
         array $filters = []
     ): LengthAwarePaginator {
-        $query = $this->model->with(['category', 'unit', 'user', 'images', 'prices']);
+        $query = $this->model->with(['category', 'unit', 'user', 'images' => function ($query) {
+            $query->orderBy('is_primary', 'desc'); // Sắp xếp để is_primary = true lên đầu
+        }, 'prices']);
     
         // Kiểm tra quyền truy cập
         $user = Auth::guard('api_users')->user();
@@ -272,7 +286,9 @@ class ProductRepository implements ProductRepositoryInterface
     ): LengthAwarePaginator {
         $searchQuery = $this->model->when(!auth('api_users')->check(), function ($query) {
             $query->where('status', 'selling');
-        })->with(['category', 'unit', 'user', 'images', 'prices']);
+        })->with(['category', 'unit', 'user', 'images' => function ($query) {
+            $query->orderBy('is_primary', 'desc'); // Sắp xếp để is_primary = true lên đầu
+        }, 'prices']);
 
         // Chỉ áp dụng giới hạn cho user không phải super_admin
         $user = Auth::guard('api_users')->user();

@@ -34,7 +34,7 @@ class ProductImageController extends Controller
             sortBy: $sortBy,
             sortDirection: $sortDirection,
             perPage: $perPage 
-        )->appends(request()->query());        
+        );       
         return ProductImageResource::collection($images);
     }
 
