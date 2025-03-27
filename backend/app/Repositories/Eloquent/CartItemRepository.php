@@ -18,7 +18,7 @@ class CartItemRepository implements CartItemRepositoryInterface
     public function getAll(int $customerId)
     {
         return $this->model->where('customer_id', $customerId)
-            ->with('product');
+            ->with('product')->get();
     }
 
     public function getById(int $customerId, $id)

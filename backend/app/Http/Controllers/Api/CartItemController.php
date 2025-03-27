@@ -23,7 +23,7 @@ class CartItemController extends Controller
         
         $items = $this->repository->getAll($customerId);
         // Kiểm tra từng mục trong giỏ
-        $items->getCollection()->each(function ($item) {
+        $items->each(function ($item) {
             $product = $item->product;
             if ($product->unit && !$product->unit->allow_decimal && floor($item->quantity) != $item->quantity) {
                 $item->invalid_quantity = true;
