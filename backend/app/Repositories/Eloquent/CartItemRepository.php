@@ -134,6 +134,11 @@ class CartItemRepository implements CartItemRepositoryInterface
      */
     protected function getPriceForQuantity(int $productId, float $quantity)
     {
+        $priceRecordExists = ProductQuantityPrice::where('product_id', $productId)->exists();
+
+        if (!$priceRecordExists) {
+            return 'Contact Price'; // Không có bản ghi, trả về "Giá liên hệ"
+        }
         // Lấy ngưỡng nhỏ nhất cho product_id
         $minQuantity = ProductQuantityPrice::where('product_id', $productId)
             ->min('quantity');
