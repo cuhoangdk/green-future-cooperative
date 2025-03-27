@@ -18,13 +18,13 @@ class CartItemRepository implements CartItemRepositoryInterface
     public function getAll(int $customerId)
     {
         return $this->model->where('customer_id', $customerId)
-            ->with('product')->get();
+            ->with(['product','product.images'])->get();
     }
 
     public function getById(int $customerId, $id)
     {
         return $this->model->where('customer_id', $customerId)
-            ->findOrFail($id);
+        ->with(['product','product.images'])->findOrFail($id);
     }
 
     public function create(int $customerId, array $data)
