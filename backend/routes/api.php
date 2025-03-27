@@ -148,8 +148,8 @@ Route::middleware('log.activity')->group(function () {
             // sometimes: quantity, price
             Route::put('/{id}', [ProductQuantityPriceController::class, 'update'])->name('quantity-prices.update');
             Route::delete('/{id}', [ProductQuantityPriceController::class, 'destroy'])->name('quantity-prices.destroy');            
-            Route::patch('/restore/{id}', [ProductQuantityPriceController::class, 'restore'])->name('quantity-prices.restore');
-            Route::delete('/force-delete/{id}', [ProductQuantityPriceController::class, 'forceDelete'])->name('quantity-prices.forceDelete');
+            // Route::patch('/restore/{id}', [ProductQuantityPriceController::class, 'restore'])->name('quantity-prices.restore');
+            // Route::delete('/force-delete/{id}', [ProductQuantityPriceController::class, 'forceDelete'])->name('quantity-prices.forceDelete');
         });
         Route::prefix('{product_id}/images')->group(function () {
             // sometimes: sort_by, sort_direction, per_page
