@@ -13,6 +13,7 @@ use App\Repositories\Contracts\FarmRepositoryInterface;
 use App\Repositories\Contracts\NotificationRepositoryInterface;
 use App\Repositories\Contracts\OrderItemRepositoryInterface;
 use App\Repositories\Contracts\OrderRepositoryInterface;
+use App\Repositories\Contracts\ParameterRepositoryInterface;
 use App\Repositories\Contracts\PostCommentRepositoryInterface;
 use App\Repositories\Contracts\ProductCatogoryRepositoryInterface;
 use App\Repositories\Contracts\ProductImageRepositoryInterface;
@@ -33,6 +34,7 @@ use App\Repositories\Eloquent\FarmRepository;
 use App\Repositories\Eloquent\NotificationRepository;
 use App\Repositories\Eloquent\OrderItemRepository;
 use App\Repositories\Eloquent\OrderRepository;
+use App\Repositories\Eloquent\ParameterRepository;
 use App\Repositories\Eloquent\PostCommentRepository;
 use App\Repositories\Eloquent\ProductCategoryRepository;
 use App\Repositories\Eloquent\ProductImageRepository;
@@ -79,6 +81,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(ContactInformationRepositoryInterface::class, ContactInformationRepository::class);
         $this->app->bind(ActivityLogRepositoryInterface::class, ActivityLogRepository::class);
         $this->app->bind(NotificationRepositoryInterface::class, NotificationRepository::class);
+        $this->app->bind(ParameterRepositoryInterface::class, ParameterRepository::class);
     }
 
     /**

@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\ActivityLogController;
 use App\Http\Controllers\Api\AdminOrderController;
 use App\Http\Controllers\Api\ContactInformationController;
 use App\Http\Controllers\Api\OrderController;
+use App\Http\Controllers\Api\ParameterController;
 use App\Http\Controllers\Api\SliderImageController;
 use App\Http\Controllers\Api\SocialLinkController;
 use App\Http\Controllers\Api\CartItemController;
@@ -31,6 +32,10 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::middleware('log.activity')->group(function () {
+    Route::prefix('shipping-fee')->group(function () {
+        Route::get('/', [ParameterController::class, 'show'])->name('shipping-fee.show');
+        Route::middleware(['auth:api_users', 'permission'])->put('/', [ParameterController::class, 'update'])->name('shipping-fee.update');
+    });
     Route::middleware(['auth:api_users,api_customers'])->group(function () {
         Route::prefix('notifications')->group(function () {
             Route::get('/', [NotificationController::class, 'index'])->name('notifications.index');
@@ -126,48 +131,59 @@ Route::middleware('log.activity')->group(function () {
         Route::get('/search-with-filters', [ProductController::class, 'filter'])->name('products.search-with-filter');
         // required: name, user_idm farm_id, category_id, unit_id, pricing_type, stock_quantity
         // nullable: description, seed_supplier, cultivated_area, sown_at, harvested_at, status, meta_title, meta_description, meta_keyword
-        Route::post('/', [ProductController::class, 'store'])->name('products.store');
-        Route::get('/trashed', [ProductController::class, 'trashed'])->name('products.trashed');
+        Route::middleware(['auth:api_users'])->group(function () {
+            Route::post('/', [ProductController::class, 'store'])->name('products.store');
+            Route::get('/trashed', [ProductController::class, 'trashed'])->name('products.trashed');
+        });
         Route::prefix('{product_id}/cultivation-logs')->group(function () {
             // sometimes: sort_by, sort_direction, per_page
             Route::get('/', [CultivationLogController::class, 'index'])->name('cultivation-logs.index');
-            // requỉed: activity
-            // nullable: fertilizer_used, pesticide_used, image_url, video_url, notes
-            Route::post('/', [CultivationLogController::class, 'store'])->name('cultivation-logs.store');
-            Route::get('/{id}', [CultivationLogController::class, 'show'])->name('cultivation-logs.show');
-            Route::put('/{id}', [CultivationLogController::class, 'update'])->name('cultivation-logs.update');
-            Route::delete('/{id}', [CultivationLogController::class, 'destroy'])->name('cultivation-logs.destroy');
+            Route::middleware(['auth:api_users'])->group(function () {
+                // requỉed: activity
+                // nullable: fertilizer_used, pesticide_used, image_url, video_url, notes
+                Route::post('/', [CultivationLogController::class, 'store'])->name('cultivation-logs.store');
+                Route::get('/{id}', [CultivationLogController::class, 'show'])->name('cultivation-logs.show');
+                Route::put('/{id}', [CultivationLogController::class, 'update'])->name('cultivation-logs.update');
+                Route::delete('/{id}', [CultivationLogController::class, 'destroy'])->name('cultivation-logs.destroy');
+            });
         });
         Route::prefix('{product_id}/quantity-prices')->group(function () {
             // sometimes: sort_by, sort_direction, per_page
             Route::get('/', [ProductQuantityPriceController::class, 'index'])->name('quantity-prices.index');
             // required: prices[], prices.*.quantity, prices.*.price
-            Route::post('/', [ProductQuantityPriceController::class, 'store'])->name('quantity-prices.store');
-            Route::get('/trashed', [ProductQuantityPriceController::class, 'trashed'])->name('quantity-prices.trashed');
-            Route::get('/{id}', [ProductQuantityPriceController::class, 'show'])->name('quantity-prices.show');
-            // sometimes: quantity, price
-            Route::put('/{id}', [ProductQuantityPriceController::class, 'update'])->name('quantity-prices.update');
-            Route::delete('/{id}', [ProductQuantityPriceController::class, 'destroy'])->name('quantity-prices.destroy');            
-            // Route::patch('/restore/{id}', [ProductQuantityPriceController::class, 'restore'])->name('quantity-prices.restore');
-            // Route::delete('/force-delete/{id}', [ProductQuantityPriceController::class, 'forceDelete'])->name('quantity-prices.forceDelete');
+            Route::middleware(['auth:api_users'])->group(function () {
+                // required: prices[], prices.*.quantity, prices.*.price
+                Route::post('/', [ProductQuantityPriceController::class, 'store'])->name('quantity-prices.store');
+                Route::get('/trashed', [ProductQuantityPriceController::class, 'trashed'])->name('quantity-prices.trashed');
+                Route::get('/{id}', [ProductQuantityPriceController::class, 'show'])->name('quantity-prices.show');
+                // sometimes: quantity, price
+                Route::put('/{id}', [ProductQuantityPriceController::class, 'update'])->name('quantity-prices.update');
+                Route::delete('/{id}', [ProductQuantityPriceController::class, 'destroy'])->name('quantity-prices.destroy');            
+                // Route::patch('/restore/{id}', [ProductQuantityPriceController::class, 'restore'])->name('quantity-prices.restore');
+                // Route::delete('/force-delete/{id}', [ProductQuantityPriceController::class, 'forceDelete'])->name('quantity-prices.forceDelete');
+            });
         });
         Route::prefix('{product_id}/images')->group(function () {
             // sometimes: sort_by, sort_direction, per_page
-            Route::get('/', [ProductImageController::class, 'index'])->name('product-images.index');
-            // required: images[],images[].*.image_url
-            // nullable: images[].*.title
-            // sometimes: images[].*.sort_order, images[].*.is_primary
-            Route::post('/', [ProductImageController::class, 'store'])->name('product-images.store');
-            Route::get('/{id}', [ProductImageController::class, 'show'])->name('product-images.show');
-            Route::put('/{id}', [ProductImageController::class, 'update'])->name('product-images.update');
-            Route::delete('/{id}', [ProductImageController::class, 'destroy'])->name('product-images.destroy');
+            Route::get('/', [ProductImageController::class, 'index'])->name('product-images.index');            
+            Route::middleware(['auth:api_users'])->group(function () {
+                // required: images[],images[].*.image_url
+                // nullable: images[].*.title
+                // sometimes: images[].*.sort_order, images[].*.is_primary
+                Route::post('/', [ProductImageController::class, 'store'])->name('product-images.store');
+                Route::get('/{id}', [ProductImageController::class, 'show'])->name('product-images.show');
+                Route::put('/{id}', [ProductImageController::class, 'update'])->name('product-images.update');
+                Route::delete('/{id}', [ProductImageController::class, 'destroy'])->name('product-images.destroy');
+            });
         });
         Route::get('/code/{productCode}', [ProductController::class, 'getByProductCode'])->name('products.get-by-product-code'); 
         Route::get('/{id}/qrcode', [ProductController::class, 'getQrCode'])->name('products.qrcode');
-        Route::put('/{id}', [ProductController::class, 'update'])->name('products.update');
-        Route::delete('/{id}', [ProductController::class, 'destroy'])->name('products.destroy');
-        Route::patch('/restore/{id}', [ProductController::class, 'restore'])->name('products.restore');
-        Route::delete('/force-delete/{id}', [ProductController::class, 'forceDelete'])->name('products.forceDelete');
+        Route::middleware(['auth:api_users'])->group(function () {
+            Route::put('/{id}', [ProductController::class, 'update'])->name('products.update');
+            Route::delete('/{id}', [ProductController::class, 'destroy'])->name('products.destroy');
+            Route::patch('/restore/{id}', [ProductController::class, 'restore'])->name('products.restore');
+            Route::delete('/force-delete/{id}', [ProductController::class, 'forceDelete'])->name('products.forceDelete');
+        });
         Route::get('/{id}', [ProductController::class, 'show'])->name('products.show');
         Route::get('/slug/{slug}', [ProductController::class, 'getBySlug'])->name('products.get-by-slug');
     });
@@ -214,15 +230,21 @@ Route::middleware('log.activity')->group(function () {
         Route::get('/', [FarmController::class, 'index'])->name('farms.index');
         // required: name, user_id, address.province, address.district, address.ward, address.street_address
         // nullable: description, farm_size, soil_type, irrigation_method, latitude, longitude
-        Route::post('/', [FarmController::class, 'store'])->name('farms.store');
-        // sometimes: sort_by, sort_direction, per_page, search
-        Route::get('/search', [FarmController::class, 'search'])->name('farms.search');
-        Route::get('/trashed', [FarmController::class, 'trashed'])->name('farms.trashed');
+        Route::middleware(['auth:api_users'])->group(function () {
+            // required: name, user_id, address.province, address.district, address.ward, address.street_address
+            // nullable: description, farm_size, soil_type, irrigation_method, latitude, longitude
+            Route::post('/', [FarmController::class, 'store'])->name('farms.store');
+            // sometimes: sort_by, sort_direction, per_page, search
+            Route::get('/search', [FarmController::class, 'search'])->name('farms.search');
+            Route::get('/trashed', [FarmController::class, 'trashed'])->name('farms.trashed');
+        }); 
         Route::get('/{id}', [FarmController::class, 'show'])->name('farms.show');
-        Route::put('/{id}', [FarmController::class, 'update'])->name('farms.update');
-        Route::delete('/{id}', [FarmController::class, 'destroy'])->name('farms.destroy');    
-        Route::patch('/restore/{id}', [FarmController::class, 'restore'])->name('farms.restore');
-        Route::delete('/force-delete/{id}', [FarmController::class, 'forceDelete'])->name('farms.forceDelete');
+        Route::middleware(['auth:api_users'])->group(function () {
+            Route::put('/{id}', [FarmController::class, 'update'])->name('farms.update');
+            Route::delete('/{id}', [FarmController::class, 'destroy'])->name('farms.destroy');    
+            Route::patch('/restore/{id}', [FarmController::class, 'restore'])->name('farms.restore');
+            Route::delete('/force-delete/{id}', [FarmController::class, 'forceDelete'])->name('farms.forceDelete');
+        }); 
     });
 
     Route::middleware(['auth:api_users', 'permission'])->prefix('roles')->group(function () {
