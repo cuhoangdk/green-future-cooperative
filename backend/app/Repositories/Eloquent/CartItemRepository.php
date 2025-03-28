@@ -47,7 +47,7 @@ class CartItemRepository implements CartItemRepositoryInterface
             ->findOrFail($id);
 
         // Thêm calculated_price
-        $item->calculated_price = $this->getPriceForQuantity($item->product_id, $item->quantity);
+        // $item->calculated_price = $this->getPriceForQuantity($item->product_id, $item->quantity);
 
         return $item;
     }
@@ -100,7 +100,6 @@ class CartItemRepository implements CartItemRepositoryInterface
             $item = $this->getById($customerId, $id);
             $product = $item->product;
 
-            // Kiểm tra status của sản phẩm
             if ($product->status !== 'selling') {
                 throw new \Exception("Product {$product->name} is not available for sale (current status: {$product->status}).");
             }
@@ -110,14 +109,15 @@ class CartItemRepository implements CartItemRepositoryInterface
                 throw new \Exception("The quantity ({$newQuantity}) exceeds the available stock ({$product->stock_quantity}).");
             }
 
-            // Lấy giá từ product_quantity_prices
             $price = $this->getPriceForQuantity($item->product_id, $newQuantity);
-            if ($price === null) {
-                throw new \Exception("No price defined for product ID {$item->product_id} with quantity {$newQuantity}");
-            }
 
-            $item->update($data);
-            $item->calculated_price = $price; // Thêm calculated_price
+            // Cập nhật quantity
+            $item->quantity = $newQuantity;
+            $item->save(); // Lưu thủ công, chỉ cập nhật các cột trong $fillable
+
+            // Gán calculated_price
+            $item->calculated_price = $price;
+
             return $item;
         });
     }
