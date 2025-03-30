@@ -52,10 +52,15 @@ class StoreOrderRequest extends FormRequest
             'street_address' => 'required_without:customer_address_id|string',
             'shipping_fee' => 'sometimes|numeric|min:0',
             'notes' => 'nullable|string',
-            'expected_delivery_date' => 'nullable|date|after:today',
-            
+            'expected_delivery_date' => 'nullable|date|after:today',            
         ];
-
+        // Trường hợp không đăng nhập (khách vãng lai)
+        if (!auth('api_customers')->check() && !auth('api_users')->check()) {
+            $rules['items'] = 'required|array';
+            $rules['items.*.product_id'] = 'required|exists:products,id';
+            $rules['items.*.quantity'] = 'required|numeric|min:1';
+            $rules['email'] = 'nullable|email';
+        }
         // Nếu là admin, yêu cầu customer_id
         if (auth('api_users')->check()) {
             $rules['customer_id'] = 'required|exists:customers,id';

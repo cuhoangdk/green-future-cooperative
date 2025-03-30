@@ -88,15 +88,17 @@ Route::middleware('log.activity')->group(function () {
         Route::get('/{id}', [SocialLinkController::class, 'show'])->name('social-links.show'); 
     });
 
-    Route::prefix('orders')->middleware(['auth:api_customers'])->group(function () {
-        Route::get('/', [OrderController::class, 'index'])->name('orders.index');
+    Route::prefix('orders')->group(function () {
         // required_without:customer_address_id: full_name, phone_number, province, district, ward, street_address
-        // nullable: customer_address_id, notes, expected_delivery_date
+        // nullable: customer_address_id, notes, expected_delivery_date, email
         // sometimes: address_type, shipping_fee       
         Route::post('/', [OrderController::class, 'store'])->name('orders.store');
-        Route::get('/{id}', [OrderController::class, 'show'])->name('orders.show');
-        // required: cancelled_reason
-        Route::post('/{id}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
+        Route::middleware(['auth:api_customers'])->group(function () {
+            Route::get('/', [OrderController::class, 'index'])->name('orders.index');
+            Route::get('/{id}', [OrderController::class, 'show'])->name('orders.show');
+            // required: cancelled_reason
+            Route::post('/{id}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
+        }); 
     });
 
     Route::prefix('admin/orders')->middleware(['auth:api_users', 'permission'])->group(function () {

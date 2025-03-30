@@ -24,9 +24,11 @@ class OrderRepository implements OrderRepositoryInterface
 
     protected function sendOrderStatusEmails(Order $order)
     {
-        // Người mua (customer)
+        // Người mua (customer)       
         if ($order->customer && $order->customer->email) {
             Mail::to($order->customer->email)->queue(new OrderStatusUpdated($order, 'customer'));
+        } elseif ($order->email) {
+            Mail::to($order->email)->queue(new OrderStatusUpdated($order, 'customer'));
         }
 
         // Người bán (seller) - Lấy từ user_id trong products
@@ -71,31 +73,67 @@ class OrderRepository implements OrderRepositoryInterface
         return $query->findOrFail($id);
     }
 
-    public function createForCustomer(int $customerId, array $data)
+    public function createForCustomer(?int $customerId = null, array $data)
     {
         return DB::transaction(function () use ($customerId, $data) {
-            $cartItems = CartItem::where('customer_id', $customerId)->with('product')->get();
-
-            if ($cartItems->isEmpty()) {
-                throw new \Exception('Cart is empty');
+            // Nếu không có customer_id (khách vãng lai), yêu cầu thông tin khách hàng từ $data
+            if (!$customerId) {
+                if (empty($data['full_name']) || empty($data['phone_number']) || empty($data['province']) || 
+                    empty($data['district']) || empty($data['ward']) || empty($data['street_address'])) {
+                    throw new \Exception('Customer information (full_name, phone_number, province, district, ward, street_address) is required for guest orders.');
+                }
+                if (empty($data['items']) || !is_array($data['items'])) {
+                    throw new \Exception('Items are required for guest orders.');
+                }
             }
 
-            foreach ($cartItems as $item) {
-                if ($item->product->status !== 'selling') {
-                    throw new \Exception("Product {$item->product->name} is not available for sale (current status: {$item->product->status}).");
+            // Lấy danh sách items
+            if ($customerId) {
+                // Trường hợp đăng nhập: Lấy từ giỏ hàng
+                $cartItems = CartItem::where('customer_id', $customerId)->with('product')->get();
+                if ($cartItems->isEmpty()) {
+                    throw new \Exception('Cart is empty');
                 }
-                if ($item->quantity > $item->product->stock_quantity) {
-                    throw new \Exception("Insufficient stock for product ID {$item->product_id}. Available: {$item->product->stock_quantity}, Requested: {$item->quantity}");
+
+                foreach ($cartItems as $item) {
+                    if ($item->product->status !== 'selling') {
+                        throw new \Exception("Product {$item->product->name} is not available for sale (current status: {$item->product->status}).");
+                    }
+                    if ($item->quantity > $item->product->stock_quantity) {
+                        throw new \Exception("Insufficient stock for product ID {$item->product_id}. Available: {$item->product->stock_quantity}, Requested: {$item->quantity}");
+                    }
+                    $price = $this->getPriceForQuantity($item->product_id, $item->quantity);
+                    if ($price === null) {
+                        throw new \Exception("No price defined for product ID {$item->product_id} with quantity {$item->quantity}");
+                    }
+                    $item->calculated_price = $price;
                 }
-                // Lấy giá từ product_quantity_prices dựa trên quantity
-                $price = $this->getPriceForQuantity($item->product_id, $item->quantity);
-                if ($price === null) {
-                    throw new \Exception("No price defined for product ID {$item->product_id} with quantity {$item->quantity}");
-                }
-                $item->calculated_price = $price; // Lưu giá tạm thời vào item để dùng sau
+                $items = $cartItems;
+            } else {
+                // Trường hợp khách vãng lai: Lấy từ $data['items']
+                $items = collect($data['items'])->map(function ($itemData) {
+                    $product = Product::findOrFail($itemData['product_id']);
+                    if ($product->status !== 'selling') {
+                        throw new \Exception("Product {$product->name} is not available for sale (current status: {$product->status}).");
+                    }
+                    if ($itemData['quantity'] > $product->stock_quantity) {
+                        throw new \Exception("Insufficient stock for product ID {$product->id}. Available: {$product->stock_quantity}, Requested: {$itemData['quantity']}");
+                    }
+                    $price = $this->getPriceForQuantity($product->id, $itemData['quantity']);
+                    if ($price === null) {
+                        throw new \Exception("No price defined for product ID {$product->id} with quantity {$itemData['quantity']}");
+                    }
+                    return (object) [
+                        'product_id' => $product->id,
+                        'product' => $product,
+                        'quantity' => $itemData['quantity'],
+                        'calculated_price' => $price,
+                    ];
+                });
             }
 
-            if (isset($data['customer_address_id'])) {
+            // Xử lý thông tin địa chỉ
+            if ($customerId && isset($data['customer_address_id'])) {
                 $customerAddress = CustomerAddress::where('customer_id', $customerId)
                     ->with('address')
                     ->findOrFail($data['customer_address_id']);
@@ -121,24 +159,28 @@ class OrderRepository implements OrderRepositoryInterface
                 ];
             }
 
+            // Tạo mã đơn hàng
             $timestamp = now()->format('YmdHis');
             $randomSequence = str_pad(rand(0, 9999), 4, '0', STR_PAD_LEFT);
             $orderCode = 'ORD' . $timestamp . $randomSequence;
 
+            // Tạo dữ liệu đơn hàng
             $orderData = array_merge($addressData, [
                 'order_code' => $orderCode,
-                'customer_id' => $customerId,
+                'customer_id' => $customerId, // Có thể là null cho khách vãng lai
                 'status' => 'pending',
-                'total_price' => $cartItems->sum(fn($item) => $item->quantity * $item->calculated_price),
+                'total_price' => $items->sum(fn($item) => $item->quantity * $item->calculated_price),
                 'shipping_fee' => $data['shipping_fee'] ?? 0,
-                'final_total_amount' => $cartItems->sum(fn($item) => $item->quantity * $item->calculated_price) + ($data['shipping_fee'] ?? 0),
+                'final_total_amount' => $items->sum(fn($item) => $item->quantity * $item->calculated_price) + ($data['shipping_fee'] ?? 0),
                 'notes' => $data['notes'] ?? null,
                 'expected_delivery_date' => $data['expected_delivery_date'] ?? null,
+                'email' => $customerId ? null : ($data['email'] ?? null), // Lưu email cho khách vãng lai
             ]);
 
             $order = $this->model->create($orderData);
 
-            foreach ($cartItems as $item) {
+            // Tạo items cho đơn hàng
+            foreach ($items as $item) {
                 $totalItemPrice = $item->quantity * $item->calculated_price;
                 $order->items()->create([
                     'product_id' => $item->product_id,
@@ -148,7 +190,11 @@ class OrderRepository implements OrderRepositoryInterface
                     'total_item_price' => $totalItemPrice,
                 ]);
                 $item->product->decrement('stock_quantity', $item->quantity);
-                $item->delete();
+                if ($customerId) {
+                    CartItem::where('customer_id', $customerId)
+                        ->where('product_id', $item->product_id)
+                        ->delete();
+                }
             }
 
             $order->load('customer', 'items.product.user');
@@ -334,6 +380,7 @@ class OrderRepository implements OrderRepositoryInterface
         if (!empty($filters['day'])) {
             $query->whereDay('created_at', $filters['day']);
         }
+        $query->when($filters['status'] ?? null, fn($query, $status) => $query->where('status', $status));
 
         return $query->orderBy($sortBy, $sortDirection)
             ->paginate($perPage);
