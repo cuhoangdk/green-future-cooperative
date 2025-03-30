@@ -51,6 +51,7 @@ class AdminOrderController extends Controller
             'year' => $request->input('year'),
             'month' => $request->input('month'),
             'day' => $request->input('day'),
+            'status' => $request->input('status'),
         ];
 
         $orders = $this->orderRepository->search($customerId, $perPage, $filters, $sortBy, $sortDirection)
