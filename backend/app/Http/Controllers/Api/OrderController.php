@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Order\IndexOrderRequest;
 use App\Http\Requests\Order\StoreOrderRequest;
 use App\Http\Requests\Order\CancelOrderRequest;
 use App\Http\Resources\OrderResource;
@@ -23,10 +24,16 @@ class OrderController extends Controller
         $this->notificationRepository = $notificationRepository;
     }
 
-    public function index()
+    public function index(IndexOrderRequest $request)
     {
         $customerId = auth('api_customers')->id();
-        $orders = $this->orderRepository->getAll($customerId);
+        $perPage = $request->input('per_page', 10);
+        $sortBy = $request->input('sort_by', 'updated_at');
+        $sortDirection = $request->input('sort_direction', 'desc');
+
+        $orders = $this->orderRepository->getAll($customerId, $sortBy, $sortDirection, $perPage)
+            ->appends(request()->query());
+        
         return OrderResource::collection($orders);
     }
 

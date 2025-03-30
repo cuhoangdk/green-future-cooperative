@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Order\IndexOrderRequest;
 use App\Http\Requests\Order\CancelOrderRequest;
 use App\Http\Requests\Order\UpdateOrderRequest;
 use App\Http\Requests\Order\StoreOrderRequest;
+use App\Http\Requests\SearchOrderRequest;
 use App\Http\Resources\OrderResource;
 use App\Repositories\Contracts\OrderRepositoryInterface;
 use App\Repositories\Contracts\NotificationRepositoryInterface;
@@ -25,10 +27,35 @@ class AdminOrderController extends Controller
         $this->notificationRepository = $notificationRepository;
     }
 
-    public function index(Request $request)
+    public function index(IndexOrderRequest $request)
     {
-        $perPage = $request->query('per_page', 10);
-        $orders = $this->orderRepository->getAll(null, $perPage)->appends(request()->query());
+        $customerId = auth('api_customers')->id();
+        $perPage = $request->input('per_page', 10);
+        $sortBy = $request->input('sort_by', 'updated_at');
+        $sortDirection = $request->input('sort_direction', 'desc');
+
+        $orders = $this->orderRepository->getAll($customerId, $sortBy, $sortDirection, $perPage)
+            ->appends(request()->query());
+
+        return OrderResource::collection($orders);
+    }
+    public function search(SearchOrderRequest $request)
+    {
+        $customerId = auth('api_customers')->id();
+        $perPage = $request->input('per_page', 10);
+        $sortBy = $request->input('sort_by', 'updated_at');
+        $sortDirection = $request->input('sort_direction', 'desc');
+
+        $filters = [
+            'search' => $request->input('search'),
+            'year' => $request->input('year'),
+            'month' => $request->input('month'),
+            'day' => $request->input('day'),
+        ];
+
+        $orders = $this->orderRepository->search($customerId, $perPage, $filters, $sortBy, $sortDirection)
+            ->appends(request()->query());
+
         return OrderResource::collection($orders);
     }
 
@@ -79,6 +106,7 @@ class AdminOrderController extends Controller
             return response()->json(['message' => $e->getMessage()], 422);
         }
     }
+
 
     protected function sendOrderNotifications($order, $status)
     {

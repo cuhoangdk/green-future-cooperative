@@ -4,6 +4,7 @@ namespace App\Repositories\Eloquent;
 
 use App\Mail\OrderStatusUpdated;
 use App\Models\CartItem;
+use App\Models\Customer;
 use App\Models\CustomerAddress;
 use App\Models\Order;
 use App\Models\Product;
@@ -42,13 +43,13 @@ class OrderRepository implements OrderRepositoryInterface
         }
     }
 
-    public function getAll(?int $customerId = null, int $perPage = 10)
+    public function getAll(?int $customerId = null, string $sortBy = 'created_at', string $sortDirection = 'desc', int $perPage = 10)
     {
-        $query = $this->model->with('items');
-        if ($customerId !== null) {
+        return $this->model->when($customerId !== null, function ($query) use ($customerId) {
             $query->where('customer_id', $customerId);
-        }
-        return $query->paginate($perPage);
+        })->with('items')
+            ->orderBy($sortBy, $sortDirection)
+            ->paginate($perPage);
     }
 
     public function getById(?int $customerId = null, $id)
@@ -128,12 +129,13 @@ class OrderRepository implements OrderRepositoryInterface
             $order = $this->model->create($orderData);
 
             foreach ($cartItems as $item) {
+                $totalItemPrice = $item->quantity * $item->calculated_price;
                 $order->items()->create([
                     'product_id' => $item->product_id,
                     'product_snapshot' => $item->product->toArray(),
                     'quantity' => $item->quantity,
-                    'price' => $item->product->calculated_price,
-                    'total_item_price' => $item->quantity * $item->product->calculated_price,
+                    'price' => $item->calculated_price,
+                    'total_item_price' => $totalItemPrice,
                 ]);
                 $item->product->decrement('stock_quantity', $item->quantity);
                 $item->delete();
@@ -221,12 +223,13 @@ class OrderRepository implements OrderRepositoryInterface
             $order = $this->model->create($orderData);
 
             foreach ($items as $item) {
+                $totalItemPrice = $item->quantity * $item->calculated_price; // Tính total_item_price
                 $order->items()->create([
                     'product_id' => $item->product_id,
                     'product_snapshot' => $item->product->toArray(),
                     'quantity' => $item->quantity,
-                    'price' => $item->product->calculated_price,
-                    'total_item_price' => $item->quantity * $item->product->calculated_price,
+                    'price' => $item->calculated_price,
+                    'total_item_price' => $totalItemPrice, // Đảm bảo lưu giá trị đúng
                 ]);
                 $item->product->decrement('stock_quantity', $item->quantity);
             }
@@ -244,7 +247,14 @@ class OrderRepository implements OrderRepositoryInterface
         $oldStatus = $order->status;
 
         $order->update($data);
-
+        // Nếu trạng thái mới là 'delivered' và trạng thái cũ không phải 'delivered'
+        if (isset($data['status']) && $data['status'] === 'delivered' && $oldStatus !== 'delivered') {
+            $customer = Customer::find($order->customer_id);
+            if ($customer) {
+                $customer->increment('total_spending', $order->final_total_amount);
+                $customer->increment('total_orders');
+            }
+        }
         if (isset($data['status']) && $data['status'] !== $oldStatus && in_array($data['status'], ['pending', 'processing', 'delivered', 'cancelled'])) {
             $order->load('customer', 'items.product.user');
             if ($order instanceof Order) {
@@ -279,7 +289,40 @@ class OrderRepository implements OrderRepositoryInterface
 
             return $order;
         });
-    }    
+    }
+    public function search(?int $customerId = null, int $perPage = 10, array $filters = [], string $sortBy = 'created_at', string $sortDirection = 'desc')
+    {        
+        $query = $this->model->with('items');
+
+        if ($customerId !== null) {
+            $query->where('customer_id', $customerId);
+        }
+
+        if (!empty($filters['search'])) {
+            $search = $filters['search'];
+            $query->where(function ($q) use ($search) {
+                $q->where('full_name', 'like', "%{$search}%")
+                  ->orWhere('phone_number', 'like', "%{$search}%")
+                  ->orWhere('order_code', 'like', "%{$search}%")
+                  ->orWhereHas('customer', function ($q) use ($search) {
+                      $q->where('email', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        if (!empty($filters['year'])) {
+            $query->whereYear('created_at', $filters['year']);
+        }
+        if (!empty($filters['month'])) {
+            $query->whereMonth('created_at', $filters['month']);
+        }
+        if (!empty($filters['day'])) {
+            $query->whereDay('created_at', $filters['day']);
+        }
+
+        return $query->orderBy($sortBy, $sortDirection)
+            ->paginate($perPage);
+    }  
     protected function getPriceForQuantity(int $productId, float $quantity)
     {
         // Lấy ngưỡng nhỏ nhất cho product_id

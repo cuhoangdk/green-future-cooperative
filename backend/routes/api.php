@@ -101,6 +101,8 @@ Route::middleware('log.activity')->group(function () {
 
     Route::prefix('admin/orders')->middleware(['auth:api_users', 'permission'])->group(function () {
         Route::get('/', [AdminOrderController::class, 'index'])->name('admin.orders.index');
+        // sometimes: search, year, month, day, sort_by, sort_direction, per_page
+        Route::get('/search', [AdminOrderController::class, 'search'])->name('admin.orders.search');
         // required: customer_id, items[], items.*.product_id, items.*.quantity
         // required_without:customer_address_id: full_name, phone_number, province, district, ward, street_address
         // nullable: customer_address_id, notes, expected_delivery_date
