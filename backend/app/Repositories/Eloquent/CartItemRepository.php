@@ -24,15 +24,14 @@ class CartItemRepository implements CartItemRepositoryInterface
                 'product.images' => function ($query) {
                     $query->where('is_primary', true);
                 }
-            ])
-            ->get();
+            ])->get();
 
         // Thêm calculated_price cho từng item
         $items->each(function ($item) {
             $item->calculated_price = $this->getPriceForQuantity($item->product_id, $item->quantity);
         });
 
-        return $items;
+        return $items->orderBy('created_at', 'desc');
     }
 
     public function getById(int $customerId, $id)

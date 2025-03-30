@@ -14,6 +14,18 @@ class OrderResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        $data = parent::toArray($request);
+
+        $user = auth('api_users')->user();
+        $isSuperAdmin = $user && $user->is_super_admin;
+
+        // Thêm trường items với message kiểu bool
+        $data['items'] = collect($data['items'])->map(function ($item) use ($user, $isSuperAdmin) {
+            $belongsToCurrentUser = $user && isset($item['product']['user_id']) && $item['product']['user_id'] === $user->id;
+            $item['flag'] = !$isSuperAdmin && !$belongsToCurrentUser; // true nếu không thuộc về user hiện tại và không phải super_admin
+            return $item;
+        })->all();
+
+        return $data;
     }
 }

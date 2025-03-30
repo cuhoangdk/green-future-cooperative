@@ -47,14 +47,24 @@ class OrderRepository implements OrderRepositoryInterface
     {
         return $this->model->when($customerId !== null, function ($query) use ($customerId) {
             $query->where('customer_id', $customerId);
-        })->with('items')
+        })->with('items.product.user')->when(!$this->isSuperAdmin(), function ($query) {
+            $userId = auth('api_users')->id();
+            $query->whereHas('items.product', function ($q) use ($userId) {
+                $q->where('user_id', $userId);
+            });
+        })->with('items.product.user')
             ->orderBy($sortBy, $sortDirection)
             ->paginate($perPage);
     }
 
     public function getById(?int $customerId = null, $id)
     {
-        $query = $this->model->with('items');
+        $query = $this->model->when(!$this->isSuperAdmin(), function ($query) {
+            $userId = auth('api_users')->id();
+            $query->whereHas('items.product', function ($q) use ($userId) {
+                $q->where('user_id', $userId);
+            });
+        })->with('items.product.user');
         if ($customerId !== null) {
             $query->where('customer_id', $customerId);
         }
@@ -283,8 +293,8 @@ class OrderRepository implements OrderRepositoryInterface
             foreach ($order->items as $item) {
                 $item->product->increment('stock_quantity', $item->quantity);
             }
-
-            $order->load('customer', 'items.product.user');
+            // Tải lại quan hệ sau khi cập nhật
+            $order = $order->fresh(['customer', 'items.product.user']);
             $this->sendOrderStatusEmails($order);
 
             return $order;
@@ -292,7 +302,12 @@ class OrderRepository implements OrderRepositoryInterface
     }
     public function search(?int $customerId = null, int $perPage = 10, array $filters = [], string $sortBy = 'created_at', string $sortDirection = 'desc')
     {        
-        $query = $this->model->with('items');
+        $query = $this->model->when(!$this->isSuperAdmin(), function ($query) {
+            $userId = auth('api_users')->id();
+            $query->whereHas('items.product', function ($q) use ($userId) {
+                $q->where('user_id', $userId);
+            });
+        })->with('items.product.user');
 
         if ($customerId !== null) {
             $query->where('customer_id', $customerId);
@@ -339,5 +354,11 @@ class OrderRepository implements OrderRepositoryInterface
             ->first();
 
         return $priceRecord ? $priceRecord->price : null;
+    }
+
+    protected function isSuperAdmin(): bool
+    {
+        $user = auth('api_users')->user();
+        return $user && $user->is_super_admin;
     }
 }
