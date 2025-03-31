@@ -169,7 +169,7 @@ class CustomerAuthRepository implements CustomerAuthRepositoryInterface
         $tokenRequest = Request::create('/oauth/token', 'POST', [
             'grant_type' => 'refresh_token',
             'client_id' => config('passport.client_id_customer'),
-            'client_secret' => config('passport.client_customer'),
+            'client_secret' => config('passport.client_secret_customer'),
             'refresh_token' => $refreshToken,
             'scope' => '*',
         ]);
