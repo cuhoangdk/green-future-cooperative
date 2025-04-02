@@ -1,5 +1,5 @@
 <template>
-    <footer class="bg-[#333031] text-white p-4 pt-12">
+    <div class="bg-[#333031] text-white p-4 pt-12">
       <div class="text-left max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
         <div class="col-span-2">
           <h2 class="text-3xl font-bold text-green-500 mb-4">Green Future</h2>
@@ -31,7 +31,7 @@
   
       <hr class="my-6 border-gray-600" />
       <p class="text-center text-gray-400">&copy; 2025 Nguyễn Đình Hiệu. All rights reserved.</p>
-    </footer>
+    </div>
   </template>
   
   <script setup lang="ts">

@@ -1,11 +1,11 @@
 <template>
-    <header class="bg-white shadow-sm text-black lg:relative fixed top-0 w-full z-50">
+    <div class="bg-white shadow-sm text-black lg:relative fixed top-0 w-full z-50">
         <!-- Top row with logo and user actions -->
-        <div class="bg-green-600 border-b border-green-700">
+        <div class="bg-green-600">
             <div class="max-w-7xl mx-auto px-4 lg:px-8">
                 <div class="flex flex-wrap lg:flex-nowrap items-center justify-between py-1">
                     <div class="flex items-center space-x-2">
-                        <img src="~/assets/images/logo.jpg" alt="Logo Green Future"
+                        <img src="~/assets/images/logo.png" alt="Logo Green Future"
                             class="rounded-full w-12 h-12 lg:w-16 lg:h-16 object-cover" />
                         <h1 class="text-2xl lg:text-3xl font-bold text-white hidden lg:block">
                             <NuxtLink to="/" class="">Green Future</NuxtLink>
@@ -24,19 +24,23 @@
 
                     <!-- Cart and Login -->
                     <div class="flex items-center space-x-4">
-                        <button class="relative">
+                        <NuxtLink to="/cart" class="relative">
                             <ShoppingCart
                                 class="w-6 h-6 text-white hover:text-green-200 transition-colors duration-200" />
                             <span
                                 class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                                 0
                             </span>
-                        </button>
+                        </NuxtLink>
 
-                        <button
+                        <NuxtLink v-if="!refreshToken" to="/login" 
                             class="hidden lg:block bg-white font-semibold text-green-600 px-4 py-2 rounded-full hover:bg-green-100 transition-colors duration-200">
                             Đăng nhập
-                        </button>
+                        </NuxtLink>
+                        <NuxtLink v-else to="/account"
+                            class="hidden lg:block text-white underline font-semibold hover:text-green-200 transition-colors duration-200">
+                            {{ currentCustomer?.full_name || 'Name' }}
+                        </NuxtLink>
                         <button @click="toggleMobileMenu"
                             :class="['lg:hidden z-50 p-2 rounded-lg text-white transition-colors duration-200', isMobileMenuOpen ? 'bg-green-500' : 'hover:bg-green-500']">
                             <Menu class="w-6 h-6" />
@@ -67,13 +71,14 @@
                 </NuxtLink>
             </div>
         </nav>
-    </header>
+    </div>
 </template>
 
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
 import { Menu, ShoppingCart, Search as SearchIcon } from 'lucide-vue-next'
 
+const { currentCustomer, refreshToken } = useCustomerAuth()
 const route = useRoute()
 const isMobileMenuOpen = ref(false)
 
