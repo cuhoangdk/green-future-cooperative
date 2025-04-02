@@ -18,20 +18,18 @@ class CartItemRepository implements CartItemRepositoryInterface
 
     public function getAll(int $customerId)
     {
-        $items = $this->model->where('customer_id', $customerId)
+        return $this->model->where('customer_id', $customerId)
             ->with([
                 'product',
                 'product.images' => function ($query) {
                     $query->where('is_primary', true);
                 }
-            ])->get();
-
-        // Thêm calculated_price cho từng item
-        $items->each(function ($item) {
-            $item->calculated_price = $this->getPriceForQuantity($item->product_id, $item->quantity);
-        });
-
-        return $items->orderBy('created_at', 'desc');
+            ])
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->each(function ($item) {
+                $item->calculated_price = $this->getPriceForQuantity($item->product_id, $item->quantity);
+            });
     }
 
     public function getById(int $customerId, $id)

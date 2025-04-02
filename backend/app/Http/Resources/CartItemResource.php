@@ -21,7 +21,7 @@ class CartItemResource extends JsonResource
             'customer_id' => $this->customer_id,
             'product_id' => $this->product_id,
             'quantity' => $this->quantity,
-            'calculated_price' => $calculatedPrice, 
+            'purchase_price' => $calculatedPrice, 
             'product' => new ProductResource($this->whenLoaded('product')),
             'invalid_quantity' => $this->invalid_quantity ?? false, // Thêm trường kiểm tra
             'invalid_message' => $this->invalid_message ?? null, // Thông báo nếu không hợp lệ            
