@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ActivityLog\IndexActivityLogRequest;
+use App\Http\Requests\ActivityLog\SearchActivityLogRequest;
 use App\Http\Resources\ActivityLogResource;
 use App\Repositories\Contracts\ActivityLogRepositoryInterface;
 
@@ -56,5 +57,23 @@ class ActivityLogController extends Controller
 
         $log = $this->repository->create($logData);
         return new ActivityLogResource($log);
+    }
+    public function search(SearchActivityLogRequest $request)
+    {
+        $perPage = $request->input('per_page', 10);
+        $sortBy = $request->input('sort_by', 'updated_at');
+        $sortDirection = $request->input('sort_direction', 'desc');
+
+        $filters = array_filter([
+            'search' => $request->input('search'),
+            'user_type' => $request->input('user_type'),            
+            'start_date' => $request->input('start_date'),
+            'end_date' => $request->input('end_date'),            
+        ], fn($value) => $value !== null);
+
+        $log = $this->repository->getFilteredActivityLog($sortBy, $sortDirection, $perPage, $filters)
+            ->appends(request()->query());
+
+        return ActivityLogResource::collection($log);
     }
 }

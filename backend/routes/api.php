@@ -48,6 +48,7 @@ Route::middleware('log.activity')->group(function () {
     Route::prefix('activity-logs')->middleware(['auth:api_users', 'permission'])->group(function () {   
         // sometimes: sort_by, sort_direction, per_page
         Route::get('/', [ActivityLogController::class, 'index'])->name('activity-logs.index');
+        Route::get('/search', [ActivityLogController::class, 'search'])->name('activity-logs.search');
         Route::get('/{id}', [ActivityLogController::class, 'show'])->name('activity-logs.show');
     });
 
