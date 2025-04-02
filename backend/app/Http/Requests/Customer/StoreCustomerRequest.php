@@ -14,7 +14,7 @@ class StoreCustomerRequest extends FormRequest
             'password' => 'required|min:6|confirmed',
             'full_name' => 'required|string|max:255',
             'phone_number' => 'required|string|max:20|unique:customers,phone_number|unique:users,phone_number',
-            'gender' => 'required|string|in:male,female,other',
+            'gender' => 'nullable|string|in:male,female,other',
             'date_of_birth' => 'nullable|date',
             'avatar_url' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ];
