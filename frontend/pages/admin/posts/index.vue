@@ -128,7 +128,7 @@
             </table>
 
             <!-- Pagination -->
-            <div class="flex justify-between items-center m-4">
+            <div class="flex justify-between items-center gap-2 m-4">
                 <div class="flex items-center space-x-2">
                     <p class="text-sm text-gray-600">{{ posts.posts.length }} / {{ posts.meta?.total }} bài viết</p>
                     <select v-model="perPage" class="select select-sm select-primary" @change="search">

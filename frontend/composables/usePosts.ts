@@ -39,23 +39,23 @@ export const usePosts = () => {
   }
 
   // Lấy bài viết nổi bật (hot)
-  const getHotPosts = async () => {
-    return await get<Post>('/posts/hot')
+  const getHotPosts = async (authType: AuthType = AuthType.Guest) => {
+    return await get<Post>('/posts/hot', { authType })
   }
 
   // Lấy bài viết đặc sắc (featured)
-  const getFeaturedPosts = async () => {
-    return await get<Post>('/posts/featured')
+  const getFeaturedPosts = async (authType: AuthType = AuthType.Guest) => {
+    return await get<Post>('/posts/featured', { authType })
   }
 
   // Lấy bài viết theo ID
-  const getPostById = async (postId: number) => {
-    return await get(`/posts/${postId}`)
+  const getPostById = async (postId: number, authType: AuthType = AuthType.User) => {
+    return await get(`/posts/${postId}`, { authType })
   }
 
   // Lấy bài viết theo slug
-  const getPostBySlug = async (slug: string) => {
-    return await get(`/posts/slug/${slug}`)
+  const getPostBySlug = async (slug: string, authType: AuthType = AuthType.Guest) => {
+    return await get(`/posts/slug/${slug}`, { authType })
   }
 
   // Tạo bài viết mới
