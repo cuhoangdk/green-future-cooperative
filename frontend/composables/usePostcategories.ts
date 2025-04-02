@@ -12,26 +12,32 @@ export const usePostCategories = () => {
   }
 
   // Lấy danh mục bài viết theo ID
-  const getPostCategoryById = async (categoryId: string) => {
+  const getPostCategoryById = async (categoryId: number) => {
     return await get<PostCategory>(`/post-categories/${categoryId}`)
   }
 
   // Tạo danh mục bài viết mới
-  const createPostCategory = async (categoryData: PostCategory) => {
+  const createPostCategory = async (categoryData: FormData) => {
     return await post('/post-categories', categoryData, {
       authType: AuthType.User, // Mặc định yêu cầu token cho hành động tạo
+      headers: {
+        'Content-Type': 'multipart/form-data', // Đảm bảo gửi dưới dạng form data
+      },
     })
   }
 
   // Cập nhật danh mục bài viết
-  const updatePostCategory = async (categoryId: string, categoryData: PostCategory) => {
+  const updatePostCategory = async (categoryId: number, categoryData: FormData) => {
     return await put(`/post-categories/${categoryId}`, categoryData, {
       authType: AuthType.User, // Mặc định yêu cầu token cho hành động tạo
+      headers: {
+        'Content-Type': 'multipart/form-data', // Đảm bảo gửi dưới dạng form data
+      },
     })
   }
 
   // Xóa danh mục bài viết
-  const deletePostCategory = async (categoryId: string) => {
+  const deletePostCategory = async (categoryId: number) => {
     return await del(`/post-categories/${categoryId}`, {
       authType: AuthType.User, // Mặc định yêu cầu token cho hành động tạo
     })
