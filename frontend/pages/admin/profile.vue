@@ -155,12 +155,9 @@ definePageMeta({
     layout: 'user',
 })
 
-import { useUserAuth } from '#imports';
 import { useToast } from 'vue-toastification';
-import { useRuntimeConfig } from '#app';
-import { useVietnamAddress } from '#imports';
 const { provinces, districts, wards, fetchProvinces, fetchDistricts, fetchWards } = useVietnamAddress();
-const { currentUser, updateProfile } = useUserAuth();
+const { currentUser, updateProfile, isAuthenticated } = useUserAuth();
 const toast = useToast();
 
 // Avatar mặc định nếu không có ảnh
@@ -212,11 +209,11 @@ const handleFileChange = (event: Event) => {
 };
 
 await fetchProvinces();
-if (form.value.address.province) {
-    await fetchDistricts(form.value.address.province);
+if (currentUser.value?.address.province) {
+    await fetchDistricts(currentUser.value?.address.province);
 }
-if (form.value.address.district) {
-    await fetchWards(form.value.address.district);
+if (currentUser.value?.address.district) {
+    await fetchWards(currentUser.value?.address.district);
 }
 
 // Xử lý submit form
@@ -225,25 +222,25 @@ const handleSubmit = async () => {
         status.value = 'pending';
         // Tạo FormData để gửi dữ liệu multipart
         const formData = new FormData();
-        formData.append('full_name', form.value.full_name);
-        formData.append('email', form.value.email);
-        formData.append('phone_number', form.value.phone_number || '');
-        formData.append('date_of_birth', form.value.date_of_birth || '');
-        formData.append('gender', form.value.gender || '');
-        formData.append('bank_name', form.value.bank_name || '');
-        formData.append('bank_account_number', form.value.bank_account_number || '');
-        formData.append('bio', form.value.bio || '');
+        if (form.value.full_name) formData.append('full_name', form.value.full_name);
+        if (form.value.email) formData.append('email', form.value.email);
+        if (form.value.phone_number) formData.append('phone_number', form.value.phone_number);
+        if (form.value.date_of_birth) formData.append('date_of_birth', form.value.date_of_birth);
+        if (form.value.gender) formData.append('gender', form.value.gender);
+        if (form.value.bank_name) formData.append('bank_name', form.value.bank_name);
+        if (form.value.bank_account_number) formData.append('bank_account_number', form.value.bank_account_number);
+        if (form.value.bio) formData.append('bio', form.value.bio);
 
         // Thêm file avatar nếu có
         if (selectedFile.value) {
             formData.append('avatar_url', selectedFile.value);
         }
 
-        // Thêm address
-        formData.append('address[province]', form.value.address.province || '');
-        formData.append('address[district]', form.value.address.district || '');
-        formData.append('address[ward]', form.value.address.ward || '');
-        formData.append('address[street_address]', form.value.address.street_address || '');
+        // Thêm address nếu có
+        if (form.value.address.province) formData.append('address[province]', form.value.address.province);
+        if (form.value.address.district) formData.append('address[district]', form.value.address.district);
+        if (form.value.address.ward) formData.append('address[ward]', form.value.address.ward);
+        if (form.value.address.street_address) formData.append('address[street_address]', form.value.address.street_address);
 
         // Gửi request với FormData
         const result = await updateProfile(formData);
