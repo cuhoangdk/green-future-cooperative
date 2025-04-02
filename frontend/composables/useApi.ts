@@ -10,7 +10,8 @@ export enum AuthType {
 export const useApi = () => {
   const config = useRuntimeConfig()
   const baseURL = config.public.apiBaseUrl || 'http://localhost:3000/api'
-
+  
+  // Sử dụng useRequestHeaders để lấy cookie từ request khi ở server-side
   const apiFetch = async <T>(
     method: 'GET' | 'HEAD' | 'PATCH' | 'POST' | 'PUT' | 'DELETE' | 'CONNECT' | 'OPTIONS' | 'TRACE' | 'get' | 'head' | 'patch' | 'post' | 'put' | 'delete' | 'connect' | 'options' | 'trace',
     endpoint: string,
@@ -19,27 +20,55 @@ export const useApi = () => {
     const {
       body = null,
       params = {} as Record<string, any>,
-      authType = AuthType.User, // Mặc định là 'user'
+      authType = AuthType.Customer, 
       customHeaders = {} as Record<string, string>,
-      lazy = true, // Mặc định lazy là true
+      lazy = true, 
+      server = true, 
     } = options as {
       body?: any
       params?: Record<string, any>
       authType?: AuthType
       customHeaders?: Record<string, string>
       lazy?: boolean
+      server?: boolean
     }
 
-    // Lấy token dựa trên authType
     let token: string | null = null
-    if (import.meta.client) {
-      if (authType === AuthType.User || authType === AuthType.Customer) {
+
+    // Xử lý khác nhau cho client và server side
+    if (process.client) {
+      // Client-side: lấy từ cookie browser
+      if (authType === AuthType.Customer) {
+        token = useCookie('customer_access_token', { maxAge: 7200 }).value || null
+      }
+      if (authType === AuthType.User) {
         token = useCookie('user_access_token', { maxAge: 7200 }).value || null
+      }
+    } else if (process.server) {
+      // Server-side: lấy từ request headers
+      const cookieHeaders = useRequestHeaders(['cookie'])
+      
+      if (cookieHeaders.cookie) {
+        const cookies = cookieHeaders.cookie.split(';').map(c => c.trim())
+        
+        if (authType === AuthType.Customer) {
+          const customerCookie = cookies.find(c => c.startsWith('customer_access_token='))
+          if (customerCookie) {
+            token = customerCookie.split('=')[1]
+          }
+        }
+        
+        if (authType === AuthType.User) {
+          const userCookie = cookies.find(c => c.startsWith('user_access_token='))
+          if (userCookie) {
+            token = userCookie.split('=')[1]
+          }
+        }
       }
     }
 
     const headers: Record<string, string> = {
-      ...(body instanceof FormData ? {} : { 'Content-Type': 'application/json' }), // Chỉ thêm nếu không phải FormData
+      ...(body instanceof FormData ? {} : { 'Content-Type': 'application/json' }), 
       ...customHeaders,
     }
 
@@ -48,16 +77,22 @@ export const useApi = () => {
     }
 
     const url = `${baseURL}${endpoint}`
+    
+    // Thêm các options để debug
+    const fetchOptions = {
+      method,
+      headers,
+      body: body instanceof FormData ? body : body ? JSON.stringify(body) : undefined,
+      query: params,
+    }
+    
+    // Có thể log để debug
+    // console.log(`Fetching ${method} ${url}`, { headers, isClient: process.client })
+    
     const { data, status, error, refresh } = await useAsyncData(
-      `${method}-${endpoint}`,
-      () =>
-        $fetch<ApiResponse<T>>(url, {
-          method,
-          headers,
-          body: body instanceof FormData ? body : body ? JSON.stringify(body) : undefined,
-          query: params,
-        }),
-      { lazy }
+      `${method}-${endpoint}-${JSON.stringify(params)}`, // Thêm params vào key để tránh cache sai
+      () => $fetch<ApiResponse<T>>(url, fetchOptions),
+      { lazy, server }
     )
 
     return { data, status, error, refresh }
