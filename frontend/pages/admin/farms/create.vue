@@ -79,7 +79,7 @@
             <div class="col-span-3">
                 <label class="text-gray-700 font-semibold">Địa chỉ chi tiết</label>
                 <input v-model="form.address.street_address" class="input input-primary w-full mt-1"
-                    placeholder="Số nhà, tên đường..." />
+                    placeholder="Số nhà, tên đường..." required/>
             </div>
 
             <!-- Location -->
@@ -182,18 +182,7 @@ const handleSubmit = async () => {
         if (error.value) throw new Error(error.value.message || 'Tạo nông trại thất bại')
 
         toast.success('Tạo nông trại thành công!')
-        // Có thể redirect hoặc reset form sau khi tạo thành công
-        form.value = {
-            name: '',
-            user_id: '',
-            description: '',
-            farm_size: null,
-            soil_type: '',
-            irrigation_method: '',
-            latitude: null,
-            longitude: null,
-            address: { province: '', district: '', ward: '', street_address: '' },
-        }
+        navigateTo('/admin/farms')
     } catch (error: any) {
         toast.error(error.message || 'Tạo nông trại thất bại!')
     } finally {
