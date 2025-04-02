@@ -31,6 +31,8 @@ class UserAuthRepository implements UserAuthRepositoryInterface
         if (!Hash::check($credentials['password'], $user->password)) {
             return response()->json(['message' => 'Invalid credentials.'], 401);
         }
+        // Cập nhật last_login_at
+        $user->update(['last_login_at' => now()]);
 
         // Gọi trực tiếp OAuth để lấy token
         $tokenRequest = Request::create('/oauth/token', 'POST', [
@@ -83,10 +85,7 @@ class UserAuthRepository implements UserAuthRepositoryInterface
     {
         if (Auth::check()) {
             $user = Auth::user();
-
-            // Cập nhật last_login_at
-            $user->update(['last_login_at' => now()]);
-
+            
             // Thu hồi Access Token
             $token = $user->token();
             $token->revoke();
