@@ -145,11 +145,15 @@ import {
     Sprout,
     ShoppingBag,
     Ruler,
-    Layers
+    Layers,
+    Ticket
 } from 'lucide-vue-next'
 import { useRuntimeConfig } from '#app'
+import { useToast } from 'vue-toastification';
 
 const { logout, currentUser } = useUserAuth()
+const toast = useToast();
+
 const isSidebarOpen = ref(false)
 const isUserMenuOpen = ref(false)
 const isCollapsed = ref(false)
@@ -159,16 +163,25 @@ const backendUrl = useRuntimeConfig().public.backendUrl
 const windowWidth = ref(window.innerWidth)
 const avatar = computed(() => currentUser.value?.avatar_url ? `${backendUrl}${currentUser.value.avatar_url}` : defaultAvatar)
 
-const handleLogout = () => {
-    logout()
-    navigateTo('/admin/login')
-}
+const handleLogout = async () => {
+    try {
+        await logout();
+        toast.success('Đăng xuất thành công!');
+        // Chuyển hướng về trang đăng nhập hoặc trang chủ
+        useRouter().push('/admin/login');
+    } catch (error: any) {
+        toast.error(error.message || 'Đăng xuất thất bại!');
+    }
+};
 
 // Menu không thuộc nhóm
 const nonGroupedMenus = ref([
     { label: 'Trang chủ', route: '/admin', icon: Home },
     { label: 'Thành viên', route: '/admin/users', icon: Users },
+    { label: 'Khách hàng', route: '/admin/customers', icon: User2Icon },
     { label: 'Nông trại', route: '/admin/farms', icon: Sprout },
+    { label: 'Đơn hàng', route: '/admin/orders', icon: Ticket },
+    { label: 'Cài đặt', route: '#', icon: Ruler },
 ])
 
 // Menu nhóm (menu chính là trang index)
@@ -189,7 +202,7 @@ const groupedMenus = ref([
         icon: Newspaper,
         isOpen: false,
         items: [
-            { label: 'Loại bài viết', route: '#', icon: Layers },
+            { label: 'Loại bài viết', route: '/admin/post-categories', icon: Layers },
         ]
     }
 ])
