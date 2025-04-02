@@ -55,16 +55,12 @@ const handleSubmit = async () => {
 
         // Gửi request tạo nông trại
         const { error, data } = await createProductCategory(formData)
-        
+
         if (error.value?.message) throw new Error(data.value?.message || 'Thêm loại sản phẩm thất bại!')
 
         toast.success('Thêm loại sản phẩm thành công!')
-        // Có thể redirect hoặc reset form sau khi tạo thành công
-        form.value = {
-            name: '',
-            description: '',
-            allow_decimal: true,
-        }
+        // Redirect to the index page
+        useRouter().push('/admin/product-categories')
     } catch (error: any) {
         toast.error(error.message || 'Thêm loại sản phẩm thất bại!')
     } finally {

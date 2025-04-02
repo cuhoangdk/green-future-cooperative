@@ -1,181 +1,195 @@
 <template>
-    <div class="min-h-screen items-center flex flex-col mt-16 pb-5 lg:mt-0">
-        <div class="w-11/12 flex flex-col lg:flex-row max-w-7xl mt-5 gap-5">
-            <div v-if="productStatus === 'pending'" class="skeleton w-full lg:w-1/2 aspect-[4/3]">
-            </div>
-            <div v-else class="w-full lg:w-1/2">
-                <!-- Ảnh lớn -->
-                <div class="relative">
-                    <img :src="activeImageUrl" :alt="product?.name"
-                        class="w-full aspect-[4/3] object-cover rounded-xl border border-gray-200"
-                        @error="event => { const target = event.target as HTMLImageElement; if (target) target.src = placeholderImage as string; }" />
-                    <!-- Nút điều hướng -->
-                    <button v-if="product?.images && product.images.length > 1" @click="prevImage"
-                        class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-gray-600 text-white p-2 rounded-full">
-                        <ArrowLeft />
-                    </button>
-                    <button v-if="product?.images && product.images.length > 1" @click="nextImage"
-                        class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-gray-600 text-white p-2 rounded-full">
-                        <ArrowRight />
-                    </button>
-                </div>
-                <!-- Danh sách ảnh nhỏ -->
-                <div class="flex gap-2 mt-2 overflow-x-auto">
-                    <img v-for="(image, index) in product?.images" :key="index" :src="`${backendUrl}${image.image_url}`"
-                        :alt="`Image ${index + 1}`"
-                        class="w-20 h-20 object-cover rounded border border-gray-200 flex-shrink-0 cursor-pointer"
-                        :class="{ 'border-green-600 border-2': activeImageIndex === index }"
-                        @click="activeImageIndex = index"
-                        @error="event => { const target = event.target as HTMLImageElement; if (target) target.src = placeholderImage as string; }" />
-                </div>
-            </div>
-            <div v-if="productStatus === 'pending'" class="skeleton w-full lg:w-1/2 aspect-[4/3]">
-            </div>
-            <div v-else class="w-full lg:w-1/2">
-                <div class="max-w-7xl p-3 px-6 border border-gray-200 rounded-xl">
-                    <div class="flex justify-between item-center mb-3">
-                        <h1 class="text-2xl font-bold">{{ product?.name }}</h1>
-                        <div class="flex gap-1">
-                            <EyeIcon class="w-6 h-6 text-gray-500" /> {{ product?.views }}
-                        </div>
-                    </div>
-                    <div class="flex justify-between mb-3">
-                        <p class="text-sm text-gray-500"><span>Mã: </span>{{ product?.product_code }}</p>
-                        <p class="text-sm text-gray-500"><span>Đã bán: </span>{{ product?.sold_quantity }} <span>{{
-                            product?.unit.name }}</span></p>
-                    </div>
-                    <p class="text-3xl font-bold text-green-600 mb-3">{{ Math.floor(product?.prices?.[0]?.price ??
-                        0).toLocaleString('vi-VN') }}<span class="text-xl underline">đ</span><span
-                            class="text-xl text-gray-500"> / {{ product?.unit.name
-                            }}</span></p>
-                    <hr class="border border-gray-200 mb-3">
-
-                    <p class="text-sm text-gray-500 mb-3 h-24 overflow-y-auto">{{ product?.description }}</p>
-
-                    <hr class="border border-gray-200 mb-3">
-
-                    <div class="flex mb-1">
-                        <p class="w-1/2 text-sm text-gray-900"><span class="text-gray-500">Nhà cung cấp giống: </span>{{
-                            product?.seed_supplier }}
-                        </p>
-                        <p class="w-1/2 text-sm text-gray-900"><span class="text-gray-500">Diện tích canh tác: </span>{{
-                            product?.cultivated_area
-                            }} m²
-                        </p>
-                    </div>
-                    <div class="flex mb-3">
-                        <p class="w-1/2 text-sm text-gray-900"><span class="text-gray-500">Ngày gieo trồng: </span>{{
-                            new
-                                Date(product?.sown_at ??
-                                    '').toLocaleDateString() }}</p>
-                        <p class="w-1/2 text-sm text-gray-900"><span class="text-gray-500">Ngày thu hoạch: </span>{{ new
-                            Date(product?.harvested_at
-                                ?? '').toLocaleDateString() }}</p>
-                    </div>
-                    <hr class="border border-gray-200 mb-3">
-
-                    <p class="w-1/2 text-sm text-gray-900 mb-1"><span class="text-gray-500">Người trồng: </span>{{
-                        product?.user?.full_name }}</p>
-                    <p class="w-1/2 text-sm text-gray-900 mb-1"><span class="text-gray-500">Nơi trồng: </span>{{
-                        address }}</p>
-
-                    <div class="mt-4 flex gap-4">
-                        <button class="bg-green-600 text-white font-semibold px-5 py-2 rounded-full hover:bg-green-700">
-                            Thêm vào giỏ hàng
-                        </button>
-                    </div>
-                </div>
-            </div>
+    <div>
+        <div v-if="productStatus === 'pending'" class="relative h-screen w-full flex items-center justify-center">
+            <span class="loading loading-spinner loading-xl"></span>
         </div>
-        <div class="w-11/12 flex flex-col max-w-7xl mt-5 gap-5">
-            <div class="w-full">
-                <div class="flex justify-between items-center mb-4 gap-3">
-                    <h2 class="text-left text-xl font-bold text-green-800">Quá trình chăm sóc</h2>
-                    <div class="flex-1 h-[3px] bg-green-500"></div>
+        <div v-else-if="product" class="min-h-screen items-center flex flex-col mt-16 pb-5 lg:mt-0">
+            <div class="w-11/12 flex flex-col md:flex-row max-w-7xl mt-5 gap-5">
+                <div class="w-full md:w-1/2">
+                    <ProductImageSection :images="product?.images ?? []" />
                 </div>
-                <div class="relative">
-                    <div v-if="logs.status === 'pending'"
-                        class="absolute inset-0 flex items-center justify-center bg-gray-100/20 z-10">
-                        <span class="loading loading-spinner loading-xl"></span>
+                <div class="w-full md:w-1/2">
+                    <div class="max-w-7xl p-3 px-6 border border-gray-200 rounded-xl">
+                        <div class="flex justify-between item-center mb-3">
+                            <h1 class="text-2xl font-bold">{{ product?.name }}</h1>
+                            <div class="flex gap-1">
+                                <EyeIcon class="w-6 h-6 text-gray-500" /> {{ product?.views }}
+                            </div>
+                        </div>
+                        <div class="flex justify-between mb-3">
+                            <p class="text-sm text-gray-500"><span>Mã: </span>{{ product?.product_code }}</p>
+                            <p class="text-sm text-gray-500"><span>Đã bán: </span>{{ product?.sold_quantity }}
+                                <span>{{
+                                    product?.unit.name }}</span>
+                            </p>
+                        </div>
+                        <p class="text-3xl font-bold text-green-600 mb-3">{{ Math.floor(product?.prices?.[0]?.price
+                            ??
+                            0).toLocaleString('vi-VN') }}<span class="text-xl underline">đ</span><span
+                                class="text-xl text-gray-500"> / {{ product?.unit.name
+                                }}</span></p>
+                        <hr class="border border-gray-200 mb-3">
+
+                        <p class="text-sm text-gray-500 mb-3 h-24 overflow-y-auto">{{ product?.description }}</p>
+
+                        <hr class="border border-gray-200 mb-3">
+
+                        <div class="grid grid-cols-1 lg:grid-cols-2 mb-1 gap-1">
+                            <p class="text-sm text-gray-900"><span class="text-gray-500">Nhà cung cấp giống:
+                                </span>{{
+                                    product?.seed_supplier }}
+                            </p>
+                            <p class="text-sm text-gray-900"><span class="text-gray-500">Diện tích canh tác:
+                                </span>{{
+                                    product?.cultivated_area
+                                }} m²
+                            </p>
+                        </div>
+                        <div class="grid grid-cols-1 lg:grid-cols-2 mb-1 gap-1">
+                            <p class="text-sm text-gray-900"><span class="text-gray-500">Ngày gieo trồng: </span>{{
+                                new
+                                    Date(product?.sown_at ??
+                                        '').toLocaleDateString('vi-VN') }}</p>
+                            <p class="text-sm text-gray-900"><span class="text-gray-500">Ngày thu hoạch: </span>{{
+                                new
+                                    Date(product?.harvested_at
+                                        ?? '').toLocaleDateString('vi-VN') }}</p>
+                        </div>
+                        <hr class="border border-gray-200 mb-3">
+
+                        <p class="text-sm text-gray-900 mb-1"><span class="text-gray-500">Người trồng: </span>{{
+                            product?.user?.full_name }}</p>
+                        <p class="text-sm text-gray-900 mb-1"><span class="text-gray-500">Nơi trồng: </span>{{
+                            address }}</p>
+
+                        <div class="mt-4 flex flex-col lg:flex-row gap-4 justify-center items-center md:justify-start">
+                            <div class="flex items-center space-x-2">
+                                <button @click="decreaseQuantity"
+                                    class="btn btn-outline btn-primary w-[40px] h-[40px] p-0">
+                                    <Minus />
+                                </button>
+                                <input v-model.number="quantity" type="number" min="1"
+                                    class="text-sm input w-[100px] h-[40px] text-center" />
+                                <button @click="increaseQuantity"
+                                    class="btn btn-outline btn-primary w-[40px] h-[40px] p-0">
+                                    <Plus />
+                                </button>
+                            </div>
+                            <button @click="addProductToCart" :disabled="isAddingToCart"
+                                class="bg-green-600 text-white font-semibold w-52 py-2 rounded-full hover:bg-green-700 flex items-center justify-center">
+                                <span v-if="!isAddingToCart">Thêm vào giỏ hàng</span>
+                                <span v-else class="flex items-center">
+                                    <span class="loading loading-spinner loading-sm mr-2"></span> Đang thêm...
+                                </span>
+                            </button>
+                        </div>
                     </div>
                 </div>
-                <div v-for="log in logs.logs" :key="log.id">
-                    <div class="collapse collapse-arrow bg-base-100 border-green-500 border my-1.5">
-                        <input type="checkbox" />
-                        <div class="collapse-title font-semibold flex items-center ">
-                            {{
-                                log.created_at ? new Date(log.created_at).toLocaleString('vi-VN', {
-                                    hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric'
-                                })
-                                    : ''
-                            }} - {{ log.activity }}
+            </div>
+            <div class="w-11/12 flex flex-col max-w-7xl mt-5 gap-5">
+                <div class="w-full">
+                    <div class="flex justify-between items-center mb-4 gap-3">
+                        <h2 class="text-left text-xl font-bold text-green-800">Quá trình chăm sóc</h2>
+                        <div class="flex-1 h-[3px] bg-green-500"></div>
+                    </div>
+                    <div class="relative">
+                        <div v-if="logs.status === 'pending'"
+                            class="absolute inset-0 flex items-center justify-center bg-gray-100/20 z-10">
+                            <span class="loading loading-spinner loading-xl"></span>
                         </div>
-                        <div class="collapse-content text-sm">
-                            <div class="flex flex-col space-y-2 mb-2">
-                                <div v-if="log.fertilizer_used"><span class="font-semibold">Phân bón:</span> {{
-                                    log.fertilizer_used }}
+                    </div>
+                    <div v-for="log in logs.logs" :key="log.id">
+                        <div class="collapse collapse-arrow bg-base-100 border-green-500 border my-1.5">
+                            <input type="checkbox" />
+                            <div class="collapse-title font-semibold flex items-center ">
+                                {{
+                                    log.created_at ? new Date(log.created_at).toLocaleString('vi-VN', {
+                                        hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year:
+                                            'numeric'
+                                    })
+                                        : ''
+                                }} - {{ log.activity }}
+                            </div>
+                            <div class="collapse-content text-sm">
+                                <div class="flex flex-col space-y-2 mb-2">
+                                    <div v-if="log.fertilizer_used"><span class="font-semibold">Phân bón:</span> {{
+                                        log.fertilizer_used }}
+                                    </div>
+                                    <div v-if="log.pesticide_used"><span class="font-semibold">Thuốc bảo vệ thực
+                                            vật:</span>
+                                        {{
+                                            log.pesticide_used
+                                        }}</div>
+                                    <div v-if="log.notes"><span class="font-semibold">Ghi chú:</span> {{ log.notes
+                                        }}
+                                    </div>
                                 </div>
-                                <div v-if="log.pesticide_used"><span class="font-semibold">Thuốc bảo vệ thực vật:</span>
-                                    {{
-                                        log.pesticide_used
-                                    }}</div>
-                                <div v-if="log.notes"><span class="font-semibold">Ghi chú:</span> {{ log.notes }}</div>
-                            </div>
-                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-2">
-                                <NuxtImg v-if="log.image_url" :src="`${backendUrl}${log.image_url}`" alt="Hình ảnh"
-                                    class="w-full border border-gray-100 overflow-hidden object-cover aspect-video rounded-lg bg-gray-100" />
-                                <div v-else
-                                    class="flex justify-center items-center w-full aspect-video rounded-lg bg-gray-100">
-                                    Không có hình ảnh</div>
+                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-2">
+                                    <NuxtImg v-if="log.image_url" :src="`${backendUrl}${log.image_url}`" alt="Hình ảnh"
+                                        class="w-full border border-gray-100 overflow-hidden object-cover aspect-video rounded-lg bg-gray-100" />
+                                    <div v-else
+                                        class="flex justify-center items-center w-full aspect-video rounded-lg bg-gray-100">
+                                        Không có hình ảnh</div>
 
-                                <iframe v-if="log.video_url" class="w-full aspect-video rounded-lg"
-                                    :src="`https://www.youtube.com/embed/${log.video_url}`" frameborder="0"
-                                    allowfullscreen>
-                                </iframe>
-                                <div v-else
-                                    class="flex justify-center items-center w-full aspect-video rounded-lg bg-gray-100">
-                                    Không có video</div>
+                                    <iframe v-if="log.video_url" class="w-full aspect-video rounded-lg"
+                                        :src="`https://www.youtube.com/embed/${log.video_url}`" frameborder="0"
+                                        allowfullscreen>
+                                    </iframe>
+                                    <div v-else
+                                        class="flex justify-center items-center w-full aspect-video rounded-lg bg-gray-100">
+                                        Không có video</div>
+                                </div>
                             </div>
                         </div>
                     </div>
+                    <UiPagination class="mt-4" :links="logs.links" :meta="logs.meta"
+                        @page-change="handleLogsPageChange" />
                 </div>
-                <UiPagination class="mt-4" :links="logs.links" :meta="logs.meta" @page-change="handleLogsPageChange" />
-            </div>
-            <div class="w-full">
-                <div class="flex justify-between items-center mb-4 gap-3">
-                    <h2 class="text-left text-xl font-bold text-green-800">Sản phẩm khác</h2>
-                    <div class="flex-1 h-[3px] bg-green-500"></div>
-                    <NuxtLink to="/products" class="bg-green-600 text-white font-semibold px-5 py-1 rounded-full hover:bg-green-700">
-                        Xem tất cả
-                    </NuxtLink>
+                <div class="w-full">
+                    <div class="flex justify-between items-center mb-4 gap-3">
+                        <h2 class="text-left text-xl font-bold text-green-800">Sản phẩm khác</h2>
+                        <div class="flex-1 h-[3px] bg-green-500"></div>
+                        <NuxtLink to="/products"
+                            class="bg-green-600 text-white font-semibold px-5 py-1 rounded-full hover:bg-green-700">
+                            Xem tất cả
+                        </NuxtLink>
+                    </div>
+                    <ProductList :products="otherProducts.products" :meta="otherProducts.meta"
+                        :links="otherProducts.links" :status="otherProductsStatus"
+                        @page-change="handleProductsPageChange" />
                 </div>
-                <ProductList :products="otherProducts.products" :meta="otherProducts.meta" :links="otherProducts.links"
-                    :status="otherProductsStatus" @page-change="handleProductsPageChange" />
             </div>
         </div>
-        11
-        <pre>{{ farm?.address }}</pre>
-        11
+        <div v-else class="relative h-screen w-full flex items-center justify-center">
+            Sản phẩm không tồn tại
+        </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import { EyeIcon, ArrowLeft, ArrowRight } from 'lucide-vue-next'
+import { EyeIcon, ArrowLeft, ArrowRight, Trash, Plus, Minus } from 'lucide-vue-next'
+
 import type { Farm } from '~/types/farm'
 import type { Product, CultivationLog } from '~/types/product'
 import type { PaginationMeta, PaginationLinks } from '~/types/api'
+import { useToast } from 'vue-toastification';
+
 const route = useRoute()
 const slug = String(route.params.slug)
 const config = useRuntimeConfig()
 const placeholderImage = config.public.placeholderImage
 const backendUrl = config.public.backendUrl
+const toast = useToast();
 
 const { getProductBySlug, getProducts } = useProducts()
 const { getFarmById } = useFarms()
 const { getLogs } = useCultivationLogs()
 const { getFullAddressName } = useVietnamAddress()
+const { addCartItem } = useCart()
 const currentLogPage = ref(1)
 const perLogPage = 10
+const quantity = ref(1)
+const isAddingToCart = ref(false)
 
 const { data: productData, status: productStatus, error: productError } = await getProductBySlug(slug)
 const product = computed<Product | null>(() => Array.isArray(productData.value?.data) ? productData.value.data[0] : productData.value?.data || null)
@@ -184,7 +198,7 @@ const product = computed<Product | null>(() => Array.isArray(productData.value?.
 const farm = ref<Farm | null>(null)
 watch(product, async (newProduct) => {
     if (newProduct?.farm_id) {
-        const {data} = await getFarmById(Number(newProduct.farm_id))
+        const { data } = await getFarmById(Number(newProduct.farm_id))
         farm.value = data.value?.data || null
     }
 }, { immediate: true })
@@ -196,17 +210,7 @@ watch(farm, async (newFarm) => {
     }
 })
 // Lấy thông tin logs
-const logs = ref<{
-    logs: CultivationLog[];
-    meta: PaginationMeta | null;
-    links: PaginationLinks | null;
-    status: string;
-}>({
-    logs: [],
-    meta: null,
-    links: null,
-    status: 'pending',
-})
+const logs = ref<{ logs: CultivationLog[]; meta: PaginationMeta | null; links: PaginationLinks | null; status: string; }>({ logs: [], meta: null, links: null, status: 'pending', })
 
 watch(product, async (newProduct) => {
     if (newProduct) {
@@ -220,8 +224,6 @@ watch(product, async (newProduct) => {
     }
 }, { immediate: true })
 
-
-
 const { data: otherProductsData, status: otherProductsStatus } = await getProducts()
 
 const otherProducts = computed<{
@@ -234,27 +236,6 @@ const otherProducts = computed<{
     links: (otherProductsData.value?.links as PaginationLinks) ?? null,
 }));
 
-// Quản lý ảnh đang chọn
-const activeImageIndex = ref(0)
-const activeImageUrl = computed(() => {
-    const images = product.value?.images
-    if (!images || images.length === 0) return placeholderImage
-    return `${backendUrl}${images[activeImageIndex.value]?.image_url}` || placeholderImage
-})
-
-// Chuyển ảnh trước/sau
-function prevImage() {
-    if (product.value?.images && activeImageIndex.value > 0) {
-        activeImageIndex.value--
-    }
-}
-
-function nextImage() {
-    if (product.value?.images && activeImageIndex.value < product.value.images.length - 1) {
-        activeImageIndex.value++
-    }
-}
-
 const handleLogsPageChange = (page: number) => {
     currentLogPage.value = page
     getLogs(product.value?.id || -1, page, perLogPage)
@@ -262,5 +243,32 @@ const handleLogsPageChange = (page: number) => {
 
 const handleProductsPageChange = (page: number) => {
     getProducts(page)
+}
+
+const increaseQuantity = () => {
+    quantity.value++;
+}
+
+const decreaseQuantity = () => {
+    if (quantity.value > 1) {
+        quantity.value--;
+    }
+}
+
+
+const addProductToCart = async () => {
+    try {
+        if (product.value) {
+            isAddingToCart.value = true
+            await addCartItem(product.value.id, quantity.value)
+            toast.success('Đã thêm sản phẩm vào giỏ hàng!')
+        } else {
+            toast.error('Sản phẩm không tồn tại!')
+        }
+    } catch (error) {
+        toast.error('Có lỗi khi thêm sản phẩm vào giỏ hàng!')
+    } finally {
+        isAddingToCart.value = false
+    }
 }
 </script>

@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div v-if="productStatus === 'pending'" class="skeleton w-[650px] h-[280px] mx-auto rounded-lg" />
+        <div v-if="productStatus === 'pending'" class="skeleton w-[650px] h-[280px] rounded-lg" />
         <div v-else ref="labelRef"
             class="w-[650px] border-2 border-green-700 rounded-lg p-4 bg-white font-sans shadow-md relative overflow-hidden">
             <div class="absolute inset-0 flex items-center justify-center opacity-5 pointer-events-none">
@@ -30,9 +30,9 @@
                 </div>
             </div>
         </div>
+        <button @click="downloadLabel" class="mt-4 btn bg-green-700 text-white hover:bg-green-800 block">Tải xuống
+            nhãn</button>
     </div>
-    <button @click="downloadLabel" class="mt-4 btn bg-green-700 text-white hover:bg-green-800 block">Tải xuống
-        nhãn</button>
 </template>
 
 <script setup lang="ts">

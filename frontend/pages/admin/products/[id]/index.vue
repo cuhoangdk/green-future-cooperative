@@ -215,21 +215,6 @@ const backendUrl = runtimeConfig.public.backendUrl
 const status = ref<'idle' | 'pending' | 'success' | 'error'>('idle')
 const productId = Number(route.params.id)
 const primaryImageIndex = ref<number>(0)
-
-// Lấy thông tin sản phẩm
-const { data: productData } = await getProductById(productId)
-const product = computed<Product | null>(() => Array.isArray(productData.value?.data) ? productData.value.data[0] : productData.value?.data || null)
-
-// Gọi API để lấy dữ liệu
-const { data: usersData } = await getUsers()
-const users = computed<User[]>(() => Array.isArray(usersData.value?.data) ? usersData.value.data : usersData.value ? [usersData.value.data] : [])
-const { data: farmsData } = await searchFarms({ user_id: Number(product.value?.user_id || currentUser.value?.id) })
-const farms = computed<Farm[]>(() => Array.isArray(farmsData.value?.data) ? farmsData.value.data : farmsData.value ? [farmsData.value.data] : [])
-const { data: unitsData } = await getUnits()
-const units = computed<Unit[]>(() => Array.isArray(unitsData.value?.data) ? unitsData.value.data : unitsData.value ? [unitsData.value.data] : [])
-const { data: productCategoriesData } = await getProductCategories()
-const productCategories = computed<ProductCategory[]>(() => Array.isArray(productCategoriesData.value?.data) ? productCategoriesData.value.data : productCategoriesData.value ? [productCategoriesData.value.data] : [])
-
 // Khởi tạo form
 const form = ref({
     name: '',
@@ -249,11 +234,26 @@ const form = ref({
     product_prices: [] as Array<{ id?: number, quantity: string, price: string }>
 })
 
+
+// Lấy thông tin sản phẩm
+const { data: productData } = await getProductById(productId)
+const product = computed<Product | null>(() => Array.isArray(productData.value?.data) ? productData.value.data[0] : productData.value?.data || null)
+
+// Gọi API để lấy dữ liệu
+const { data: usersData } = await getUsers()
+const users = computed<User[]>(() => Array.isArray(usersData.value?.data) ? usersData.value.data : usersData.value ? [usersData.value.data] : [])
+const { data: farmsData } = await searchFarms({ user_id: Number(form.value.user_id) })
+const farms = computed<Farm[]>(() => Array.isArray(farmsData.value?.data) ? farmsData.value.data : farmsData.value ? [farmsData.value.data] : [])
+const { data: unitsData } = await getUnits()
+const units = computed<Unit[]>(() => Array.isArray(unitsData.value?.data) ? unitsData.value.data : unitsData.value ? [unitsData.value.data] : [])
+const { data: productCategoriesData } = await getProductCategories()
+const productCategories = computed<ProductCategory[]>(() => Array.isArray(productCategoriesData.value?.data) ? productCategoriesData.value.data : productCategoriesData.value ? [productCategoriesData.value.data] : [])
+
 // Cập nhật form từ dữ liệu sản phẩm
 watch(product, (newData) => {
     if (newData) {
         form.value.name = newData.name || ''
-        form.value.user_id = newData.user_id?.toString() || currentUser.value?.id || ''
+        form.value.user_id = newData.user_id?.toString() || ''
         form.value.farm_id = newData.farm_id?.toString() || ''
         form.value.unit_id = newData.unit.id?.toString() || ''
         form.value.category_id = newData.category_id?.toString() || ''

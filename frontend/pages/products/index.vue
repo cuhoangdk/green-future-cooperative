@@ -3,9 +3,10 @@
         <div class="w-11/12 flex flex-col max-w-7xl gap-2">
             <div>
                 <div class="flex flex-wrap gap-2 mt-7">
-                    <button v-for="category in categories" :key="category.id"
+                    <div v-if="categoriesStatus === 'pending'" v-for="n in 7" :key="n" class="skeleton rounded-full w-20 btn btn-sm"></div>
+                    <button v-else v-for="category in categories" :key="category?.id"
                         class="btn btn-outline btn-sm rounded-full text-[17px]">
-                        {{ category.name }}
+                        {{ category?.name }}
                     </button>
                 </div>
             </div>
@@ -30,11 +31,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
 import type { PaginationMeta, PaginationLinks } from '~/types/api'
-import type { Product } from '~/types/product'
+import type { Product, ProductCategory } from '~/types/product'
 
-const { getProducts } = useProducts()
+const { getProducts, searchProducts } = useProducts()
 const { getProductCategories } = useProductCategories()
 
 const perPage = 16
@@ -42,7 +42,7 @@ const currentPage = ref(1)
 const sortOrder = ref('newest')
 
 // State cho phân trang
-const { data, status, error } = await getProducts(currentPage.value, perPage, AuthType.Guest)
+const { data, status, error } = await searchProducts({}, AuthType.Guest)
 const products = computed<{
     products: Product[];
     meta: PaginationMeta | null;
@@ -55,14 +55,10 @@ const products = computed<{
 
 // State cho danh mục sản phẩm
 const { data: categoriesData, status: categoriesStatus, error: categoriesError } = await getProductCategories()
-const categories = computed(() => categoriesData.value?.data ?? [])
-
-
+const categories = computed<ProductCategory[]>(() => categoriesData.value?.data ?? [])
 
 const handleSortChange = () => {
 }
-
-
 
 const handleProductsPageChange = (page: number) => {
     getProducts(page, perPage, AuthType.Guest)

@@ -86,7 +86,7 @@
                 <div class="w-full md:w-1/2">
                     <label class="text-gray-700 font-semibold">Sản lượng dự kiến{{ units.find(unit => unit.id === Number(form.unit_id))?.name ? ` (${units.find(unit => unit.id === Number(form.unit_id))?.name})` : '' }}</label>
                     <input v-model="form.stock_quantity" type="number" step="0.1"
-                        class="input input-primary w-full mt-1" placeholder="300" />
+                        class="input input-primary w-full mt-1" placeholder="300" required/>
                 </div>
             </div>
 

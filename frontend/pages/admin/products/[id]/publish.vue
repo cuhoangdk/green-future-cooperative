@@ -231,15 +231,12 @@ const handleSubmit = async () => {
 
         const { error: productError } = await updateProduct(productId, formProductData)
         const { error: imageError } = await createImage(productId, formImageData)
-        let priceError = null
         if (form.value.pricing_type !== 'contact') {
-            const result = await createPrice(productId, formPriceData)
-            priceError = result.error
+            const {error} = await createPrice(productId, formPriceData)
+            if (error.value) throw new Error('Thêm giá mới thất bại')
         }
         if (productError.value) throw new Error('Thông tin sản phẩm không hợp lệ')
         if (imageError.value) throw new Error('Ảnh không hợp lệ')
-        if (priceError !== null) throw new Error('Giá không hợp lệ')
-
 
         toast.success('Mở bán thành công!')
         router.push(`/admin/products`)
