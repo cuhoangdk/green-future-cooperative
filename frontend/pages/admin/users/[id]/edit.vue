@@ -1,6 +1,9 @@
 <template>
     <div class="border border-gray-200 rounded-lg p-4 sm:p-5">
-        <form @submit.prevent="handleSubmit" class="space-y-6">
+        <div v-if="userStatus === 'pending'" class="flex justify-center items-center h-screen">
+            <span class="loading loading-spinner loading-lg"></span>
+        </div>
+        <form v-else @submit.prevent="handleSubmit" class="space-y-6">
             <!-- Phần 1: Thông tin cơ bản với avatar -->
             <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
                 <!-- Avatar Section -->
@@ -26,19 +29,22 @@
 
                     <!-- Thông tin nhận dạng -->
                     <div>
-                        <label class="text-gray-700 font-semibold block mb-1">Họ và tên <span class="text-red-500">*</span></label>
+                        <label class="text-gray-700 font-semibold block mb-1">Họ và tên <span
+                                class="text-red-500">*</span></label>
                         <input v-model="form.full_name" class="input input-bordered input-primary w-full"
                             placeholder="Nguyen Van A" required />
                     </div>
 
                     <div>
-                        <label class="text-gray-700 font-semibold block mb-1">Email <span class="text-red-500">*</span></label>
+                        <label class="text-gray-700 font-semibold block mb-1">Email <span
+                                class="text-red-500">*</span></label>
                         <input v-model="form.email" type="email" class="input input-bordered input-primary w-full"
                             placeholder="example@email.com" required />
                     </div>
 
                     <div>
-                        <label class="text-gray-700 font-semibold block mb-1">Số điện thoại <span class="text-red-500">*</span></label>
+                        <label class="text-gray-700 font-semibold block mb-1">Số điện thoại <span
+                                class="text-red-500">*</span></label>
                         <input v-model="form.phone_number" type="tel" class="input input-bordered input-primary w-full"
                             placeholder="0123-456-789" required />
                     </div>
@@ -55,7 +61,8 @@
 
                     <div>
                         <label class="text-gray-700 font-semibold block mb-1">Ngày sinh</label>
-                        <input v-model="form.date_of_birth" type="date" class="input input-bordered input-primary w-full" />
+                        <input v-model="form.date_of_birth" type="date"
+                            class="input input-bordered input-primary w-full" />
                     </div>
 
                     <div>
@@ -133,7 +140,8 @@
                     <!-- Bank Name -->
                     <div>
                         <label class="text-gray-700 font-semibold block mb-1">Tên ngân hàng</label>
-                        <input v-model="form.bank_name" class="input input-bordered input-primary w-full" placeholder="Techcombank" />
+                        <input v-model="form.bank_name" class="input input-bordered input-primary w-full"
+                            placeholder="Techcombank" />
                     </div>
 
                     <!-- Bank Account Number -->
@@ -216,110 +224,91 @@ const form = ref({
     }
 });
 
-const { data: userData, refresh } = await getUserByCode(route.params.id as string);
-const user = computed<User | null>(() => Array.isArray(userData.value?.data) ? userData.value.data[0] : userData.value?.data || null)
-
-watch(user, (newVal) => {
-    if (newVal) {
-        form.value = {
-            full_name: newVal.full_name,
-            email: newVal.email,
-            phone_number: newVal.phone_number,
-            date_of_birth: newVal.date_of_birth ? new Date(newVal.date_of_birth).toISOString().split('T')[0] : '',
-            gender: newVal.gender,
-            is_super_admin: newVal.is_super_admin,
-            is_banned: newVal.is_banned,
-            bank_name: newVal.bank_name,
-            bank_account_number: newVal.bank_account_number,
-            bio: newVal.bio,
-            avatar_url: newVal.avatar_url ? backEndUrl + newVal.avatar_url : defaultAvatar,
-            address: {
-                id: newVal.address?.id || 0,
-                province: newVal.address?.province || '',
-                district: newVal.address?.district || '',
-                ward: newVal.address?.ward || '',
-                street_address: newVal.address?.street_address || ''
-            }
-        }
-    }
-});
-
-watch(user, async (newVal) => {
-    if (newVal) {
-        await fetchProvinces();
-        if (form.value.address.province) {
-            await fetchDistricts(form.value.address.province);
-        }
-        if (form.value.address.district) {
-            await fetchWards(form.value.address.district);
-        }
-    }
-});
-
-// Hàm kích hoạt input file khi click vào ảnh
+// Xử lý chọn file ảnh
 const triggerFileInput = () => {
-    if (fileInput.value) {
-        fileInput.value.click();
-    }
+    fileInput.value?.click();
 };
 
-// Xử lý khi file được chọn
 const handleFileChange = (event: Event) => {
     const target = event.target as HTMLInputElement;
-    const file = target.files?.[0];
-    if (file) {
-        selectedFile.value = file; // Lưu file để upload
-        form.value.avatar_url = URL.createObjectURL(file); // Hiển thị tạm thời
+    if (target.files && target.files[0]) {
+        selectedFile.value = target.files[0];
+        form.value.avatar_url = URL.createObjectURL(target.files[0]);
     }
 };
+
+const { data: userData, status: userStatus, refresh } = await getUserByCode(route.params.id as string);
+const user = computed(() => { return Array.isArray(userData.value?.data) ? userData.value.data[0] : userData.value?.data || null; });
+watch(() => user.value, async (newUser) => {
+    if (newUser) {
+        form.value = {
+            full_name: newUser.full_name,
+            email: newUser.email,
+            phone_number: newUser.phone_number,
+            date_of_birth: newUser.date_of_birth ? new Date(newUser.date_of_birth).toISOString().split('T')[0] : '',
+            gender: newUser.gender,
+            is_super_admin: newUser.is_super_admin,
+            is_banned: newUser.is_banned,
+            bank_name: newUser.bank_name,
+            bank_account_number: newUser.bank_account_number,
+            bio: newUser.bio,
+            avatar_url: newUser.avatar_url ? backEndUrl + newUser.avatar_url : defaultAvatar,
+            address: {
+                id: newUser.address?.id || 0,
+                province: newUser.address?.province || '',
+                district: newUser.address?.district || '',
+                ward: newUser.address?.ward || '',
+                street_address: newUser.address?.street_address || ''
+            }
+        }
+        await fetchDistricts(user.value.address.province);
+        await fetchWards(user.value.address.district);
+
+    }
+}, { immediate: true })
+
+await fetchProvinces();
+
 
 // Xử lý submit form
 const handleSubmit = async () => {
     try {
         status.value = 'pending';
-        // Tạo FormData để gửi dữ liệu multipart
         const formData = new FormData();
 
-        // Append form fields with type checking
-        if (form.value.full_name) formData.append('full_name', form.value.full_name);
-        if (form.value.email) formData.append('email', form.value.email);
-        if (form.value.phone_number) formData.append('phone_number', form.value.phone_number);
-        if (form.value.date_of_birth) formData.append('date_of_birth', form.value.date_of_birth.toString());
-        if (form.value.gender) formData.append('gender', form.value.gender);
+        if (form.value.full_name) {formData.append('full_name', form.value.full_name);}
+        if (form.value.email) { formData.append('email', form.value.email);}
+        if (form.value.phone_number) {formData.append('phone_number', form.value.phone_number);}
+        if (form.value.date_of_birth) {formData.append('date_of_birth', form.value.date_of_birth.toString());}
+        if (form.value.gender) {formData.append('gender', form.value.gender);}
         formData.append('is_super_admin', form.value.is_super_admin ? '1' : '0');
         formData.append('is_banned', form.value.is_banned ? '1' : '0');
-        if (form.value.bank_name) formData.append('bank_name', form.value.bank_name);
-        if (form.value.bank_account_number) formData.append('bank_account_number', form.value.bank_account_number);
-        if (form.value.bio) formData.append('bio', form.value.bio);
+        if (form.value.bank_name) {formData.append('bank_name', form.value.bank_name);}
+        if (form.value.bank_account_number) {formData.append('bank_account_number', form.value.bank_account_number);}
+        if (form.value.bio) {formData.append('bio', form.value.bio);}
 
-        // Thêm file avatar nếu có
+        if (form.value.address) {
+            // Thêm address
+            formData.append('address[province]', form.value.address.province.toString() || '');
+            formData.append('address[district]', form.value.address.district.toString() || '');
+            formData.append('address[ward]', form.value.address.ward.toString() || '');
+            formData.append('address[street_address]', form.value.address.street_address.toString() || '');
+        }
+
         if (selectedFile.value) {
             formData.append('avatar_url', selectedFile.value);
         }
 
-        // Thêm address với type checking
-        if (form.value.address) {
-            if (form.value.address.province) formData.append('address[province]', form.value.address.province.toString());
-            if (form.value.address.district) formData.append('address[district]', form.value.address.district.toString());
-            if (form.value.address.ward) formData.append('address[ward]', form.value.address.ward.toString());
-            if (form.value.address.street_address) formData.append('address[street_address]', form.value.address.street_address);
-        }
-
-        // Gửi request với FormData
-        const { error } = await updateUser(
-            Number(user?.value?.id),
-            formData
-        );
-
+        const { error } = await updateUser(user.value?.id, formData);
         if (error.value) {
             throw new Error(error.value.message);
         }
 
-        toast.success('Cập nhật thông tin người dùng thành công!');
+        toast.success('Cập nhật thông tin thành viên thành công!');
         refresh();
         router.push('/admin/users');
     } catch (error: any) {
-        toast.error(error.message || 'Cập nhật thông tin người dùng thất bại!');
+        toast.error(error.message || 'Cập nhật thông tin thành viên thất bại!');
     } finally {
         status.value = 'idle';
     }

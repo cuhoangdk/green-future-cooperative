@@ -23,35 +23,35 @@ class UpdateUserRequest extends FormRequest
             'date_of_birth' => 'sometimes|date|before:today',
             'address' => 'sometimes|array',
             'address.province' => [
-                'sometimes',
+                'nullable',
                 'string',
                 function ($attribute, $value, $fail) {
-                    if (!LocationHelper::isValidProvince($value)) {
+                    if ($value && !LocationHelper::isValidProvince($value)) {
                         $fail('Mã tỉnh không hợp lệ.');
                     }
                 },
             ],
             'address.district' => [
-                'sometimes',
+                'nullable',
                 'string',
                 function ($attribute, $value, $fail) {
                     $province = $this->input('address.province');
-                    if (!$province || !LocationHelper::isValidDistrict($province, $value)) {
+                    if ($value && (!$province || !LocationHelper::isValidDistrict($province, $value))) {
                         $fail('Mã quận/huyện không hợp lệ.');
                     }
                 },
             ],
             'address.ward' => [
-                'sometimes',
+                'nullable',
                 'string',
                 function ($attribute, $value, $fail) {
                     $district = $this->input('address.district');
-                    if (!$district || !LocationHelper::isValidWard($district, $value)) {
+                    if ($value && (!$district || !LocationHelper::isValidWard($district, $value))) {
                         $fail('Mã phường/xã không hợp lệ.');
                     }
                 },
             ],
-            'address.street_address' => 'sometimes|string|max:500',
+            'address.street_address' => 'nullable|string|max:500',
             'bank_account_number' => 'nullable|string|max:20',
             'bank_name' => 'nullable|string|max:255',
             'avatar_url' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
