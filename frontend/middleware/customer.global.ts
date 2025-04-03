@@ -5,6 +5,11 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
   if (to.path.startsWith('/admin')) {
     return
   }
+
+  // Skip middleware when running on the server
+  if (import.meta.server) {
+    return
+  }
   
   const { isAuthenticated, accessToken, refreshToken, refreshAccessToken, fetchCurrentCustomer } = useCustomerAuth()
 
