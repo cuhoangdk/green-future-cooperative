@@ -76,7 +76,6 @@ class OrderRepository implements OrderRepositoryInterface
     public function createForCustomer(?int $customerId = null, array $data)
     {
         return DB::transaction(function () use ($customerId, $data) {
-            // Nếu không có customer_id (khách vãng lai), yêu cầu thông tin khách hàng từ $data
             if (!$customerId) {
                 if (empty($data['full_name']) || empty($data['phone_number']) || empty($data['province']) || 
                     empty($data['district']) || empty($data['ward']) || empty($data['street_address'])) {
@@ -87,10 +86,8 @@ class OrderRepository implements OrderRepositoryInterface
                 }
             }
 
-            // Lấy danh sách items
             if ($customerId) {
-                // Trường hợp đăng nhập: Lấy từ giỏ hàng
-                $cartItems = CartItem::where('customer_id', $customerId)->with('product')->get();
+                $cartItems = CartItem::where('customer_id', $customerId)->with('product.user', 'product.unit')->get();
                 if ($cartItems->isEmpty()) {
                     throw new \Exception('Cart is empty');
                 }
@@ -110,9 +107,8 @@ class OrderRepository implements OrderRepositoryInterface
                 }
                 $items = $cartItems;
             } else {
-                // Trường hợp khách vãng lai: Lấy từ $data['items']
                 $items = collect($data['items'])->map(function ($itemData) {
-                    $product = Product::findOrFail($itemData['product_id']);
+                    $product = Product::with('user', 'unit')->findOrFail($itemData['product_id']);
                     if ($product->status !== 'selling') {
                         throw new \Exception("Product {$product->name} is not available for sale (current status: {$product->status}).");
                     }
@@ -132,7 +128,6 @@ class OrderRepository implements OrderRepositoryInterface
                 });
             }
 
-            // Xử lý thông tin địa chỉ
             if ($customerId && isset($data['customer_address_id'])) {
                 $customerAddress = CustomerAddress::where('customer_id', $customerId)
                     ->with('address')
@@ -159,32 +154,37 @@ class OrderRepository implements OrderRepositoryInterface
                 ];
             }
 
-            // Tạo mã đơn hàng
             $timestamp = now()->format('YmdHis');
             $randomSequence = str_pad(rand(0, 9999), 4, '0', STR_PAD_LEFT);
             $orderCode = 'ORD' . $timestamp . $randomSequence;
 
-            // Tạo dữ liệu đơn hàng
             $orderData = array_merge($addressData, [
                 'order_code' => $orderCode,
-                'customer_id' => $customerId, // Có thể là null cho khách vãng lai
+                'customer_id' => $customerId,
                 'status' => 'pending',
                 'total_price' => $items->sum(fn($item) => $item->quantity * $item->calculated_price),
                 'shipping_fee' => $data['shipping_fee'] ?? 0,
                 'final_total_amount' => $items->sum(fn($item) => $item->quantity * $item->calculated_price) + ($data['shipping_fee'] ?? 0),
                 'notes' => $data['notes'] ?? null,
                 'expected_delivery_date' => $data['expected_delivery_date'] ?? null,
-                'email' => $customerId ? null : ($data['email'] ?? null), // Lưu email cho khách vãng lai
+                'email' => $customerId ? null : ($data['email'] ?? null),
             ]);
 
             $order = $this->model->create($orderData);
 
-            // Tạo items cho đơn hàng
             foreach ($items as $item) {
                 $totalItemPrice = $item->quantity * $item->calculated_price;
+                $productSnapshot = [
+                    'id' => $item->product->id,
+                    'product_code' => $item->product->product_code,
+                    'product_name' => $item->product->name,
+                    'user_full_name' => $item->product->user->full_name ?? null,
+                    'unit' => $item->product->unit->name ?? null,
+                    'price' => $item->calculated_price,
+                ];
                 $order->items()->create([
                     'product_id' => $item->product_id,
-                    'product_snapshot' => $item->product->toArray(),
+                    'product_snapshot' => $productSnapshot,
                     'quantity' => $item->quantity,
                     'price' => $item->calculated_price,
                     'total_item_price' => $totalItemPrice,
@@ -208,7 +208,7 @@ class OrderRepository implements OrderRepositoryInterface
     {
         return DB::transaction(function () use ($customerId, $data) {
             $items = collect($data['items'])->map(function ($item) {
-                $product = Product::with('unit')->findOrFail($item['product_id']);
+                $product = Product::with('user', 'unit')->findOrFail($item['product_id']);
                 
                 if ($product->status !== 'selling') {
                     throw new \Exception("Product {$product->name} is not available for sale (current status: {$product->status}).");
@@ -280,9 +280,17 @@ class OrderRepository implements OrderRepositoryInterface
 
             foreach ($items as $item) {
                 $totalItemPrice = $item->quantity * $item->calculated_price; // Tính total_item_price
+                $productSnapshot = [
+                    'id' => $item->product->id,
+                    'product_code' => $item->product->product_code,
+                    'product_name' => $item->product->name,
+                    'user_full_name' => $item->product->user->full_name ?? null,
+                    'unit' => $item->product->unit->name ?? null,
+                    'price' => $item->calculated_price,
+                ];
                 $order->items()->create([
                     'product_id' => $item->product_id,
-                    'product_snapshot' => $item->product->toArray(),
+                    'product_snapshot' => $productSnapshot,
                     'quantity' => $item->quantity,
                     'price' => $item->calculated_price,
                     'total_item_price' => $totalItemPrice, // Đảm bảo lưu giá trị đúng
