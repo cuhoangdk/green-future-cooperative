@@ -7,7 +7,7 @@ use App\Http\Requests\Order\IndexOrderRequest;
 use App\Http\Requests\Order\CancelOrderRequest;
 use App\Http\Requests\Order\UpdateOrderRequest;
 use App\Http\Requests\Order\StoreOrderRequest;
-use App\Http\Requests\SearchOrderRequest;
+use App\Http\Requests\Order\SearchOrderRequest;
 use App\Http\Resources\OrderResource;
 use App\Repositories\Contracts\OrderRepositoryInterface;
 use App\Repositories\Contracts\NotificationRepositoryInterface;
