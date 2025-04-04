@@ -13,6 +13,7 @@ class UpdateCustomerRequest extends FormRequest
             'full_name' => 'sometimes|string|max:255',
             'phone_number' => 'sometimes|string|max:20|unique:users,phone_number|unique:customers,phone_number,' . $this->id,
             'gender' => 'sometimes|string|in:male,female,other',
+            'is_banned' => 'sometimes|boolean',
             'date_of_birth' => 'nullable|date',
             'avatar_url' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ];
