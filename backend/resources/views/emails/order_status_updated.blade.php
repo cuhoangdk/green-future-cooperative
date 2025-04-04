@@ -67,7 +67,7 @@
             @foreach ($order->items as $item)
                 <tr>
                     <td>{{ $item->product_id }}</td>
-                    <td><a href="{{ config('app.url') }}/products/{{ $item->product_id }}">{{ $item->product_snapshot['name'] }}</a></td>
+                    <td><a href="{{ config('app.url') }}/products/{{ $item->product_id }}">{{ $item->product_snapshot['product_name'] }}</a></td>
                     <td>{{ $item->quantity }}</td>
                     <td>{{ number_format($item->price, 0) }} VND</td>
                     <td>{{ number_format($item->total_item_price, 0) }} VND</td>
