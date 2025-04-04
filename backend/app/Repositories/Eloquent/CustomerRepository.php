@@ -55,7 +55,7 @@ class CustomerRepository implements CustomerRepositoryInterface
             ->orderBy($sortBy, $sortDirection)
             ->paginate($perPage);
     }
-    
+
     public function getTrashedById($id)
     {
         return $this->model->with(['addresses.address'])->onlyTrashed()->find($id);
@@ -82,7 +82,7 @@ class CustomerRepository implements CustomerRepositoryInterface
     }
     public function changePassword(int $id, array $data): bool
     {
-        $customer = $this->model->find($id);       
+        $customer = $this->model->find($id);
 
         return $customer->update(['password' => $data['password']]);
     }
@@ -93,7 +93,7 @@ class CustomerRepository implements CustomerRepositoryInterface
         array $filters = []
     ) {
         $query = $this->model->query();
-    
+
         $query->when($filters['search'] ?? null, function (Builder $query, $search) {
             $query->where(function (Builder $q) use ($search) {
                 $q->where('full_name', 'like', "%{$search}%")
@@ -101,36 +101,40 @@ class CustomerRepository implements CustomerRepositoryInterface
                     ->orWhere('email', 'like', "%{$search}%")
                     ->orWhereHas('addresses', function (Builder $q) use ($search) {
                         $q->whereHas('address', function (Builder $q) use ($search) {
-                              $q->where('street_address', 'like', "%{$search}%");
-                          });
+                            $q->where('street_address', 'like', "%{$search}%");
+                        });
                     });
             });
         });
-    
+
+        $query->when(isset($filters['is_banned']), function ($query) use ($filters) {
+            $query->where('is_banned', (int) $filters['is_banned']);
+        });
+
         $query->when(isset($filters['province']), function ($query) use ($filters) {
             $query->whereHas('addresses.address', function (Builder $q) use ($filters) {
                 $q->where('province', $filters['province']);
             });
         });
-    
+
         $query->when(isset($filters['district']), function ($query) use ($filters) {
             $query->whereHas('addresses.address', function (Builder $q) use ($filters) {
                 $q->where('district', $filters['district']);
             });
         });
-    
+
         $query->when(isset($filters['ward']), function ($query) use ($filters) {
             $query->whereHas('addresses.address', function (Builder $q) use ($filters) {
                 $q->where('ward', $filters['ward']);
             });
         });
-    
+
         $query->with(['addresses.address'])->orderBy(
             $sortBy,
             $sortDirection
         );
-    
+
         return $query->paginate($perPage);
     }
-    
+
 }

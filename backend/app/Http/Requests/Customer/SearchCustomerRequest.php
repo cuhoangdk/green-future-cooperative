@@ -15,9 +15,10 @@ class SearchCustomerRequest extends FormRequest
     {
         return [
             'per_page'       => 'nullable|integer|min:1|max:100', 
-            'sort_by'        => 'nullable|string|in:full_name, email, phone_number,created_at,updated_at', 
+            'sort_by'        => 'nullable|string|in:full_name,email,phone_number,created_at,updated_at', 
             'sort_direction' => 'nullable|string|in:asc,desc', 
             'search'         => 'nullable|string|max:255',
+            'is_banned' => 'sometimes|boolean',
             'province' => 'nullable|string|max:255',
             'district' => 'nullable|string|max:255',
             'ward' => 'nullable|string|max:255',        
