@@ -213,8 +213,8 @@ class UserRepository implements UserRepositoryInterface
                 $q->where('full_name', 'like', "%{$search}%")
                     ->orWhere('phone_number', 'like', "%{$search}%")
                     ->orWhere('email', 'like', "%{$search}%")
-                    ->orWhere('usercode', 'like', "%{$search}%")
-                    ->orWhere('street_address', 'like', "%{$search}%");
+                    ->orWhere('usercode', 'like', "%{$search}%");
+                    
             });
         });
 

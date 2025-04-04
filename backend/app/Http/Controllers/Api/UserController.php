@@ -182,7 +182,9 @@ class UserController extends Controller
 
         $searchKeyword = $request->input('search'); // Từ khóa tìm kiếm
 
-        $users = $this->userRepository->getSearchUsers($sortBy, $sortDirection, $perPage, $searchKeyword)->appends(request()->query());
+        $filters = ['search' => $searchKeyword];
+
+        $users = $this->userRepository->getSearchUsers($sortBy, $sortDirection, $perPage, $filters)->appends(request()->query());
 
         return UserResource::collection($users);
     }
