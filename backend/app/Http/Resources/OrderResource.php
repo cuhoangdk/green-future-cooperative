@@ -19,10 +19,11 @@ class OrderResource extends JsonResource
         $user = auth('api_users')->user();
         $isSuperAdmin = $user && $user->is_super_admin;
 
-        // Thêm trường items với message kiểu bool
+        // Thêm trường items với message kiểu bool, không kèm theo product
         $data['items'] = collect($data['items'])->map(function ($item) use ($user, $isSuperAdmin) {
             $belongsToCurrentUser = $user && isset($item['product']['user_id']) && $item['product']['user_id'] === $user->id;
             $item['flag'] = !$isSuperAdmin && !$belongsToCurrentUser; // true nếu không thuộc về user hiện tại và không phải super_admin
+            unset($item['product']); // Loại bỏ trường product
             return $item;
         })->all();
 
