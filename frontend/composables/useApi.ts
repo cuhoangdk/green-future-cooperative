@@ -1,4 +1,5 @@
 import type { ApiResponse } from '../types/api'
+import { watch } from 'vue';
 
 // Định nghĩa enum cho authType
 export enum AuthType {
@@ -36,7 +37,7 @@ export const useApi = () => {
     let token: string | null = null
 
     // Xử lý khác nhau cho client và server side
-    if (process.client) {
+    if (import.meta.client) {
       // Client-side: lấy từ cookie browser
       if (authType === AuthType.Customer) {
         token = useCookie('customer_access_token', { maxAge: 7200 }).value || null
@@ -44,7 +45,7 @@ export const useApi = () => {
       if (authType === AuthType.User) {
         token = useCookie('user_access_token', { maxAge: 7200 }).value || null
       }
-    } else if (process.server) {
+    } else if (import.meta.server) {
       // Server-side: lấy từ request headers
       const cookieHeaders = useRequestHeaders(['cookie'])
       
@@ -78,21 +79,16 @@ export const useApi = () => {
 
     const url = `${baseURL}${endpoint}`
     
-    // Thêm các options để debug
-    const fetchOptions = {
-      method,
-      headers,
-      body: body instanceof FormData ? body : body ? JSON.stringify(body) : undefined,
-      query: params,
-    }
-    
-    // Có thể log để debug
-    // console.log(`Fetching ${method} ${url}`, { headers, isClient: process.client })
-    
     const { data, status, error, refresh } = await useAsyncData(
-      `${method}-${endpoint}-${JSON.stringify(params)}`, // Thêm params vào key để tránh cache sai
-      () => $fetch<ApiResponse<T>>(url, fetchOptions),
-      { lazy, server }
+      `${method}-${endpoint}`,
+      () =>
+        $fetch<ApiResponse<T>>(url, {
+          method,
+          headers,
+          body: body instanceof FormData ? body : body ? JSON.stringify(body) : undefined,
+          query: params,
+        }),
+      { lazy }
     )
 
     return { data, status, error, refresh }
