@@ -19,9 +19,31 @@ export interface Order {
     notes?: string;
     admin_note?: string;
     cancelled_reason?: string;
-    cancelled_at?: Date;
+    cancelled_at?: string;
     cancelled_by?: string;
-    expected_delivery_date?: Date;
-    created_at: Date;
-    updated_at: Date;
+    expected_delivery_date?: string;
+    items: OrderItem[];
+    created_at: string;
+    updated_at: string;
+}
+
+export interface OrderItem {
+    id: number;
+    order_id: number;
+    product_id: number;
+    product_snapshot: Product_Snapshot;
+    quantity: number;
+    total_item_price: number;
+    created_at: string;
+    updated_at: string;
+    flag: boolean;
+}
+
+export interface Product_Snapshot {
+    id: number;
+    product_code: string;
+    product_name: string;
+    user_full_name?: string | null;
+    unit: string;
+    price: string;
 }

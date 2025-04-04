@@ -19,9 +19,9 @@ export interface Post {
     meta_description: string;
     views: number;
     published_at: string;
-    created_at: Date;
-    updated_at: Date;
-    deleted_at: Date | null;
+    created_at: string;
+    updated_at: string;
+    deleted_at: string | null;
 }
 
 export interface PostCategory {
@@ -30,7 +30,7 @@ export interface PostCategory {
     slug: string;
     description: string;
     is_active: boolean;
-    created_at: Date;
-    updated_at: Date;
-    deleted_at: Date | null;
+    created_at: string;
+    updated_at: string;
+    deleted_at: string | null;
 }
