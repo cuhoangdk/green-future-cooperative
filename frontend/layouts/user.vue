@@ -125,7 +125,7 @@
                 </header>
 
                 <!-- Page Content -->
-                <div class="p-4">
+                <div>
                     <slot />
                 </div>
             </div>
