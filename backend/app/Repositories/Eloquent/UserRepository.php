@@ -177,7 +177,9 @@ class UserRepository implements UserRepositoryInterface
                     ->orWhere('phone_number', 'like', "%{$search}%")
                     ->orWhere('email', 'like', "%{$search}%")
                     ->orWhere('usercode', 'like', "%{$search}%")
-                    ->orWhere('street_address', 'like', "%{$search}%");
+                    ->orwhereHas('address', function (Builder $q) use ($search) {
+                        $q->where('street_address', 'like', "%{$search}%");
+                    });
             });
         });
        
@@ -185,10 +187,23 @@ class UserRepository implements UserRepositoryInterface
         $query->when(isset($filters['is_banned']), fn($query) => $query->where('is_banned', $filters['is_banned']));
 
         // Lọc theo địa phương (province, district, ward phải là số)
-        $query->when(isset($filters['province']), fn($query) => $query->where('province', $filters['province']));
-        $query->when(isset($filters['district']), fn($query) => $query->where('district', $filters['district']));
-        $query->when(isset($filters['ward']), fn($query) => $query->where('ward', $filters['ward']));
-
+        $query->when(isset($filters['province']), function ($query) use ($filters) {
+            $query->whereHas('address', function (Builder $q) use ($filters) {
+                $q->where('province', $filters['province']);
+            });
+        });
+    
+        $query->when(isset($filters['district']), function ($query) use ($filters) {
+            $query->whereHas('address', function (Builder $q) use ($filters) {
+                $q->where('district', $filters['district']);
+            });
+        });
+    
+        $query->when(isset($filters['ward']), function ($query) use ($filters) {
+            $query->whereHas('address', function (Builder $q) use ($filters) {
+                $q->where('ward', $filters['ward']);
+            });
+        });
         $query->orderBy(
             $sortBy,
             $sortDirection
