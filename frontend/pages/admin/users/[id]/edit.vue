@@ -1,5 +1,5 @@
 <template>
-    <div class="border border-gray-200 rounded-lg p-4 sm:p-5">
+    <div class="p-4">
         <div v-if="userStatus === 'pending'" class="flex justify-center items-center h-screen">
             <span class="loading loading-spinner loading-lg"></span>
         </div>

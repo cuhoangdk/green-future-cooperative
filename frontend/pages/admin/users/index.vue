@@ -1,116 +1,58 @@
 <template>
-    <div class="border border-gray-200 rounded-lg">
-        <!-- Header -->
-        <div class="flex justify-between items-center border-gray-200 px-3 pt-2">
-            <h1 class="text-xl font-bold text-gray-800">Danh sách người dùng</h1>
-            <button @click="$router.push('/admin/users/create')" class="btn btn-sm btn-secondary">
-                <Plus class="w-3 h-3" /> Thêm người dùng
+    <div>
+        <div class="flex flex-col md:flex-row justify-between items-start gap-3 border-gray-200 px-3 py-4">
+            <div class="flex flex-col w-full md:flex-row gap-2">
+                <div class="relative w-full md:w-auto">
+                    <Search class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 z-10 w-5 h-5" />
+                    <input v-model="searchQuery" type="search" placeholder="Tìm kiếm khách hàng..."
+                        class="input input-sm input-primary w-full pl-10" @input="debouncedSearch" />
+                </div>
+                <div class="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
+                    <select v-model="selectedRole" class="select select-sm select-primary w-full sm:w-[150px]"
+                        @change="search">
+                        <option value="">Tất cả vai trò</option>
+                        <option value="admin">Quản trị viên</option>
+                        <option value="user">Người dùng</option>
+                    </select>
+                    <select v-model="selectedStatus" class="select select-sm select-primary w-full sm:w-[150px]"
+                        @change="search">
+                        <option value="">Tất cả trạng thái</option>
+                        <option value="active">Hoạt động</option>
+                        <option value="inactive">Không hoạt động</option>
+                    </select>
+                    <select v-model="sortBy" class="select select-sm select-primary w-full sm:w-[150px]"
+                        @change="search">
+                        <option value="">Sắp xếp theo</option>
+                        <option value="created_at+desc">Mới nhất</option>
+                        <option value="created_at+asc">Cũ nhất</option>
+                        <option value="full_name">Theo tên</option>
+                        <option value="email">Theo email</option>
+                    </select>
+                </div>
+            </div>
+            <button @click="$router.push('/admin/users/create')" class="btn btn-sm btn-primary w-full md:w-auto">
+                <Plus class="w-5 h-5" /> Thêm
             </button>
         </div>
 
-        <!-- Filters -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-2 px-3 py-3">
-            <div class="relative">
-                <Search class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 z-10 w-5 h-5" />
-                <input v-model="searchQuery" type="search" placeholder="Tìm kiếm người dùng..."
-                    class="input input-sm input-primary w-full pl-10" @input="debouncedSearch" />
-            </div>
-            <select v-model="selectedRole" class="select select-sm select-primary" @change="search">
-                <option value="">Tất cả vai trò</option>
-                <option value="admin">Quản trị viên</option>
-                <option value="user">Người dùng</option>
-                <option value="customer">Khách hàng</option>
-            </select>
-            <select v-model="selectedStatus" class="select select-sm select-primary" @change="search">
-                <option value="">Tất cả trạng thái</option>
-                <option value="active">Hoạt động</option>
-                <option value="inactive">Không hoạt động</option>
-            </select>
-            <select v-model="sortBy" class="select select-sm select-primary" @change="search">
-                <option value="">Sắp xếp theo</option>
-                <option value="created_at+desc">Mới nhất</option>
-                <option value="created_at+asc">Cũ nhất</option>
-                <option value="full_name">Theo tên</option>
-                <option value="email">Theo email</option>
-            </select>
-        </div>
+        <!-- Desktop Table View -->
+        <TableUser :users="users.users" :on-toggle-status="handleToggleStatus" :on-edit="handleEdit"
+            :on-delete="handleDeleteUser" />
 
-        <!-- Table -->
-        <div class="w-full max-w-[90vw] overflow-x-auto">
-            <table class="table w-full border-collapse bg-white border border-gray-200">
-                <thead>
-                    <tr class="bg-gray-100 text-gray-700">
-                        <th class="py-2 w-[5%]"></th>
-                        <th class="py-2 w-[25%] text-left">Họ tên</th>
-                        <th class="py-2 w-[25%] text-left">Email</th>
-                        <th class="py-2 w-[15%] text-left">Số điện thoại</th>
-                        <th class="py-2 w-[15%] text-left">Trạng thái</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <template v-for="user in users.users" :key="user.id">
-                        <tr class="border-b border-gray-100 hover:bg-gray-200 cursor-pointer"
-                            @click="toggleRow(user.id)"
-                            :class="{ 'bg-gray-200 hover:bg-gray-200': expandedRows.has(user.id) }">
-                            <td class="py-2">
-                                <component :is="expandedRows.has(user.id) ? ChevronDown : ChevronRight"
-                                    class="text-green-600" />
-                            </td>
-                            <td class="py-2">{{ user.full_name }}</td>
-                            <td class="py-2">{{ user.email }}</td>
-                            <td class="py-2">{{ user.phone_number }}</td>
-                            <td class="py-2">
-                                <span class="px-2 py-1 rounded-full text-xs" :class="{
-                                    'bg-green-100 text-green-800': !user.is_banned,
-                                    'bg-red-100 text-red-800': user.is_banned
-                                }">
-                                    {{ !user.is_banned ? 'Hoạt động' : 'Đã bị cấm' }}
-                                </span>
-                            </td>
-                        </tr>
-                        <tr v-if="expandedRows.has(user.id)" class="bg-gray-50">
-                            <td colspan="7" class="p-3">
-                                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
-                                    <div>
-                                        <p class="font-semibold">Địa chỉ:</p>
-                                        <p class="text-gray-600">{{ addressData[user.id] ? addressData[user.id] : (user.address?.street_address || 'Chưa cập nhật') }}</p>
-                                    </div>
-                                    <div>
-                                        <p class="font-semibold">Ngày tham gia:</p>
-                                        <p class="text-gray-600">{{ new Date(user.created_at).toLocaleString('vi-VN') }}</p>
-                                    </div>
-                                    <div>
-                                        <p class="font-semibold">Cập nhật lúc:</p>
-                                        <p class="text-gray-600">{{ new Date(user.updated_at).toLocaleString('vi-VN') }}</p>
-                                    </div>
-                                </div>
-                                <div class="flex space-x-3 mt-4">
-                                    <button @click.stop="handleDeleteUser(user.id)"
-                                        class="btn btn-sm btn-error px-4">Xóa</button>
-                                    <button @click.stop="$router.push(`/admin/users/${user.usercode}/edit`)"
-                                        class="btn btn-sm btn-primary px-4">Sửa</button>
-                                    <button @click.stop="handleToggleStatus(user)"
-                                        class="btn btn-sm" :class="user.is_banned ? 'btn-success' : 'btn-warning'">
-                                        {{ user.is_banned ? 'Mở khóa tài khoản' : 'Khóa tài khoản' }}
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                    </template>
-                </tbody>
-            </table>
+        <GridUser :users="users.users" :on-toggle-status="handleToggleStatus" :on-edit="handleEdit"
+            :on-delete="handleDeleteUser" />
 
-            <!-- Pagination -->
-            <div class="flex justify-between items-center gap-2 m-4">
-                <div class="flex items-center space-x-2">
-                    <p class="text-sm text-gray-600 w-32">{{ users.users.length }} / {{ users.meta?.total }} người dùng</p>
-                    <select v-model="perPage" class="select select-sm select-primary" @change="search">
-                        <option v-for="n in [10, 25, 50, 100]" :value="n" :key="n">{{ n }}</option>
-                    </select>
-                </div>
-                <UiPagination :links="users.links" :meta="users.meta" :show-first-last="true" :show-numbers="true"
-                    @page-change="handlePageChange" />
+        <!-- Pagination -->
+        <div class="flex justify-between items-center gap-2 m-4">
+            <div class="flex items-center space-x-2">
+                <p class="text-sm text-gray-600 w-32">{{ users.users.length }} / {{ users.meta?.total }} người dùng
+                </p>
+                <select v-model="perPage" class="select select-sm select-primary" @change="search">
+                    <option v-for="n in [10, 25, 50, 100]" :value="n" :key="n">{{ n }}</option>
+                </select>
             </div>
+            <UiPagination :links="users.links" :meta="users.meta" :show-first-last="true" :show-numbers="true"
+                @page-change="handlePageChange" />
         </div>
     </div>
 </template>
@@ -147,7 +89,7 @@ const users = computed<{ users: User[], meta: PaginationMeta | null, links: Pagi
     links: data.value?.links ?? null,
 }))
 
-const addressData = ref<{[key: number]: string}>({})
+const addressData = ref<{ [key: number]: string }>({})
 watch(() => users.value.users, async (newUsers) => {
     for (const user of newUsers) {
         if (user.address?.ward) {
@@ -210,11 +152,15 @@ async function handleToggleStatus(user: User) {
         const newBanStatus = !user.is_banned
         const { error } = await updateUser(user.id, { is_banned: newBanStatus })
         if (error.value) throw new Error(error.value.message)
-        
+
         user.is_banned = newBanStatus
         toast.success(`Đã ${newBanStatus ? 'khóa' : 'mở khóa'} tài khoản thành công!`)
     } catch (err) {
         toast.error(`Thao tác thất bại: ${(err as Error).message || 'Unknown error'}`)
     }
+}
+
+const handleEdit = (customerId: number) => {
+    router.push(`/admin/users/${customerId}/edit`)
 }
 </script>
