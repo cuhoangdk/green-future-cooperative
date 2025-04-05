@@ -1,5 +1,5 @@
 <template>
-    <div class="border border-gray-200 rounded-lg p-4 sm:p-5">
+    <div class="p-4">
         <form @submit.prevent="handleSubmit" class="space-y-6">
             <!-- Phần 1: Thông tin cơ bản với avatar -->
             <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -68,56 +68,6 @@
                         <label class="text-gray-700 font-semibold block mb-1">Xác nhận mật khẩu <span class="text-red-500">*</span></label>
                         <input v-model="form.password_confirmation" type="password" class="input input-bordered input-primary w-full"
                             placeholder="********" required />
-                    </div>
-                </div>
-            </div>
-
-            <!-- Phần 2: Thông tin địa chỉ -->
-            <div class="border-t border-gray-200 pt-5">
-                <h3 class="text-lg font-medium text-gray-800 mb-3">Thông tin địa chỉ</h3>
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <!-- Province -->
-                    <div>
-                        <label class="text-gray-700 font-semibold block mb-1">Tỉnh/Thành phố</label>
-                        <select v-model="address.province"
-                            @change="handleProvinceChange"
-                            class="select select-bordered select-primary w-full" required>
-                            <option value="" disabled>Chọn tỉnh/thành phố</option>
-                            <option v-for="p in provinces" :key="p.id" :value="p.id">
-                                {{ p.full_name }}
-                            </option>
-                        </select>
-                    </div>
-
-                    <!-- District -->
-                    <div>
-                        <label class="text-gray-700 font-semibold block mb-1">Quận/Huyện</label>
-                        <select v-model="address.district"
-                            @change="handleDistrictChange"
-                            class="select select-bordered select-primary w-full" required>
-                            <option value="" disabled>Chọn quận/huyện</option>
-                            <option v-for="d in districts" :key="d.id" :value="d.id">
-                                {{ d.full_name }}
-                            </option>
-                        </select>
-                    </div>
-
-                    <!-- Ward -->
-                    <div>
-                        <label class="text-gray-700 font-semibold block mb-1">Phường/Xã</label>
-                        <select v-model="address.ward" class="select select-bordered select-primary w-full" required>
-                            <option value="" disabled>Chọn phường/xã</option>
-                            <option v-for="w in wards" :key="w.id" :value="w.id">
-                                {{ w.full_name }}
-                            </option>
-                        </select>
-                    </div>
-
-                    <!-- Street Address (Full Width) -->
-                    <div class="sm:col-span-3">
-                        <label class="text-gray-700 font-semibold block mb-1">Địa chỉ chi tiết</label>
-                        <input v-model="address.street_address" class="input input-bordered input-primary w-full"
-                            placeholder="Số nhà, tên đường..." required />
                     </div>
                 </div>
             </div>
@@ -223,14 +173,14 @@ const handleSubmit = async () => {
         status.value = 'pending';
         // Tạo FormData để gửi dữ liệu multipart
         const formData = new FormData();
-        formData.append('full_name', form.value.full_name);
-        formData.append('email', form.value.email);
-        formData.append('phone_number', form.value.phone_number);
-        formData.append('date_of_birth', form.value.date_of_birth);
-        formData.append('gender', form.value.gender);
+        if (form.value.full_name) {formData.append('full_name', form.value.full_name);}
+        if (form.value.email) {formData.append('email', form.value.email);}
+        if (form.value.phone_number) {formData.append('phone_number', form.value.phone_number);}
+        if (form.value.date_of_birth) {formData.append('date_of_birth', form.value.date_of_birth);}
+        if (form.value.gender) {formData.append('gender', form.value.gender);}
         formData.append('newsletter_subscribed', form.value.newsletter_subscribed ? '1' : '0');
-        formData.append('password', form.value.password);
-        formData.append('password_confirmation', form.value.password_confirmation);
+        if (form.value.password) {formData.append('password', form.value.password);}
+        if (form.value.password_confirmation) {formData.append('password_confirmation', form.value.password_confirmation);}
 
         // Thêm file avatar nếu có
         if (selectedFile.value) {
@@ -242,23 +192,6 @@ const handleSubmit = async () => {
 
         if (error.value) {
             throw new Error(error.value.message);
-        }
-
-        // Thêm địa chỉ cho khách hàng mới tạo
-        if (data.value) {
-            const addressData = new FormData();
-            addressData.append('full_name', form.value.full_name);
-            addressData.append('phone_number', form.value.phone_number);
-            addressData.append('address_type', 'home');
-            addressData.append('address[province]', address.value.province);
-            addressData.append('address[district]', address.value.district);
-            addressData.append('address[ward]', address.value.ward);
-            addressData.append('address[street_address]', address.value.street_address);
-
-            const { error: addressError } = await createCustomerAddress(data.value.data.id, addressData);
-            if (addressError.value) {
-                throw new Error(addressError.value.message);
-            }
         }
 
         toast.success('Thêm khách hàng thành công!');
