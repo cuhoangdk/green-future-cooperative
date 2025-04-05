@@ -1,104 +1,110 @@
 <template>
-  <div class="border border-gray-200 rounded-lg p-5">
-    <form @submit.prevent="handleSubmit" class="space-y-2">
-      <!-- Tiêu đề -->
-      <div class="divider divider-start text-xl font-bold">Thông tin nông trại</div>
-      <div class="flex space-x-4">
-        <div class="w-1/2">
-          <label class="text-gray-700 font-semibold">Mã nông trại</label>
-          <input v-model="form.id" class="input input-primary w-full mt-1" disabled />
+  <div class="p-4">
+    <form @submit.prevent="handleSubmit" class="space-y-4">
+      <!-- Section 1: Farm Information -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Farm Name -->
+        <div>
+          <label class="text-gray-700 font-semibold block mb-1">Tên nông trại <span
+              class="text-red-500">*</span></label>
+          <input v-model="form.name" class="input input-bordered input-primary w-full" placeholder="Nông trại XYZ"
+            required />
         </div>
-        <div class="w-1/2">
-          <label class="text-gray-700 font-semibold">Chủ sở hữu</label>
-          <input v-model="form.user" class="input input-primary w-full mt-1" disabled />
+        <!-- User Selection -->
+        <div>
+          <label class="text-gray-700 font-semibold block mb-1">Thành viên<span class="text-red-500"></span></label>
+          <div class="input input-bordered select-primary w-full bg-gray-100">
+            {{ farm?.user?.full_name }}
+          </div>
         </div>
       </div>
 
-      <!-- Tên nông trại -->
+      <!-- Description -->
       <div>
-        <label class="text-gray-700 font-semibold">Tên nông trại</label>
-        <input v-model="form.name" class="input input-primary w-full mt-1" placeholder="Nông trại XYZ" required />
+        <label class="text-gray-700 font-semibold block mb-1">Mô tả</label>
+        <textarea v-model="form.description" class="textarea textarea-bordered textarea-primary w-full h-24"
+          placeholder="Mô tả về nông trại..."></textarea>
       </div>
 
-      <!-- Mô tả -->
-      <div>
-        <label class="text-gray-700 font-semibold">Mô tả</label>
-        <textarea v-model="form.description" class="textarea textarea-primary h-24 w-full mt-1"
-          placeholder="Mô tả về nông trại..." />
-      </div>
-
-      <!-- Chi tiết nông trại -->
-      <div class="flex space-x-4">
-        <div class="w-1/2">
-          <label class="text-gray-700 font-semibold">Kích thước (ha)</label>
-          <input v-model="form.farm_size" type="number" step="0.01" class="input input-primary w-full mt-1"
+      <!-- Section 2: Farm Details -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="text-gray-700 font-semibold block mb-1">Kích thước (m2)</label>
+          <input v-model="form.farm_size" type="number" step="0.01" class="input input-bordered input-primary w-full"
             placeholder="0.5" />
         </div>
-        <div class="w-1/2">
-          <label class="text-gray-700 font-semibold">Loại đất</label>
-          <input v-model="form.soil_type" class="input input-primary w-full mt-1" placeholder="Đất cát trắng" />
+        <div>
+          <label class="text-gray-700 font-semibold block mb-1">Loại đất</label>
+          <input v-model="form.soil_type" class="input input-bordered input-primary w-full"
+            placeholder="Đất cát trắng" />
         </div>
-      </div>
-      <div class="w-full">
-        <label class="text-gray-700 font-semibold">Phương pháp canh tác</label>
-        <textarea v-model="form.irrigation_method" class="textarea textarea-primary h-24 w-full mt-1"
-          placeholder="Tưới nhỏ giọt"></textarea>
+        <div>
+          <label class="text-gray-700 font-semibold block mb-1">Phương pháp canh tác</label>
+          <input v-model="form.irrigation_method" class="input input-bordered input-primary w-full"
+            placeholder="Không sử dụng thuốc bảo vệ thực vật hóa học" />
+        </div>
       </div>
 
+      <!-- Section 3: Address -->
+      <div class="border-t border-gray-200 pt-5">
+        <h3 class="text-lg font-medium text-gray-800 mb-3">Địa chỉ</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div>
+            <label class="text-gray-700 font-semibold block mb-1">Tỉnh/T.Phố</label>
+            <select v-model="form.address.province"
+              @change="(event) => fetchDistricts((event.target as HTMLSelectElement).value)"
+              class="select select-bordered select-primary w-full" required>
+              <option value="" disabled>Tỉnh/thành phố</option>
+              <option v-for="p in provinces" :key="p.id" :value="p.id">{{ p.name }}</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-gray-700 font-semibold block mb-1">Quận/Huyện</label>
+            <select v-model="form.address.district"
+              @change="(event) => fetchWards((event.target as HTMLSelectElement).value)"
+              class="select select-bordered select-primary w-full" required>
+              <option value="" disabled>Quận/huyện</option>
+              <option v-for="d in districts" :key="d.id" :value="d.id">{{ d.name }}</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-gray-700 font-semibold block mb-1">Phường/Xã</label>
+            <select v-model="form.address.ward" class="select select-bordered select-primary w-full" required>
+              <option value="" disabled>Phường/xã</option>
+              <option v-for="w in wards" :key="w.id" :value="w.id">{{ w.name }}</option>
+            </select>
+          </div>
+        </div>
+        <div class="mt-4">
+          <label class="text-gray-700 font-semibold block mb-1">Địa chỉ chi tiết</label>
+          <input v-model="form.address.street_address" class="input input-bordered input-primary w-full"
+            placeholder="Số nhà, tên đường..." required />
+        </div>
+      </div>
 
-      <!-- Địa chỉ -->
-      <div class="divider divider-start text-xl font-bold py-3 pt-7">Địa chỉ</div>
-      <div class="flex space-x-4">
-        <div class="w-1/3">
-          <label class="text-gray-700 font-semibold">Tỉnh/Thành phố</label>
-          <select v-model="form.address.province"
-            @change="(event) => fetchDistricts((event.target as HTMLSelectElement).value)"
-            class="select select-primary w-full mt-1" required>
-            <option value="" disabled>Chọn tỉnh/thành phố</option>
-            <option v-for="p in provinces" :key="p.id" :value="p.id">{{ p.name }}</option>
-          </select>
+      <!-- Section 4: Location -->
+      <div class="border-t border-gray-200 pt-5">
+        <h3 class="text-lg font-medium text-gray-800 mb-3">Vị trí</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="text-gray-700 font-semibold block mb-1">Kinh độ</label>
+            <input v-model="form.latitude" type="number" step="0.000001"
+              class="input input-bordered input-primary w-full" placeholder="21.0285" />
+          </div>
+          <div>
+            <label class="text-gray-700 font-semibold block mb-1">Vĩ độ</label>
+            <input v-model="form.longitude" type="number" step="0.000001"
+              class="input input-bordered input-primary w-full" placeholder="105.8542" />
+          </div>
         </div>
-        <div class="w-1/3">
-          <label class="text-gray-700 font-semibold">Quận/Huyện</label>
-          <select v-model="form.address.district"
-            @change="(event) => fetchWards((event.target as HTMLSelectElement).value)"
-            class="select select-primary w-full mt-1" required>
-            <option value="" disabled>Chọn quận/huyện</option>
-            <option v-for="d in districts" :key="d.id" :value="d.id">{{ d.name }}</option>
-          </select>
-        </div>
-        <div class="w-1/3">
-          <label class="text-gray-700 font-semibold">Phường/Xã</label>
-          <select v-model="form.address.ward" class="select select-primary w-full mt-1" required>
-            <option value="" disabled>Chọn phường/xã</option>
-            <option v-for="w in wards" :key="w.id" :value="w.id">{{ w.name }}</option>
-          </select>
-        </div>
-      </div>
-      <div>
-        <label class="text-gray-700 font-semibold">Địa chỉ chi tiết</label>
-        <input v-model="form.address.street_address" class="input input-primary w-full mt-1"
-          placeholder="Số nhà, tên đường..." />
       </div>
 
-      <!-- Vị trí -->
-      <div class="flex space-x-4">
-        <div class="w-1/2">
-          <label class="text-gray-700 font-semibold">Kinh độ</label>
-          <input v-model="form.latitude" type="number" step="0.000001" class="input input-primary w-full mt-1"
-            placeholder="21.0285" />
-        </div>
-        <div class="w-1/2">
-          <label class="text-gray-700 font-semibold">Vĩ độ</label>
-          <input v-model="form.longitude" type="number" step="0.000001" class="input input-primary w-full mt-1"
-            placeholder="105.8542" />
-        </div>
-      </div>
-      <!-- Submit -->
-      <div class="flex justify-end mt-6">
-        <button type="submit" class="btn btn-primary mt-1" :disabled="submitStatus === 'pending'">
+      <!-- Submit Button -->
+      <div class="border-t border-gray-200 pt-5 flex justify-end">
+        <button type="button" @click="navigateTo('/admin/farms')" class="btn btn-ghost mr-2">Hủy</button>
+        <button type="submit" class="btn btn-primary px-6" :disabled="submitStatus === 'pending'">
           <span v-if="submitStatus === 'pending'" class="loading loading-spinner loading-md"></span>
-          <span>Cập nhật</span>
+          Lưu
         </button>
       </div>
     </form>
@@ -213,7 +219,7 @@ const handleSubmit = async () => {
   try {
     const { error, status, refresh } = await updateFarm(Number(farmId), formData)
     if (error.value) throw new Error(error.value.message || 'Cập nhật nông trại thất bại')
-    submitStatus.value = status.value
+    submitStatus.value = 'pending'
     if (status.value === 'success') {
       toast.success('Cập nhật nông trại thành công!')
       await farmRefresh() // Làm mới dữ liệu sau khi cập nhật

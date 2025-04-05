@@ -1,74 +1,25 @@
 <template>
-    <div class="border border-gray-200 rounded-lg">
-        <!-- Header -->
-        <div class="flex justify-between items-center border-b border-gray-200 px-3 py-2">
-            <h1 class="text-xl font-bold text-gray-800">Danh sách nông trại</h1>
-            <button @click="$router.push('/admin/farms/create')" class="btn btn-sm btn-secondary">
-                <Plus class="w-3 h-3" /> Thêm nông trại
+    <div>
+        <div class="flex flex-col md:flex-row justify-between items-start gap-3 border-gray-200 px-3 py-4">
+            <div class="flex flex-col w-full md:flex-row gap-2">
+                <div class="relative w-full md:w-auto">
+                    <Search class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 z-10 w-5 h-5" />
+                    <input v-model="searchQuery" type="search" placeholder="Tìm kiếm khách hàng..."
+                        class="input input-sm input-primary w-full pl-10" @input="debouncedSearch" />
+                </div>
+            </div>
+            <button @click="$router.push('/admin/farms/create')" class="btn btn-sm btn-primary w-full md:w-auto">
+                <Plus class="w-5 h-5" /> Thêm
             </button>
         </div>
-
-        <!-- Search -->
-        <div class="px-3 py-3">
-            <div class="relative">
-                <Search class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 z-10 w-5 h-5" />
-                <input v-model="searchQuery" type="search" placeholder="Tìm kiếm nông trại..."
-                    class="input input-sm input-primary pl-10" @input="debouncedSearch" />
-            </div>
-        </div>
-
         <!-- Table -->
         <div class="w-full overflow-x-auto">
-            <table class="table w-full border-collapse bg-white border border-gray-200">
-                <thead>
-                    <tr class="bg-gray-100 text-gray-700">
-                        <th class="py-2 w-[3%]"></th>
-                        <th class="py-2 w-[3%]">ID</th>
-                        <th class="py-2 w-[15%] text-left">Tên</th>
-                        <th class="py-2 w-[15%] text-left">Chủ sở hữu</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <template v-if="farms?.farms" v-for="farm in farms.farms" :key="farm.id">
-                        <tr class="border-b border-gray-100 hover:bg-gray-200 cursor-pointer"
-                            @click="toggleRow(farm.id)"
-                            :class="{ 'bg-gray-200 hover:bg-gray-200': expandedRows.has(farm.id) }">
-                            <td class="py-2">
-                                <component :is="expandedRows.has(farm.id) ? ChevronDown : ChevronRight"
-                                    class="text-green-600 w-5 h-5" />
-                            </td>
-                            <td class="py-2">{{ farm.id }}</td>
-                            <td class="py-2">{{ farm.name }}</td>
-                            <td class="py-2">{{ farm.user.full_name }}</td>
-                        </tr>
-                        <tr v-if="expandedRows.has(farm.id)" class="bg-gray-50">
-                            <td colspan="5" class="p-3">
-                                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-2 gap-y-1 text-sm">
-                                    <div><span class="font-semibold">Mô tả:</span><p class="text-gray-600 line-clamp-2">{{ farm.description }}</p></div>
-                                    <div><span class="font-semibold">Phương pháp canh tác:</span><p class="text-gray-600 line-clamp-2">{{farm.irrigation_method || "Chưa xác định" }}</p></div>
-                                    <div><span class="font-semibold">Chủ sở hữu:</span> {{ farm.user?.full_name }}</div>
-                                    <div><span class="font-semibold">Địa chỉ:</span> {{ addressData[farm.id]+', '+farm.address?.street_address }}</div>
-                                    <div><span class="font-semibold">Loại đất:</span> {{ farm.soil_type || "Chưa xác định" }}</div>
-                                    <div><span class="font-semibold">Kích thước (m2):</span> {{ farm.farm_size || "Chưa xác định" }}</div>
-                                    <div><span class="font-semibold">Ngày tạo:</span> {{ new Date(farm.created_at).toLocaleDateString("vi-VN") }}</div>
-                                    <div class="flex gap-x-2 gap-y-1">
-                                        <span class="font-semibold">Kinh độ:</span> {{ farm.latitude || "Chưa xác định"
-                                        }}<br>
-                                        <span class="font-semibold">Vĩ độ:</span> {{ farm.longitude || "Chưa xác định"
-                                        }}
-                                    </div>
-                                    <div class="flex space-x-2 mt-2 sm:col-span-2 lg:col-span-4">
-                                        <button @click.stop="handleDeleteFarm(farm.id)"
-                                            class="btn btn-sm btn-error">Xóa</button>
-                                        <button @click.stop="$router.push(`/admin/farms/${farm.id}`)"
-                                            class="btn btn-sm btn-primary">Sửa</button>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                    </template>
-                </tbody>
-            </table>
+            <!-- Desktop Table View -->
+            <TableFarm :farms="farms.farms" :on-edit="handleEdit" :address-data="addressData"
+                :on-delete="handleDeleteFarm" />
+            <!-- Mobile Card View -->
+            <GridFarm :farms="farms.farms" :on-edit="handleEdit" :address-data="addressData"
+                :on-delete="handleDeleteFarm" />
 
             <!-- Pagination -->
             <div class="flex flex-col sm:flex-row justify-between items-center m-4 gap-2">
@@ -98,6 +49,7 @@ const { searchFarms, deleteFarm } = useFarms()
 const { getFullAddressName } = useVietnamAddress()
 const toast = useToast()
 const swal = useSwal()
+const router = useRouter()
 
 const currentPage = ref(1)
 const perPage = ref(10)
@@ -112,11 +64,11 @@ const farms = computed<{ farms: Farm[], meta: PaginationMeta | null, links: Pagi
     links: data.value?.links ?? null,
 }))
 
-const addressData = ref<{[key: number]: string}>({})
+const addressData = ref<{ [key: number]: string }>({})
 watch(() => farms.value.farms, async (newFarms) => {
     for (const farm of newFarms) {
         if (farm.address?.ward) {
-            addressData.value[farm.id] = await getFullAddressName(farm.address.ward)
+            addressData.value[farm.id] = `${farm.address.street_address || ''}, ${await getFullAddressName(farm.address.ward)}`
         }
     }
 }, { immediate: true })
@@ -160,9 +112,7 @@ const handlePageChange = (page: number) => {
     search()
 }
 
-const toggleRow = (id: number) => {
-    expandedRows.value.has(id)
-        ? expandedRows.value.delete(id)
-        : expandedRows.value.add(id)
+const handleEdit = (customerId: number) => {
+    router.push(`/admin/farms/${customerId}`)
 }
 </script>

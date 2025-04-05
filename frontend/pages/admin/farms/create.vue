@@ -1,19 +1,18 @@
 <template>
-    <div class="border border-gray-200 rounded-lg p-5">
-        <form @submit.prevent="handleSubmit" class="space-y-2">
-            <div class="divider divider-start text-xl font-bold">Thông tin nông trại</div>
-            <div class="flex space-x-4">
+    <div class="p-4">
+        <form @submit.prevent="handleSubmit" class="space-y-4">
+            <!-- Section 1: Farm Information -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <!-- Farm Name -->
-                <div :class="currentUser?.is_super_admin ? 'w-1/2' : 'w-full'">
-                    <label class="text-gray-700 font-semibold">Tên nông trại</label>
-                    <input v-model="form.name" class="input input-primary w-full mt-1" placeholder="Nông trại XYZ"
-                        required />
+                <div>
+                    <label class="text-gray-700 font-semibold block mb-1">Tên nông trại <span class="text-red-500">*</span></label>
+                    <input v-model="form.name" class="input input-bordered input-primary w-full" placeholder="Nông trại XYZ" required />
                 </div>
-                <!-- Danh mục -->
-                <div class="w-1/2"  v-if="currentUser?.is_super_admin">
-                    <label class="text-gray-700 font-semibold">Thành viên</label>
-                    <select v-model="form.user_id" class="select select-primary w-full mt-1" required>
-                        <option  value=""  disabled selected>Chọn chủ của nông trại</option>
+                <!-- User Selection -->
+                <div v-if="currentUser?.is_super_admin">
+                    <label class="text-gray-700 font-semibold block mb-1">Thành viên <span class="text-red-500">*</span></label>
+                    <select v-model="form.user_id" class="select select-bordered select-primary w-full" required>
+                        <option value="" disabled selected>Chọn chủ của nông trại</option>
                         <option v-for="user in users" :key="user.id" :value="user.id">
                             {{ user.full_name }}
                         </option>
@@ -22,92 +21,93 @@
             </div>
 
             <!-- Description -->
-            <div class="col-span-3">
-                <label class="text-gray-700 font-semibold">Mô tả</label>
-                <textarea v-model="form.description" class="textarea textarea-primary w-full h-24 mt-1"
-                    placeholder="Mô tả về nông trại..." />
+            <div>
+                <label class="text-gray-700 font-semibold block mb-1">Mô tả</label>
+                <textarea v-model="form.description" class="textarea textarea-bordered textarea-primary w-full h-24"
+                    placeholder="Mô tả về nông trại..."></textarea>
             </div>
 
-            <!-- Farm Details -->
-            <div class="flex space-x-4">
-                <div class="w-1/2">
-                    <label class="text-gray-700 font-semibold">Kích thước (m2)</label>
-                    <input v-model="form.farm_size" type="number" step="0.01" class="input input-primary w-full mt-1"
+            <!-- Section 2: Farm Details -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="text-gray-700 font-semibold block mb-1">Kích thước (m2)</label>
+                    <input v-model="form.farm_size" type="number" step="0.01" class="input input-bordered input-primary w-full"
                         placeholder="0.5" />
                 </div>
-                <div class="w-1/2">
-                    <label class="text-gray-700 font-semibold">Loại đất</label>
-                    <input v-model="form.soil_type" class="input input-primary w-full mt-1"
-                        placeholder="Đất cát trắng" />
+                <div>
+                    <label class="text-gray-700 font-semibold block mb-1">Loại đất</label>
+                    <input v-model="form.soil_type" class="input input-bordered input-primary w-full" placeholder="Đất cát trắng" />
                 </div>
-            </div>
-            <div>
-                <label class="text-gray-700 font-semibold">Phương pháp canh tác</label>
-                <input v-model="form.irrigation_method" class="input input-primary w-full mt-1"
-                    placeholder="Không sử dụng thuốc bảo vệ thực vật hóa học" />
+                <div>
+                    <label class="text-gray-700 font-semibold block mb-1">Phương pháp canh tác</label>
+                    <input v-model="form.irrigation_method" class="input input-bordered input-primary w-full"
+                        placeholder="Không sử dụng thuốc bảo vệ thực vật hóa học" />
+                </div>
             </div>
 
-            <!-- Address Section -->
-            <div class="divider divider-start text-xl font-bold py-3 pt-7">Địa chỉ</div>
-            <div class="flex space-x-4">
-                <div class="w-1/3">
-                    <label class="text-gray-700 font-semibold">Tỉnh/T.Phố</label>
-                    <select v-model="form.address.province"
-                        @change="(event) => fetchDistricts((event.target as HTMLSelectElement).value)"
-                        class="select select-primary w-full mt-1" required>
-                        <option value="" disabled>Chọn tỉnh/thành phố</option>
-                        <option v-for="p in provinces" :key="p.id" :value="p.id">{{ p.name }}</option>
-                    </select>
+            <!-- Section 3: Address -->
+            <div class="border-t border-gray-200 pt-5">
+                <h3 class="text-lg font-medium text-gray-800 mb-3">Địa chỉ</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                        <label class="text-gray-700 font-semibold block mb-1">Tỉnh/T.Phố</label>
+                        <select v-model="form.address.province" @change="(event) => fetchDistricts((event.target as HTMLSelectElement).value)"
+                            class="select select-bordered select-primary w-full" required>
+                            <option value="" disabled>Tỉnh/thành phố</option>
+                            <option v-for="p in provinces" :key="p.id" :value="p.id">{{ p.name }}</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-gray-700 font-semibold block mb-1">Quận/Huyện</label>
+                        <select v-model="form.address.district" @change="(event) => fetchWards((event.target as HTMLSelectElement).value)"
+                            class="select select-bordered select-primary w-full" required>
+                            <option value="" disabled>Quận/huyện</option>
+                            <option v-for="d in districts" :key="d.id" :value="d.id">{{ d.name }}</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-gray-700 font-semibold block mb-1">Phường/Xã</label>
+                        <select v-model="form.address.ward" class="select select-bordered select-primary w-full" required>
+                            <option value="" disabled>Phường/xã</option>
+                            <option v-for="w in wards" :key="w.id" :value="w.id">{{ w.name }}</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="w-1/3">
-                    <label class="text-gray-700 font-semibold">Quận/Huyện</label>
-                    <select v-model="form.address.district"
-                        @change="(event) => fetchWards((event.target as HTMLSelectElement).value)"
-                        class="select select-primary w-full mt-1" required>
-                        <option value="" disabled>Chọn quận/huyện</option>
-                        <option v-for="d in districts" :key="d.id" :value="d.id">{{ d.name }}</option>
-                    </select>
+                <div class="mt-4">
+                    <label class="text-gray-700 font-semibold block mb-1">Địa chỉ chi tiết</label>
+                    <input v-model="form.address.street_address" class="input input-bordered input-primary w-full"
+                        placeholder="Số nhà, tên đường..." required />
                 </div>
-                <div class="w-1/3">
-                    <label class="text-gray-700 font-semibold">Phường/Xã</label>
-                    <select v-model="form.address.ward" class="select select-primary w-full mt-1" required>
-                        <option value="" disabled>Chọn phường/xã</option>
-                        <option v-for="w in wards" :key="w.id" :value="w.id">{{ w.name }}</option>
-                    </select>
-                </div>
-            </div>
-            <div class="col-span-3">
-                <label class="text-gray-700 font-semibold">Địa chỉ chi tiết</label>
-                <input v-model="form.address.street_address" class="input input-primary w-full mt-1"
-                    placeholder="Số nhà, tên đường..." required/>
             </div>
 
-            <!-- Location -->
-            <div class="flex space-x-4">
-                <div class="w-1/2">
-                    <label class="text-gray-700 font-semibold">Kinh độ</label>
-                    <input v-model="form.latitude" type="number" step="0.000001" class="input input-primary w-full mt-1"
-                        placeholder="21.0285" />
-                </div>
-                <div class="w-1/2">
-                    <label class="text-gray-700 font-semibold">Vĩ độ</label>
-                    <input v-model="form.longitude" type="number" step="0.000001"
-                        class="input input-primary w-full mt-1" placeholder="105.8542" />
+            <!-- Section 4: Location -->
+            <div class="border-t border-gray-200 pt-5">
+                <h3 class="text-lg font-medium text-gray-800 mb-3">Vị trí</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-gray-700 font-semibold block mb-1">Kinh độ</label>
+                        <input v-model="form.latitude" type="number" step="0.000001" class="input input-bordered input-primary w-full"
+                            placeholder="21.0285" />
+                    </div>
+                    <div>
+                        <label class="text-gray-700 font-semibold block mb-1">Vĩ độ</label>
+                        <input v-model="form.longitude" type="number" step="0.000001" class="input input-bordered input-primary w-full"
+                            placeholder="105.8542" />
+                    </div>
                 </div>
             </div>
 
             <!-- Submit Button -->
-            <div class="flex justify-end">
-                <button type="submit" class="btn btn-primary" :disabled="status === 'pending'">
+            <div class="border-t border-gray-200 pt-5 flex justify-end">
+                <button type="button" @click="navigateTo('/admin/farms')" class="btn btn-ghost mr-2">Hủy</button>
+                <button type="submit" class="btn btn-primary px-6" :disabled="status === 'pending'">
                     <span v-if="status === 'pending'" class="loading loading-spinner loading-md"></span>
-                    <span>Thêm</span>
+                    Thêm
                 </button>
             </div>
         </form>
     </div>
 </template>
-
-
 
 <script setup lang="ts">
 definePageMeta({
