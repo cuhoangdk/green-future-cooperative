@@ -21,7 +21,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->append(CorsMiddleware::class);
         // $middleware->append(\Illuminate\Http\Middleware\TrustHosts::class); // Bảo vệ hostname        
         $middleware->append(\Illuminate\Foundation\Http\Middleware\ValidatePostSize::class); // Giới hạn kích thước POST
-        $middleware->append(ForceJsonResponse::class); // Buộc trả về JSON
+        // $middleware->append(ForceJsonResponse::class); // Buộc trả về JSON
     })
     ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->render(function (TooManyRequestsHttpException $e) {
