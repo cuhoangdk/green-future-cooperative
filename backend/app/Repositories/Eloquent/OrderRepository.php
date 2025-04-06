@@ -59,23 +59,18 @@ class OrderRepository implements OrderRepositoryInterface
             ->paginate($perPage);
     }
 
-    public function getById(?int $customerId = null, $txnRef = null)
+    public function getById(?int $customerId = null, $id)
     {
-        $query = $this->model->query();
-        // $query = $this->model->when(!$this->isSuperAdmin(), function ($query) {
-        //     $userId = auth('api_users')->id();
-        //     $query->whereHas('items.product', function ($q) use ($userId) {
-        //         $q->where('user_id', $userId);
-        //     });
-        // })->with('items.product.user');
-
+        $query = $this->model->when(!$this->isSuperAdmin(), function ($query) {
+            $userId = auth('api_users')->id();
+            $query->whereHas('items.product', function ($q) use ($userId) {
+                $q->where('user_id', $userId);
+            });
+        })->with('items.product.user');
         if ($customerId !== null) {
             $query->where('customer_id', $customerId);
         }
-        if ($txnRef !== null) {
-            $query->where('order_code', $txnRef);
-        }
-        return $query->firstOrFail();
+        return $query->findOrFail($id);
     }
 
     public function createForCustomer(?int $customerId = null, array $data)
@@ -304,14 +299,9 @@ class OrderRepository implements OrderRepositoryInterface
             }
 
             $order->load('customer', 'items.product.user');
-            // $this->sendOrderStatusEmails($order);
+            $this->sendOrderStatusEmails($order);
 
-            $vnpayUrl = $this->generateVnpayUrl($order);
-
-            return [
-                'order' => $order,
-                'vnpay_url' => $vnpayUrl,
-            ];
+            return $order;
         });
     }
 
@@ -425,47 +415,5 @@ class OrderRepository implements OrderRepositoryInterface
     {
         $user = auth('api_users')->user();
         return $user && $user->is_super_admin;
-    }
-
-    protected function generateVnpayUrl($order)
-    {
-        $vnp_TmnCode = env('VNPAY_TMN_CODE');
-        $vnp_HashSecret = env('VNPAY_HASH_SECRET');
-        $vnp_Url = env('VNPAY_URL');
-        $vnp_ReturnUrl = env('VNPAY_RETURN_URL');
-
-        $vnp_TxnRef = $order->order_code;
-        $vnp_Amount = $order->final_total_amount * 100; // VND, nhân 100
-        $vnp_OrderInfo = "Thanh toan don hang {$order->order_code}";
-        $vnp_IpAddr = request()->ip();
-        $vnp_Locale = 'vn';
-        $vnp_CreateDate = now()->format('YmdHis');
-
-        $inputData = [
-            'vnp_Version' => '2.1.0',
-            'vnp_TmnCode' => $vnp_TmnCode,
-            'vnp_Amount' => $vnp_Amount,
-            'vnp_Command' => 'pay',
-            'vnp_CreateDate' => $vnp_CreateDate,
-            'vnp_CurrCode' => 'VND',
-            'vnp_IpAddr' => $vnp_IpAddr,
-            'vnp_Locale' => $vnp_Locale,
-            'vnp_OrderInfo' => $vnp_OrderInfo,
-            'vnp_OrderType' => '250000',
-            'vnp_ReturnUrl' => $vnp_ReturnUrl,
-            'vnp_TxnRef' => $vnp_TxnRef,
-        ];
-
-        \Log::info('VNPAY Input Data: ' . json_encode($inputData));
-
-        ksort($inputData);
-        $query = http_build_query($inputData);
-        $hashData = $query;
-        $vnp_SecureHash = hash_hmac('sha512', $hashData, $vnp_HashSecret);
-
-        $vnpayUrl = $vnp_Url . '?' . $query . '&vnp_SecureHash=' . $vnp_SecureHash;
-        \Log::info('Generated VNPAY URL: ' . $vnpayUrl);
-
-        return $vnpayUrl;
     }
 }
