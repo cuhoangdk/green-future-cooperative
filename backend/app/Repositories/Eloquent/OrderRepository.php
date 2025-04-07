@@ -173,6 +173,7 @@ class OrderRepository implements OrderRepositoryInterface
                 'notes' => $data['notes'] ?? null,
                 'expected_delivery_date' => $data['expected_delivery_date'] ?? null,
                 'email' => $customerId ? null : ($data['email'] ?? null),
+                'created_by_method' => 'customer',
             ]);
 
             $order = $this->model->create($orderData);
@@ -205,7 +206,12 @@ class OrderRepository implements OrderRepositoryInterface
             $order->load('customer', 'items.product.user');
             $this->sendOrderStatusEmails($order);
 
-            return $order;
+            $vnpayUrl = $this->generateVnpayUrl($order);
+
+            return [
+                'order' => $order,
+                'vnpay_url' => $vnpayUrl,
+            ];
         });
     }
 
@@ -279,6 +285,7 @@ class OrderRepository implements OrderRepositoryInterface
                 'final_total_amount' => $items->sum(fn($item) => $item->quantity * $item->calculated_price) + ($data['shipping_fee'] ?? 0),
                 'notes' => $data['notes'] ?? null,
                 'expected_delivery_date' => $data['expected_delivery_date'] ?? null,
+                'created_by_method' => $data['created_by_method'] ?? 'admin',
             ]);
 
             $order = $this->model->create($orderData);
@@ -351,7 +358,7 @@ class OrderRepository implements OrderRepositoryInterface
                 'status' => 'cancelled',
                 'cancelled_reason' => $data['cancelled_reason'] ?? null,
                 'cancelled_at' => now(),
-                'cancelled_by' => auth('api_users')->id() ?? auth('api_customers')->id(),
+                // 'cancelled_by' => auth('api_users')->id() ?? auth('api_customers')->id(),
             ]);
 
             foreach ($order->items as $item) {
@@ -359,7 +366,7 @@ class OrderRepository implements OrderRepositoryInterface
             }
             // Tải lại quan hệ sau khi cập nhật
             $order = $order->fresh(['customer', 'items.product.user']);
-            $this->sendOrderStatusEmails($order);
+            // $this->sendOrderStatusEmails($order);
 
             return $order;
         });
