@@ -25,8 +25,8 @@ class CartItemResource extends JsonResource
             'product' => new ProductResource($this->whenLoaded('product')),
             'invalid_quantity' => $this->invalid_quantity ?? false, // Thêm trường kiểm tra
             'invalid_message' => $this->invalid_message ?? null, // Thông báo nếu không hợp lệ            
-            'created_at' => $this->created_at->toDateTimeString(),
-            'updated_at' => $this->updated_at->toDateTimeString(),
+            'created_at' => $this->created_at?->toDateTimeString(),
+            'updated_at' => $this->updated_at?->toDateTimeString(),
         ];
     }
     protected function getPriceForQuantity(int $productId, float $quantity)

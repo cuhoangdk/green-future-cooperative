@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Order\StoreOrderSessionRequest;
 use App\Models\CustomerAddress;
 use App\Repositories\Eloquent\OrderRepository;
 use App\Models\CartItem;
@@ -91,17 +92,17 @@ class OrderController extends Controller
     }
 
     // Xử lý tạo đơn hàng và chuyển hướng đến VNPAY
-    public function create(Request $request)
+    public function create(StoreOrderSessionRequest $request)
     {
-        $customerId = Session::get('customer_id');  
+        $customerId = Session::get('customer_id');
         \Log::info('Customer ID: ' . $customerId);
 
-        $data = $request->only(['full_name', 'phone_number', 'province', 'district', 'ward', 'street_address', 'address_id', 'address_type']);
+        $data = $request->validated(); // Dữ liệu đã được validate
         \Log::info('Form Data: ' . json_encode($data));
 
         // Nếu chọn địa chỉ có sẵn
-        if (!empty($data['address_id'])) {
-            $selectedAddress = CustomerAddress::where('id', $data['address_id'])
+        if (!empty($data['customer_address_id'])) {
+            $selectedAddress = CustomerAddress::where('id', $data['customer_address_id'])
                 ->where('customer_id', $customerId)
                 ->with('address')
                 ->first();
@@ -116,16 +117,20 @@ class OrderController extends Controller
             }
         }
 
-        // Lấy giỏ hàng từ cart_items
-        $cartItems = DB::table('cart_items')->where('customer_id', $customerId)->get()->map(function ($item) {
-            return [
-                'product_id' => $item->product_id,
-                'quantity' => (float) $item->quantity,
-            ];
-        })->toArray();
-        if (empty($cartItems)) {
-            \Log::warning('Cart is empty, using default items');
-            $cartItems = [['product_id' => 1, 'quantity' => 2]];
+        // Lấy giỏ hàng từ cart_items nếu đăng nhập, hoặc từ request nếu không đăng nhập
+        if ($customerId) {
+            $cartItems = DB::table('cart_items')->where('customer_id', $customerId)->get()->map(function ($item) {
+                return [
+                    'product_id' => $item->product_id,
+                    'quantity' => (float) $item->quantity,
+                ];
+            })->toArray();
+            if (empty($cartItems)) {
+                \Log::warning('Cart is empty, using default items');
+                $cartItems = [['product_id' => 1, 'quantity' => 2]];
+            }
+        } else {
+            $cartItems = $data['items']; // Đã được validate trong request
         }
         \Log::info('Cart Items: ' . json_encode($cartItems));
         $data['items'] = $cartItems;
@@ -140,7 +145,7 @@ class OrderController extends Controller
             if (empty($result['vnpay_url'])) {
                 \Log::error('VNPAY URL is null or empty');
                 throw new \Exception('Không thể tạo URL thanh toán VNPAY');
-            }            
+            }
             return redirect($result['vnpay_url']);
         } catch (\Exception $e) {
             \Log::error('Error in createForCustomer: ' . $e->getMessage());
@@ -157,6 +162,18 @@ class OrderController extends Controller
         $inputData = $request->all();
         $vnp_SecureHash = $inputData['vnp_SecureHash'] ?? '';
         unset($inputData['vnp_SecureHash']);
+
+        // Kiểm tra thời gian
+        $payDate = $inputData['vnp_PayDate'] ?? null;
+        if ($payDate) {
+            $payTime = \Carbon\Carbon::createFromFormat('YmdHis', $payDate);
+            if ($payTime->diffInMinutes(now()) > 5) { // Giới hạn 5 phút
+                return view('vnpay.error', [
+                    'message' => 'Giao dịch đã hết hạn',
+                    'code' => 'TIMEOUT',
+                ]);
+            }
+        }
 
         \Log::info('VNPAY Provided Hash: ' . $vnp_SecureHash);
 
@@ -176,6 +193,12 @@ class OrderController extends Controller
                     return view('vnpay.error', [
                         'message' => 'Không tìm thấy đơn hàng',
                         'code' => 'N/A',
+                    ]);
+                }
+                if ($order->status !== 'pending') {
+                    return view('vnpay.error', [
+                        'message' => 'Đơn hàng đã được xử lý trước đó',
+                        'code' => 'DUPLICATE',
                     ]);
                 }
 
