@@ -75,6 +75,16 @@ class ProductController extends Controller
     {
         $data = $request->validated();
         $product = $this->repository->update($id, $data);
+        $notificationRepo = app(NotificationRepositoryInterface::class);
+        $superAdmins = User::where('is_super_admin', true)->get();
+        foreach ($superAdmins as $superAdmin) {
+            $notificationRepo->create([
+                'user_type' => 'member',
+                'user_id' => $superAdmin->id,
+                'title' => "Sản phẩm có mã là {$product->product_code} vừa được cập nhật",
+                'type' => 'updated_product',                
+            ]);
+        }
         return new ProductResource($product);
     }
 
