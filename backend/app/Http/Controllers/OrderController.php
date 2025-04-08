@@ -124,14 +124,24 @@ class OrderController extends Controller
                     'product_id' => $item->product_id,
                     'quantity' => (float) $item->quantity,
                 ];
-            })->toArray();
-            if (empty($cartItems)) {
-                \Log::warning('Cart is empty, using default items');
-                $cartItems = [['product_id' => 1, 'quantity' => 2]];
-            }
+            })->toArray();            
         } else {
             $cartItems = $data['items']; // Đã được validate trong request
         }
+        $calculatedTotal = 0;
+
+        // Tính tổng tiền dùng getPriceForQuantity
+        foreach ($cartItems as $item) {
+            try {
+                $price = $this->getPriceForQuantity($item['product_id'], $item['quantity']);
+                $calculatedTotal += $price * $item['quantity'];
+            } catch (\Exception $e) {
+                \Log::error('Price calculation error: ' . $e->getMessage());
+                return redirect()->back()->with('error', $e->getMessage());
+            }
+        }
+
+        \Log::info('Calculated Total: ' . $calculatedTotal);
         \Log::info('Cart Items: ' . json_encode($cartItems));
         $data['items'] = $cartItems;
 
@@ -141,6 +151,11 @@ class OrderController extends Controller
             $data['created_by_method'] = 'customer';
             $result = $this->orderRepository->createForCustomer($customerId, $data);
             \Log::info('CreateForCustomer Result: ' . json_encode($result));
+
+            $vnpayAmount = $result['order']->final_total_amount * 100;
+            if ($vnpayAmount != ($calculatedTotal * 100)) {
+                throw new \Exception('Số tiền VNPAY không khớp với giỏ hàng');
+            }
 
             if (empty($result['vnpay_url'])) {
                 \Log::error('VNPAY URL is null or empty');
@@ -170,7 +185,7 @@ class OrderController extends Controller
             if ($payTime->diffInMinutes(now()) > 5) { // Giới hạn 5 phút
                 return view('vnpay.error', [
                     'message' => 'Giao dịch đã hết hạn',
-                    'code' => 'TIMEOUT',
+                    'code' => '99',
                 ]);
             }
         }
@@ -192,13 +207,22 @@ class OrderController extends Controller
                 if (!$order) {
                     return view('vnpay.error', [
                         'message' => 'Không tìm thấy đơn hàng',
-                        'code' => 'N/A',
+                        'code' => '99',
                     ]);
                 }
                 if ($order->status !== 'pending') {
                     return view('vnpay.error', [
                         'message' => 'Đơn hàng đã được xử lý trước đó',
-                        'code' => 'DUPLICATE',
+                        'code' => '99',
+                    ]);
+                }
+
+                $vnpAmount = $inputData['vnp_Amount'] / 100;
+                if ($vnpAmount != $order->final_total_amount) {
+                    \Log::error('VNPAY Amount mismatch: ' . $vnpAmount . ' vs Order Amount: ' . $order->final_total_amount);
+                    return view('vnpay.error', [
+                        'message' => 'Số tiền thanh toán không khớp với đơn hàng',
+                        'code' => '99',
                     ]);
                 }
 
@@ -242,7 +266,7 @@ class OrderController extends Controller
                 \Log::error('Order not found for TxnRef: ' . $inputData['vnp_TxnRef']);
                 return view('vnpay.error', [
                     'message' => 'Không tìm thấy đơn hàng trong hệ thống',
-                    'code' => 'N/A',
+                    'code' => '99',
                 ]);
             } catch (\Exception $e) {
                 \Log::error('Error cancelling order: ' . $e->getMessage());
@@ -254,7 +278,7 @@ class OrderController extends Controller
         } else {
             return view('vnpay.error', [
                 'message' => 'Chữ ký không hợp lệ',
-                'code' => 'N/A',
+                'code' => '99',
             ]);
         }
     }
