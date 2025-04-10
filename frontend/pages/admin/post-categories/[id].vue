@@ -1,7 +1,6 @@
 <template>
-    <div class="border border-gray-200 rounded-lg p-5">
-        <form @submit.prevent="handleSubmit" class="space-y-2">
-            <div class="divider divider-start text-xl font-bold">Thông tin danh mục bài viết</div>
+    <div class="p-4">
+        <form @submit.prevent="handleSubmit" class="space-y-4">
             <div class="flex flex-col gap-4">
                 <!-- Category Name -->
                 <div class="w-full">
@@ -15,14 +14,14 @@
                     <input v-model="form.description" class="input input-primary w-full mt-1"
                         placeholder="Mô tả danh mục..." required />
                 </div>
-                <!-- Submit Button -->
-                <div class="flex justify-between">
-                    <button type="button" class="btn mr-2" @click="router.back()">Quay lại</button>
-                    <button type="submit" class="btn btn-primary" :disabled="status === 'pending'">
-                        <span v-if="status === 'pending'" class="loading loading-spinner loading-md"></span>
-                        <span>Cập nhật</span>
-                    </button>
-                </div>
+            </div>
+            <!-- Submit Button -->
+            <div class="flex justify-between">
+                <button type="button" class="btn mr-2" @click="router.back()">Quay lại</button>
+                <button type="submit" class="btn btn-primary" :disabled="status === 'pending'">
+                    <span v-if="status === 'pending'" class="loading loading-spinner loading-md"></span>
+                    <span>Cập nhật</span>
+                </button>
             </div>
         </form>
     </div>

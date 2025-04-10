@@ -5,9 +5,9 @@ export interface Unit {
     name: string;
     description?: string;
     allow_decimal: boolean;
-    created_at?: Date;
-    updated_at?: Date;
-    deleted_at?: Date;
+    created_at?: string;
+    updated_at?: string;
+    deleted_at?: string;
 }
 
 export interface ProductCategory {
@@ -15,9 +15,9 @@ export interface ProductCategory {
     name: string;
     slug: string;
     description?: string;
-    created_at?: Date;
-    updated_at?: Date;
-    deleted_at?: Date;
+    created_at?: string;
+    updated_at?: string;
+    deleted_at?: string;
 }
 
 export interface Product {
@@ -35,8 +35,8 @@ export interface Product {
     user?: User;
     seed_supplier?: string;
     cultivated_area?: number;
-    sown_at?: Date;
-    harvested_at?: Date;
+    sown_at?: string;
+    harvested_at?: string;
     pricing_type: string;
     stock_quantity: number;
     status: string;
@@ -46,9 +46,9 @@ export interface Product {
     meta_title?: string;
     meta_description?: string;
     meta_keyword?: string;
-    created_at?: Date;
-    updated_at?: Date;
-    deleted_at?: Date;
+    created_at?: string;
+    updated_at?: string;
+    deleted_at?: string;
 }
 
 export interface CultivationLog {
@@ -60,8 +60,8 @@ export interface CultivationLog {
     image_url?: string;
     video_url?: string;
     notes?: string;
-    created_at?: Date;
-    updated_at?: Date;
+    created_at?: string;
+    updated_at?: string;
     product: Product;
 }
 
@@ -72,8 +72,8 @@ export interface ProductImage {
     sort_order: number;
     is_primary: boolean;
     title?: string;
-    created_at?: Date;
-    updated_at?: Date;
+    created_at?: string;
+    updated_at?: string;
 }
 
 export interface ProductPrice {
@@ -81,7 +81,7 @@ export interface ProductPrice {
     product_id: number;
     quantity: number;
     price: number;
-    created_at?: Date;
-    updated_at?: Date;
-    deleted_at?: Date;
+    created_at?: string;
+    updated_at?: string;
+    deleted_at?: string;
 }

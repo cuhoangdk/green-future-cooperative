@@ -15,7 +15,7 @@
                 <div class="p-3 bg-white border-b border-gray-200 text-center text-xl font-bold text-gray-800 flex items-center justify-between">
                     <span v-show="!isCollapsed">Admin Panel</span>
                     <button @click="toggleCollapse" class="p-1 mx-auto hover:bg-gray-100 rounded">
-                        <MenuIcon class="w-5 h-5 text-gray-600" />
+                        <Expand class="w-5 h-5 text-gray-600" />
                     </button>
                 </div>
 
@@ -87,10 +87,10 @@
                 <header class="sticky top-0 z-30 bg-white border-b border-gray-200">
                     <div class="flex items-center justify-between px-4 py-1.5">
                         <div class="flex items-center">
-                            <button @click="toggleSidebar" class="p-2 rounded-lg lg:hidden hover:bg-gray-100">
+                            <button @click="toggleSidebar" class="rounded-lg lg:hidden btn btn-sm btn-square btn-ghost mr-2">
                                 <MenuIcon class="w-6 h-6 text-gray-600" />
                             </button>
-                            <h1 class="font-bold text-lg ml-4 text-gray-800">
+                            <h1 class="font-bold text-lg text-gray-800">
                                 {{ pageTitle }}
                             </h1>
                         </div>
@@ -98,14 +98,12 @@
                         <!-- User Dropdown -->
                         <div class="relative" v-click-outside="closeUserMenu">
                             <button @click="toggleUserMenu"
-                                class="flex items-center space-x-2 hover:bg-gray-100 px-3 py-1 rounded-lg">
-                                <span class="text-gray-700">{{ currentUser?.full_name }}</span>
+                                class="flex items-center space-x-2 hover:bg-gray-100 py-1 rounded-lg">
                                 <div class="avatar">
                                     <div class="w-8 rounded">
                                         <img :src="avatar" @error="avatar = defaultAvatar" />
                                     </div>
                                 </div>
-                                <ChevronDown class="w-4 h-4 text-gray-600" />
                             </button>
 
                             <div v-show="isUserMenuOpen"
@@ -146,7 +144,8 @@ import {
     ShoppingBag,
     Ruler,
     Layers,
-    Ticket
+    Ticket,
+    Expand,
 } from 'lucide-vue-next'
 import { useRuntimeConfig } from '#app'
 import { useToast } from 'vue-toastification';

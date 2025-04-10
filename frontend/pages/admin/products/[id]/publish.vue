@@ -1,7 +1,6 @@
 <template>
-    <div class="border border-gray-200 rounded-lg p-5">
-        <form @submit.prevent="handleSubmit" class="space-y-2">
-            <div class="divider divider-start text-xl font-bold">Thông tin đăng bán</div>
+    <div class="p-4">
+        <form @submit.prevent="handleSubmit" class="space-y-4">
             <!-- Product Name -->
             <div>
                 <label class="text-gray-700 font-semibold">Tên sản phẩm</label>
@@ -25,9 +24,9 @@
                     <input v-model="form.harvested_at" type="date" class="input input-primary w-full mt-1" required />
                 </div>
             </div>
-            <div class="divider divider-start text-xl font-bold">Hình ảnh</div>
             <!-- Multiple Images -->
-            <div>
+            <div class="border-t border-gray-200 pt-5">
+                <div class="text-lg font-medium text-gray-800 mb-3">Hình ảnh</div>
                 <div class="space-y-2">
                     <input @change="handleImageUpload" type="file"
                         class="file-input file-input-primary mt-1 w-full lg:w-1/2" multiple required />
@@ -54,27 +53,30 @@
                 </div>
             </div>
 
-            <div class="divider divider-start text-xl font-bold">Thông tin giá cả</div>
             <!-- Price Type -->
-            <div class="flex space-x-4">
-                <div class="w-1/2">
-                    <label class="text-gray-700 font-semibold">Kiểu giá</label>
-                    <select v-model="form.pricing_type" class="select select-primary w-full mt-1" required>
-                        <option value="" disabled selected>Chọn đơn vị</option>
-                        <option value="fix">Cố định</option>
-                        <option value="flexible">Theo số lượng</option>
-                        <option value="contact">Liên hệ</option>
-                    </select>
-                </div>
-                <div class="w-1/2 flex items-end">
-                    <button v-if="form.pricing_type === 'flexible'" @click="addPrice" type="button"
-                        class="btn btn-primary">
-                        Thêm giá
-                    </button>
-                    <div class="flex gap-2 items-center"  v-if="form.pricing_type === 'fix'" >
-                        <input v-model="form.product_prices[0].price"
-                            class="input input-primary w-24" placeholder="15000" required />
-                        <span>VNĐ</span>
+            <div class="border-t border-gray-200 pt-5">
+                <div class="text-lg font-medium text-gray-800 mb-3">Giá cả</div>
+                <div class="flex space-x-4">
+
+                    <div class="w-1/2">
+                        <label class="text-gray-700 font-semibold">Kiểu giá</label>
+                        <select v-model="form.pricing_type" class="select select-primary w-full mt-1" required>
+                            <option value="" disabled selected>Chọn đơn vị</option>
+                            <option value="fix">Cố định</option>
+                            <option value="flexible">Theo số lượng</option>
+                            <option value="contact">Liên hệ</option>
+                        </select>
+                    </div>
+                    <div class="w-1/2 flex items-end">
+                        <button v-if="form.pricing_type === 'flexible'" @click="addPrice" type="button"
+                            class="btn btn-primary">
+                            Thêm giá
+                        </button>
+                        <div class="flex gap-2 items-center" v-if="form.pricing_type === 'fix'">
+                            <input v-model="form.product_prices[0].price" class="input input-primary w-24"
+                                placeholder="15000" required />
+                            <span>VNĐ</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -232,7 +234,7 @@ const handleSubmit = async () => {
         const { error: productError } = await updateProduct(productId, formProductData)
         const { error: imageError } = await createImage(productId, formImageData)
         if (form.value.pricing_type !== 'contact') {
-            const {error} = await createPrice(productId, formPriceData)
+            const { error } = await createPrice(productId, formPriceData)
             if (error.value) throw new Error('Thêm giá mới thất bại')
         }
         if (productError.value) throw new Error('Thông tin sản phẩm không hợp lệ')

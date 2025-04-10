@@ -1,23 +1,22 @@
 <template>
-  <div class="border border-gray-200 rounded-lg px-5 py-3 ">
+  <div class="p-4 ">
     <form @submit.prevent="handleSubmit" class="space-y-2">
       <!-- Tiêu đề -->
-      <div class="divider divider-start text-xl font-bold">Thông tin bài viết</div>
       <div class="flex space-x-4">
         <div class="w-1/2">
           <label class="text-gray-700 font-semibold">Mã bài viết</label>
-          <input v-model="form.id" class="input input-primary w-full mt-1" placeholder="Bài viết về ..." disabled
+          <input v-model="form.id" class="input input-primary w-full mt-1 bg-gray-100" placeholder="Bài viết về ..." readonly
             required />
         </div>
         <div class="w-1/2">
           <label class="text-gray-700 font-semibold">Tác giả</label>
-          <input v-model="form.user" class="input input-primary w-full mt-1" placeholder="Bài viết về ..." disabled
+          <input v-model="form.user" class="input input-primary w-full mt-1 bg-gray-100" placeholder="Bài viết về ..." readonly
             required />
         </div>
       </div>
       <div>
         <label class="text-gray-700 font-semibold">Đường dẫn đến bài viết</label>
-        <input v-model="form.slug" class="textarea textarea-primary h-18 w-full mt-1" readonly />
+        <input v-model="form.slug" class="input input-primary w-full mt-1" readonly />
       </div>
       <div>
         <label class="text-gray-700 font-semibold">Tiêu đề bài viết</label>
@@ -98,7 +97,7 @@
       </div>
 
       <!-- SEO -->
-      <div class="divider divider-start text-xl font-bold">SEO (Không bắt buộc nhập)</div>
+      <!-- <div class="divider divider-start text-xl font-bold">SEO (Không bắt buộc nhập)</div>
       <div class="flex space-x-4">
         <div class="w-1/2">
           <label class="text-gray-700 font-semibold">Tags</label>
@@ -115,34 +114,12 @@
         <label class="text-gray-700 font-semibold">Meta Description</label>
         <textarea v-model="form.meta_description" class="textarea textarea-primary h-24 w-full mt-1"
           placeholder="Meta description" />
-      </div>
-      <!-- <div class="divider"></div> -->
-      <!-- <div>
-        <label class="text-gray-700 font-semibold">Slug</label>
-        <textarea class="textarea textarea-primary h-18 w-full mt-1" disabled>{{ post?.slug }}</textarea>
-      </div>
-      <div class="flex space-x-4">
-        <div class="w-1/3">
-          <label class=" text-gray-700 font-semibold">Phát hành</label>
-          <input v-model="form.published_at" type="text" placeholder="dd/mm/yyyy" class="input input-primary w-full mt-1"
-            disabled />
-        </div>
-        <div class="w-1/3">
-          <label class="text-gray-700 font-semibold">Thêm</label>
-          <input v-model="form.created_at" type="text" placeholder="dd/mm/yyyy" class="input input-primary w-full mt-1"
-            disabled />
-        </div>
-        <div class="w-1/3">
-          <label class="text-gray-700 font-semibold">Cập nhật</label>
-          <input v-model="form.updated_at" type="text" placeholder="dd/mm/yyyy" class="input input-primary w-full mt-1"
-            disabled />
-        </div>
       </div> -->
-      <!-- Submit -->
       <div class="flex justify-end mt-6">
-        <button type="submit" class="btn btn-primary mt-1" :disabled="submitStatus === 'pending'">
+        <button type="button" @click="$router.back()" class="btn btn-ghost mr-2">Hủy</button>
+        <button type="submit" class="btn btn-primary" :disabled="submitStatus === 'pending'">
           <span v-if="submitStatus === 'pending'" class="loading loading-spinner loading-md"></span>
-          <span>Cập nhật bài viết</span>
+          <span>Lưu</span>
         </button>
       </div>
     </form>

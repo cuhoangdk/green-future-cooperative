@@ -20,10 +20,12 @@ export const useProducts = () => {
     const getProductsByCategoryId = async (
         categoryId: number,
         page: number = 1,
-        perPage: number = 10
+        perPage: number = 10,
+        authType: AuthType = AuthType.User
     ) => {
         return await get<Product>(`/products/category/${categoryId}`, {
             params: { page, per_page: perPage },
+            authType,
         });
     };
 
@@ -40,8 +42,11 @@ export const useProducts = () => {
 
 
     // Lấy sản phẩm theo ID
-    const getProductById = async (productId: number) => {
-        return await get<Product>(`/products/${productId}`);
+    const getProductById = async (productId: number, authType: AuthType = AuthType.User
+    ) => {
+        return await get<Product>(`/products/${productId}`, {
+            authType
+        });
     };
 
     // Lấy sản phẩm theo slug

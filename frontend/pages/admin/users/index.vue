@@ -36,18 +36,18 @@
         </div>
 
         <!-- Desktop Table View -->
-        <TableUser :users="users.users" :on-toggle-status="handleToggleStatus" :on-edit="handleEdit"
+        <TableUser :users="users.users" :on-toggle-status="handleToggleStatus" 
             :on-delete="handleDeleteUser" />
 
-        <GridUser :users="users.users" :on-toggle-status="handleToggleStatus" :on-edit="handleEdit"
+        <GridUser :users="users.users" :on-toggle-status="handleToggleStatus" 
             :on-delete="handleDeleteUser" />
 
         <!-- Pagination -->
-        <div class="flex justify-between items-center gap-2 m-4">
+        <div class="flex flex-col sm:flex-row justify-between items-center gap-4 m-4">
             <div class="flex items-center space-x-2">
-                <p class="text-sm text-gray-600 w-32">{{ users.users.length }} / {{ users.meta?.total }} người dùng
+                <p class="text-sm text-gray-600">{{ users.users.length }} / {{ users.meta?.total }}
                 </p>
-                <select v-model="perPage" class="select select-sm select-primary" @change="search">
+                <select v-model="perPage" class="select select-sm select-primary w-18" @change="search">
                     <option v-for="n in [10, 25, 50, 100]" :value="n" :key="n">{{ n }}</option>
                 </select>
             </div>
@@ -88,19 +88,6 @@ const users = computed<{ users: User[], meta: PaginationMeta | null, links: Pagi
     meta: data.value?.meta ?? null,
     links: data.value?.links ?? null,
 }))
-
-const addressData = ref<{ [key: number]: string }>({})
-watch(() => users.value.users, async (newUsers) => {
-    for (const user of newUsers) {
-        if (user.address?.ward) {
-            addressData.value[user.id] = await getFullAddressName(user.address.ward)
-        }
-    }
-}, { immediate: true })
-
-const toggleRow = (id: number) => {
-    expandedRows.value.has(id) ? expandedRows.value.delete(id) : expandedRows.value.add(id)
-}
 
 async function search() {
     const filters: any = {
@@ -160,7 +147,4 @@ async function handleToggleStatus(user: User) {
     }
 }
 
-const handleEdit = (customerId: number) => {
-    router.push(`/admin/users/${customerId}/edit`)
-}
 </script>

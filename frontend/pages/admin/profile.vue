@@ -1,8 +1,8 @@
 <template>
-    <div class="border border-gray-200 rounded-lg p-4 sm:p-5">
-        <form @submit.prevent="handleSubmit" class="space-y-6">
+    <div class="p-4">
+        <form @submit.prevent="handleSubmit" class="space-y-4">
             <!-- Phần 1: Thông tin cơ bản với avatar -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <!-- Avatar Section -->
                 <div class="flex flex-col items-center md:col-span-1">
                     <div class="w-48 h-48 mb-3 cursor-pointer" @click="triggerFileInput">

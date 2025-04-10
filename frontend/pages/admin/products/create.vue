@@ -1,14 +1,11 @@
 <template>
-    <div class="border border-gray-200 rounded-lg p-5">
-        <form @submit.prevent="handleSubmit" class="space-y-2">
-            <div class="divider divider-start text-xl font-bold">Thông tin sản phẩm</div>
-            <!-- Farm Name -->
+    <div class="p-4">
+        <form @submit.prevent="handleSubmit" class="space-y-4">
             <div class="">
                 <label class="text-gray-700 font-semibold">Tên sản phẩm</label>
                 <input v-model="form.name" class="input input-primary w-full mt-1" placeholder="Rau cải" required />
             </div>
 
-            <!-- Danh mục -->
             <div v-if="currentUser?.is_super_admin">
                 <label class="text-gray-700 font-semibold">Thành viên</label>
                 <select @change="(event) => searchFarms({ user_id: Number((event.target as HTMLSelectElement).value) })"
@@ -19,9 +16,7 @@
                     </option>
                 </select>
             </div>
-            <!-- Farm Details -->
             <div class="flex gap-2">
-                <!-- Farm -->
                 <div class="w-1/3">
                     <label class="text-gray-700 font-semibold">Nông trại</label>
                     <select v-model="form.farm_id" class="select select-primary w-full mt-1" required>
@@ -32,7 +27,6 @@
                     </select>
                 </div>
 
-                <!-- Unit -->
                 <div class="w-1/3">
                     <label class="text-gray-700 font-semibold">Đơn vị</label>
                     <select v-model="form.unit_id" class="select select-primary w-full mt-1" required>
@@ -43,7 +37,6 @@
                     </select>
                 </div>
 
-                <!-- Category -->
                 <div class="w-1/3">
                     <label class="text-gray-700 font-semibold">Loại</label>
                     <select v-model="form.category_id" class="select select-primary w-full mt-1" required>
@@ -55,14 +48,12 @@
                 </div>
             </div>
 
-            <!-- Description -->
             <div>
                 <label class="text-gray-700 font-semibold">Mô tả</label>
                 <textarea v-model="form.description" class="textarea textarea-primary w-full h-24 mt-1"
                     placeholder="Sẩn phẩm được trồng..." />
             </div>
 
-            <!-- Farm Details -->
             <div class="flex flex-col md:flex-row gap-2">
                 <div class="w-full md:w-1/2">
                     <label class="text-gray-700 font-semibold">Ngày gieo hạt</label>
@@ -76,7 +67,6 @@
                 </div>
             </div>
 
-            <!-- Location -->
             <div class="flex flex-col md:flex-row gap-2">
                 <div class="w-full md:w-1/2">
                     <label class="text-gray-700 font-semibold">Diện tích trồng (mét vuông)</label>
@@ -90,15 +80,14 @@
                 </div>
             </div>
 
-            <!-- Expired -->
             <div class="w-full md:w-1/2">
                 <label class="text-gray-700 font-semibold">Hạn sử dụng (ngày từ khi thu hoạch)</label>
                 <input v-model="form.expired" type="number" step="1" class="input input-primary w-full mt-1"
                     placeholder="7" />
             </div>
 
-            <!-- Submit Button -->
-            <div class="flex justify-end">
+            <div class="flex justify-between items-center">
+                <button type="button" @click="$router.back()" class="btn btn-ghost mr-2">Hủy</button>
                 <button type="submit" class="btn btn-primary" :disabled="status === 'pending'">
                     <span v-if="status === 'pending'" class="loading loading-spinner loading-md"></span>
                     <span>Thêm</span>
@@ -107,8 +96,6 @@
         </form>
     </div>
 </template>
-
-
 
 <script setup lang="ts">
 definePageMeta({ title: 'Thêm sản phẩm', layout: 'user', })

@@ -82,7 +82,7 @@
                         <select v-model="form.address.province"
                             @change="handleProvinceChange"
                             class="select select-bordered select-primary w-full">
-                            <option value="" disabled>Chọn tỉnh/thành phố</option>
+                            <option value="" disabled>Tỉnh/thành phố</option>
                             <option v-for="p in provinces" :key="p.id" :value="p.id">
                                 {{ p.full_name }}
                             </option>
@@ -95,7 +95,7 @@
                         <select v-model="form.address.district"
                             @change="handleDistrictChange"
                             class="select select-bordered select-primary w-full">
-                            <option value="" disabled>Chọn quận/huyện</option>
+                            <option value="" disabled>Quận/huyện</option>
                             <option v-for="d in districts" :key="d.id" :value="d.id">
                                 {{ d.full_name }}
                             </option>
@@ -106,7 +106,7 @@
                     <div>
                         <label class="text-gray-700 font-semibold block mb-1">Phường/Xã</label>
                         <select v-model="form.address.ward" class="select select-bordered select-primary w-full">
-                            <option value="" disabled>Chọn phường/xã</option>
+                            <option value="" disabled>Phường/xã</option>
                             <option v-for="w in wards" :key="w.id" :value="w.id">
                                 {{ w.full_name }}
                             </option>
@@ -156,7 +156,7 @@
                 <button type="button" @click="$router.push('/admin/users')" class="btn btn-ghost mr-2">Hủy</button>
                 <button type="submit" class="btn btn-primary px-6" :disabled="status === 'pending'">
                     <span v-if="status === 'pending'" class="loading loading-spinner loading-md"></span>
-                    Thêm người dùng
+                    Thêm
                 </button>
             </div>
         </form>

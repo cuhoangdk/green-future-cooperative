@@ -1,13 +1,13 @@
 <template>
-    <div>
+    <div class="p-4">
         <div v-if="productStatus === 'pending'" class="skeleton w-[650px] h-[280px] rounded-lg" />
         <div v-else ref="labelRef"
-            class="w-[650px] border-2 border-green-700 rounded-lg p-4 bg-white font-sans shadow-md relative overflow-hidden">
+            class="w-[650px] border-2 border-green-700 rounded-lg p-2 bg-white font-sans shadow-md relative overflow-hidden">
             <div class="absolute inset-0 flex items-center justify-center opacity-5 pointer-events-none">
                 <img :src="logo" alt="Logo" class="w-96 h-96 object-contain" />
             </div>
 
-            <div class="text-center mb-4 pb-2 border-b border-green-200">
+            <div class="text-center border-b border-green-200">
                 <h1 class="text-xl font-bold text-green-700">HTX TƯƠNG LAI XANH</h1>
             </div>
 
@@ -22,16 +22,29 @@
                     <p><span class="font-semibold text-green-800">Tên sản phẩm:</span> {{ product?.name }}</p>
                     <p><span class="font-semibold text-green-800">Mã sản phẩm:</span> {{ product?.product_code }}</p>
                     <p><span class="font-semibold text-green-800">Xuất xứ:</span> {{ addressData || 'Đang tải...' }}</p>
-                    <p><span class="font-semibold text-green-800">Ngày thu hoạch:</span> {{ product?.harvested_at ? new
-                        Date(product.harvested_at).toLocaleDateString('vi-VN') : 'Chưa thu hoạch' }}</p>
+                    <p><span class="font-semibold text-green-800">Ngày thu hoạch:</span> {{ formatDate(havertedAt) }}</p>
                     <p><span class="font-semibold text-green-800">SĐT/Zalo:</span> 0917248016</p>
                     <p><span class="font-semibold text-green-800">Fanpage:</span> Green Future Cooperative</p>
-                    <p><span class="font-semibold text-green-800">Hạn sử dụng:</span> 7 ngày kể từ ngày thu hoạch</p>
+                    <p><span class="font-semibold text-green-800">Hạn sử dụng:</span> {{ expired ? expired : "__" }} ngày kể từ ngày thu hoạch</p>
                 </div>
             </div>
         </div>
-        <button @click="downloadLabel" class="mt-4 btn bg-green-700 text-white hover:bg-green-800 block">Tải xuống
-            nhãn</button>
+
+        <div class="mt-4">
+            <div class="text-gray-700 font-semibold">Ngày thu hoạch</div>
+            <input v-model="havertedAt" type="date" class="input input-sm input-primary" />
+        </div>
+        <div class="mt-2" >
+            <div class="text-gray-700 font-semibold">Hạn sử dụng</div>
+            <input v-model="expired" type="number" class="input input-sm input-primary" placeholder="Nhập số ngày hết hạn" />
+        </div>
+        
+        <div class="flex gap-4">
+            <button @click="$router.back()" class="mt-4 btn btn-ghost">Quay lại</button>
+
+            <button @click="downloadLabel" class="mt-4 btn btn-primary">Tải xuống nhãn</button>
+        </div>
+
     </div>
 </template>
 
@@ -39,8 +52,8 @@
 definePageMeta({ layout: 'user', title: 'QR Code' })
 import type { Product } from '~/types/product'
 import type { Farm } from '~/types/farm'
+import { formatDate } from '~/utils/common'
 import domtoimage from 'dom-to-image'
-
 
 const route = useRoute()
 const runtimeConfig = useRuntimeConfig()
@@ -61,10 +74,18 @@ const { data: productData, status: productStatus } = await getProductById(produc
 const product = computed<Product | null>(() => Array.isArray(productData.value?.data) ? productData.value.data[0] : productData.value?.data || null)
 
 const farm = ref<Farm | null>(null)
+const havertedAt = ref('')
+const expired = ref()
 watch(product, async (newProduct) => {
     if (newProduct?.farm_id) {
         const { data } = await getFarmById(Number(newProduct.farm_id))
         farm.value = data.value?.data || null
+    }
+    if (newProduct?.harvested_at) {
+        havertedAt.value = newProduct.harvested_at
+    }
+    if (newProduct?.expired) {
+        expired.value = newProduct.expired
     }
 }, { immediate: true })
 

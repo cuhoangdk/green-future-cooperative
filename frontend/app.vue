@@ -16,7 +16,7 @@ definePageMeta({
 <style>
 .page-enter-active,
 .page-leave-active {
-  transition: all 0.1s;
+  transition: all 0.05s;
 }
 .page-enter-from,
 .page-leave-to {

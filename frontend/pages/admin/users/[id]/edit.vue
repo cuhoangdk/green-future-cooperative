@@ -168,7 +168,7 @@
                 <button type="button" @click="$router.push('/admin/users')" class="btn btn-ghost mr-2">Hủy</button>
                 <button type="submit" class="btn btn-primary px-6" :disabled="status === 'pending'">
                     <span v-if="status === 'pending'" class="loading loading-spinner loading-md"></span>
-                    Cập nhật người dùng
+                    Lưu
                 </button>
             </div>
         </form>

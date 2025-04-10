@@ -1,7 +1,6 @@
 <template>
-    <div class="border border-gray-200 rounded-lg p-5">
-        <form @submit.prevent="handleSubmit" class="space-y-2">
-            <div class="divider divider-start text-xl font-bold">Thông tin sản phẩm</div>
+    <div class="p-4">
+        <form @submit.prevent="handleSubmit" class="space-y-4">
             <!-- Product Code -->
             <div>
                 <label class="text-gray-700 font-semibold">Mã sản phẩm</label>
@@ -101,31 +100,34 @@
             <!-- Harvested At -->
             <div>
                 <label class="text-gray-700 font-semibold">Bắt đầu thu hoạch</label>
-                <input v-model="form.harvested_at" type="date" class="input input-primary w-full mt-1"/>
+                <input v-model="form.harvested_at" type="date" class="input input-primary w-full mt-1" />
             </div>
 
             <!-- Phần hình ảnh và giá cả (chỉ khi đã bán) -->
             <template v-if="product?.status === 'selling'">
-                <div class="divider divider-start text-xl font-bold">Hình ảnh</div>
-                <div>
-                    <div class="space-y-2">
-                        <input @change="handleImageUpload" type="file"
-                            class="file-input file-input-primary mt-1 w-full lg:w-1/2" multiple />
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                            <div v-for="(image, index) in form.product_images" :key="index">
-                                <div class="relative w-full">
-                                    <img :src="image.preview || `${backendUrl}${image.image_url}`"
-                                        class="aspect-video w-full object-cover rounded-lg shadow mt-2" />
-                                    <div class="absolute inset-0 flex flex-col justify-between items-end p-2 rounded-lg">
-                                        <label class="flex items-center text-black bg-white px-2 py-1 rounded-full">
-                                            <span class="text-sm font-semibold">Ảnh chính</span>
-                                            <input type="radio" v-model="primaryImageIndex" :value="index"
-                                                class="radio radio-primary ml-2" />
-                                        </label>
-                                        <button @click="removeImage(index)" type="button"
-                                            class="btn btn-error btn-sm mt-2">
-                                            Xóa
-                                        </button>
+                <div class="border-t border-gray-200 pt-5">
+                    <div class="text-lg font-medium text-gray-800 mb-3">Hình ảnh</div>
+                    <div>
+                        <div class="space-y-2">
+                            <input @change="handleImageUpload" type="file"
+                                class="file-input file-input-primary mt-1 w-full lg:w-1/2" multiple />
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                <div v-for="(image, index) in form.product_images" :key="index">
+                                    <div class="relative w-full">
+                                        <img :src="image.preview || `${backendUrl}${image.image_url}`"
+                                            class="aspect-video w-full object-cover rounded-lg shadow mt-2" />
+                                        <div
+                                            class="absolute inset-0 flex flex-col justify-between items-end p-2 rounded-lg">
+                                            <label class="flex items-center text-black bg-white px-2 py-1 rounded-full">
+                                                <span class="text-sm font-semibold">Ảnh chính</span>
+                                                <input type="radio" v-model="primaryImageIndex" :value="index"
+                                                    class="radio radio-primary ml-2" />
+                                            </label>
+                                            <button @click="removeImage(index)" type="button"
+                                                class="btn btn-error btn-sm mt-2">
+                                                Xóa
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -133,55 +135,59 @@
                     </div>
                 </div>
 
-                <div class="divider divider-start text-xl font-bold">Thông tin giá cả</div>
-                <div class="flex space-x-4">
-                    <div class="w-1/2">
-                        <label class="text-gray-700 font-semibold">Kiểu giá</label>
-                        <select v-model="form.pricing_type" class="select select-primary w-full mt-1" required>
-                            <option value="" disabled>Chọn kiểu giá</option>
-                            <option value="fix">Cố định</option>
-                            <option value="flexible">Theo số lượng</option>
-                            <option value="contact">Liên hệ</option>
-                        </select>
+                <div class="border-t border-gray-200 pt-5">
+                    <div class="text-lg font-medium text-gray-800 mb-3">Thông tin giá cả</div>
+                    <div class="flex space-x-4">
+                        <div class="w-1/2">
+                            <label class="text-gray-700 font-semibold">Kiểu giá</label>
+                            <select v-model="form.pricing_type" class="select select-primary w-full mt-1" required>
+                                <option value="" disabled>Chọn kiểu giá</option>
+                                <option value="fix">Cố định</option>
+                                <option value="flexible">Theo số lượng</option>
+                                <option value="contact">Liên hệ</option>
+                            </select>
+                        </div>
+                        <div class="w-1/2 flex items-end">
+                            <button v-if="form.pricing_type === 'flexible'" @click="addPrice" type="button"
+                                class="btn btn-primary">
+                                Thêm giá
+                            </button>
+                            <div class="flex gap-2 items-center" v-if="form.pricing_type === 'fix'">
+                                <input v-model="form.product_prices[0].price" type="number"
+                                    class="input input-primary w-24" placeholder="15000" required />
+                                <span>VNĐ</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="w-1/2 flex items-end">
-                        <button v-if="form.pricing_type === 'flexible'" @click="addPrice" type="button"
-                            class="btn btn-primary">
-                            Thêm giá
-                        </button>
-                        <div class="flex gap-2 items-center" v-if="form.pricing_type === 'fix'">
-                            <input v-model="form.product_prices[0].price" type="number" class="input input-primary w-24"
+
+                    <div v-if="form.pricing_type === 'flexible'">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-gray-700 font-semibold">Danh sách giá</span>
+                        </div>
+                        <div v-for="(price, index) in form.product_prices" :key="index"
+                            class="flex items-center gap-2 mb-2">
+                            <div>
+                                <label class="text-gray-700 font-semibold">Từ </label>
+                                <input v-model="price.quantity" type="number"
+                                    class="input input-primary w-15 text-center" placeholder="0" required />
+                                {{ product?.unit.name }}
+                                <span class="text-gray-700 font-semibold">-</span>
+                            </div>
+                            <input v-model="price.price" type="number" class="input input-primary w-24 text-center"
                                 placeholder="15000" required />
                             <span>VNĐ</span>
+                            <button v-if="form.product_prices.length > 1" @click="removePrice(index)" type="button"
+                                class="btn btn-error btn-sm">
+                                Xóa
+                            </button>
                         </div>
-                    </div>
-                </div>
-
-                <div v-if="form.pricing_type === 'flexible'">
-                    <div class="flex justify-between items-center mb-2">
-                        <span class="text-gray-700 font-semibold">Danh sách giá</span>
-                    </div>
-                    <div v-for="(price, index) in form.product_prices" :key="index" class="flex items-center gap-2 mb-2">
-                        <div>
-                            <label class="text-gray-700 font-semibold">Từ </label>
-                            <input v-model="price.quantity" type="number" class="input input-primary w-15 text-center"
-                                placeholder="0" required />
-                            {{ product?.unit.name }}
-                            <span class="text-gray-700 font-semibold">-</span>
-                        </div>
-                        <input v-model="price.price" type="number" class="input input-primary w-24 text-center"
-                            placeholder="15000" required />
-                        <span>VNĐ</span>
-                        <button v-if="form.product_prices.length > 1" @click="removePrice(index)" type="button"
-                            class="btn btn-error btn-sm">
-                            Xóa
-                        </button>
                     </div>
                 </div>
             </template>
 
             <!-- Submit Button -->
-            <div class="flex justify-end mt-5">
+            <div class="flex justify-between items-center">
+                <button type="button" @click="$router.back()" class="btn btn-ghost mr-2">Hủy</button>
                 <button type="submit" class="btn btn-primary" :disabled="status === 'pending'">
                     <span v-if="status === 'pending'" class="loading loading-spinner loading-md"></span>
                     <span>Lưu thay đổi</span>

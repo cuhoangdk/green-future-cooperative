@@ -14,6 +14,16 @@ export const useCustomerAuth = () => {
         decode: (value) => (value ? JSON.parse(value) : null),
     })
 
+    const register = async (email: string, full_name: string, phone_number: string, password: string , password_confirmation: string) => {
+        const { data, error } = await post<LoginResponse>('/customer-auth/register', {
+            email,
+            full_name,
+            phone_number,
+            password,
+            password_confirmation,
+        }, { authType: AuthType.Guest })
+    }
+
     const login = async (email: string, password: string) => {
         const { data, error } = await post<LoginResponse>('/customer-auth/login', {
             email,
@@ -25,7 +35,7 @@ export const useCustomerAuth = () => {
             refreshToken.value = data.value.original.refresh_token
             return { success: true }
         } else {
-            throw new Error(error.value?.message || 'Login failed')
+            throw new Error(data.value?.original.message || 'Login failed')
         }
     }
 
@@ -113,6 +123,7 @@ export const useCustomerAuth = () => {
         fetchCurrentCustomer,
         refreshAccessToken,
         updateProfile,
+        register,
         currentCustomer: readonly(currentCustomer),
         accessToken: readonly(accessToken),
         refreshToken: readonly(refreshToken),

@@ -77,7 +77,7 @@
                 <button type="button" @click="$router.push('/admin/customers')" class="btn btn-ghost mr-2">Hủy</button>
                 <button type="submit" class="btn btn-primary px-6" :disabled="status === 'pending'">
                     <span v-if="status === 'pending'" class="loading loading-spinner loading-md"></span>
-                    Thêm khách hàng
+                    Thêm
                 </button>
             </div>
         </form>
@@ -86,7 +86,7 @@
 
 <script setup lang="ts">
 definePageMeta({
-    title: 'Thêm khách hàng mới',
+    title: 'Thêm khách hàng',
     layout: 'user',
 })
 

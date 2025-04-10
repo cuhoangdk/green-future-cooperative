@@ -13,13 +13,13 @@
                         <span>{{ farm.user.full_name }}</span>
                     </div>
                     <div class="flex gap-2 items-center">
-                        <MapIcon class="w-4 h-4 text-gray-500" />
+                        <MapPinIcon class="w-4 h-4 text-gray-500" />
                         <span>{{ addressData[farm.id] }}</span>
                     </div>
                 </div>
 
                 <div class="card-actions justify-end border-t pt-2 border-gray-100">
-                    <UiEditButton :on-click="() => onEdit(farm.id)" />
+                    <UiEditButton :to="`farms/${farm.id}`" />
                     <UiDeleteButton :on-click="() => onDelete(farm.id)" />
                 </div>
             </div>
@@ -28,13 +28,12 @@
 </template>
 
 <script setup lang="ts">
-import { User2Icon, MapIcon } from 'lucide-vue-next'
+import { User2Icon, MapPinIcon } from 'lucide-vue-next'
 import type { Farm } from '~/types/farm'
 
 defineProps<{
     farms: Farm[]
     addressData: { [key: number]: string }
-    onEdit: (customerId: number) => void
     onDelete: (customerId: number) => void
 }>()
 </script>

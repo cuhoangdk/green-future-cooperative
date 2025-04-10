@@ -8,6 +8,7 @@ export interface Order {
     status: OrderStatus;
     full_name: string;
     phone_number: string;
+    email: string;
     address_type: AddressType;
     province: string;
     district: string;
@@ -45,5 +46,5 @@ export interface Product_Snapshot {
     product_name: string;
     user_full_name?: string | null;
     unit: string;
-    price: string;
+    price: number;
 }

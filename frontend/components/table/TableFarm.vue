@@ -12,12 +12,12 @@
             <tbody>
                 <tr v-for="farm in farms" :key="farm.id"
                     class="border-b border-gray-100 hover:bg-gray-200 cursor-pointer">
-                    <td class="py-2 pl-2">{{ farm.name }}</td>
-                    <td class="py-2 pl-2">{{ farm.user.full_name }}</td>
-                    <td class="py-2 pl-2">{{ addressData[farm.id] }}</td>
-                    <td class="py-2">
+                    <td class="py-1 pl-2">{{ farm.name }}</td>
+                    <td class="py-1">{{ farm.user.full_name }}</td>
+                    <td class="py-1">{{ addressData[farm.id] }}</td>
+                    <td class="py-1">
                         <div class="flex space-x-1 items-center">
-                            <UiEditButton :on-click="() => onEdit(farm.id)" />
+                            <UiEditButton :to="`farms/${farm.id}`" />
                             <UiDeleteButton :on-click="() => onDelete(farm.id)" />
                         </div>
                     </td>
@@ -33,7 +33,6 @@ import type { Farm } from '~/types/farm'
 defineProps<{
     farms: Farm[]
     addressData: { [key: number]: string }
-    onEdit: (customerId: number) => void
     onDelete: (customerId: number) => void
 }>()
 </script>

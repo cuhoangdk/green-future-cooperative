@@ -1,7 +1,6 @@
 <template>
-    <div class="border border-gray-200 rounded-lg p-5">
-        <form @submit.prevent="handleSubmit" class="space-y-2">
-            <div class="divider divider-start text-xl font-bold">Thông tin đơn vị tính</div>
+    <div class="p-4">
+        <form @submit.prevent="handleSubmit" class="space-y-4">
             <div class="flex flex-col gap-4">
                 <!-- Farm Name -->
                 <div class="w-full">
@@ -16,14 +15,15 @@
                         placeholder="Kilogram/Gram..." required />
                 </div>
                 <label class="flex items-center w-full">
-                    <input v-model="form.allow_decimal" type="checkbox" class="toggle toggle-primary mr-2 mt-1" />Cho phép số lượng lẻ
+                    <input v-model="form.allow_decimal" type="checkbox" class="checkbox checkbox-secondary mr-2" />Cho phép số lượng lẻ
                 </label>
             </div>
             <!-- Submit Button -->
             <div class="flex justify-end">
+                <button type="button" @click="$router.back()" class="btn btn-ghost mr-2">Hủy</button>
                 <button type="submit" class="btn btn-primary" :disabled="status === 'pending'">
                     <span v-if="status === 'pending'" class="loading loading-spinner loading-md"></span>
-                    <span>Thêm đơn vị tính</span>
+                    <span>Thêm</span>
                 </button>
             </div>
         </form>

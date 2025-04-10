@@ -15,17 +15,17 @@
         <!-- Table -->
         <div class="w-full overflow-x-auto">
             <!-- Desktop Table View -->
-            <TableFarm :farms="farms.farms" :on-edit="handleEdit" :address-data="addressData"
+            <TableFarm :farms="farms.farms" :address-data="addressData"
                 :on-delete="handleDeleteFarm" />
             <!-- Mobile Card View -->
-            <GridFarm :farms="farms.farms" :on-edit="handleEdit" :address-data="addressData"
+            <GridFarm :farms="farms.farms":address-data="addressData"
                 :on-delete="handleDeleteFarm" />
 
             <!-- Pagination -->
             <div class="flex flex-col sm:flex-row justify-between items-center m-4 gap-2">
                 <div class="flex items-center space-x-2">
-                    <p class="text-sm text-gray-600 w-24">{{ farms.farms.length }} / {{ farms.meta?.total }}</p>
-                    <select v-model="perPage" class="select select-sm select-primary" @change="search">
+                    <p class="text-sm text-gray-600">{{ farms.farms.length }} / {{ farms.meta?.total }}</p>
+                    <select v-model="perPage" class="select select-sm select-primary w-18" @change="search">
                         <option v-for="n in [10, 25, 50, 100]" :value="n" :key="n">{{ n }}</option>
                     </select>
                 </div>
@@ -39,7 +39,7 @@
 <script setup lang="ts">
 definePageMeta({ layout: 'user', title: 'Nông trại', description: 'Quản lý nông trại trên trang web' })
 
-import { ChevronDown, ChevronRight, Search, Plus } from 'lucide-vue-next'
+import { Search, Plus } from 'lucide-vue-next'
 import { debounce } from 'lodash-es'
 import { useToast } from 'vue-toastification'
 import type { Farm } from '~/types/farm'
@@ -112,7 +112,4 @@ const handlePageChange = (page: number) => {
     search()
 }
 
-const handleEdit = (customerId: number) => {
-    router.push(`/admin/farms/${customerId}`)
-}
 </script>

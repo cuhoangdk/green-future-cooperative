@@ -1,7 +1,6 @@
 <template>
-    <div class="border border-gray-200 rounded-lg p-4 sm:p-5">
+    <div class="p-4">
         <form @submit.prevent="handleSubmit" class="space-y-6">
-            <!-- Phần 1: Thông tin cơ bản với avatar -->
             <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
                 <!-- Avatar Section -->
                 <div class="flex flex-col items-center md:col-span-1">
@@ -14,7 +13,6 @@
                     <label class="text-gray-700 font-semibold mt-2">Ảnh đại diện</label>
                 </div>
 
-                <!-- Thông tin cá nhân chính -->
                 <div class="md:col-span-3 grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <!-- User Code - Luôn hiển thị đầu tiên -->
                     <div class="sm:col-span-2">
@@ -24,7 +22,6 @@
                         </div>
                     </div>
 
-                    <!-- Thông tin nhận dạng -->
                     <div>
                         <label class="text-gray-700 font-semibold block mb-1">Họ và tên <span
                                 class="text-red-500">*</span></label>
@@ -81,7 +78,6 @@
                 </div>
             </div>
 
-            <!-- Phần 2: Thông tin địa chỉ -->
             <div class="border-t border-gray-200 pt-5">
                 <h3 class="text-lg font-medium text-gray-800 mb-3">Thông tin địa chỉ</h3>
                 <div v-for="address in customer?.addresses" :key="address.id">
@@ -89,12 +85,11 @@
                     </div>
             </div>
 
-            <!-- Submit Button -->
             <div class="border-t border-gray-200 pt-5 flex justify-end">
                 <button type="button" @click="$router.push('/admin/customers')" class="btn btn-ghost mr-2">Hủy</button>
                 <button type="submit" class="btn btn-primary px-6" :disabled="status === 'pending'">
                     <span v-if="status === 'pending'" class="loading loading-spinner loading-md"></span>
-                    Cập nhật khách hàng
+                    Lưu
                 </button>
             </div>
         </form>
@@ -108,13 +103,10 @@ definePageMeta({
 })
 
 import { useToast } from 'vue-toastification';
-import { useRuntimeConfig } from '#app';
-import { useVietnamAddress } from '#imports';
-import { useCustomer } from '#imports';
 import type { Customer } from '~/types/customer';
 
 const route = useRoute();
-const { provinces, districts, wards, fetchProvinces, fetchDistricts, fetchWards, getFullAddressName } = useVietnamAddress();
+const { getFullAddressName } = useVietnamAddress();
 const { getCustomerById, updateCustomer } = useCustomer();
 const toast = useToast();
 const router = useRouter();

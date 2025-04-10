@@ -28,27 +28,37 @@
       </button>
     </div>
 
-    <!-- Desktop Table View -->
-    <TableCustomer :customers="customers.customers" :on-toggle-status="handleToggleStatus" :on-edit="handleEdit"
-      :on-delete="handleDeleteCustomer" />
+    <!-- Content Wrapper with Loading Overlay -->
+    <div class="relative">
+      <!-- Loading Overlay specific to table/grid -->
+      <div v-if="status === 'pending'"
+        class="absolute inset-0 bg-gray-50 opacity-25 flex justify-center items-center z-10">
+        <span class="loading loading-spinner loading-lg"></span>
+      </div>
 
-    <!-- Mobile Card View -->
-    <GridCustomer :customers="customers.customers" :on-toggle-status="handleToggleStatus" :on-edit="handleEdit"
-      :on-delete="handleDeleteCustomer" />
+      <div v-if="customers.customers.length > 0">
+        <TableCustomer :customers="customers.customers" :on-toggle-status="handleToggleStatus"
+          :on-delete="handleDeleteCustomer" />
 
-    <!-- Empty State -->
-    <div v-if="customers.customers.length === 0" class="flex flex-col items-center justify-center p-8">
-      <EmptyBoxIcon class="w-16 h-16 text-gray-300" />
-      <p class="text-gray-500 mt-2">Không tìm thấy khách hàng</p>
+        <GridCustomer :customers="customers.customers" :on-toggle-status="handleToggleStatus"
+          :on-delete="handleDeleteCustomer" />
+      </div>
+
+      <div v-else-if="customers.customers.length === 0" class="flex flex-col items-center justify-center p-8">
+        <Box class="w-16 h-16 text-gray-300" />
+        <p class="text-gray-500 mt-2">Không tìm thấy khách hàng</p>
+      </div>
     </div>
+
+
 
     <!-- Pagination -->
     <div class="flex flex-col sm:flex-row justify-between items-center gap-4 m-4">
       <div class="flex items-center space-x-2">
+        <p class="text-sm text-gray-600">{{ customers.customers.length }} / {{ customers.meta?.total }}</p>
         <select v-model="perPage" class="select select-sm select-primary w-18" @change="search">
           <option v-for="n in [10, 25, 50, 100]" :value="n" :key="n">{{ n }}</option>
         </select>
-        <p class="text-sm text-gray-600">{{ customers.customers.length }} / {{ customers.meta?.total }}</p>
       </div>
       <UiPagination :links="customers.links" :meta="customers.meta" :show-first-last="true" :show-numbers="true"
         @page-change="handlePageChange" />
@@ -59,7 +69,7 @@
 <script setup lang="ts">
 definePageMeta({ layout: 'user', title: 'Khách hàng', description: 'Quản lý khách hàng trên trang web' })
 
-import { Search, Plus } from 'lucide-vue-next'
+import { Search, Plus, Box } from 'lucide-vue-next'
 import { debounce } from 'lodash-es'
 import { useSwal } from '~/composables/useSwal'
 import { useToast } from 'vue-toastification'
@@ -73,13 +83,13 @@ const toast = useToast()
 const router = useRouter()
 
 const currentPage = ref(Number(useRoute().query.page) || 1)
-const perPage = ref(10)
+const perPage = ref(3)
 const searchQuery = ref('')
 const isBanned = ref('')
 const sortBy = ref('')
 const debouncedSearch = debounce(search, 500)
 
-const { data } = await searchCustomers({ page: currentPage.value, per_page: perPage.value })
+const { data, status } = await searchCustomers({ page: currentPage.value, per_page: perPage.value })
 const customers = computed<{ customers: Customer[], meta: PaginationMeta | null, links: PaginationLinks | null }>(() => ({
   customers: Array.isArray(data.value?.data) ? data.value.data : data.value?.data ? [data.value.data] : [],
   meta: data.value?.meta ?? null,
@@ -142,7 +152,4 @@ async function handleToggleStatus(customer: Customer) {
   }
 }
 
-const handleEdit = (customerId: number) => {
-  router.push(`/admin/customers/${customerId}/edit`)
-}
 </script>

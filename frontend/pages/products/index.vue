@@ -42,7 +42,7 @@ const currentPage = ref(1)
 const sortOrder = ref('newest')
 
 // State cho phân trang
-const { data, status, error } = await searchProducts({}, AuthType.Guest)
+const { data, status, error } = await getProducts(currentPage.value, perPage, AuthType.Guest)
 const products = computed<{
     products: Product[];
     meta: PaginationMeta | null;

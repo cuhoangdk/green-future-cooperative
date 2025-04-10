@@ -33,6 +33,6 @@ export function getYouTubeVideoID(url: string): string | null {
     const day = String(date.getUTCDate()).padStart(2, '0');
     const month = String(date.getUTCMonth() + 1).padStart(2, '0');
     const year = date.getUTCFullYear();
-    return `${minutes}:${hours} ${day}/${month}/${year}`;
+    return `${hours}:${minutes} ${day}/${month}/${year}`;
   }
 

@@ -1,7 +1,6 @@
 <template>
-    <div class="border border-gray-200 rounded-lg px-5 py-3 ">
-        <form @submit.prevent="handleSubmit" class="space-y-2">
-            <div class="divider divider-start text-xl font-bold">Thông tin bài viết</div>
+    <div class="p-4">
+        <form @submit.prevent="handleSubmit" class="space-y-4">
             <!-- Tiêu đề -->
             <div>
                 <label class="text-gray-700 font-semibold">Tiêu đề bài viết</label>
@@ -87,7 +86,7 @@
                 </div>
                 <div v-else class="w-1/2"></div>
             </div>
-            <div class="divider divider-start text-xl font-bold">SEO (Không bắt buộc nhập)</div>
+            <!-- <div class="divider divider-start text-xl font-bold">SEO (Không bắt buộc nhập)</div>
             <div class="flex space-x-4">
                 <div class="w-1/2">
                     <label class="text-gray-700 font-semibold">Tags</label>
@@ -95,7 +94,6 @@
                         class="input input-primary w-full mt-1" />
                 </div>
 
-                <!-- Meta Title -->
                 <div class="w-1/2">
                     <label class="text-gray-700 font-semibold">Meta Title</label>
                     <input v-model="form.meta_title" type="text" placeholder="Nhập meta title"
@@ -103,15 +101,17 @@
                 </div>
             </div>
 
-            <!-- Meta Description -->
             <div>
                 <label class="text-gray-700 font-semibold">Meta Description</label>
                 <textarea v-model="form.meta_description" class="textarea textarea-primary h-24 w-full mt-1"
                     placeholder="Nhập meta description"></textarea>
-            </div>
+            </div> -->
 
             <div class="flex justify-end mt-6">
-                <button type="submit" class="btn btn-primary mt-1" :disabled="submitStatus === 'pending'">
+                <button type="button" class="btn btn-ghost mr-2" @click="$router.push('/admin/posts')">
+                    Hủy
+                </button>
+                <button type="submit" class="btn btn-primary" :disabled="submitStatus === 'pending'">
                     <span v-if="submitStatus === 'pending'" class="loading loading-spinner loading-md"></span>
                     <span>Tạo bài viết</span>
                 </button>
