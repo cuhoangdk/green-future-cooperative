@@ -157,7 +157,13 @@ class OrderRepository implements OrderRepositoryInterface
             $timestamp = now()->format('YmdHis');
             $randomSequence = str_pad(rand(0, 9999), 4, '0', STR_PAD_LEFT);
             $orderCode = 'ORD' . $timestamp . $randomSequence;
-
+            
+            $customerEmail = null;
+            if ($customerId) {
+                $customer = Customer::find($customerId);
+                $customerEmail = $customer ? $customer->email : null;
+            }
+            
             $orderData = array_merge($addressData, [
                 'order_code' => $orderCode,
                 'customer_id' => $customerId,
@@ -167,7 +173,7 @@ class OrderRepository implements OrderRepositoryInterface
                 'final_total_amount' => $items->sum(fn($item) => $item->quantity * $item->calculated_price) + ($data['shipping_fee'] ?? 0),
                 'notes' => $data['notes'] ?? null,
                 'expected_delivery_date' => $data['expected_delivery_date'] ?? null,
-                'email' => $customerId ? null : ($data['email'] ?? null),
+                'email' => $customerId ? $customerEmail : ($data['email'] ?? null),
             ]);
 
             $order = $this->model->create($orderData);
