@@ -3,8 +3,8 @@
         <!-- Top row with logo and user actions -->
         <div class="bg-green-600">
             <div class="max-w-7xl mx-auto px-4 lg:px-8">
-                <div class="flex flex-wrap lg:flex-nowrap items-center justify-between py-1">
-                    <div class="flex items-center space-x-2">
+                <div class="flex items-center justify-between py-1 gap-2">
+                    <div class="flex items-center gap-2">
                         <img src="~/assets/images/logo.png" alt="Logo Green Future"
                             class="rounded-full w-12 h-12 lg:w-16 lg:h-16 object-cover" />
                         <h1 class="text-2xl lg:text-3xl font-bold text-white hidden lg:block">
@@ -23,7 +23,7 @@
                     </div>
 
                     <!-- Cart and Login -->
-                    <div class="flex items-center space-x-4">
+                    <div class="flex items-center gap-2">
                         <NuxtLink to="/cart" class="relative">
                             <ShoppingCart
                                 class="w-6 h-6 text-white hover:text-green-200 transition-colors duration-200" />
