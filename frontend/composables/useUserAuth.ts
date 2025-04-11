@@ -51,14 +51,15 @@ export const useUserAuth = () => {
       }))
       currentUser.value = sanitizedUserData
       return sanitizedUserData
-    } else {
-      if (error.value?.statusCode === 401 && refreshToken.value) {
-        await refreshAccessToken()
-        return await fetchCurrentUser()
-      }
-      currentUser.value = null
-      return null
     }
+    //  else {
+    //   if (error.value?.statusCode === 401 && refreshToken.value) {
+    //     await refreshAccessToken()
+    //     return await fetchCurrentUser()
+    //   }
+    //   currentUser.value = null
+    //   return null
+    // }
   }
 
   const refreshAccessToken = async () => {

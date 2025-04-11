@@ -56,14 +56,15 @@ export const useCustomerAuth = () => {
         if (data.value && !error.value) {
             currentCustomer.value = data.value.data
             return data.value
-        } else {
-            if (error.value?.statusCode === 401 && refreshToken.value) {
-                await refreshAccessToken()
-                return await fetchCurrentCustomer()
-            }
-            currentCustomer.value = null
-            return null
-        }
+        } 
+        // else {
+        //     if (error.value?.statusCode === 401 && refreshToken.value) {
+        //         await refreshAccessToken()
+        //         return await fetchCurrentCustomer()
+        //     }
+        //     currentCustomer.value = null
+        //     return null
+        // }
     }
 
     const refreshAccessToken = async () => {
