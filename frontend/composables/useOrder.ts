@@ -4,8 +4,9 @@ export const useOrder = () => {
     const { get, post, put, del } = useApi();
 
     // Lấy danh sách sản phẩm trong giỏ hàng
-    const getOrders = async () => {
+    const getOrders = async (page: number = 1,perPage: number = 10) => {
         return await get<Order>('/orders', {
+            arams: { page, per_page: perPage },
             authType: AuthType.Customer,
         });
     };

@@ -1,6 +1,9 @@
 <template>
     <div class="p-4">
-        <form @submit.prevent="handleSubmit" class="space-y-6">
+        <div v-if="status === 'pending'" class="flex justify-center items-center h-screen">
+            <span class="loading loading-spinner loading-lg"></span>
+        </div>
+        <form v-else @submit.prevent="handleSubmit" class="space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
                 <!-- Avatar Section -->
                 <div class="flex flex-col items-center md:col-span-1">
@@ -87,8 +90,8 @@
 
             <div class="border-t border-gray-200 pt-5 flex justify-end">
                 <button type="button" @click="$router.push('/admin/customers')" class="btn btn-ghost mr-2">Hủy</button>
-                <button type="submit" class="btn btn-primary px-6" :disabled="status === 'pending'">
-                    <span v-if="status === 'pending'" class="loading loading-spinner loading-md"></span>
+                <button type="submit" class="btn btn-primary px-6" :disabled="submit === 'pending'">
+                    <span v-if="submit === 'pending'" class="loading loading-spinner loading-md"></span>
                     Lưu
                 </button>
             </div>
@@ -118,7 +121,7 @@ const backEndUrl = useRuntimeConfig().public.backendUrl;
 // Ref để tham chiếu đến input file và file được chọn
 const fileInput = ref<HTMLInputElement | null>(null);
 const selectedFile = ref<File | null>(null);
-const status = ref<'idle' | 'pending' | 'success' | 'error'>('idle');
+const submit = ref<'idle' | 'pending' | 'success' | 'error'>('idle');
 
 // Khởi tạo form với dữ liệu mặc định
 const form = ref({
@@ -138,7 +141,7 @@ const form = ref({
     }
 });
 
-const { data: customerData, refresh } = await getCustomerById(Number(route.params.id));
+const { data: customerData, status, refresh } = await getCustomerById(Number(route.params.id));
 const customer = computed<Customer | null>(() => Array.isArray(customerData.value?.data) ? customerData.value.data[0] : customerData.value?.data || null)
 
 watch(customer, (newVal) => {
@@ -193,7 +196,7 @@ const handleFileChange = (event: Event) => {
 // Xử lý submit form
 const handleSubmit = async () => {
     try {
-        status.value = 'pending';
+        submit.value = 'pending';
         // Tạo FormData để gửi dữ liệu multipart
         const formData = new FormData();
 
@@ -235,7 +238,7 @@ const handleSubmit = async () => {
     } catch (error: any) {
         toast.error(error.message || 'Cập nhật thông tin khách hàng thất bại!');
     } finally {
-        status.value = 'idle';
+        submit.value = 'idle';
     }
 };
 </script>

@@ -1,5 +1,5 @@
 <template>
-    <div class="p-4">
+    <div class="card bg-base-100 shadow-sm border border-gray-300 w-full lg:w-10/12 mx-auto mt-16 lg:my-5 p-4">
         <div v-if="status === 'pending'" class="flex justify-center items-center h-screen">
             <span class="loading loading-spinner loading-lg"></span>
         </div>
@@ -81,11 +81,9 @@
                         <table class="w-full">
                             <thead>
                                 <tr class="bg-gray-100 text-gray-700">
-                                    <th class="py-2 pl-2 text-left w-[25%] min-w-44">Sản phẩm</th>
-                                    <th class="py-2 text-left w-[25%] min-w-44">Số lượng × Đơn giá</th>
-                                    <th class="py-2 text-left w-[25%] min-w-44">Thành tiền</th>
-                                    <th v-if="currentUser?.is_super_admin === true"
-                                        class="py-2 text-left w-[25%] min-w-44">Thuộc về</th>
+                                    <th class="py-2 pl-2 text-left w-[34%] min-w-44">Sản phẩm</th>
+                                    <th class="py-2 text-left w-[33%] min-w-44">Số lượng × Đơn giá</th>
+                                    <th class="py-2 text-left w-[33%] min-w-44">Thành tiền</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -99,14 +97,10 @@
                                         {{ item.product_snapshot.product_name }}
                                     </td>
                                     <td>
-                                        {{ formatNumber(item.quantity) }} {{ item.product_snapshot.unit }} × {{formatCurrency(item.product_snapshot.price) }}
-                                            </td>
-                                    <td class="font-semibold">{{ formatCurrency(item.total_item_price) }}</td>
-                                    <td v-if="item.flag === false && currentUser?.is_super_admin === true">
-                                        <span class="text-gray-500">
-                                            {{ item.product_snapshot.user_full_name }}
-                                        </span>
+                                        {{ formatNumber(item.quantity) }} {{ item.product_snapshot.unit }} ×
+                                        {{ formatCurrency(item.product_snapshot.price) }}
                                     </td>
+                                    <td class="font-semibold">{{ formatCurrency(item.total_item_price) }}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -122,7 +116,7 @@
                         <div v-if="order.notes" class="bg-gray-50 p-3 rounded-lg text-gray-700 mb-4">
                             <p class="whitespace-pre-line">{{ order.notes }}</p>
                         </div>
-                        <div v-else class="text-gray-500 italic">Không có ghi chú từ khách hàng</div>
+                        <div v-else class="text-gray-500 italic">Không có ghi chú</div>
 
                         <div v-if="order.admin_note" class="mt-4">
                             <h3 class="font-medium mb-1 text-primary">Ghi chú nội bộ:</h3>
@@ -140,7 +134,7 @@
                             <div class="flex justify-between py-2">
                                 <span>Tạm tính:</span>
                                 <span class="font-medium">{{ formatCurrency(order.total_price - order.shipping_fee)
-                                    }}</span>
+                                }}</span>
                             </div>
                             <div class="flex justify-between py-2">
                                 <span>Phí vận chuyển:</span>
@@ -181,14 +175,6 @@
                 <button @click="$router.back()" class="btn btn-ghost">
                     Quay lại
                 </button>
-                <div class="space-x-2">
-                    <button class="btn btn-primary">
-                        In 
-                    </button>
-                    <button class="btn btn-outline btn-primary">
-                        Lưu
-                    </button>
-                </div>
             </div>
         </div>
 
@@ -206,16 +192,15 @@
 </template>
 
 <script setup lang="ts">
-definePageMeta({ layout: 'user', title: 'Chi tiết đơn hàng', description: 'Quản lý đơn hàng' })
 import type { Order } from '~/types/order'
-import { ArrowLeft, Phone, Mail, User, MapPin , X } from 'lucide-vue-next'
+import { ArrowLeft, Phone, Mail, User, MapPin, X } from 'lucide-vue-next'
 
-const { getAdminOrderById } = useAdminOrder()
+const { getOrderById } = useOrder()
 const { getFullAddressName } = useVietnamAddress()
 const { currentUser } = useUserAuth()
 
 const { id } = useRoute().params as { id: string }
-const { data, status } = await getAdminOrderById(Number(id))
+const { data, status } = await getOrderById(Number(id))
 const addressData = ref<string>('')
 
 const order = computed<Order | null>(() => Array.isArray(data.value?.data) ? data.value.data[0] : data.value?.data || null)

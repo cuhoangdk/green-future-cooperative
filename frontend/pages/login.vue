@@ -102,7 +102,7 @@ const handleSubmit = async () => {
         status.value = 'error'
         // Lấy thông báo lỗi từ server hoặc đặt mặc định
         errorMessage.value = error
-        toast.error(error) // Hiển thị toast thông báo lỗi
+        // toast.error(error) // Hiển thị toast thông báo lỗi
     }
 }
 </script>

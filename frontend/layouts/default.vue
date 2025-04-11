@@ -1,10 +1,11 @@
 <template>
     <div>
         <LayoutHeader />
-        <div class="bg-gray-50">
+        <div>
             <slot />
         </div>
         <LayoutSocialButtons style="z-index: 10;"/>
         <LayoutFooter />
+        <LayoutDock />
     </div>
 </template>

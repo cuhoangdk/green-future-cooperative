@@ -1,6 +1,6 @@
 <template>
     <div class="min-h-screen items-center flex flex-col mt-16 p-2 lg:mt-0">
-        <div class="w-full lg:w-8/12 bg-white border border-gray-200 rounded-lg p-4 sm:p-5">
+        <div class="w-full lg:w-8/12 bg-white border border-gray-200 rounded-2xl p-4 sm:p-5">
             <form @submit.prevent="handleSubmit" class="space-y-6">
                 <div class="border-gray-200">
                     <h3 class="text-lg font-medium text-gray-800 mb-3">Thông tin địa chỉ</h3>

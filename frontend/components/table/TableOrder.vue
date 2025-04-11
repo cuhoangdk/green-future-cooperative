@@ -27,8 +27,7 @@
                     </td>
                     <td class="py-1">
                         <div class="flex space-x-1 items-center" @click.stop>
-                            <UiViewButton :to="`orders/${order.id}/view`" />
-                            <UiEditButton :to="`orders/${order.id}/edit`" />
+                            <UiEditButton v-if="displayEditButton" :to="`orders/${order.id}/edit`" />
                             <UiCancelButton :to="`orders/${order.id}/cancel`"/>
                         </div>
                     </td>
@@ -45,5 +44,6 @@ import { formatNumber, formatCurrency } from '~/utils/common'
 defineProps<{
     orders: Order[]
     addressData: { [key: number]: string }
+    displayEditButton?: boolean
 }>()
 </script>

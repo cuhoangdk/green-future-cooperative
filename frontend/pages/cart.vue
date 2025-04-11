@@ -1,7 +1,7 @@
 <template>
     <div class="min-h-screen mt-16 p-2 lg:mt-0">
         <div class="flex item-center justify-center gap-5 mb-3">
-            <h1 class="w-full lg:w-10/12 text-3xl font-bold text-green-800">Giỏ hàng</h1>
+            <h1 class="w-full lg:w-10/12 text-2xl font-bold text-green-800">Giỏ hàng</h1>
         </div>
         <div v-if="isFirstLoad && status === 'pending'" class="text-center text-gray-500 h-96 flex flex-col justify-center items-center">
             <span class="loading loading-spinner loading-xl"></span>

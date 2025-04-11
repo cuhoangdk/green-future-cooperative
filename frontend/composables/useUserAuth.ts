@@ -45,24 +45,12 @@ export const useUserAuth = () => {
   
     const { data, error } = await get<User>('/user-profile', { authType: AuthType.User })
     if (data.value && !error.value) {
-      const userData = data.value.data || data.value
-      console.log('Raw user data:', userData) // Log dữ liệu thô
-  
-      // Lọc dữ liệu để loại bỏ các giá trị không hợp lệ
-      const sanitizedUserData = JSON.parse(JSON.stringify(userData, (key, value) => {
+      const sanitizedUserData = JSON.parse(JSON.stringify(data.value.data || data.value, (key, value) => {
         if (typeof value === 'function' || value === undefined) return null
         return value
       }))
-  
-      try {
-        currentUser.value = sanitizedUserData
-        console.log('Stored in cookie:', currentUser.value) // Xác nhận lưu thành công
-        return sanitizedUserData
-      } catch (e) {
-        console.error('Error storing user in cookie:', e)
-        currentUser.value = null
-        return null
-      }
+      currentUser.value = sanitizedUserData
+      return sanitizedUserData
     } else {
       if (error.value?.statusCode === 401 && refreshToken.value) {
         await refreshAccessToken()

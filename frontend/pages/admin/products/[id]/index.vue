@@ -1,6 +1,9 @@
 <template>
     <div class="p-4">
-        <form @submit.prevent="handleSubmit" class="space-y-4">
+        <div v-if="productStatus === 'pending'" class="flex justify-center items-center h-screen">
+            <span class="loading loading-spinner loading-lg"></span>
+        </div>
+        <form v-else @submit.prevent="handleSubmit" class="space-y-4">
             <!-- Product Code -->
             <div>
                 <label class="text-gray-700 font-semibold">Mã sản phẩm</label>
@@ -242,7 +245,7 @@ const form = ref({
 
 
 // Lấy thông tin sản phẩm
-const { data: productData } = await getProductById(productId)
+const { data: productData, status: productStatus } = await getProductById(productId)
 const product = computed<Product | null>(() => Array.isArray(productData.value?.data) ? productData.value.data[0] : productData.value?.data || null)
 
 // Gọi API để lấy dữ liệu

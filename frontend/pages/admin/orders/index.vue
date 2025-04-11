@@ -13,9 +13,9 @@
             </NuxtLink>
         </div>
 
-        <TableOrder :orders="orders.orders" :addressData="addressData" @delete="handleDeleteProduct" />
+        <TableOrder :orders="orders.orders" :addressData="addressData" @delete="handleDelete" :display-edit-button="true" />
 
-        <GridOrder :orders="orders.orders" :addressData="addressData" @delete="handleDeleteProduct" />
+        <GridOrder :orders="orders.orders" :addressData="addressData" @delete="handleDelete" :display-edit-button="true"/>
         <div class="flex flex-col sm:flex-row justify-between items-center m-4 gap-2">
             <div class="flex items-center space-x-2">
                 <p class="text-sm text-gray-600">{{ orders.orders.length }} / {{ orders.meta?.total }}</p>
@@ -32,11 +32,10 @@
 <script setup lang="ts">
 definePageMeta({ layout: 'user', title: 'Đơn hàng', description: 'Quản lý đơn hàng' })
 
-import { ChevronDown, ChevronRight, Search, Plus } from 'lucide-vue-next'
+import { Search, Plus } from 'lucide-vue-next'
 import { debounce } from 'lodash-es'
 import { useSwal } from '~/composables/useSwal'
 import { useToast } from 'vue-toastification'
-import { formatNumber, formatCurrency, formatDateTime } from '~/utils/common'
 import type { PaginationMeta, PaginationLinks } from '~/types/api'
 import type { Product } from '~/types/product'
 import type { Order } from '~/types/order'
@@ -103,7 +102,7 @@ const handlePageChange = (page: number) => {
     search()
 }
 
-async function handleDeleteProduct(productId: number) {
+async function handleDelete(productId: number) {
     const result = await swal.fire({
         title: 'Xác nhận xóa',
         text: 'Bạn có chắc muốn xóa sản phẩm này không?',

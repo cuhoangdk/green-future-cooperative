@@ -1,5 +1,5 @@
 <template>
-    <NuxtLink :to="to" class="btn btn-sm btn-square btn-warning" title="Chỉnh sửa">
+    <NuxtLink :to="to" class="btn btn-sm btn-square btn-primary" title="Chỉnh sửa">
         <Edit2Icon class="w-4 h-4" />
     </NuxtLink>
 </template>

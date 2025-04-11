@@ -1,12 +1,12 @@
 <template>
-    <div class="min-h-screen items-center flex flex-col mt-16 p-2 lg:mt-0">
-        <div class="w-full lg:w-8/12 bg-white border border-gray-200 rounded-lg p-4 sm:p-5">
+    <div class="items-center flex flex-col mt-16 p-2 lg:mt-0">
+        <div class="w-full lg:w-7/12 bg-white border border-gray-200 rounded-2xl p-4 shadow-sm sm:p-5">
             <form @submit.prevent="handleSubmit" class="space-y-6">
                 <!-- Phần 1: Thông tin cơ bản với avatar -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Avatar Section -->
                     <div class="flex flex-col items-center md:col-span-1">
-                        <div class="w-64 h-64 mb-3 cursor-pointer" @click="triggerFileInput">
+                        <div class="w-44 h-44 mb-3 cursor-pointer" @click="triggerFileInput">
                             <img :src="form.avatar_url || defaultAvatar" @error="form.avatar_url = defaultAvatar"
                                 class="w-full h-full object-cover rounded-full border shadow-sm" alt="Avatar" />
                         </div>
@@ -19,7 +19,7 @@
                     <div class="md:col-span-1 grid grid-cols-1 gap-4">
                         <div>
                             <label class="text-gray-700 font-semibold block mb-1">Email</label>
-                            <input v-model="form.email" type="email" class="input input-bordered input-primary w-full"
+                            <input v-model="form.email" type="email" class="input input-bordered input-primary bg-gray-200 w-full"
                                 placeholder="example@email.com" readonly />
                         </div>
 
@@ -53,7 +53,7 @@
                     </div>
                 </div>
                 <!-- Phần 2: Thông tin địa chỉ -->
-                <div class="border-t border-gray-200 pt-5">
+                <!-- <div class="border-t border-gray-200 pt-5">
                     <div class="flex justify-between items-center mb-3">
                         <h3 class="text-lg font-medium text-gray-800">Thông tin địa chỉ</h3>
                         <button type="button" class="btn btn-secondary"
@@ -62,17 +62,14 @@
                     <div v-for="address in addresses" :key="address.id">
                         <UiAddressCard :address="address" :addressDetailId="address.address.ward" />
                     </div>
-                </div>
+                </div> -->
 
                 <!-- Submit Button -->
                 <div class="border-t border-gray-200 pt-5 flex justify-between">
                     <div>
-                        <NuxtLink to="/account/change-password" class="btn btn-warning px-6 mr-2">
-                            Đổi mật khẩu
+                        <NuxtLink to="/account/change-password" class="btn btn-warning mr-2">
+                            <Key class="w-4 h-4" /> Đổi mật khẩu
                         </NuxtLink>
-                        <button type="button" class="btn btn-error px-6" @click="handleLogout">
-                            Đăng xuất
-                        </button>
                     </div>
                     <button type="submit" class="btn btn-primary px-6" :disabled="status === 'pending'">
                         <span v-if="status === 'pending'" class="loading loading-spinner loading-md mr-2"></span>
@@ -86,6 +83,7 @@
 
 <script setup lang="ts">
 import { useToast } from 'vue-toastification';
+import { Key } from 'lucide-vue-next';
 import type { CustomerAddress } from '~/types/customer';
 
 const { currentCustomer, updateProfile, logout } = useCustomerAuth();
@@ -100,8 +98,8 @@ const fileInput = ref<HTMLInputElement | null>(null);
 const selectedFile = ref<File | null>(null);
 const status = ref<'idle' | 'pending' | 'success' | 'error'>('idle');
 
-const { data: dataAddresses } = await getCustomerAddress();
-const addresses = computed<CustomerAddress[]>(() => Array.isArray(dataAddresses.value?.data) ? dataAddresses.value.data : dataAddresses.value ? [dataAddresses.value.data] : [])
+// const { data: dataAddresses } = await getCustomerAddress();
+// const addresses = computed<CustomerAddress[]>(() => Array.isArray(dataAddresses.value?.data) ? dataAddresses.value.data : dataAddresses.value ? [dataAddresses.value.data] : [])
 
 // Khởi tạo form với dữ liệu từ currentCustomer
 const form = ref({
@@ -166,17 +164,6 @@ const handleSubmit = async () => {
         toast.error(error.message || 'Cập nhật thông tin thất bại!');
     } finally {
         status.value = 'idle';
-    }
-};
-
-const handleLogout = async () => {
-    try {
-        await logout();
-        toast.success('Đăng xuất thành công!');
-        // Chuyển hướng về trang đăng nhập hoặc trang chủ
-        useRouter().push('/login');
-    } catch (error: any) {
-        toast.error(error.message || 'Đăng xuất thất bại!');
     }
 };
 </script>

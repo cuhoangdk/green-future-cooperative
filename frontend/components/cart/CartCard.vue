@@ -1,41 +1,43 @@
 <template>
-    <div v-if="isVisible" class="bg-white border border-gray-300 rounded-xl flex items-center">
+    <div v-if="isVisible" class="bg-white border border-gray-300 rounded-xl flex flex-col md:flex-row md:items-center">
         <!-- Product Image -->
-        <div class="w-34 h-34 flex-shrink-0">
+        <div class="w-full md:w-34 md:h-34 flex-shrink-0">
             <img v-if="cartItem.product.images?.[0]?.image_url" :src="backendUrl + cartItem.product.images[0].image_url"
-                alt="Product Image" class="w-full h-full object-cover rounded-l-xl" />
-            <div v-else class="w-full h-full bg-green-100 flex items-center justify-center rounded-l-xl">
+                alt="Product Image" class="w-full h-34 object-cover rounded-t-xl md:rounded-t-none md:rounded-l-xl" />
+            <div v-else class="w-full h-34 bg-green-100 flex items-center justify-center rounded-t-xl md:rounded-t-none md:rounded-l-xl">
                 <span class="text-green-500">No Image</span>
             </div>
         </div>
 
         <!-- Product Details -->
-        <div class="flex-grow mx-3">
-            <flex class="flex justify-between items-center">
-                <NuxtLink :to="`/products/${cartItem.product.slug}`" class="text-xl font-bold text-green-800">{{
-                    cartItem.product.name }}</NuxtLink>
-                <div>
-                    <button @click="removeItem" class="btn btn-accent text-white rounded-full w-[30px] h-[30px] p-1.5">
-                        <Trash />
-                    </button>
-                </div>
-            </flex>
+        <div class="flex-grow p-3">
+            <div class="flex justify-between items-center">
+                <NuxtLink :to="`/products/${cartItem.product.slug}`" class="text-lg md:text-xl font-bold text-green-800 hover:underline">
+                    {{ cartItem.product.name }}
+                </NuxtLink>
+                <button @click="removeItem" class="btn btn-accent text-white rounded-full w-8 h-8 p-1.5 flex-shrink-0">
+                    <Trash class="w-5 h-5" />
+                </button>
+            </div>
 
-            <p class="text-sm">{{ cartItem.product.product_code }}</p>
-            <p class="my-2 font-semibold">{{ formatPrice(cartItem.purchase_price) }} / {{ cartItem.product.unit.name }}
+            <!-- <p class="text-sm text-gray-600">{{ cartItem.product.product_code }}</p> -->
+            <p class="my-1 font-semibold text-green-700">
+                {{ formatPrice(cartItem.purchase_price) }} / {{ cartItem.product.unit.name }}
             </p>
-            <div class="flex justify-between">
+            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center">
                 <div class="flex items-center space-x-2">
-                    <button @click="decreaseQuantity" class="btn btn-outline btn-primary w-[40px] h-[40px] p-0">
-                        <Minus />
+                    <button @click="decreaseQuantity" class="btn btn-outline btn-sm btn-primary btn-square">
+                        <Minus class="w-5 h-5" />
                     </button>
                     <input v-model.number="localQuantity" @change="debouncedUpdateQuantity" type="number" min="1"
-                        class="text-sm input w-[100px] h-[40px] text-center" />
-                    <button @click="increaseQuantity" class="btn btn-outline btn-primary w-[40px] h-[40px] p-0">
-                        <Plus />
+                        class="text-sm input input-sm w-24 text-center" />
+                    <button @click="increaseQuantity" class="btn btn-outline btn-sm btn-primary btn-square">
+                        <Plus class="w-5 h-5" />
                     </button>
                 </div>
-                <p class="text-xl font-bold text-green-800">{{ formatPrice(cartItem.purchase_price * localQuantity) }}</p>
+                <p class="text-lg md:text-xl font-bold text-green-800">
+                    {{ formatPrice(cartItem.purchase_price * localQuantity) }}
+                </p>
             </div>
         </div>
     </div>

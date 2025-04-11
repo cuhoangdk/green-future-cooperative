@@ -36,18 +36,16 @@
         <span class="loading loading-spinner loading-lg"></span>
       </div>
 
-      <div v-if="customers.customers.length > 0">
-        <TableCustomer :customers="customers.customers" :on-toggle-status="handleToggleStatus"
-          :on-delete="handleDeleteCustomer" />
+      <TableCustomer :customers="customers.customers" :on-toggle-status="handleToggleStatus"
+        :on-delete="handleDeleteCustomer" />
 
-        <GridCustomer :customers="customers.customers" :on-toggle-status="handleToggleStatus"
-          :on-delete="handleDeleteCustomer" />
-      </div>
+      <GridCustomer :customers="customers.customers" :on-toggle-status="handleToggleStatus"
+        :on-delete="handleDeleteCustomer" />
 
-      <div v-else-if="customers.customers.length === 0" class="flex flex-col items-center justify-center p-8">
+      <!-- <div v-else-if="customers.customers.length === 0" class="flex flex-col items-center justify-center p-8">
         <Box class="w-16 h-16 text-gray-300" />
         <p class="text-gray-500 mt-2">Không tìm thấy khách hàng</p>
-      </div>
+      </div> -->
     </div>
 
 
@@ -83,7 +81,7 @@ const toast = useToast()
 const router = useRouter()
 
 const currentPage = ref(Number(useRoute().query.page) || 1)
-const perPage = ref(3)
+const perPage = ref(10)
 const searchQuery = ref('')
 const isBanned = ref('')
 const sortBy = ref('')

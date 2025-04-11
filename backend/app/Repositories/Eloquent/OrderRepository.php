@@ -47,29 +47,41 @@ class OrderRepository implements OrderRepositoryInterface
 
     public function getAll(?int $customerId = null, string $sortBy = 'created_at', string $sortDirection = 'desc', int $perPage = 10)
     {
-        return $this->model->when($customerId !== null, function ($query) use ($customerId) {
-            $query->where('customer_id', $customerId);
-        })->with('items.product.user')->when(!$this->isSuperAdmin(), function ($query) {
+        $query = $this->model->with('items.product.user');
+    
+        // Nếu có customerId, lọc theo customer_id
+        if ($customerId !== null) {
+            return $query->where('customer_id', $customerId)->orderBy($sortBy, $sortDirection)
+            ->paginate($perPage);;
+        }
+    
+        // Nếu không phải super admin, chỉ lấy order liên quan đến user hiện tại
+        if (!$this->isSuperAdmin()) {
             $userId = auth('api_users')->id();
             $query->whereHas('items.product', function ($q) use ($userId) {
                 $q->where('user_id', $userId);
             });
-        })->with('items.product.user')
-            ->orderBy($sortBy, $sortDirection)
-            ->paginate($perPage);
+        }
+    
+        return $query->orderBy($sortBy, $sortDirection)
+                    ->paginate($perPage);
     }
 
     public function getById(?int $customerId = null, $id)
     {
-        $query = $this->model->when(!$this->isSuperAdmin(), function ($query) {
+        $query = $this->model->with('items.product.user');
+
+        if ($customerId !== null) {
+            return $query->where('customer_id', $customerId)->findOrFail($id);
+        }
+
+        if (!$this->isSuperAdmin()) {
             $userId = auth('api_users')->id();
             $query->whereHas('items.product', function ($q) use ($userId) {
                 $q->where('user_id', $userId);
             });
-        })->with('items.product.user');
-        if ($customerId !== null) {
-            $query->where('customer_id', $customerId);
         }
+
         return $query->findOrFail($id);
     }
 

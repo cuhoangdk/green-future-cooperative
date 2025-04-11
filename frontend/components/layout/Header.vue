@@ -27,20 +27,45 @@
                         <NuxtLink to="/cart" class="relative">
                             <ShoppingCart
                                 class="w-6 h-6 text-white hover:text-green-200 transition-colors duration-200" />
-                            <span
+                            <!-- <span
                                 class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                                0
-                            </span>
+                                
+                            </span> -->
                         </NuxtLink>
 
-                        <NuxtLink v-if="!refreshToken" to="/login" 
+                        <NuxtLink v-if="!refreshToken" to="/login"
                             class="hidden lg:block bg-white font-semibold text-green-600 px-4 py-2 rounded-full hover:bg-green-100 transition-colors duration-200">
                             Đăng nhập
                         </NuxtLink>
-                        <NuxtLink v-else to="/account"
-                            class="hidden lg:block text-white underline font-semibold hover:text-green-200 transition-colors duration-200">
-                            {{ currentCustomer?.full_name || 'Name' }}
-                        </NuxtLink>
+                        <div v-else class="dropdown dropdown-bottom dropdown-end">
+                            <button tabindex="0"
+                                class="hidden lg:block text-white underline font-semibold hover:text-green-200 transition-colors duration-200">
+                                {{ currentCustomer?.full_name || 'Name' }}
+                            </button>
+                            <ul tabindex="0"
+                                class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
+                                <li>
+                                    <NuxtLink to="/account" @click="closeDropdown">
+                                        Tài khoản
+                                    </NuxtLink>
+                                </li>
+                                <li>
+                                    <NuxtLink to="/orders" @click="closeDropdown">
+                                        Đơn hàng
+                                    </NuxtLink>
+                                </li>
+                                <li>
+                                    <NuxtLink to="/account/addresses" @click="closeDropdown">
+                                        Địa chỉ
+                                    </NuxtLink>
+                                </li>
+                                <li>
+                                    <button @click="handleLogout" class="w-full text-left">
+                                        Đăng xuất
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
                         <button @click="toggleMobileMenu"
                             :class="['lg:hidden z-50 p-2 rounded-lg text-white transition-colors duration-200', isMobileMenuOpen ? 'bg-green-500' : 'hover:bg-green-500']">
                             <Menu class="w-6 h-6" />
@@ -64,8 +89,7 @@
         <nav :class="['fixed top-14 right-0 p-4 bg-white z-40 lg:hidden transform transition-transform duration-300 w-2/3 h-full shadow-lg',
             isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full']">
             <div class="text-left flex flex-col items-start justify-start h-full space-y-3">
-                <NuxtLink v-for="link in mobileNavLinks" :key="link.path" :to="link.path"
-                    @click="closeMobileMenu"
+                <NuxtLink v-for="link in mobileNavLinks" :key="link.path" :to="link.path" @click="closeMobileMenu"
                     :class="['text-2xl font-semibold transition-colors duration-200 bg-gray-100 p-2 rounded-lg w-full', isActive(link.path) ? 'text-green-500 bg-green-100' : 'text-gray-600 hover:text-green-500 hover:bg-gray-200']">
                     {{ link.text }}
                 </NuxtLink>
@@ -77,9 +101,11 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
 import { Menu, ShoppingCart, Search as SearchIcon } from 'lucide-vue-next'
+import { useToast } from 'vue-toastification'
 
-const { currentCustomer, refreshToken } = useCustomerAuth()
+const { logout ,currentCustomer, refreshToken } = useCustomerAuth()
 const route = useRoute()
+const toast = useToast();
 const isMobileMenuOpen = ref(false)
 
 // Danh sách link cho cả desktop và mobile
@@ -110,4 +136,23 @@ const toggleMobileMenu = () => {
 const closeMobileMenu = () => {
     isMobileMenuOpen.value = false
 }
+
+// Đóng dropdown khi chọn một mục
+const closeDropdown = () => {
+    const dropdownButton = document.activeElement as HTMLElement
+    if (dropdownButton) {
+        dropdownButton.blur() // Xóa focus khỏi button để đóng dropdown
+    }
+}
+
+const handleLogout = async () => {
+    try {
+        await logout();
+        toast.success('Đăng xuất thành công!');
+        // Chuyển hướng về trang đăng nhập hoặc trang chủ
+        useRouter().push('/login');
+    } catch (error: any) {
+        toast.error(error.message || 'Đăng xuất thất bại!');
+    }
+};
 </script>

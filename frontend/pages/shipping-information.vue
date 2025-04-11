@@ -18,7 +18,7 @@
                 <div class="border border-gray-300 rounded-xl p-5 bg-white">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div class="sm:col-span-2">
-                            <input v-model="form.full_name" class="input input-bordered input-primary w-full rounded-xl"
+                            <input v-model="form.full_name" class="input input-bordered input-primary w-full"
                                 placeholder="Họ và tên" required />
                         </div>
 
