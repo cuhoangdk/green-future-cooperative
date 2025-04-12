@@ -1,15 +1,16 @@
 <template>
-  <section class="w-full mt-5">
-    <div class="flex justify-between items-center mb-4">
-      <h2 class="text-left text-xl font-bold text-green-800">{{ title }}</h2>
-      <div class="flex-1 h-[3px] bg-green-500 ml-4"></div>
-    </div>
-
-    <div class="grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 gap-3 mb-4">
+  <section class="w-full">
+    <div class="grid relative gap-3 mb-4" :class="[
+      gridColsClass,
+    ]">
       <PostCard v-for="post in posts" :key="post.id" :post="post" />
+      <div v-if="status === 'pending'" class="absolute inset-0 flex items-center justify-center bg-gray-100/20 z-10">
+        <span class="loading loading-spinner loading-xl"></span>
+      </div>
     </div>
 
-    <UiPagination :meta="meta" :links="links" :show-first-last="true" :show-numbers="true" @page-change="onPageChange" />
+    <UiPagination :meta="meta" :links="links" :show-first-last="showFirstLast" :show-numbers="showNumbers"
+      @page-change="onPageChange" />
   </section>
 </template>
 
@@ -18,22 +19,38 @@ import type { Post } from '~/types/post';
 import type { PaginationMeta, PaginationLinks } from '~/types/api';
 
 interface Props {
-  title: string;
   posts: Post[];
   meta: PaginationMeta | null;
   links: PaginationLinks | null;
+  status: string;
+  showFirstLast?: boolean;
+  showNumbers?: boolean;
+  maxColumns?: number;
 }
 
 interface Emits {
   (e: 'page-change', page: number): void
 }
 
-defineProps<Props>()
+const props = defineProps<Props>();
 const emit = defineEmits<Emits>();
 
 const onPageChange = (page: number) => {
   emit('page-change', page);
 };
+
+// Tính toán class cho grid columns dựa trên maxColumns
+const gridColsClass = computed(() => {
+  const maxCols = props.maxColumns || 3; // Giá trị mặc định là 3
+
+  // Xác định class grid-cols cho desktop (lg)
+  let lgCols = `lg:grid-cols-${Math.min(maxCols, 6)}`; // Giới hạn tối đa 6 cột cho desktop
+
+  // Xác định class grid-cols cho tablet (md)
+  // Nếu maxColumns >= 3, tablet hiển thị 2 cột, ngược lại hiển thị 1 cột
+  let mdCols = maxCols >= 3 ? 'md:grid-cols-2' : 'md:grid-cols-1';
+
+  // Cho mobile luôn là 1 cột
+  return `grid-cols-1 ${mdCols} ${lgCols}`;
+});
 </script>
-
-

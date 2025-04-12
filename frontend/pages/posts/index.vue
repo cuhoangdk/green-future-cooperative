@@ -14,11 +14,12 @@
         <div class="w-11/12 max-w-7xl mt-5 flex lg:flex-row flex-col gap-x-5">
             <!-- Posts List -->
             <div class="w-full lg:w-3/4 max-w-7xl">
-                <div v-if="isLoading" class="space-y-4 mt-5">
-                    <PostSkeletonCard v-for="i in 3" :key="i" />
+                <div class="flex justify-between items-center my-5 gap-3">
+                    <h2 class="text-left text-xl font-bold text-green-800">BÀI VIẾT</h2>
+                    <div class="flex-1 h-[3px] bg-green-500"></div>
                 </div>
-                <PostList v-else title="Bài đăng gần đây" :posts="posts" :meta="meta" :links="links"
-                    @page-change="handlePageChange" />
+                <PostList title="Bài đăng gần đây" :posts="posts" :meta="meta" :links="links" 
+                    @page-change="handlePageChange" :status="status" />
             </div>
 
             <!-- Categories Sidebar -->
@@ -37,7 +38,7 @@ import { useRuntimeConfig } from '#app'
 import { usePosts } from '~/composables/usePosts'
 
 // Runtime config
-const perPage = 9 // Số bài viết mỗi trang
+const perPage = 6 // Số bài viết mỗi trang
 
 // Khởi tạo usePosts
 const { getPosts } = usePosts()
