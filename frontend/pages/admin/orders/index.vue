@@ -12,10 +12,17 @@
                 <Plus class="w-5 h-5" /> Thêm
             </NuxtLink>
         </div>
+        <div class="relative">
+            <!-- Loading Overlay specific to table/grid -->
+            <div v-if="status === 'pending'"
+                class="absolute inset-0 bg-gray-50 opacity-25 flex justify-center items-center z-10">
+                <span class="loading loading-spinner loading-lg"></span>
+            </div>
+            <TableOrder :orders="orders.orders" :addressData="addressData" @delete="handleDelete" :display-edit-button="true" />
 
-        <TableOrder :orders="orders.orders" :addressData="addressData" @delete="handleDelete" :display-edit-button="true" />
-
-        <GridOrder :orders="orders.orders" :addressData="addressData" @delete="handleDelete" :display-edit-button="true"/>
+            <GridOrder :orders="orders.orders" :addressData="addressData" @delete="handleDelete" :display-edit-button="true"/>
+            
+        </div>
         <div class="flex flex-col sm:flex-row justify-between items-center m-4 gap-2">
             <div class="flex items-center space-x-2">
                 <p class="text-sm text-gray-600">{{ orders.orders.length }} / {{ orders.meta?.total }}</p>
@@ -59,7 +66,7 @@ const sortBy = ref('')
 const expandedRows = ref(new Set<number>())
 const debouncedSearch = debounce(search, 500)
 
-const { data } = await getAdminOrders(currentPage.value, perPage.value)
+const { data, status } = await getAdminOrders(currentPage.value, perPage.value)
 const orders = computed<{ orders: Order[], meta: PaginationMeta | null, links: PaginationLinks | null }>(() => ({
     orders: Array.isArray(data.value?.data) ? data.value.data : data.value?.data ? [data.value.data] : [],
     meta: data.value?.meta ?? null,

@@ -13,24 +13,33 @@
             </button>
         </div>
         <!-- Table -->
-        <div class="w-full overflow-x-auto">
-            <!-- Desktop Table View -->
-            <TableFarm :farms="farms.farms" :address-data="addressData"
-                :on-delete="handleDeleteFarm" />
-            <!-- Mobile Card View -->
-            <GridFarm :farms="farms.farms":address-data="addressData"
-                :on-delete="handleDeleteFarm" />
+        <!-- Content Wrapper with Loading Overlay -->
+        <div class="relative">
+            <!-- Loading Overlay specific to table/grid -->
+            <div v-if="status === 'pending'"
+                class="absolute inset-0 bg-gray-50 opacity-25 flex justify-center items-center z-10">
+                <span class="loading loading-spinner loading-lg"></span>
+            </div>
+            <div class="w-full overflow-x-auto">
+                
+                <!-- Desktop Table View -->
+                <TableFarm :farms="farms.farms" :address-data="addressData"
+                    :on-delete="handleDeleteFarm" />
+                <!-- Mobile Card View -->
+                <GridFarm :farms="farms.farms":address-data="addressData"
+                    :on-delete="handleDeleteFarm" />
 
-            <!-- Pagination -->
-            <div class="flex flex-col sm:flex-row justify-between items-center m-4 gap-2">
-                <div class="flex items-center space-x-2">
-                    <p class="text-sm text-gray-600">{{ farms.farms.length }} / {{ farms.meta?.total }}</p>
-                    <select v-model="perPage" class="select select-sm select-primary w-18" @change="search">
-                        <option v-for="n in [10, 25, 50, 100]" :value="n" :key="n">{{ n }}</option>
-                    </select>
+                <!-- Pagination -->
+                <div class="flex flex-col sm:flex-row justify-between items-center m-4 gap-2">
+                    <div class="flex items-center space-x-2">
+                        <p class="text-sm text-gray-600">{{ farms.farms.length }} / {{ farms.meta?.total }}</p>
+                        <select v-model="perPage" class="select select-sm select-primary w-18" @change="search">
+                            <option v-for="n in [10, 25, 50, 100]" :value="n" :key="n">{{ n }}</option>
+                        </select>
+                    </div>
+                    <UiPagination :links="farms.links" :meta="farms.meta" :show-first-last="true" :show-numbers="true"
+                        @page-change="handlePageChange" />
                 </div>
-                <UiPagination :links="farms.links" :meta="farms.meta" :show-first-last="true" :show-numbers="true"
-                    @page-change="handlePageChange" />
             </div>
         </div>
     </div>
@@ -57,7 +66,7 @@ const searchQuery = ref('')
 const expandedRows = ref(new Set<number>())
 const debouncedSearch = debounce(search, 500)
 
-const { data } = await searchFarms({ page: currentPage.value, per_page: perPage.value }, AuthType.User)
+const { data, status } = await searchFarms({ page: currentPage.value, per_page: perPage.value }, AuthType.User)
 const farms = computed<{ farms: Farm[], meta: PaginationMeta | null, links: PaginationLinks | null }>(() => ({
     farms: Array.isArray(data.value?.data) ? data.value.data : data.value?.data ? [data.value.data] : [],
     meta: data.value?.meta ?? null,

@@ -1,5 +1,8 @@
 <template>
   <div class="p-4 ">
+    <div v-if="status === 'pending'" class="flex justify-center items-center h-screen">
+            <span class="loading loading-spinner loading-lg"></span>
+        </div>
     <form @submit.prevent="handleSubmit" class="space-y-2">
       <!-- Tiêu đề -->
       <div class="flex space-x-4">
@@ -147,7 +150,7 @@ const { getAllPostCategories } = usePostCategories()
 // Lấy ID từ route params
 const postId = route.params.id
 // Lấy dữ liệu bài viết hiện tại
-const { data: postData, error: postError, refresh: postRefresh } = await getPostById(Number(postId))
+const { data: postData, error: postError, status, refresh: postRefresh } = await getPostById(Number(postId))
 const post = computed<Post | null>(() => Array.isArray(postData.value?.data) ? postData.value.data[0] : postData.value?.data || null)
 // Preview ảnh bìa hiện tại
 const previewImage = ref<string | null>(post.value?.featured_image ? `${useRuntimeConfig().public.backendUrl}${post.value.featured_image}` : null)

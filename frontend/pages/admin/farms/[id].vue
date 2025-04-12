@@ -1,5 +1,8 @@
 <template>
   <div class="p-4">
+    <div v-if="status === 'pending'" class="flex justify-center items-center h-screen">
+            <span class="loading loading-spinner loading-lg"></span>
+        </div>
     <form @submit.prevent="handleSubmit" class="space-y-4">
       <!-- Section 1: Farm Information -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -130,7 +133,7 @@ const { provinces, districts, wards, fetchProvinces, fetchDistricts, fetchWards 
 const farmId = route.params.id
 
 // Lấy dữ liệu nông trại hiện tại
-const { data: farmData, error: farmError, refresh: farmRefresh } = await getFarmById(Number(farmId))
+const { data: farmData, error: farmError, status, refresh: farmRefresh } = await getFarmById(Number(farmId))
 const farm = computed<Farm | null>(() =>
   Array.isArray(farmData.value?.data) ? farmData.value.data[0] : farmData.value?.data || null
 )

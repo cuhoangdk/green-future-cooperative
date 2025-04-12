@@ -12,7 +12,14 @@
                 <Plus class="w-5 h-5" /> Thêm
             </NuxtLink>
         </div>
+        <div class="relative">
+            <!-- Loading Overlay specific to table/grid -->
+            <div v-if="status === 'pending'"
+                class="absolute inset-0 bg-gray-50 opacity-25 flex justify-center items-center z-10">
+                <span class="loading loading-spinner loading-lg"></span>
+            </div>
         <TableUnit :units="units" :onEdit="handleEdit" :onDelete="handleDeleteUnit" />
+        </div>
     </div>
 </template>
 
@@ -28,7 +35,7 @@ const { getUnits, deleteUnit } = useUnits()
 const swal = useSwal()
 const toast = useToast()
 const router = useRouter()
-const { data, refresh } = await getUnits()
+const { data, status, refresh } = await getUnits()
 const units = computed<Unit[]>(() => Array.isArray(data.value?.data) ? data.value.data : data.value ? [data.value.data] : [])
 
 async function handleDeleteUnit(unitId: number) {

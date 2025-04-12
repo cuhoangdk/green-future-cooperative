@@ -1,5 +1,8 @@
 <template>
-    <div class="p-4">
+    <div v-if="status === 'pending'" class="flex justify-center items-center h-screen">
+            <span class="loading loading-spinner loading-lg"></span>
+        </div>
+    <div v-else class="p-4">
         <form @submit.prevent="handleSubmit" class="space-y-4">
             <div class="flex flex-col gap-4">
                 <!-- Farm Name -->
@@ -18,8 +21,8 @@
             <!-- Submit Button -->
             <div class="flex justify-end">
                 <button type="button" class="btn btn-ghost mr-2" @click="router.back()">Hủy</button>
-                <button type="submit" class="btn btn-primary" :disabled="status === 'pending'">
-                    <span v-if="status === 'pending'" class="loading loading-spinner loading-md"></span>
+                <button type="submit" class="btn btn-primary" :disabled="submit === 'pending'">
+                    <span v-if="submit === 'pending'" class="loading loading-spinner loading-md"></span>
                     <span>Lưu</span>
                 </button>
             </div>
@@ -39,10 +42,10 @@ const route = useRoute()
 const router = useRouter()
 const { getProductCategoryById, updateProductCategory } = useProductCategories()
 const toast = useToast()
-const status = ref<'idle' | 'pending' | 'success' | 'error'>('idle')
+const submit = ref<'idle' | 'pending' | 'success' | 'error'>('idle')
 
 
-const { data, error, refresh: Refresh } = await getProductCategoryById(Number(route.params.id))
+const { data, error, status, refresh: Refresh } = await getProductCategoryById(Number(route.params.id))
 const category = computed<ProductCategory | null>(() => Array.isArray(data.value?.data) ? data.value.data[0] : data.value?.data || null)
 // Preview ảnh bìa hiện tại
 
@@ -61,7 +64,7 @@ watch(category, (newData) => {
 
 const handleSubmit = async () => {
     try {
-        status.value = 'pending'
+        submit.value = 'pending'
 
         // Tạo FormData để gửi dữ liệu
         const formData = new FormData()
@@ -79,7 +82,7 @@ const handleSubmit = async () => {
     } catch (error: any) {
         toast.error(error.message || 'Cập nhật đơn vị tính thất bại!')
     } finally {
-        status.value = 'idle'
+        submit.value = 'idle'
     }
 }
 </script>

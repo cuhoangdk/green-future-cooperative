@@ -42,10 +42,15 @@
                 <Plus class="w-5 h-5" /> Thêm
             </NuxtLink>
         </div>
-
+        <div class="relative">
+            <!-- Loading Overlay specific to table/grid -->
+            <div v-if="status === 'pending'"
+                class="absolute inset-0 bg-gray-50 opacity-25 flex justify-center items-center z-10">
+                <span class="loading loading-spinner loading-lg"></span>
+            </div>
         <TableProduct :products="products.products" v-on:delete="handleDeleteProduct" />
         <GridProduct :products="products.products" v-on:delete="handleDeleteProduct" />
-
+        </div>
         <div class="flex flex-col lg:flex-row justify-between items-center gap-2 m-4">
             <div class="flex items-center space-x-2">
                 <p class="text-sm text-gray-600">{{ products.products.length }} / {{ products.meta?.total }}
@@ -90,7 +95,7 @@ const expandedRows = ref(new Set<number>())
 const debouncedSearch = debounce(search, 500)
 
 // Lấy danh sách danh mục
-const { data: categoryData } = await getProductCategories()
+const { data: categoryData, status } = await getProductCategories()
 const categories = computed<ProductCategory[]>(() =>
     Array.isArray(categoryData.value?.data) ? categoryData.value.data : categoryData.value?.data ? [categoryData.value.data] : []
 )

@@ -48,11 +48,16 @@
                 <Plus class="w-5 h-5" /> Thêm
             </button>
         </div>
-
+        <div class="relative">
+            <!-- Loading Overlay specific to table/grid -->
+            <div v-if="status === 'pending'"
+                class="absolute inset-0 bg-gray-50 opacity-25 flex justify-center items-center z-10">
+                <span class="loading loading-spinner loading-lg"></span>
+            </div>
         <TablePost :posts="posts.posts" :on-delete="handleDeletePost"/>
 
         <GridPost :posts="posts.posts" :on-delete="handleDeletePost"/>
-
+        </div>
         <div class="flex flex-col sm:flex-row justify-between items-center m-4 gap-2">
             <div class="flex items-center space-x-2">
                 <p class="text-sm text-gray-600 w-24">{{ posts.posts.length }} / {{ posts.meta?.total }}</p>
@@ -100,7 +105,7 @@ const categories = computed<PostCategory[]>(() =>
     Array.isArray(categoryData.value?.data) ? categoryData.value.data : categoryData.value ? [categoryData.value.data] : []
 )
 
-const { data } = await searchPosts({ page: currentPage.value, per_page: perPage.value, status: selectedStatus.value }, AuthType.User)
+const { data, status } = await searchPosts({ page: currentPage.value, per_page: perPage.value, status: selectedStatus.value }, AuthType.User)
 const posts = computed<{ posts: Post[], meta: PaginationMeta | null, links: PaginationLinks | null }>(() => ({
     posts: Array.isArray(data.value?.data) ? data.value.data : data.value?.data ? [data.value.data] : [],
     meta: data.value?.meta ?? null,

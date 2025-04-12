@@ -1,5 +1,8 @@
 <template>
     <div class="p-4">
+        <div v-if="status === 'pending'" class="flex justify-center items-center h-screen">
+            <span class="loading loading-spinner loading-lg"></span>
+        </div>
         <form @submit.prevent="handleSubmit" class="space-y-4">
             <div class="flex flex-col gap-4">
                 <!-- Category Name -->
@@ -18,8 +21,8 @@
             <!-- Submit Button -->
             <div class="flex justify-between">
                 <button type="button" class="btn mr-2" @click="router.back()">Quay lại</button>
-                <button type="submit" class="btn btn-primary" :disabled="status === 'pending'">
-                    <span v-if="status === 'pending'" class="loading loading-spinner loading-md"></span>
+                <button type="submit" class="btn btn-primary" :disabled="submit === 'pending'">
+                    <span v-if="submit === 'pending'" class="loading loading-spinner loading-md"></span>
                     <span>Cập nhật</span>
                 </button>
             </div>
@@ -40,9 +43,9 @@ const route = useRoute()
 const router = useRouter()
 const { getPostCategoryById, updatePostCategory } = usePostCategories()
 const toast = useToast()
-const status = ref<'idle' | 'pending' | 'success' | 'error'>('idle')
+const submit = ref<'idle' | 'pending' | 'success' | 'error'>('idle')
 
-const { data, error, refresh: refreshCategory } = await getPostCategoryById(Number(route.params.id))
+const { data, error, status, refresh: refreshCategory } = await getPostCategoryById(Number(route.params.id))
 const category = computed<PostCategory | null>(() => Array.isArray(data.value?.data) ? data.value.data[0] : data.value?.data || null)
 
 // Initialize form with default values
@@ -60,7 +63,7 @@ watch(category, (newData) => {
 
 const handleSubmit = async () => {
     try {
-        status.value = 'pending'
+        submit.value = 'pending'
 
         // Create FormData to send data
         const formData = new FormData()
@@ -78,7 +81,7 @@ const handleSubmit = async () => {
     } catch (error: any) {
         toast.error(error.message || 'Cập nhật danh mục thất bại!')
     } finally {
-        status.value = 'idle'
+        submit.value = 'idle'
     }
 }
 </script>

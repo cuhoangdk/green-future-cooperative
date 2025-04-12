@@ -12,7 +12,14 @@
                 <Plus class="w-5 h-5" /> Thêm
             </button>
         </div>
+        <div class="relative">
+            <!-- Loading Overlay specific to table/grid -->
+            <div v-if="status === 'pending'"
+                class="absolute inset-0 bg-gray-50 opacity-25 flex justify-center items-center z-10">
+                <span class="loading loading-spinner loading-lg"></span>
+            </div>
         <TableProductCategory :productCategories="categories" :onDelete="handleDeleteUnit" />
+        </div>
     </div>
 </template>
 
@@ -28,7 +35,7 @@ const { getProductCategories, deleteProductCategory } = useProductCategories()
 const swal = useSwal()
 const toast = useToast()
 const router = useRouter()
-const { data, refresh } = await getProductCategories()
+const { data, status, refresh } = await getProductCategories()
 const categories = computed<ProductCategory[]>(() => Array.isArray(data.value?.data) ? data.value.data : data.value ? [data.value.data] : [])
 
 async function handleDeleteUnit(categoryId: number) {

@@ -34,14 +34,19 @@
                 <Plus class="w-5 h-5" /> Thêm
             </button>
         </div>
-
+        <div class="relative">
+            <!-- Loading Overlay specific to table/grid -->
+            <div v-if="status === 'pending'"
+                class="absolute inset-0 bg-gray-50 opacity-25 flex justify-center items-center z-10">
+                <span class="loading loading-spinner loading-lg"></span>
+            </div>
         <!-- Desktop Table View -->
         <TableUser :users="users.users" :on-toggle-status="handleToggleStatus" 
             :on-delete="handleDeleteUser" />
 
         <GridUser :users="users.users" :on-toggle-status="handleToggleStatus" 
             :on-delete="handleDeleteUser" />
-
+        </div>
         <!-- Pagination -->
         <div class="flex flex-col sm:flex-row justify-between items-center gap-4 m-4">
             <div class="flex items-center space-x-2">
@@ -82,7 +87,7 @@ const sortBy = ref('')
 const expandedRows = ref(new Set<number>())
 const debouncedSearch = debounce(search, 500)
 
-const { data } = await searchUsersWithFilters({ page: currentPage.value, per_page: perPage.value }, AuthType.User)
+const { data, status } = await searchUsersWithFilters({ page: currentPage.value, per_page: perPage.value }, AuthType.User)
 const users = computed<{ users: User[], meta: PaginationMeta | null, links: PaginationLinks | null }>(() => ({
     users: Array.isArray(data.value?.data) ? data.value.data : data.value?.data ? [data.value.data] : [],
     meta: data.value?.meta ?? null,

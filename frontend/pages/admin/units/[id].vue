@@ -1,5 +1,8 @@
 <template>
-    <div class="p-4">
+    <div v-if="status === 'pending'" class="flex justify-center items-center h-screen">
+            <span class="loading loading-spinner loading-lg"></span>
+        </div>
+    <div v-else class="p-4">
         <form @submit.prevent="handleSubmit" class="space-y-4">
             <div class="flex flex-col gap-4">
                 <!-- Unit Name -->
@@ -22,8 +25,8 @@
             <!-- Submit Button -->
             <div class="flex justify-end">
                 <button type="button" @click="$router.back()" class="btn btn-ghost mr-2">Hủy</button>
-                <button type="submit" class="btn btn-primary" :disabled="status === 'pending'">
-                    <span v-if="status === 'pending'" class="loading loading-spinner loading-md"></span>
+                <button type="submit" class="btn btn-primary" :disabled="submit === 'pending'">
+                    <span v-if="submit === 'pending'" class="loading loading-spinner loading-md"></span>
                     <span>Lưu</span>
                 </button>
             </div>
@@ -42,10 +45,10 @@ const route = useRoute()
 const router = useRouter()
 const { getUnitById, updateUnit } = useUnits()
 const toast = useToast()
-const status = ref<'idle' | 'pending' | 'success' | 'error'>('idle')
+const submit = ref<'idle' | 'pending' | 'success' | 'error'>('idle')
 
 
-const { data: postData, error: postError, refresh: postRefresh } = await getUnitById(Number(route.params.id))
+const { data: postData, error: postError, status, refresh: postRefresh } = await getUnitById(Number(route.params.id))
 const unit = computed<Unit | null>(() => Array.isArray(postData.value?.data) ? postData.value.data[0] : postData.value?.data || null)
 // Preview ảnh bìa hiện tại
 
@@ -66,7 +69,7 @@ watch(unit, (newUnit) => {
 
 const handleSubmit = async () => {
     try {
-        status.value = 'pending'
+        submit.value = 'pending'
 
         // Tạo FormData để gửi dữ liệu
         const formData = new FormData()
@@ -85,7 +88,7 @@ const handleSubmit = async () => {
     } catch (error: any) {
         toast.error(error.message || 'Cập nhật đơn vị tính thất bại!')
     } finally {
-        status.value = 'idle'
+        submit.value = 'idle'
     }
 }
 </script>
