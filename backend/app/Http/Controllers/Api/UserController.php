@@ -43,6 +43,22 @@ class UserController extends Controller
 
         return UserResource::collection($users);
     }
+     /**
+     * Hiển thị chi tiết một người dùng.
+     *
+     * @param string $id
+     * @return UserResource|\Illuminate\Http\JsonResponse
+     */
+    public function show($id)
+    {
+        $user = $this->userRepository->getById($id);
+
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+
+        return new UserResource($user);
+    }
     
     /**
      * Hiển thị chi tiết một người dùng.
@@ -50,7 +66,7 @@ class UserController extends Controller
      * @param string $usercode
      * @return UserResource|\Illuminate\Http\JsonResponse
      */
-    public function show($usercode)
+    public function showByUsercode($usercode)
     {
         $user = $this->userRepository->getByUsercode($usercode);
 

@@ -165,7 +165,7 @@ Route::middleware('log.activity')->group(function () {
                 Route::put('/{id}', [ProductQuantityPriceController::class, 'update'])->name('quantity-prices.update');
                 Route::delete('/{id}', [ProductQuantityPriceController::class, 'destroy'])->name('quantity-prices.destroy');            
                 // Route::patch('/restore/{id}', [ProductQuantityPriceController::class, 'restore'])->name('quantity-prices.restore');
-                // Route::delete('/force-delete/{id}', [ProductQuantityPriceController::class, 'forceDelete'])->name('quantity-prices.forceDelete');
+                // Route::delete('/force-delete/{id}', [ProductQuantityPriceController::class, 'forceDelete'])->name('quantity-prices.force-delete');
             });
         });
         Route::prefix('{product_id}/images')->group(function () {
@@ -187,7 +187,7 @@ Route::middleware('log.activity')->group(function () {
             Route::put('/{id}', [ProductController::class, 'update'])->name('products.update');
             Route::delete('/{id}', [ProductController::class, 'destroy'])->name('products.destroy');
             Route::patch('/restore/{id}', [ProductController::class, 'restore'])->name('products.restore');
-            Route::delete('/force-delete/{id}', [ProductController::class, 'forceDelete'])->name('products.forceDelete');
+            Route::delete('/force-delete/{id}', [ProductController::class, 'forceDelete'])->name('products.force-delete');
         });
         Route::get('/{id}', [ProductController::class, 'show'])->name('products.show');
         Route::get('/slug/{slug}', [ProductController::class, 'getBySlug'])->name('products.get-by-slug');
@@ -208,7 +208,7 @@ Route::middleware('log.activity')->group(function () {
             Route::put('/{id}', [ProductCategoryController::class, 'update'])->name('product-categories.update');
             Route::delete('/{id}', [ProductCategoryController::class, 'destroy'])->name('product-categories.destroy');
             Route::patch('/restore/{id}', [ProductCategoryController::class, 'restore'])->name('product-categories.restore');
-            Route::delete('/force-delete/{id}', [ProductCategoryController::class, 'forceDelete'])->name('product-categories.forceDelete');
+            Route::delete('/force-delete/{id}', [ProductCategoryController::class, 'forceDelete'])->name('product-categories.force-delete');
         });  
     });
 
@@ -226,7 +226,7 @@ Route::middleware('log.activity')->group(function () {
             Route::put('/{id}', [ProductUnitController::class, 'update'])->name('product-units.update');
             Route::delete('/{id}', [ProductUnitController::class, 'destroy'])->name('product-units.destroy');
             Route::patch('/restore/{id}', [ProductUnitController::class, 'restore'])->name('product-units.restore');
-            Route::delete('/force-delete/{id}', [ProductUnitController::class, 'forceDelete'])->name('product-units.forceDelete');
+            Route::delete('/force-delete/{id}', [ProductUnitController::class, 'forceDelete'])->name('product-units.force-delete');
         });  
     });
 
@@ -248,7 +248,7 @@ Route::middleware('log.activity')->group(function () {
             Route::put('/{id}', [FarmController::class, 'update'])->name('farms.update');
             Route::delete('/{id}', [FarmController::class, 'destroy'])->name('farms.destroy');    
             Route::patch('/restore/{id}', [FarmController::class, 'restore'])->name('farms.restore');
-            Route::delete('/force-delete/{id}', [FarmController::class, 'forceDelete'])->name('farms.forceDelete');
+            Route::delete('/force-delete/{id}', [FarmController::class, 'forceDelete'])->name('farms.force-delete');
         }); 
     });
 
@@ -280,7 +280,7 @@ Route::middleware('log.activity')->group(function () {
         Route::put('/{id}', [CustomerController::class, 'update'])->name('customers.update');
         Route::delete('/{id}', [CustomerController::class, 'destroy'])->name('customers.destroy');
         Route::patch('/restore/{id}', [CustomerController::class, 'restore'])->name('customers.restore');
-        Route::delete('/force-delete/{id}', [CustomerController::class, 'forceDelete'])->name('customers.forceDelete');
+        Route::delete('/force-delete/{id}', [CustomerController::class, 'forceDelete'])->name('customers.force-delete');
         // required: password, password_confirmed
         Route::put('/change-password/{id}', [CustomerController::class, 'changePassword'])->name('customers.change-password');
     });
@@ -352,11 +352,12 @@ Route::middleware('log.activity')->group(function () {
         // required: email, password, password_confirmed, full_name, phone_number, date_of_birth, address.province, address.district, address.ward, address.street_address, gender
         // nullable: bank_account_number, bank_name, avatar_url, bio, is_super_admin, is_banned
         Route::post('/', [UserController::class, 'store'])->name('users.store');
-        Route::get('/{usercode}', [UserController::class, 'show'])->name('users.show');
+        Route::get('/{id}', [UserController::class, 'show'])->name('users.show');        
         Route::put('/{id}', [UserController::class, 'update'])->name('users.update');
         Route::delete('/{id}', [UserController::class, 'destroy'])->name('users.destroy');
+        Route::get('/usercode/{usercode}', [UserController::class, 'showByUsercode'])->name('users.show-by-usercode');
         Route::patch('/restore/{id}', [UserController::class, 'restore'])->name('users.restore');        
-        Route::delete('/force-delete/{id}', [UserController::class, 'forceDelete'])->name('users.forceDelete');
+        Route::delete('/force-delete/{id}', [UserController::class, 'forceDelete'])->name('users.force-delete');
         // required: password, password_confirmed
         Route::put('/change-password/{id}', [UserController::class, 'changePassword'])->name('users.change-password');
     
