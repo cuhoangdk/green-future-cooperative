@@ -25,8 +25,10 @@ class OrderStatusUpdated extends Mailable
         $statusTranslations = [
             'pending' => 'Đang chờ xử lý',
             'processing' => 'Đang xử lý',
+            'delivering' => 'Đang giao hàng',
             'delivered' => 'Đã giao hàng',
-            'cancelled' => 'Đã hủy'
+            'cancelled' => 'Đã hủy',
+            'return' => 'Trả hàng',
         ];
         $translatedStatus = $statusTranslations[$this->order->status] ?? $this->order->status;
 

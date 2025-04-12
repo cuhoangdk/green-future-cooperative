@@ -337,7 +337,7 @@ class OrderRepository implements OrderRepositoryInterface
                 $customer->increment('total_orders');
             }
         }
-        if (isset($data['status']) && $data['status'] !== $oldStatus && in_array($data['status'], ['pending', 'processing', 'delivered', 'cancelled'])) {
+        if (isset($data['status']) && $data['status'] !== $oldStatus && in_array($data['status'], ['pending', 'processing', 'delivering', 'delivered', 'cancelled'])) {
             $order->load('customer', 'items.product.user');
             if ($order instanceof Order) {
                 $this->sendOrderStatusEmails($order);

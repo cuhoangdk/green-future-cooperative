@@ -37,7 +37,7 @@ class CustomerAuthController extends Controller
         $tokenData = $this->authRepository->login($credentials);
 
         if (!$tokenData) {
-            return response()->json(['message' => 'Invalid credentials'], 401);
+            return response()->json(['message' => 'Bạn đã nhập sai thông tin email hoặc mật khẩu. Vui lòng kiểm tra lại.'], 401);
         }
 
         return response()->json($tokenData);
@@ -79,7 +79,7 @@ class CustomerAuthController extends Controller
             }
 
             return response()->json([
-                'message' => 'Customer registered successfully. Please verify your email.',
+                'message' => 'Đăng kí tài khoản thành công. Vui lòng kiểm tra email.',
                 'customer' => $customer,
             ], 201);
 
@@ -99,10 +99,10 @@ class CustomerAuthController extends Controller
         $verified = $this->authRepository->verifyAccount($request->only('email', 'token'));
 
         if (!$verified) {
-            return response()->json(['message' => 'Invalid token or email'], 400);
+            return response()->json(['message' => 'Sai token hoặc email'], 400);
         }
 
-        return response()->json(['message' => 'Account verified successfully'], 200);
+        return response()->json(['message' => 'Kích hoạt tài khoản thành công'], 200);
     }
 
 
@@ -149,7 +149,7 @@ class CustomerAuthController extends Controller
     {
         $this->authRepository->changePassword($request->only('current_password', 'new_password', 'new_password_confirmation'));
 
-        return response()->json(['message' => 'Password changed successfully'], 200);
+        return response()->json(['message' => 'Đổi mật khẩu thành công'], 200);
     }    
     /**
      * Làm mới Access Token

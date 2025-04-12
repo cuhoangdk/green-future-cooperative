@@ -24,12 +24,12 @@ class UserAuthRepository implements UserAuthRepositoryInterface
 
         // Kiểm tra nếu tài khoản bị khóa (is_banned = true)
         if (!$user || $user->is_banned) {
-            return response()->json(['message' => 'This account has been banned.'], 403);
+            return response()->json(['message' => 'Tài khoản của bạn đã bị khoá.'], 403);
         }
 
         // Kiểm tra mật khẩu
         if (!Hash::check($credentials['password'], $user->password)) {
-            return response()->json(['message' => 'Invalid credentials.'], 401);
+            return response()->json(['message' => 'Bạn đã nhập sai email hoặc mật khẩu.'], 401);
         }
         // Cập nhật last_login_at
         $user->update(['last_login_at' => now()]);
@@ -108,8 +108,8 @@ class UserAuthRepository implements UserAuthRepositoryInterface
         );
 
         return $status === Password::RESET_LINK_SENT
-            ? 'Reset link sent to your email.'
-            : 'Unable to send reset link.';
+            ? 'Gửi link tạo lại mật khẩu thành công. Vui lòng kiểm tra email.'
+            : 'Không thể gửi link tạo lại mật khẩu.';
     }
 
     /**
@@ -128,8 +128,8 @@ class UserAuthRepository implements UserAuthRepositoryInterface
         );
 
         return $status === Password::PASSWORD_RESET
-            ? 'Password reset successfully.'
-            : 'Invalid token.';
+            ? 'Mật khẩu đã được đặt lại thành công.'
+            : 'Token không hợp lệ.';
     }
     /**
      * Đổi mật khẩu.
@@ -139,13 +139,13 @@ class UserAuthRepository implements UserAuthRepositoryInterface
         $user = User::find($userId);
 
         if (!Hash::check($data['current_password'], $user->password)) {
-            return 'Current password is incorrect.';
+            return 'Mật khẩu hiện tại không chính xác.';
         }
 
         $user->password = Hash::make($data['new_password']);
         $user->save();
 
-        return 'Password changed successfully.';
+        return 'Đổi mật khẩu thành công.';
     }
 
     /**
@@ -201,9 +201,9 @@ class UserAuthRepository implements UserAuthRepositoryInterface
 
         if ($user) {
             $user->delete();
-            return 'User profile deleted successfully.';
+            return 'Xoá tài khoản thành công.';
         }
 
-        return 'Unable to delete user profile.';
+        return 'Có lỗi xảy ra, không thể xoá tài khoản.';
     }
 }

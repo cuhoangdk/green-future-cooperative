@@ -25,20 +25,20 @@ class CustomerAuthRepository implements CustomerAuthRepositoryInterface
 
         // Kiểm tra khách hàng có tồn tại không
         if (!$customer) {            
-            return response()->json(['message' => 'Invalid email'], 401);
+            return response()->json(['message' => 'Bạn đã nhập sai thông tin email hoặc mật khẩu. Vui lòng kiểm tra lại.'], 401);
         }
         // Kiểm tra xem khách hàng có được verify chưa
         if (!$customer->verified_at) {
-            return response()->json(['message' => 'Your account has not been verified.'], 403);
+            return response()->json(['message' => 'Tài khoản của bạn chưa được kích hoạt.'], 403);
         }
 
         // Kiểm tra xem khách hàng có bị khóa không
         if ($customer->is_banned) {
-            return response()->json(['message' => 'Your account has been banned.'], 403);
+            return response()->json(['message' => 'Tài khoản của bạn đã bị khoá.'], 403);
         }
         // Kiểm tra mật khẩu
         if (!Hash::check($credentials['password'], $customer->password)) {
-            return response()->json(['message' => 'Invalid password'], 401);
+            return response()->json(['message' => 'Bạn đã nhập sai thông tin email hoặc mật khẩu. Vui lòng kiểm tra lại.'], 401);
         }
 
         // Nếu thông tin chính xác, gọi /oauth/token để lấy token
@@ -75,11 +75,11 @@ class CustomerAuthRepository implements CustomerAuthRepositoryInterface
     {
         // Kiểm tra xem email hoặc số điện thoại đã tồn tại chưa
         if (Customer::where('email', $data['email'])->exists()) {
-            return response()->json(['message' => 'Email already exists.'], 422);
+            return response()->json(['message' => 'Email đã tồn tại trong hệ thống.'], 422);
         }
     
         if (Customer::where('phone_number', $data['phone_number'])->exists()) {
-            return response()->json(['message' => 'Phone number already exists.'], 422);
+            return response()->json(['message' => 'Số điện thoại đã tồn tại trong hệ thống.'], 422);
         }
     
         // Tạo token xác minh
@@ -102,7 +102,7 @@ class CustomerAuthRepository implements CustomerAuthRepositoryInterface
         $customer = Customer::where('email', $email)->first();
     
         if (!$customer) {
-            throw new \Exception('Email not found.', 404);
+            throw new \Exception('Email không tồn tại.', 404);
         }
     
         // Sử dụng broker để gửi reset link
@@ -116,8 +116,8 @@ class CustomerAuthRepository implements CustomerAuthRepositoryInterface
     
         // Trả về trạng thái
         return $status === Password::RESET_LINK_SENT
-            ? 'Reset link sent to your email.'
-            : 'Unable to send reset link.';
+            ? 'Gửi link tạo lại mật khẩu thành công. Vui lòng kiểm tra email'
+            : 'Không thể gửi link tạo lại mật khẩu.';
     }
     
 
@@ -134,8 +134,8 @@ class CustomerAuthRepository implements CustomerAuthRepositoryInterface
         );
 
         return $status === Password::PASSWORD_RESET
-            ? 'Password reset successfully.'
-            : 'Invalid token.';
+            ? 'Mật khẩu đã được đổi thành công.'
+            : 'Token không hợp lệ.';
     }
 
 
@@ -144,7 +144,7 @@ class CustomerAuthRepository implements CustomerAuthRepositoryInterface
         $customer = Auth::user();
 
         if (!Hash::check($data['current_password'], $customer->password)) {
-            throw new \Exception('Current password is incorrect.');
+            throw new \Exception('Mật khẩu hiện tại không chính xác.');
         }
 
         $customer->update(['password' => $data['new_password']]);

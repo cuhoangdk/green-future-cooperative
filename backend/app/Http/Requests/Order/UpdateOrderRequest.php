@@ -77,7 +77,7 @@ class UpdateOrderRequest extends FormRequest
         }
         // Nếu trạng thái không phải pending, chỉ cho phép sửa status và admin_note
         return [
-            'status' => 'sometimes|in:processing,delivered', // Loại bỏ pending khỏi danh sách
+            'status' => 'sometimes|in:processing,delivering,delivered', // Loại bỏ pending khỏi danh sách
             'admin_note' => 'nullable|string',
         ];
     }

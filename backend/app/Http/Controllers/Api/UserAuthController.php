@@ -35,7 +35,7 @@ class UserAuthController extends Controller
         $tokenData = $this->authRepository->login($request->only('email', 'password'));
 
         if (!$tokenData) {
-            return response()->json(['message' => 'Invalid credentials'], 401);
+            return response()->json(['message' => 'Bạn đã nhập sai email hoặc mật khẩu'], 401);
         }
 
         return response()->json($tokenData);
@@ -65,7 +65,7 @@ class UserAuthController extends Controller
     public function logout()
     {
         $this->authRepository->logout();
-        return response()->json(['message' => 'Logged out successfully']);
+        return response()->json(['message' => 'Đăng xuất thành công']);
     }    
    
     /**
@@ -78,7 +78,7 @@ class UserAuthController extends Controller
     {
         $message = $this->authRepository->sendResetLink($request->email);
 
-        if ($message === 'Reset link sent to your email.') {
+        if ($message === 'Gửi link tạo lại mật khẩu thành công. Vui lòng kiểm tra email.') {
             return response()->json(['message' => $message], 200);
         }
 
@@ -95,7 +95,7 @@ class UserAuthController extends Controller
     {
         $message = $this->authRepository->resetPassword($request->only('email', 'password', 'password_confirmation', 'token'));
 
-        if ($message === 'Password reset successfully.') {
+        if ($message === 'Mật khẩu đã được đặt lại thành công.') {
             return response()->json(['message' => $message], 200);
         }
 
@@ -111,7 +111,7 @@ class UserAuthController extends Controller
     {
         $message = $this->authRepository->changePassword(Auth::id(), $request->only('current_password', 'new_password', 'new_password_confirmation'));
 
-        if ($message === 'Password changed successfully.') {
+        if ($message === 'Đổi mật khẩu thành công.') {
             return response()->json(['message' => $message], 200);
         }
 
@@ -167,7 +167,7 @@ class UserAuthController extends Controller
     {
         $message = $this->authRepository->deleteProfile(Auth::id());
 
-        if ($message === 'User profile deleted successfully.') {
+        if ($message === 'Xoá tài khoản thành công.') {
             return response()->json(['message' => $message], 200);
         }
 

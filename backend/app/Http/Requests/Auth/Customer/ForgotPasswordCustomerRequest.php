@@ -17,4 +17,12 @@ class ForgotPasswordCustomerRequest extends FormRequest
             'email' => 'required|email|exists:customers,email',
         ];
     }
+    public function messages(): array
+    {
+        return [
+            'email.required' => 'Vui lòng nhập email.',
+            'email.email' => 'Email không đúng định dạng.',
+            'email.exists' => 'Email này không tồn tại trong hệ thống.',
+        ];
+    }
 }
