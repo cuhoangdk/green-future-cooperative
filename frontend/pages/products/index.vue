@@ -23,7 +23,7 @@
                         </select>
                     </div>
                 </div>
-                <ProductList title="Tất cả sản phẩm" :products="products.products" :meta="products.meta"
+                <ProductList title="Tất cả sản phẩm" :products="products.products" :meta="products.meta" :show-numbers="true"
                     :links="products.links" :status="status" @page-change="handleProductsPageChange" />
             </div>
         </div>

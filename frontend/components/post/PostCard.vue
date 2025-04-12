@@ -1,9 +1,9 @@
 <template>
     <NuxtLink :to="`/posts/${post.slug}`"
-        class="bg-white border border-green-100 shadow-sm rounded-lg overflow-hidden hover:shadow-md hover:-translate-y-1 duration-200 relative z-0 h-full flex flex-col">
+        class="bg-white border border-green-100 shadow-sm rounded-2xl overflow-hidden hover:shadow-md hover:-translate-y-1 duration-200 relative z-0 h-full flex flex-col">
         <!-- Khu vực ảnh với category name nổi -->
         <div class="relative w-full aspect-video">
-            <img :src="`${img}`" :alt="post.title" class="rounded-lg aspect-video rounded-b-none object-cover w-full"
+            <img :src="`${img}`" :alt="post.title" class="rounded-2xl aspect-video rounded-b-none object-cover w-full"
                 loading="lazy" @error="() => { img = placeholderImage; }" />
             <!-- Category name nổi ở góc dưới bên trái -->
             <div v-if="post.category?.name"
