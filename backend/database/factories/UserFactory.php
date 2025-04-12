@@ -36,7 +36,6 @@ class UserFactory extends Factory
             'usercode' => null, // Sẽ được tự động tạo
             'last_login_at' => $this->faker->dateTimeBetween('-1 month', 'now'),
             'gender' => $this->faker->randomElement(['male', 'female', 'other']),
-
         ];
     }
 

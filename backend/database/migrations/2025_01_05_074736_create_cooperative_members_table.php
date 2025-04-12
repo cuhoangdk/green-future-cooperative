@@ -7,7 +7,7 @@ return new class extends Migration {
     public function up()
     {
         Schema::create('cooperative_members', function (Blueprint $table) {
-            $table->id();
+            $table->id()->from(10000);
             $table->string('username')->unique();
             $table->string('slug')->unique();
             $table->string('email')->unique();

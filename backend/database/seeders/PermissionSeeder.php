@@ -16,7 +16,7 @@ class PermissionSeeder extends Seeder
 
         foreach ($routes as $route) {
             // Chỉ lấy các route có name
-            if ($route->getName()) {
+            if ($route->getName() && in_array('permission', $route->middleware())) {
                 $permissions[] = [
                     'name' => $route->getName(), // Lấy route name làm permission name
                     'display_name' => $this->generateDisplayName($route->getName()),
@@ -55,6 +55,10 @@ class PermissionSeeder extends Seeder
                 return "Cập nhật {$resource}";
             case 'destroy':
                 return "Xóa {$resource}";
+            case 'restore':
+                return "Khôi phục {$resource}";
+            case 'force-delete':
+                return "Xoá vĩnh viễn {$resource}";
             default:
                 return ucfirst(str_replace('-', ' ', $action)) . " {$resource}";
         }

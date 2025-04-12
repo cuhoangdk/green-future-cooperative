@@ -15,7 +15,7 @@ class CreateCustomersAndCustomerAddressesTables extends Migration
     {
         // Tạo bảng customers
         Schema::create('customers', function (Blueprint $table) {
-            $table->id();
+            $table->id()->from(10000);
             $table->string('email')->unique();
             $table->string('password');
             $table->string('full_name');

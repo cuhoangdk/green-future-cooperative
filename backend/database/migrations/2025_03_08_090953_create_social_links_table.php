@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('social_links', function (Blueprint $table) {
-            $table->id();
+            $table->id()->from(100);
             $table->enum('platform',['facebook', 'tiktok', 'youtube', 'instagram']);
             $table->string('url')->nullable();
             $table->boolean('is_active')->default(true);

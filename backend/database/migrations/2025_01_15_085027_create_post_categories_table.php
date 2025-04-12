@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('post_categories', function (Blueprint $table) {
-            $table->id(); // unsignedBigInteger
+            $table->id()->from(100); // unsignedBigInteger
             $table->string('name');
             $table->string('slug')->unique();
             $table->text('description')->nullable();

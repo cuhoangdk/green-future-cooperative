@@ -12,13 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('parameters', function (Blueprint $table) {
-            $table->id();
+            $table->id()->from(100);
             $table->string('name')->unique(); // Tên tham số, không trùng lặp
             $table->string('value'); // Giá trị tham số
             $table->timestamps();
         });
         DB::table('parameters')->insert([
-            'id' => 1,
+            'id' => 100,
             'name' => 'shipping_fee',
             'value' => '5000',
             'created_at' => now(),

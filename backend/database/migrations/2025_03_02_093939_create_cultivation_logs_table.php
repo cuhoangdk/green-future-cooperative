@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('cultivation_logs', function (Blueprint $table) {
-            $table->id();
+            $table->id()->from(100);
             $table->foreignId('product_id')->constrained('products')->onDelete('cascade');
             $table->string('activity'); // Hoạt động canh tác
             $table->string('fertilizer_used')->nullable(); // Phân bón sử dụng

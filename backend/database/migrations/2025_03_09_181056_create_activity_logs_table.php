@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('activity_logs', function (Blueprint $table) {
-            $table->id();
+            $table->id()->from(100);
             $table->enum('user_type', ['member', 'customer', 'system']);
             $table->unsignedBigInteger('user_id')->nullable();
             $table->string('action');

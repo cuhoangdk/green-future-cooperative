@@ -8,7 +8,7 @@ return new class extends Migration {
     public function up()
     {
         Schema::create('post_comments', function (Blueprint $table) {
-            $table->id();
+            $table->id()->from(100);
             $table->foreignId('post_id')->constrained('posts')->onDelete('cascade');
             $table->foreignId('customer_id')->constrained('customers')->onDelete('cascade');
             $table->text('content');

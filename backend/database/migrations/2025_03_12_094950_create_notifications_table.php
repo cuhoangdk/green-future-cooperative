@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('notifications', function (Blueprint $table) {
-            $table->id();
+            $table->id()->from(100);
             $table->string('user_type'); // 'member' (api_users) hoặc 'customer' (api_customers)
             $table->unsignedBigInteger('user_id')->nullable(); // Có thể null nếu thông báo hệ thống không gắn với user cụ thể
             $table->string('title');
