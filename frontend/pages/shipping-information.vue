@@ -1,5 +1,5 @@
 <template>
-    <div class="min-h-screen mt-16 p-2 lg:mt-0 mb-10">
+    <div class="min-h-screen p-2 mb-10">
         <div v-if="status === 'pending'"
             class="text-center text-gray-500 h-96 flex flex-col justify-center items-center">
             <span class="loading loading-spinner loading-xl"></span>

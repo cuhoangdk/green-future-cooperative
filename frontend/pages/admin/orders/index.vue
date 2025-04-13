@@ -56,17 +56,20 @@ const toast = useToast()
 const productStore = useProductStore()
 const router = useRouter()
 
-const currentPage = ref(Number(useRoute().query.page) || 1)
-const perPage = ref(10)
+const currentPage = ref(1)
+const perPage = ref(1)
 const searchQuery = ref('')
 const selectedStatus = ref('')
 const selectedCategory = ref('')
 const selectedOwner = ref('')
 const sortBy = ref('')
-const expandedRows = ref(new Set<number>())
 const debouncedSearch = debounce(search, 500)
 
-const { data, status } = await getAdminOrders(currentPage.value, perPage.value)
+const { data, status } = await getAdminOrders({
+    page: currentPage.value,
+    per_page: perPage.value,
+})
+
 const orders = computed<{ orders: Order[], meta: PaginationMeta | null, links: PaginationLinks | null }>(() => ({
     orders: Array.isArray(data.value?.data) ? data.value.data : data.value?.data ? [data.value.data] : [],
     meta: data.value?.meta ?? null,
@@ -82,10 +85,6 @@ watch(() => orders.value.orders, async (newData) => {
     }
 }, { immediate: true })
 
-const toggleRow = (id: number) => {
-    expandedRows.value.has(id) ? expandedRows.value.delete(id) : expandedRows.value.add(id)
-}
-
 async function search() {
     const filters: any = {
         page: currentPage.value,
@@ -100,7 +99,7 @@ async function search() {
         }),
     }
 
-    const { data, error } = await getAdminOrders(filters)
+    const { error } = await getAdminOrders(filters)
     if (error.value) swal.fire('Lỗi', 'Không thể tải danh sách sản phẩm!', 'error')
 }
 

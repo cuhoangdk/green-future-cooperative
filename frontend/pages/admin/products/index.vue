@@ -95,7 +95,7 @@ const expandedRows = ref(new Set<number>())
 const debouncedSearch = debounce(search, 500)
 
 // Lấy danh sách danh mục
-const { data: categoryData, status } = await getProductCategories()
+const { data: categoryData } = await getProductCategories()
 const categories = computed<ProductCategory[]>(() =>
     Array.isArray(categoryData.value?.data) ? categoryData.value.data : categoryData.value?.data ? [categoryData.value.data] : []
 )
@@ -106,7 +106,7 @@ const owners = computed<User[]>(() =>
     Array.isArray(userData.value?.data) ? userData.value.data : userData.value?.data ? [userData.value.data] : []
 )
 
-const { data } = await searchProducts({ page: currentPage.value, per_page: perPage.value }, AuthType.User)
+const { data, status } = await searchProducts({ page: currentPage.value, per_page: perPage.value }, AuthType.User)
 const products = computed<{ products: Product[], meta: PaginationMeta | null, links: PaginationLinks | null }>(() => ({
     products: Array.isArray(data.value?.data) ? data.value.data : data.value?.data ? [data.value.data] : [],
     meta: data.value?.meta ?? null,

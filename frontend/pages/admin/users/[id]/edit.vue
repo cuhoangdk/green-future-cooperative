@@ -23,7 +23,7 @@
                     <div class="sm:col-span-2">
                         <label class="text-gray-700 font-semibold block mb-1">Mã thành viên</label>
                         <div class="input input-bordered w-full flex items-center bg-gray-100 font-medium">
-                            {{ route.params.id }}
+                            {{ user.usercode }}
                         </div>
                     </div>
 
@@ -189,20 +189,18 @@ import type { User } from '~/types/user';
 
 const route = useRoute();
 const { provinces, districts, wards, fetchProvinces, fetchDistricts, fetchWards } = useVietnamAddress();
-const { getUserByCode, updateUser } = useUsers();
+const { getUserById, updateUser } = useUsers();
 const toast = useToast();
 const router = useRouter();
 
-// Avatar mặc định nếu không có ảnh
 const defaultAvatar = useRuntimeConfig().public.placeholderImage;
 const backEndUrl = useRuntimeConfig().public.backendUrl;
+const userId = Number(route.params.id);
 
-// Ref để tham chiếu đến input file và file được chọn
 const fileInput = ref<HTMLInputElement | null>(null);
 const selectedFile = ref<File | null>(null);
 const status = ref<'idle' | 'pending' | 'success' | 'error'>('idle');
 
-// Khởi tạo form với dữ liệu mặc định
 const form = ref({
     full_name: '',
     email: '',
@@ -237,8 +235,8 @@ const handleFileChange = (event: Event) => {
     }
 };
 
-const { data: userData, status: userStatus, refresh } = await getUserByCode(route.params.id as string);
-const user = computed(() => { return Array.isArray(userData.value?.data) ? userData.value.data[0] : userData.value?.data || null; });
+const { data: userData, status: userStatus, refresh } = await getUserById(userId);
+const user = computed<User>(() => { return Array.isArray(userData.value?.data) ? userData.value.data[0] : userData.value?.data || null; });
 watch(() => user.value, async (newUser) => {
     if (newUser) {
         form.value = {

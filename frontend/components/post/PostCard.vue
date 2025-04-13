@@ -14,8 +14,8 @@
 
         <div class="text-left mt-3 px-3 pb-3 flex-1 flex flex-col justify-between">
             <div>
-                <h3 class="text-xl font-bold text-green-800 mb-2 line-clamp-3">{{ post.title }}</h3>
-                <p class="text-gray-600 text-sm line-clamp-3">{{ post.summary }}</p>
+                <h3 class="text-xl font-bold text-green-800 mb-2 line-clamp-2">{{ post.title }}</h3>
+                <p class="text-gray-600 text-sm line-clamp-2">{{ post.summary }}</p>
             </div>
 
             <div class="flex justify-between mt-auto">

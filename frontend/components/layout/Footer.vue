@@ -30,7 +30,7 @@
       </div>
   
       <hr class="my-6 border-gray-600" />
-      <p class="text-center text-gray-400">&copy; 2025 Nguyễn Đình Hiệu. All rights reserved.</p>
+      <p class="text-center text-gray-400">&copy; 2025 H&H. All rights reserved.</p>
     </div>
   </template>
   

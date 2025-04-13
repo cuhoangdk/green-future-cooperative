@@ -1,5 +1,5 @@
 <template>
-    <div class="min-h-screen mt-16 p-2 lg:mt-0">
+    <div class="min-h-screen p-2">
         <div class="flex item-center justify-center gap-5 mb-3">
             <h1 class="w-full lg:w-10/12 text-2xl font-bold text-green-800">Giỏ hàng</h1>
         </div>

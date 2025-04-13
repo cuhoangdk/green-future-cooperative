@@ -19,13 +19,9 @@ class SliderImageRepository implements SliderImageRepositoryInterface
         return $this->model->when(!auth('api_users')->check(), function ($query) {
             $query->where('is_active', true)
             ->where(function ($q) {
-                $q->whereNull('start_date')
-                  ->orWhere('start_date', '<=', now());
-            })
-            ->where(function ($q) {
                 $q->whereNull('end_date')
                   ->orWhere('end_date', '>=', now());
-            });;
+            });
         })->get();
     }
 
@@ -34,13 +30,9 @@ class SliderImageRepository implements SliderImageRepositoryInterface
         return $this->model->when(!auth('api_users')->check(), function ($query) {
             $query->where('is_active', true)
             ->where(function ($q) {
-                $q->whereNull('start_date')
-                  ->orWhere('start_date', '<=', now());
-            })
-            ->where(function ($q) {
                 $q->whereNull('end_date')
                   ->orWhere('end_date', '>=', now());
-            });;
+            });
         })->findOrFail($id);
     }
 

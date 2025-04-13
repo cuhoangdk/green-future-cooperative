@@ -14,10 +14,12 @@
     <!-- Danh mục -->
     <ul v-else class="text-left space-y-2">
       <li v-for="category in categories" :key="category.id">
-        <NuxtLink :to="`/post-categories/${category.slug}`"
-          class="text-left text-xl font-semibold text-green-600 hover:text-green-400 transition-colors duration-200">
+        <a
+          @click.prevent="updateQuery(category.slug, category.id)"
+          class="text-left text-xl font-semibold text-green-600 hover:text-green-400 transition-colors duration-200 cursor-pointer"
+        >
           {{ category.name }}
-        </NuxtLink>
+        </a>
       </li>
     </ul>
   </div>
@@ -25,8 +27,11 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { PostCategory } from '~/types/post' // Đổi đường dẫn type nếu cần
+import { useRouter } from 'vue-router'
+import type { PostCategory } from '~/types/post'
 import { usePostCategories } from '~/composables/usePostCategories'
+
+const router = useRouter()
 
 // Sử dụng composable usePostCategories
 const { getAllPostCategories } = usePostCategories()
@@ -35,7 +40,23 @@ const { getAllPostCategories } = usePostCategories()
 const { data, status, error } = await getAllPostCategories(AuthType.Guest)
 
 // Xử lý danh mục và trạng thái loading
-const categories = computed<PostCategory[]>(() => Array.isArray(data.value?.data) ? data.value.data : data.value ? [data.value.data] : [])
+const categories = computed<PostCategory[]>(() =>
+  Array.isArray(data.value?.data) ? data.value.data : data.value ? [data.value.data] : []
+)
+
+// Cập nhật query param
+const updateQuery = (slug: string, id: number) => {
+  if (router.currentRoute.value.name !== 'posts-category') {
+    router.push({
+      name: 'posts-category',
+      query: { slug, id }, // Thêm slug và id vào query params
+    })
+  } else {
+    router.push({
+      query: { slug, id }, // Thêm slug và id vào query params
+    })
+  }
+}
 
 // Log lỗi nếu có
 if (error.value) {

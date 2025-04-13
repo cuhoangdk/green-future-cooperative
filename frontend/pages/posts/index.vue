@@ -1,5 +1,5 @@
 <template>
-    <div class="min-h-screen items-center flex flex-col mt-16 pb-5 lg:mt-0">
+    <div class="min-h-screen items-center flex flex-col pb-5">
         <!-- Marquee Section -->
         <div class="w-11/12 max-w-7xl mt-5">
             <PostMarquee />
@@ -51,7 +51,6 @@ const { data, status, error } = await getPosts(currentPage.value, perPage, AuthT
 const posts = computed<Post[]>(() => Array.isArray(data.value?.data) ? data.value.data : data.value?.data ? [data.value.data] : [])
 const meta = computed<PaginationMeta | null>(() => data.value?.meta ?? null)
 const links = computed<PaginationLinks | null>(() => data.value?.links ?? null)
-const isLoading = computed(() => status.value === 'pending')
 
 // Xử lý sự kiện thay đổi trang
 const handlePageChange = async (page: number) => {

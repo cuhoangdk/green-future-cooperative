@@ -5,10 +5,23 @@ export const useAdminOrder = () => {
     const { get, post, put } = useApi();
 
     // Lấy danh sách đơn hàng
-    const getAdminOrders = async (page: number = 1,perPage: number = 10) => {
+    const getAdminOrders = async (filters: {
+        page?: number,
+        per_page?: number,
+        sort_by?: string,
+        sort_direction?: string,
+        search?: string,
+        user_id?: number,
+        category_id?: number,
+        status?: string,
+        start_date?: string,
+        end_date?: string,
+        is_hot?: number,
+        is_featured?: number,
+      }, authType: AuthType = AuthType.User) => {
         return await get<Order>('/admin/orders', {
-            params: { page, per_page: perPage },
-            authType: AuthType.User,
+            params: {  ...filters, sort_by: filters.sort_by ?? 'updated_at'  },
+            authType
         });
     };
 

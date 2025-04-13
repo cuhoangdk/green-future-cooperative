@@ -6,7 +6,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
     return
   }
 
-  const { isAuthenticated, accessToken, refreshToken, refreshAccessToken, fetchCurrentCustomer } = useCustomerAuth()
+  const { isAuthenticated, currentCustomer, accessToken, refreshToken, refreshAccessToken, fetchCurrentCustomer } = useCustomerAuth()
 
   // Nếu có refreshToken và đang vào /login, chuyển về trang chính
   if (to.path === '/login' && refreshToken.value) {
@@ -42,5 +42,9 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
     }
   }
 
-  // Continue navigation
+    // Nếu có refreshToken nhưng accessToken hết hạn, làm mới token
+    if (accessToken.value && !currentCustomer.value) {
+        await fetchCurrentCustomer()
+    }
+
 })

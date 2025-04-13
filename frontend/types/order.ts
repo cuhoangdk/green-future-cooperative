@@ -1,4 +1,4 @@
-export type OrderStatus = 'pending' | 'processing' | 'delivered' | 'cancelled';
+export type OrderStatus = 'pending' | 'processing' | 'delivering' | 'delivered' | 'cancelled';
 export type AddressType = 'home' | 'work' | 'other';
 
 export interface Order {

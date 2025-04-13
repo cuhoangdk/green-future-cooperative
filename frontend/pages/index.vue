@@ -1,17 +1,34 @@
 <template>
-    <div class="min-h-screen items-center flex flex-col gap-4 mt-16 pb-5 lg:my-5">
+    <div class="min-h-screen items-center flex flex-col gap-4 pb-5 ">
+        <UiCarousel />
+
+        <div
+            class="w-11/12 max-w-7xl p-3 my-5 border border-gray-200 shadow-sm rounded-2xl bg-white flex flex-col lg:flex-row items-center">
+            <div class="relative w-52 lg:w-64 aspect-square">
+                <img src="/images/logo.png" alt="Logo Green Future"
+                    class="rounded-2xl p-3 lg:p-5 w-full h-full object-cover" loading="lazy" />
+            </div>
+            <div class="text-left p-3 lg:p-5 w-full">
+                <h2 class="text-2xl font-bold text-green-800 mb-1">Hợp tác xã Tương Lai Xanh</h2>
+                <p class="text-gray-700 text-sm">
+                    Với phương châm "An toàn người trồng – Sức khỏe người dùng", chúng tôi cam kết mang lại những sản
+                    phẩm nông nghiệp chất lượng cao, đảm bảo an toàn cho cả người sản xuất và người tiêu dùng.
+                </p>
+            </div>
+        </div>
+
         <div class="w-11/12 flex flex-col max-w-7xl gap-2">
             <div>
                 <div class="flex justify-between items-center mb-4 gap-3">
-                    <h2 class="text-left text-xl font-bold text-green-800">SẢN PHẨM MỚI</h2>
+                    <h2 class="text-left text-xl font-bold text-green-800">SẢN PHẨM</h2>
                     <div class="flex-1 h-[3px] bg-green-500"></div>
                     <NuxtLink to="/products"
                         class="bg-green-600 text-white font-semibold px-5 py-1 rounded-full hover:bg-green-700">
-                        Xem tất cả
+                        Tất cả
                     </NuxtLink>
                 </div>
-                <ProductList title="Tất cả sản phẩm" :products="products.products" :meta="products.meta"
-                    :links="products.links" :status="status" @page-change="handleProductsPageChange" />
+                <ProductList :products="products.products" :meta="products.meta" :links="products.links"
+                    :status="status" @page-change="handleProductsPageChange" />
             </div>
         </div>
 
@@ -22,11 +39,11 @@
                     <div class="flex-1 h-[3px] bg-green-500"></div>
                     <NuxtLink to="/posts"
                         class="bg-green-600 text-white font-semibold px-5 py-1 rounded-full hover:bg-green-700">
-                        Xem tất cả
+                        Tất cả
                     </NuxtLink>
                 </div>
-                <PostList :posts="postsData.posts" :meta="postsData.meta" :links="postsData.links" :status="postStatus" :max-columns="4"
-                    @page-change="handlePostsPageChange" />
+                <PostList :posts="postsData.posts" :meta="postsData.meta" :links="postsData.links" :status="postStatus"
+                    :max-columns="4" @page-change="handlePostsPageChange" />
             </div>
         </div>
     </div>
@@ -40,7 +57,7 @@ import type { Post } from '~/types/post'
 const { getProducts } = useProducts()
 const { getPosts } = usePosts()
 
-const perPage = 10
+const perPage = 5
 const perPagePost = 4
 const currentProductPage = ref(1)
 const currentPostPage = ref(1)

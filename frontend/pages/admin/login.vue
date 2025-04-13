@@ -142,7 +142,6 @@ definePageMeta({
     layout: false
 })
 import { useUserAuth } from '#imports'
-import ForgotPasswordModal from '~/components/auth/ForgotPasswordModal.vue'
 
 const form = reactive({
     email: '',

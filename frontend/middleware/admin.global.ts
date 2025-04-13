@@ -6,7 +6,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
     return
   }
 
-  const { isAuthenticated, accessToken, refreshToken, refreshAccessToken, fetchCurrentUser } = useUserAuth()
+  const { isAuthenticated, currentUser, accessToken, refreshToken, refreshAccessToken, fetchCurrentUser } = useUserAuth()
 
   // Nếu đang ở trang login và đã đăng nhập, chuyển hướng đến dashboard
   if (to.path === '/admin/login' && refreshToken.value) {
@@ -32,6 +32,11 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
       }
       return
     }
+  }
+
+  // Nếu có refreshToken nhưng accessToken hết hạn, làm mới token
+  if (accessToken.value && !currentUser.value) {
+    await fetchCurrentUser()
   }
 
   // Nếu vẫn không có accessToken sau khi thử làm mới, chuyển về login

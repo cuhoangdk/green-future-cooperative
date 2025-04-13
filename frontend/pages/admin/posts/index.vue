@@ -12,7 +12,7 @@
                         @change="search">
                         <option value="">Tất cả danh mục</option>
                         <option v-for="category in categories" :key="category.id" :value="category.id">{{ category.name
-                            }}
+                        }}
                         </option>
                     </select>
                     <select v-model="selectedStatus" class="select select-sm select-primary w-full sm:w-[150px]"
@@ -34,12 +34,12 @@
                     </select>
                     <label class="lg:col-span-1 col-span-2 flex items-center justify-center gap-5">
                         <div class="flex items-center gap-2">
-                            <input v-model="checkboxIsHot" type="checkbox"  class="checkbox checkbox-primary"
-                                @change="search" /> Hot
+                            <input v-model="checkboxIsHot" type="checkbox" class="checkbox checkbox-primary"
+                                @change="search" /> Nổi bật
                         </div>
                         <div class="flex items-center gap-2">
-                            <input v-model="checkboxIsFeatured" type="checkbox"
-                            class="checkbox checkbox-primary" @change="search" /> Nổi bật
+                            <input v-model="checkboxIsFeatured" type="checkbox" class="checkbox checkbox-primary"
+                                @change="search" /> Hot
                         </div>
                     </label>
                 </div>
@@ -54,9 +54,9 @@
                 class="absolute inset-0 bg-gray-50 opacity-25 flex justify-center items-center z-10">
                 <span class="loading loading-spinner loading-lg"></span>
             </div>
-        <TablePost :posts="posts.posts" :on-delete="handleDeletePost"/>
+            <TablePost :posts="posts.posts" :on-delete="handleDeletePost" />
 
-        <GridPost :posts="posts.posts" :on-delete="handleDeletePost"/>
+            <GridPost :posts="posts.posts" :on-delete="handleDeletePost" />
         </div>
         <div class="flex flex-col sm:flex-row justify-between items-center m-4 gap-2">
             <div class="flex items-center space-x-2">
@@ -127,17 +127,13 @@ async function search() {
         }),
     }
 
-    const { data, error } = await searchPosts(filters, AuthType.User)
+    const { error } = await searchPosts(filters, AuthType.User)
     if (error.value) swal.fire('Lỗi', 'Không thể tải danh sách bài viết!', 'error')
 }
 
 const handlePageChange = (page: number) => {
     currentPage.value = page
     search()
-}
-
-const toggleRow = (id: number) => {
-    expandedRows.value.has(id) ? expandedRows.value.delete(id) : expandedRows.value.add(id)
 }
 
 async function handleDeletePost(postId: number) {

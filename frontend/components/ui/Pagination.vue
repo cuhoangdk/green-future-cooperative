@@ -60,12 +60,8 @@
     <!-- Input để nhập trang (hiển thị trên cả desktop và mobile) -->
     <div class="flex items-center gap-2">
       <div class="relative">
-        <input v-model="pageInputValue" @keydown.enter="handlePageInput" type="number" min="1" :max="meta.last_page"
-          class="input input-sm input-primary w-16 pl-2 pr-6" placeholder="Trang" />
-        <button @click="handlePageInput"
-          class="absolute right-1 top-1/2 -translate-y-1/2 btn btn-sm btn-ghost btn-circle p-0 h-4 w-4 min-h-0">
-          <ArrowRightIcon class="w-3 h-3" />
-        </button>
+        <input v-model="pageInputValue" @change="handlePageInput" type="number" min="1" :max="meta.last_page"
+          class="input input-sm input-primary w-16 text-center" placeholder="Trang" />
       </div>
       <!-- <span class="text-sm text-gray-500 lg:hidden inline-block">
         Trang {{ meta.current_page }} / {{ meta.last_page }}

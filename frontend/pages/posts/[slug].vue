@@ -1,5 +1,5 @@
 <template>
-    <div class="min-h-screen items-center flex flex-col mt-16 pb-5 lg:mt-0">
+    <div class="min-h-screen items-center flex flex-col pb-5 ">
         <!-- Skeleton khi tải bài chính -->
         <div v-if="postStatus === 'pending'" class="w-11/12 max-w-7xl mt-5">
             <div class="skeleton h-12 bg-gray-300 rounded w-3/4 mb-2 mt-8"></div>
@@ -21,15 +21,7 @@
                     {{ post.category?.name }}
                 </h2>
                 <h2 class="text-sm text-gray-600 text-left font-semibold lg:w-10/12 w-full mt-3">
-                    {{
-                        new Date(post.published_at).toLocaleString("vi-VN", {
-                            day: "2-digit",
-                            month: "2-digit",
-                            year: "numeric",
-                            hour: "2-digit",
-                            minute: "2-digit",
-                        })
-                    }}
+                    {{ formatDate(post.published_at) }}
                 </h2>
                 <hr class="border-gray-300 w-full mt-4" />
             </div>
@@ -67,7 +59,8 @@
                                     loading="lazy" />
                             </div>
                             <div class="w-1/2 px-2 py-0">
-                                <h3 class="text-left font-semibold text-green-800 hover:text-green-600 duration-200 line-clamp-4">
+                                <h3
+                                    class="text-left font-semibold text-green-800 hover:text-green-600 duration-200 line-clamp-4">
                                     {{ featuredPost.title }}
                                 </h3>
                             </div>
@@ -79,10 +72,11 @@
             <!-- Bài viết liên quan -->
             <div class="w-11/12 max-w-7xl flex gap-5">
                 <div class="w-3/4">
-                    <div v-if="isLoadingRelatedPost" class="mt-5">
-                        <PostSkeletonCard />
+                    <div class="flex justify-between items-center my-5 gap-3">
+                        <h2 class="text-left text-xl font-bold text-green-800">BÀI VIẾT</h2>
+                        <div class="flex-1 h-[3px] bg-green-500"></div>
                     </div>
-                    <PostList v-else title="Bài viết liên quan" :posts="relatedPosts.posts" :meta="relatedPosts.meta"
+                    <PostList :posts="relatedPosts.posts" :meta="relatedPosts.meta" status=""
                         :links="relatedPosts.links" @page-change="handlePageChange" />
                 </div>
                 <div class="w-1/4 mt-5">
@@ -108,7 +102,7 @@ const placeholderImage = config.public.placeholderImage;
 const backendUrl = config.public.backendUrl;
 const route = useRoute()
 const slug = String(route.params.slug)
-const perPage = 6 // Số bài viết mỗi trang
+const perPage = 3 // Số bài viết mỗi trang
 const currentPage = ref(1) // Trang hiện tại
 
 // Khởi tạo usePosts
@@ -116,11 +110,11 @@ const { getPostBySlug, getFeaturedPosts, getPostsByCategoryId } = usePosts()
 
 // Lấy bài đăng chính
 const { data: postData, status: postStatus, error: postError } = await getPostBySlug(slug)
-const post = computed<Post | null>(() =>Array.isArray(postData.value?.data) ? postData.value.data[0] : postData.value?.data || null)
+const post = computed<Post | null>(() => Array.isArray(postData.value?.data) ? postData.value.data[0] : postData.value?.data || null)
 
 // Lấy bài viết nổi bật
 const { data: featuredPostsData, status: featuredPostsStatus, error: featuredPostsError } = await getFeaturedPosts()
-const featuredPosts = computed<Post[]>(() =>Array.isArray(featuredPostsData.value?.data) ? featuredPostsData.value.data : featuredPostsData.value?.data ? [featuredPostsData.value.data] : [])
+const featuredPosts = computed<Post[]>(() => Array.isArray(featuredPostsData.value?.data) ? featuredPostsData.value.data : featuredPostsData.value?.data ? [featuredPostsData.value.data] : [])
 
 // Lấy bài viết liên quan (dựa trên category của bài chính)
 const relatedPostsData = ref<any>(null) // Lưu trữ dữ liệu liên quan

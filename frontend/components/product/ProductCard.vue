@@ -24,7 +24,7 @@
                     Mua
                 </div>
             </button>
-            <p class="text-xs text-center text-gray-500 mt-1">Người trồng: {{ product.user?.full_name }}</p>
+            <!-- <p class="text-xs text-center text-gray-500 mt-1">Người trồng: {{ product.user?.full_name }}</p> -->
         </div>
 
         <!-- Modal with animations -->
@@ -43,7 +43,7 @@
                         leave-active-class="transition duration-200 ease-in" leave-from-class="opacity-100 scale-100"
                         leave-to-class="opacity-0 scale-95">
                         <div v-if="showModal" @click.stop
-                            class="bg-white rounded-2xl shadow-2xl p-4 w-full max-w-2xl mx-1 relative z-10">
+                            class="bg-white rounded-2xl shadow-2xl p-4 w-full max-w-lg mx-1 relative z-10">
                             <div class="flex items-center justify-between mb-4">
                                 <h3 class="text-xl font-semibold text-green-800">{{ product.name }}</h3>
                                 <button @click="closeModal" class=" text-gray-500 hover:text-gray-700">
