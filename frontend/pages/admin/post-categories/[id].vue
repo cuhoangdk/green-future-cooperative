@@ -33,7 +33,6 @@
 <script setup lang="ts">
 definePageMeta({ title: 'Chỉnh sửa danh mục bài viết', layout: 'user', })
 
-import { useToast } from 'vue-toastification'
 import { useRoute, useRouter } from 'vue-router'
 import { ref, computed, watch } from 'vue'
 import { usePostCategories } from '~/composables/usePostCategories'
@@ -42,7 +41,7 @@ import type { PostCategory } from '~/types/post'
 const route = useRoute()
 const router = useRouter()
 const { getPostCategoryById, updatePostCategory } = usePostCategories()
-const toast = useToast()
+const { $toast } = useNuxtApp()
 const submit = ref<'idle' | 'pending' | 'success' | 'error'>('idle')
 
 const { data, error, status, refresh: refreshCategory } = await getPostCategoryById(Number(route.params.id))
@@ -75,11 +74,11 @@ const handleSubmit = async () => {
 
         if (error.value?.message) throw new Error(data.value?.message || 'Cập nhật danh mục thất bại')
 
-        toast.success('Cập nhật danh mục thành công!')
+        $toast.success('Cập nhật danh mục thành công!')
         router.back()
 
     } catch (error: any) {
-        toast.error(error.message || 'Cập nhật danh mục thất bại!')
+        $toast.error(error.message || 'Cập nhật danh mục thất bại!')
     } finally {
         submit.value = 'idle'
     }

@@ -30,13 +30,11 @@ definePageMeta({ title: 'Loại bài viết', layout: 'user', })
 import { Plus, Search } from 'lucide-vue-next'
 import type { PostCategory } from '~/types/post'
 import { useSwal } from '~/composables/useSwal'
-import { useToast } from 'vue-toastification'
 import { usePostCategories } from '~/composables/usePostCategories'
-import TablePostCategory from '~/components/table/TablePostCategory.vue'
 
 const { getAllPostCategories, deletePostCategory } = usePostCategories()
 const swal = useSwal()
-const toast = useToast()
+const { $toast } = useNuxtApp()
 const router = useRouter()
 const { data, status, refresh } = await getAllPostCategories()
 const categories = computed<PostCategory[]>(() => Array.isArray(data.value?.data) ? data.value.data : data.value ? [data.value.data] : [])
@@ -56,9 +54,9 @@ async function handleDeleteCategory(categoryId: number) {
       const { error } = await deletePostCategory(categoryId)
       if (error.value) throw new Error(error.value.message)
       refresh()
-      toast.success('Danh mục bài viết đã được xóa!')
+      $toast.success('Danh mục bài viết đã được xóa!')
     } catch (err) {
-      toast.error(`Xóa thất bại: ${(err as Error).message || 'Unknown error'}`)
+      $toast.error(`Xóa thất bại: ${(err as Error).message || 'Unknown error'}`)
     }
   }
 }

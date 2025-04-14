@@ -33,10 +33,8 @@
 <script setup lang="ts">
 definePageMeta({ title: 'Thêm đơn vị tính', layout: 'user', })
 
-import { useToast } from 'vue-toastification'
-
 const { createUnit } = useUnits()
-const toast = useToast()
+const { $toast } = useNuxtApp()
 const status = ref<'idle' | 'pending' | 'success' | 'error'>('idle')
 
 
@@ -62,7 +60,7 @@ const handleSubmit = async () => {
         
         if (error.value?.message) throw new Error(data.value?.message || 'Tạo nông trại thất bại')
 
-        toast.success('Tạo nông trại thành công!')
+        $toast.success('Tạo nông trại thành công!')
         // Có thể redirect hoặc reset form sau khi tạo thành công
         form.value = {
             name: '',
@@ -70,7 +68,7 @@ const handleSubmit = async () => {
             allow_decimal: true,
         }
     } catch (error: any) {
-        toast.error(error.message || 'Tạo nông trại thất bại!')
+        $toast.error(error.message || 'Tạo nông trại thất bại!')
     } finally {
         status.value = 'idle'
     }

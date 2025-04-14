@@ -34,22 +34,18 @@
 <script setup lang="ts">
 definePageMeta({ title: 'Chỉnh sửa loại sản phẩm', layout: 'user', })
 
-import { useToast } from 'vue-toastification'
-import { useRoute } from 'vue-router'
 import type { ProductCategory } from '~/types/product'
 
 const route = useRoute()
 const router = useRouter()
 const { getProductCategoryById, updateProductCategory } = useProductCategories()
-const toast = useToast()
+const { $toast } = useNuxtApp()
 const submit = ref<'idle' | 'pending' | 'success' | 'error'>('idle')
 
 
 const { data, error, status, refresh: Refresh } = await getProductCategoryById(Number(route.params.id))
 const category = computed<ProductCategory | null>(() => Array.isArray(data.value?.data) ? data.value.data[0] : data.value?.data || null)
-// Preview ảnh bìa hiện tại
 
-// Khởi tạo form với các giá trị mặc định
 const form = ref({
     name: '',
     description: '',
@@ -66,21 +62,18 @@ const handleSubmit = async () => {
     try {
         submit.value = 'pending'
 
-        // Tạo FormData để gửi dữ liệu
         const formData = new FormData()
         formData.append('name', form.value.name)
         formData.append('description', form.value.description)
 
-        // Gửi request cập nhật đơn vị tính
         const { error, data } = await updateProductCategory(Number(route.params.id), formData)
 
-        if (error.value?.message) throw new Error(data.value?.message || 'Cập nhật đơn vị tính thất bại')
+        if (error.value?.message) throw new Error(data.value?.message || 'Cập nhật loại sản phẩm thất bại')
 
-        toast.success('Cập nhật đơn vị tính thành công!')
-        router.back()
-
+        $toast.success('Cập nhật loại sản phẩm thành công!')
+        useRouter().push('/admin/product-categories')
     } catch (error: any) {
-        toast.error(error.message || 'Cập nhật đơn vị tính thất bại!')
+        $toast.error(error.message || 'Cập nhật loại sản phẩm thất bại!')
     } finally {
         submit.value = 'idle'
     }

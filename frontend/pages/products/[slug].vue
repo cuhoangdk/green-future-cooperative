@@ -189,14 +189,12 @@ import { EyeIcon, ArrowLeft, ArrowRight, Trash, Plus, Minus } from 'lucide-vue-n
 import type { Farm } from '~/types/farm'
 import type { Product, CultivationLog } from '~/types/product'
 import type { PaginationMeta, PaginationLinks } from '~/types/api'
-import { useToast } from 'vue-toastification';
 
 const route = useRoute()
 const slug = String(route.params.slug)
 const config = useRuntimeConfig()
-const placeholderImage = config.public.placeholderImage
 const backendUrl = config.public.backendUrl
-const toast = useToast();
+const { $toast } = useNuxtApp()
 
 const { getProductBySlug, getProducts } = useProducts()
 const { getFarmById } = useFarms()
@@ -278,12 +276,12 @@ const addProductToCart = async () => {
         if (product.value) {
             isAddingToCart.value = true
             await addCartItem(product.value.id, quantity.value)
-            toast.success('Đã thêm sản phẩm vào giỏ hàng!')
+            $toast.success('Đã thêm sản phẩm vào giỏ hàng!')
         } else {
-            toast.error('Sản phẩm không tồn tại!')
+            $toast.error('Sản phẩm không tồn tại!')
         }
     } catch (error) {
-        toast.error('Có lỗi khi thêm sản phẩm vào giỏ hàng!')
+        $toast.error('Có lỗi khi thêm sản phẩm vào giỏ hàng!')
     } finally {
         isAddingToCart.value = false
     }

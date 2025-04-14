@@ -17,10 +17,9 @@
 
 <script setup lang="ts">
 import type { CustomerAddress } from '~/types/customer';
-import { useToast } from 'vue-toastification';
 
 const { getCustomerAddress } = useCustomerAddress();
-const toast = useToast();
+const { $toast } = useNuxtApp()
 
 const { data: dataAddresses } = await getCustomerAddress();
 const addresses = computed<CustomerAddress[]>(() => 
@@ -30,4 +29,6 @@ const addresses = computed<CustomerAddress[]>(() =>
             ? [dataAddresses.value.data] 
             : []
 );
+
+$toast.error('Không thể tải danh sách địa chỉ!')
 </script>

@@ -70,14 +70,13 @@ definePageMeta({ layout: 'user', title: 'Khách hàng', description: 'Quản lý
 import { Search, Plus, Box } from 'lucide-vue-next'
 import { debounce } from 'lodash-es'
 import { useSwal } from '~/composables/useSwal'
-import { useToast } from 'vue-toastification'
 import type { PaginationMeta, PaginationLinks } from '~/types/api'
 import type { Customer } from '~/types/customer'
 
 const { searchCustomers, deleteCustomer, updateCustomer } = useCustomer()
 const { getFullAddressName } = useVietnamAddress()
 const swal = useSwal()
-const toast = useToast()
+const { $toast } = useNuxtApp()
 const router = useRouter()
 
 const currentPage = ref(Number(useRoute().query.page) || 1)
@@ -130,9 +129,9 @@ async function handleDeleteCustomer(customerId: number) {
       const { error } = await deleteCustomer(customerId)
       if (error.value) throw new Error(error.value.message)
       customers.value.customers = customers.value.customers.filter((customer: Customer) => customer.id !== customerId)
-      toast.success('Khách hàng đã được xóa!')
+      $toast.success('Khách hàng đã được xóa!')
     } catch (err) {
-      toast.error(`Xóa thất bại: ${(err as Error).message || 'Unknown error'}`)
+      $toast.error(`Xóa thất bại: ${(err as Error).message || 'Unknown error'}`)
     }
   }
 }
@@ -144,9 +143,9 @@ async function handleToggleStatus(customer: Customer) {
     if (error.value) throw new Error(error.value.message)
 
     customer.is_banned = newBanStatus
-    toast.success(`Đã ${newBanStatus ? 'khóa' : 'mở khóa'} tài khoản thành công!`)
+    $toast.success(`Đã ${newBanStatus ? 'khóa' : 'mở khóa'} tài khoản thành công!`)
   } catch (err) {
-    toast.error(`Thao tác thất bại: ${(err as Error).message || 'Unknown error'}`)
+    $toast.error(`Thao tác thất bại: ${(err as Error).message || 'Unknown error'}`)
   }
 }
 

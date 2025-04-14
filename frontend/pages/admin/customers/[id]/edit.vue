@@ -111,7 +111,7 @@ import type { Customer } from '~/types/customer';
 const route = useRoute();
 const { getFullAddressName } = useVietnamAddress();
 const { getCustomerById, updateCustomer } = useCustomer();
-const toast = useToast();
+const { $toast } = useNuxtApp()
 const router = useRouter();
 
 // Avatar mặc định nếu không có ảnh
@@ -232,11 +232,11 @@ const handleSubmit = async () => {
             throw new Error(error.value.message);
         }
 
-        toast.success('Cập nhật thông tin khách hàng thành công!');
+        $toast.success('Cập nhật thông tin khách hàng thành công!');
         refresh();
         router.push('/admin/customers');
     } catch (error: any) {
-        toast.error(error.message || 'Cập nhật thông tin khách hàng thất bại!');
+        $toast.error(error.message || 'Cập nhật thông tin khách hàng thất bại!');
     } finally {
         submit.value = 'idle';
     }

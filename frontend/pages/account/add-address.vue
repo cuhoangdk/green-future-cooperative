@@ -83,12 +83,10 @@
 </template>
 
 <script setup lang="ts">
-import { useToast } from 'vue-toastification';
-
 const { provinces, districts, wards, fetchProvinces, fetchDistricts, fetchWards } = useVietnamAddress();
 const { addCustomerAddress } = useCustomerAddress();
 const { currentCustomer } = useCustomerAuth();
-const toast = useToast();
+const { $toast } = useNuxtApp()
 const router = useRouter();
 const status = ref<'idle' | 'pending' | 'success' | 'error'>('idle');
 
@@ -143,10 +141,10 @@ const handleSubmit = async () => {
             throw new Error(error.value.message);
         }
 
-        toast.success('Thêm địa chỉ thành công!');
+        $toast.success('Thêm địa chỉ thành công!');
         router.push('/account');
     } catch (error: any) {
-        toast.error(error.message || 'Thêm địa chỉ thất bại!');
+        $toast.error(error.message || 'Thêm địa chỉ thất bại!');
     } finally {
         status.value = 'idle';
     }

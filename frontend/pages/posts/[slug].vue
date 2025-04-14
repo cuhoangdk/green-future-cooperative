@@ -143,7 +143,6 @@ const relatedPosts = computed<{ posts: Post[]; meta: PaginationMeta | null; link
     meta: relatedPostsData.value?.meta ?? null,
     links: relatedPostsData.value?.links ?? null
 }))
-const isLoadingRelatedPost = computed(() => !relatedPostsData.value || relatedPostsData.value === null)
 
 // Xử lý sự kiện thay đổi trang
 const handlePageChange = async (page: number) => {
@@ -151,13 +150,5 @@ const handlePageChange = async (page: number) => {
     if (post.value?.category?.id) {
         await fetchRelatedPosts(post.value.category.id, page)
     }
-}
-
-// Log lỗi ban đầu
-if (postError.value) {
-    console.error('Failed to load post:', postError.value)
-}
-if (featuredPostsError.value) {
-    console.error('Failed to load featured posts:', featuredPostsError.value)
 }
 </script>

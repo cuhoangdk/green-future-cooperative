@@ -71,7 +71,6 @@ definePageMeta({ layout: 'user', title: 'Sản phẩm', description: 'Quản lý
 import { Search, Plus } from 'lucide-vue-next'
 import { debounce } from 'lodash-es'
 import { useSwal } from '~/composables/useSwal'
-import { useToast } from 'vue-toastification'
 import type { PaginationMeta, PaginationLinks } from '~/types/api'
 import type { Product, ProductCategory } from '~/types/product'
 import type { User } from '~/types/user'
@@ -80,7 +79,7 @@ const { searchProducts, deleteProduct } = useProducts()
 const { getProductCategories } = useProductCategories()
 const { getUsers } = useUsers()
 const swal = useSwal()
-const toast = useToast()
+const { $toast } = useNuxtApp()
 const productStore = useProductStore()
 const router = useRouter()
 
@@ -156,9 +155,9 @@ async function handleDeleteProduct(productId: number) {
             if (error.value) throw new Error(error.value.message)
             products.value.products = products.value.products.filter((product: Product) => product.id !== productId)
             expandedRows.value.delete(productId)
-            toast.success('Sản phẩm đã được xóa!')
+            $toast.success('Sản phẩm đã được xóa!')
         } catch (err) {
-            toast.error(`Xóa thất bại: ${(err as Error).message || 'Unknown error'}`)
+            $toast.error(`Xóa thất bại: ${(err as Error).message || 'Unknown error'}`)
         }
     }
 }

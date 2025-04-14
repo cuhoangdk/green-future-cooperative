@@ -119,12 +119,11 @@ definePageMeta({ layout: 'user', title: 'Chỉnh sửa nông trại' })
 
 import { useFarms } from '~/composables/useFarms'
 import { useVietnamAddress, useUserAuth } from '#imports'
-import { useToast } from 'vue-toastification'
 import type { Farm } from '~/types/farm'
 
 const route = useRoute()
 const router = useRouter()
-const toast = useToast()
+const { $toast } = useNuxtApp()
 const { currentUser } = useUserAuth()
 const { getFarmById, updateFarm } = useFarms()
 const { provinces, districts, wards, fetchProvinces, fetchDistricts, fetchWards } = useVietnamAddress()
@@ -139,7 +138,7 @@ const farm = computed<Farm | null>(() =>
 )
 
 if (farmError.value) {
-  toast.error('Không thể tải dữ liệu nông trại!')
+  $toast.error('Không thể tải dữ liệu nông trại!')
   router.push('/admin/farms')
 }
 
@@ -224,13 +223,13 @@ const handleSubmit = async () => {
     if (error.value) throw new Error(error.value.message || 'Cập nhật nông trại thất bại')
     submitStatus.value = 'pending'
     if (status.value === 'success') {
-      toast.success('Cập nhật nông trại thành công!')
+      $toast.success('Cập nhật nông trại thành công!')
       await farmRefresh() // Làm mới dữ liệu sau khi cập nhật
       router.back()
     }
   } catch (error) {
     submitStatus.value = 'error'
-    toast.error(`Cập nhật thất bại: ${(error as Error).message || 'Unknown error'}`)
+    $toast.error(`Cập nhật thất bại: ${(error as Error).message || 'Unknown error'}`)
   } finally {
     submitStatus.value = 'idle'
   }

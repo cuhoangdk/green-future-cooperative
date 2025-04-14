@@ -99,7 +99,6 @@
 
 <script setup lang="ts">
 definePageMeta({ title: 'Thêm sản phẩm', layout: 'user', })
-import { useToast } from 'vue-toastification'
 import type { Product, ProductCategory, Unit } from '~/types/product'
 import type { User } from '~/types/user'
 import type { Farm } from '~/types/farm'
@@ -110,7 +109,7 @@ const { searchFarms } = useFarms()
 const { getUnits } = useUnits()
 const { getProductCategories } = useProductCategories()
 const { currentUser } = useUserAuth()
-const toast = useToast()
+const { $toast } = useNuxtApp()
 const router = useRouter()
 
 const status = ref<'idle' | 'pending' | 'success' | 'error'>('idle')
@@ -175,10 +174,10 @@ const handleSubmit = async () => {
 
         if (error.value) throw new Error(error.value.message || 'Tạo sản phẩm thất bại')
 
-        toast.success('Tạo sản phẩm thành công!')
+        $toast.success('Tạo sản phẩm thành công!')
         router.push(`/admin/products`)
     } catch (error: any) {
-        toast.error(error.message || 'Tạo sản phẩm thất bại!')
+        $toast.error(error.message || 'Tạo sản phẩm thất bại!')
     } finally {
         status.value = 'idle'
     }

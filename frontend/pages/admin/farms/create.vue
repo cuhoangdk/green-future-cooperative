@@ -116,7 +116,6 @@ definePageMeta({
 })
 
 import { useFarms } from '#imports'
-import { useToast } from 'vue-toastification'
 import { useVietnamAddress, useUserAuth } from '#imports'
 import type { User } from '~/types/user'
 
@@ -124,7 +123,7 @@ const { createFarm } = useFarms()
 const { getUsers } = useUsers()
 const { provinces, districts, wards, fetchProvinces, fetchDistricts, fetchWards } = useVietnamAddress()
 const { currentUser } = useUserAuth()
-const toast = useToast()
+const { $toast } = useNuxtApp()
 
 const status = ref<'idle' | 'pending' | 'success' | 'error'>('idle')
 
@@ -181,10 +180,10 @@ const handleSubmit = async () => {
 
         if (error.value) throw new Error(error.value.message || 'Tạo nông trại thất bại')
 
-        toast.success('Tạo nông trại thành công!')
+        $toast.success('Tạo nông trại thành công!')
         navigateTo('/admin/farms')
     } catch (error: any) {
-        toast.error(error.message || 'Tạo nông trại thất bại!')
+        $toast.error(error.message || 'Tạo nông trại thất bại!')
     } finally {
         status.value = 'idle'
     }

@@ -99,7 +99,6 @@
 </template>
 
 <script setup lang="ts">
-import { useRoute } from 'vue-router'
 import { Menu, ShoppingCart, Search as SearchIcon } from 'lucide-vue-next'
 import { useToast } from 'vue-toastification'
 

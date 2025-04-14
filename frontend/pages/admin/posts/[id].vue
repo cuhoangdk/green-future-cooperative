@@ -138,9 +138,8 @@ import { usePostCategories } from '~/composables/usePostCategories'
 import { useSwal } from '~/composables/useSwal'
 import type { PostCategory } from '~/types/post'
 import type { Post } from '~/types/post'
-import { useToast } from 'vue-toastification';
 
-const toast = useToast()
+const { $toast } = useNuxtApp()
 const route = useRoute()
 const router = useRouter()
 const swal = useSwal()
@@ -263,13 +262,13 @@ const handleSubmit = async () => {
     if (error.value) throw new Error(error.value.message || 'Failed to update post')
     submitStatus.value = status.value
     if (status.value === 'success' && data.value) {
-      toast.success('Cập nhật thông tin thành công!');
+      $toast.success('Cập nhật thông tin thành công!');
       await postRefresh() // Làm mới dữ liệu sau khi cập nhật
       router.back()
     }
   } catch (error) {
     submitStatus.value = 'error'
-    toast.error(`Cập nhật thất bại: ${(error as Error).message || 'Unknown error'}`)
+    $toast.error(`Cập nhật thất bại: ${(error as Error).message || 'Unknown error'}`)
   } finally {
     submitStatus.value = 'idle'
   }

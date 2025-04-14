@@ -75,7 +75,6 @@
 <script setup lang="ts">
 definePageMeta({ layout: 'empty' })
 import { User2, Lock, Eye, EyeClosed } from 'lucide-vue-next'
-import { useToast } from 'vue-toastification'
 
 const form = reactive({
     email: '',
@@ -86,9 +85,9 @@ const status = ref<'idle' | 'pending' | 'success' | 'error'>('idle')
 const errorMessage = ref<string | null>(null) // Thêm state để lưu thông báo lỗi
 const { login, fetchCurrentCustomer, accessToken } = useCustomerAuth()
 const router = useRouter()
-const toast = useToast()
 const showPassword = ref(false)
 const showForgotPasswordModal = ref(false)
+const { $toast } = useNuxtApp()
 
 const handleSubmit = async () => {
     try {
@@ -97,12 +96,12 @@ const handleSubmit = async () => {
         await login(form.email, form.password)
         await fetchCurrentCustomer()
         status.value = 'success'
-        await router.push('/')
+        await router.push('/admin')
     } catch (error: any) {
         status.value = 'error'
         // Lấy thông báo lỗi từ server hoặc đặt mặc định
         errorMessage.value = error
-        // toast.error(error) // Hiển thị toast thông báo lỗi
+        $toast.error(error) // Hiển thị toast thông báo lỗi
     }
 }
 </script>

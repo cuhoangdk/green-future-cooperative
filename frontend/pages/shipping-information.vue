@@ -169,18 +169,15 @@
 <script setup lang="ts">
 import type { CartItem } from '../types/cart';
 import { ShoppingCart } from 'lucide-vue-next';
-import { useToast } from 'vue-toastification';
 import type { CustomerAddress } from '~/types/customer';
 const { getCustomerAddress } = useCustomerAddress();
-
 
 const { provinces, districts, wards, fetchProvinces, fetchDistricts, fetchWards } = useVietnamAddress();
 const { getCartItems } = useCart();
 const { addOrder } = useOrder();
-const toast = useToast();
+const { $toast } = useNuxtApp()
 const router = useRouter();
 const submit = ref(false);
-
 
 // Khởi tạo form với các giá trị mặc định
 const form = ref({
@@ -250,11 +247,11 @@ const handleSubmit = async () => {
             throw new Error(error.value.message);
         }
 
-        toast.success('Đặt hàng thành công!');
+        $toast.success('Đặt hàng thành công!');
         // Chuyển hướng đến trang cảm ơn hoặc trang khác
         router.push('/');
     } catch (error: any) {
-        toast.error(error.message || 'Đặt hàng thất bại!');
+        $toast.error(error.message || 'Đặt hàng thất bại!');
     } finally {
         submit.value = false;
     }

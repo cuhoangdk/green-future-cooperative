@@ -50,11 +50,6 @@
 import { ShoppingCart } from 'lucide-vue-next';
 import type { CartItem } from '~/types/cart';
 
-// Tắt SSR cho trang này
-definePageMeta({
-    ssr: false,
-});
-
 const { getCartItems } = useCart();
 
 // Thêm biến theo dõi lần tải đầu tiên

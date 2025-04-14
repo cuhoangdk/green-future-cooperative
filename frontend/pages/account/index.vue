@@ -91,13 +91,12 @@
 </template>
 
 <script setup lang="ts">
-import { useToast } from 'vue-toastification';
 import { Key } from 'lucide-vue-next';
 import type { CustomerAddress } from '~/types/customer';
 
 const { currentCustomer, updateProfile, logout } = useCustomerAuth();
 const { getCustomerAddress } = useCustomerAddress();
-const toast = useToast();
+const { $toast } = useNuxtApp();
 
 // Avatar mặc định nếu không có ảnh
 const defaultAvatar = useRuntimeConfig().public.placeholderImage;
@@ -163,14 +162,14 @@ const handleSubmit = async () => {
         const result = await updateProfile(formData);
 
         if (result.success) {
-            toast.success('Cập nhật thông tin thành công!');
+            $toast.success('Cập nhật thông tin thành công!');
             // Cập nhật lại avatar_url từ server nếu cần
             if (result.customer?.avatar_url) {
                 form.value.avatar_url = `${useRuntimeConfig().public.backendUrl}${result.customer.avatar_url}`;
             }
         }
     } catch (error: any) {
-        toast.error(error.message || 'Cập nhật thông tin thất bại!');
+        $toast.error(error.message || 'Cập nhật thông tin thất bại!');
     } finally {
         status.value = 'idle';
     }

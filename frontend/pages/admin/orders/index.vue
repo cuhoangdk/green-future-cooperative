@@ -42,7 +42,6 @@ definePageMeta({ layout: 'user', title: 'Đơn hàng', description: 'Quản lý 
 import { Search, Plus } from 'lucide-vue-next'
 import { debounce } from 'lodash-es'
 import { useSwal } from '~/composables/useSwal'
-import { useToast } from 'vue-toastification'
 import type { PaginationMeta, PaginationLinks } from '~/types/api'
 import type { Product } from '~/types/product'
 import type { Order } from '~/types/order'
@@ -52,7 +51,7 @@ const { getProductCategories } = useProductCategories()
 const { getUsers } = useUsers()
 const { getFullAddressName } = useVietnamAddress()
 const swal = useSwal()
-const toast = useToast()
+const { $toast } = useNuxtApp()
 const productStore = useProductStore()
 const router = useRouter()
 

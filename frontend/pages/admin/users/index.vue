@@ -68,15 +68,14 @@ definePageMeta({ layout: 'user', title: 'Người dùng', description: 'Quản l
 import { ChevronDown, ChevronRight, Search, Plus } from 'lucide-vue-next'
 import { debounce } from 'lodash-es'
 import { useSwal } from '~/composables/useSwal'
-import { useToast } from 'vue-toastification'
 import type { PaginationMeta, PaginationLinks } from '~/types/api'
 import type { User } from '~/types/user'
 
 const { searchUsersWithFilters, deleteUser, updateUser } = useUsers()
 const { getFullAddressName } = useVietnamAddress()
 const swal = useSwal()
-const toast = useToast()
 const router = useRouter()
+const { $toast } = useNuxtApp()
 
 const currentPage = ref(Number(useRoute().query.page) || 1)
 const perPage = ref(10)
@@ -132,9 +131,9 @@ async function handleDeleteUser(userId: number) {
             if (error.value) throw new Error(error.value.message)
             users.value.users = users.value.users.filter((user: User) => user.id !== userId)
             expandedRows.value.delete(userId)
-            toast.success('Người dùng đã được xóa!')
+            $toast.success('Người dùng đã được xóa!')
         } catch (err) {
-            toast.error(`Xóa thất bại: ${(err as Error).message || 'Unknown error'}`)
+            $toast.error(`Xóa thất bại: ${(err as Error).message || 'Unknown error'}`)
         }
     }
 }
@@ -146,9 +145,9 @@ async function handleToggleStatus(user: User) {
         if (error.value) throw new Error(error.value.message)
 
         user.is_banned = newBanStatus
-        toast.success(`Đã ${newBanStatus ? 'khóa' : 'mở khóa'} tài khoản thành công!`)
+        $toast.success(`Đã ${newBanStatus ? 'khóa' : 'mở khóa'} tài khoản thành công!`)
     } catch (err) {
-        toast.error(`Thao tác thất bại: ${(err as Error).message || 'Unknown error'}`)
+        $toast.error(`Thao tác thất bại: ${(err as Error).message || 'Unknown error'}`)
     }
 }
 

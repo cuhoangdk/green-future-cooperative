@@ -132,6 +132,8 @@ const { createPost } = usePosts()
 const { getAllPostCategories } = usePostCategories()
 const router = useRouter()
 const swal = useSwal()
+const { $toast } = useNuxtApp()
+
 
 // Gọi API để lấy danh mục
 const { data: categoryData, status, error: categoryError } = await getAllPostCategories()
@@ -207,23 +209,14 @@ const handleSubmit = async () => {
         }
         submitStatus.value = status.value
         if (status.value === 'success' && data.value) {
-            await swal.fire({
-                icon: 'success',
-                title: 'Thành công',
-                text: 'Bài viết đã được tạo thành công!',
-            })
+            $toast.success('Tạo bài viết thành công!')
             await router.push('/admin/posts')
         } else {
             throw new Error('Unexpected response from server')
         }
     } catch (error) {
-        console.error('Lỗi khi tạo bài viết:', error)
         const errorMessage = (error as Error).message || 'Unknown error'
-        await swal.fire({
-            icon: 'error',
-            title: 'Lỗi',
-            text: `Đã xảy ra lỗi khi tạo bài viết: ${errorMessage}`,
-        })
+        $toast.error(`Tạo bài viết thất bại: ${errorMessage}`)
     } finally {
         submitStatus.value = 'idle'
     }

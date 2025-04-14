@@ -181,7 +181,6 @@ definePageMeta({
     layout: 'user',
 })
 
-import { useToast } from 'vue-toastification';
 import { useRuntimeConfig } from '#app';
 import { useVietnamAddress } from '#imports';
 import { useUsers } from '#imports';
@@ -190,7 +189,7 @@ import type { User } from '~/types/user';
 const route = useRoute();
 const { provinces, districts, wards, fetchProvinces, fetchDistricts, fetchWards } = useVietnamAddress();
 const { getUserById, updateUser } = useUsers();
-const toast = useToast();
+const { $toast } = useNuxtApp()
 const router = useRouter();
 
 const defaultAvatar = useRuntimeConfig().public.placeholderImage;
@@ -302,11 +301,11 @@ const handleSubmit = async () => {
             throw new Error(error.value.message);
         }
 
-        toast.success('Cập nhật thông tin thành viên thành công!');
+        $toast.success('Cập nhật thông tin thành viên thành công!');
         refresh();
         router.push('/admin/users');
     } catch (error: any) {
-        toast.error(error.message || 'Cập nhật thông tin thành viên thất bại!');
+        $toast.error(error.message || 'Cập nhật thông tin thành viên thất bại!');
     } finally {
         status.value = 'idle';
     }

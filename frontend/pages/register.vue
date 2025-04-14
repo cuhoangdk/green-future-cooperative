@@ -103,7 +103,6 @@
 <script setup lang="ts">
 definePageMeta({ layout: 'empty' })
 import { User2, Lock, Eye, EyeClosed, Phone, Mail } from 'lucide-vue-next'
-import { useToast } from 'vue-toastification'
 
 const form = reactive({
     email: '',
@@ -117,7 +116,7 @@ const status = ref<'idle' | 'pending' | 'success' | 'error'>('idle')
 const errorMessage = ref<string | null>(null) // Thêm state để lưu thông báo lỗi
 const { login, fetchCurrentCustomer, register, accessToken } = useCustomerAuth()
 const router = useRouter()
-const toast = useToast()
+const { $toast } = useNuxtApp()
 const showPassword = ref(false)
 const showPasswordConfirmed = ref(false)
 const showForgotPasswordModal = ref(false)
@@ -133,7 +132,7 @@ const handleSubmit = async () => {
         status.value = 'error'
         // Lấy thông báo lỗi từ server hoặc đặt mặc định
         errorMessage.value = 'Email hoặc mật khẩu không đúng'
-        toast.error(errorMessage.value) // Hiển thị toast thông báo lỗi
+        $toast.error(errorMessage.value) // Hiển thị toast thông báo lỗi
     }
 }
 </script>

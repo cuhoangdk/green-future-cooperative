@@ -74,20 +74,17 @@
 <script setup lang="ts">
 definePageMeta({ layout: 'user', title: 'Bài viết', description: 'Quản lý bài viết trên trang web' })
 
-import { ChevronDown, ChevronRight, Search, Plus } from 'lucide-vue-next'
+import { Search, Plus } from 'lucide-vue-next'
 import { usePosts, usePostCategories } from '#imports'
-import { useRuntimeConfig } from '#app'
 import { debounce } from 'lodash-es'
 import { useSwal } from '~/composables/useSwal'
-import { useToast } from 'vue-toastification'
 import type { PaginationMeta, PaginationLinks } from '~/types/api'
 import type { Post, PostCategory } from '~/types/post'
 
-const { public: { backendUrl, placeholderImage } } = useRuntimeConfig()
 const { searchPosts, deletePost } = usePosts()
 const { getAllPostCategories } = usePostCategories()
 const swal = useSwal()
-const toast = useToast()
+const { $toast } = useNuxtApp()
 
 const currentPage = ref(Number(useRoute().query.page) || 1)
 const perPage = ref(10)
@@ -128,7 +125,7 @@ async function search() {
     }
 
     const { error } = await searchPosts(filters, AuthType.User)
-    if (error.value) swal.fire('Lỗi', 'Không thể tải danh sách bài viết!', 'error')
+    if (error.value) $toast.error('Không thể tải danh sách bài viết!')
 }
 
 const handlePageChange = (page: number) => {
@@ -152,9 +149,9 @@ async function handleDeletePost(postId: number) {
             if (error.value) throw new Error(error.value.message)
             posts.value.posts = posts.value.posts.filter((post: Post) => post.id !== postId)
             expandedRows.value.delete(postId)
-            toast.success('Bài viết đã được xóa!')
+            $toast.success('Bài viết đã được xóa!')
         } catch (err) {
-            toast.error(`Xóa thất bại: ${(err as Error).message || 'Unknown error'}`)
+            $toast.error(`Xóa thất bại: ${(err as Error).message || 'Unknown error'}`)
         }
     }
 }

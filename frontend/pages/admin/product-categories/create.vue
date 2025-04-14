@@ -30,10 +30,8 @@
 <script setup lang="ts">
 definePageMeta({ title: 'Thêm loại sản phẩm', layout: 'user', })
 
-import { useToast } from 'vue-toastification'
-
 const { createProductCategory } = useProductCategories()
-const toast = useToast()
+const { $toast } = useNuxtApp()
 const router = useRouter()
 const status = ref<'idle' | 'pending' | 'success' | 'error'>('idle')
 
@@ -44,26 +42,22 @@ const form = ref({
     description: '',
     allow_decimal: true,
 })
-const data1 = ref<any>(null)
 const handleSubmit = async () => {
     try {
         status.value = 'pending'
 
-        // Tạo FormData để gửi dữ liệu
         const formData = new FormData()
         formData.append('name', form.value.name)
         formData.append('description', form.value.description)
 
-        // Gửi request tạo nông trại
         const { error, data } = await createProductCategory(formData)
 
         if (error.value?.message) throw new Error(data.value?.message || 'Thêm loại sản phẩm thất bại!')
 
-        toast.success('Thêm loại sản phẩm thành công!')
-        // Redirect to the index page
+        $toast.success('Thêm loại sản phẩm thành công!')
         useRouter().push('/admin/product-categories')
     } catch (error: any) {
-        toast.error(error.message || 'Thêm loại sản phẩm thất bại!')
+        $toast.error(error.message || 'Thêm loại sản phẩm thất bại!')
     } finally {
         status.value = 'idle'
     }

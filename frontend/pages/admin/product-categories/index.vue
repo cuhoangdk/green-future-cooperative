@@ -29,12 +29,10 @@ definePageMeta({ title: 'Quản lý loại sản phẩm', layout: 'user', })
 import { Plus, Search } from 'lucide-vue-next'
 import type { ProductCategory } from '~/types/product'
 import { useSwal } from '~/composables/useSwal'
-import { useToast } from 'vue-toastification'
 
 const { getProductCategories, deleteProductCategory } = useProductCategories()
 const swal = useSwal()
-const toast = useToast()
-const router = useRouter()
+const { $toast } = useNuxtApp()
 const { data, status, refresh } = await getProductCategories()
 const categories = computed<ProductCategory[]>(() => Array.isArray(data.value?.data) ? data.value.data : data.value ? [data.value.data] : [])
 
@@ -53,9 +51,9 @@ async function handleDeleteUnit(categoryId: number) {
             const { error } = await deleteProductCategory(categoryId)
             if (error.value) throw new Error(error.value.message)
             refresh()
-            toast.success('Loại sản phẩm đã được xóa!')
+            $toast.success('Loại sản phẩm đã được xóa!')
         } catch (err) {
-            toast.error(`Xóa thất bại: ${(err as Error).message || 'Unknown error'}`)
+            $toast.error(`Xóa thất bại: ${(err as Error).message || 'Unknown error'}`)
         }
     }
 }

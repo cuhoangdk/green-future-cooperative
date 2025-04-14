@@ -90,14 +90,13 @@ definePageMeta({
     layout: 'user',
 })
 
-import { useToast } from 'vue-toastification';
 import { useRuntimeConfig } from '#app';
 import { useVietnamAddress } from '#imports';
 import { useCustomer } from '#imports';
 
 const { provinces, districts, wards, fetchProvinces, fetchDistricts, fetchWards } = useVietnamAddress();
 const { createCustomer, createCustomerAddress } = useCustomer();
-const toast = useToast();
+const { $toast } = useNuxtApp()
 const router = useRouter();
 
 // Avatar mặc định nếu không có ảnh
@@ -194,10 +193,10 @@ const handleSubmit = async () => {
             throw new Error(error.value.message);
         }
 
-        toast.success('Thêm khách hàng thành công!');
+        $toast.success('Thêm khách hàng thành công!');
         router.push('/admin/customers');
     } catch (error: any) {
-        toast.error(error.message || 'Thêm khách hàng thất bại!');
+        $toast.error(error.message || 'Thêm khách hàng thất bại!');
     } finally {
         status.value = 'idle';
     }

@@ -28,11 +28,10 @@
 <script setup lang="ts">
 definePageMeta({ title: 'Thêm danh mục bài viết', layout: 'user', })
 
-import { useToast } from 'vue-toastification'
 import { usePostCategories } from '~/composables/usePostCategories'
 
 const { createPostCategory } = usePostCategories()
-const toast = useToast()
+const { $toast } = useNuxtApp()
 const router = useRouter()
 const status = ref<'idle' | 'pending' | 'success' | 'error'>('idle')
 
@@ -55,12 +54,12 @@ const handleSubmit = async () => {
 
         if (error.value?.message) throw new Error(data.value?.message || 'Thêm danh mục bài viết thất bại!')
 
-        toast.success('Thêm danh mục bài viết thành công!')
+        $toast.success('Thêm danh mục bài viết thành công!')
         
         // Redirect to the index page
         useRouter().push('/admin/post-categories')
     } catch (error: any) {
-        toast.error(error.message || 'Thêm danh mục bài viết thất bại!')
+        $toast.error(error.message || 'Thêm danh mục bài viết thất bại!')
     } finally {
         status.value = 'idle'
     }

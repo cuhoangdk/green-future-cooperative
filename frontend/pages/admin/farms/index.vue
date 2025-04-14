@@ -50,13 +50,12 @@ definePageMeta({ layout: 'user', title: 'Nông trại', description: 'Quản lý
 
 import { Search, Plus } from 'lucide-vue-next'
 import { debounce } from 'lodash-es'
-import { useToast } from 'vue-toastification'
 import type { Farm } from '~/types/farm'
 import type { PaginationMeta, PaginationLinks } from '~/types/api'
 
 const { searchFarms, deleteFarm } = useFarms()
 const { getFullAddressName } = useVietnamAddress()
-const toast = useToast()
+const { $toast } = useNuxtApp()
 const swal = useSwal()
 const router = useRouter()
 
@@ -90,7 +89,7 @@ async function search() {
     }
 
     const { data, error } = await searchFarms(filters, AuthType.User)
-    if (error.value) toast.error('Không thể tải danh sách nông trại!')
+    if (error.value) $toast.error('Không thể tải danh sách nông trại!')
 }
 
 async function handleDeleteFarm(farmId: number) {
@@ -109,9 +108,9 @@ async function handleDeleteFarm(farmId: number) {
             if (error.value) throw new Error(error.value.message)
             farms.value.farms = farms.value.farms.filter(farm => farm.id !== farmId)
             expandedRows.value.delete(farmId)
-            toast.success('Nông trại đã được xóa!')
+            $toast.success('Nông trại đã được xóa!')
         } catch (err) {
-            toast.error(`Xóa thất bại: ${(err as Error).message || 'Unknown error'}`)
+            $toast.error(`Xóa thất bại: ${(err as Error).message || 'Unknown error'}`)
         }
     }
 }
