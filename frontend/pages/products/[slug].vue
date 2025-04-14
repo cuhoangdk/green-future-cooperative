@@ -9,7 +9,7 @@
                     <ProductImageSection :images="product?.images ?? []" />
                 </div>
                 <div class="w-full md:w-1/2">
-                    <div class="max-w-7xl p-3 px-6 border border-gray-200 rounded-xl">
+                    <div class="max-w-7xl p-3 px-6 border border-gray-200 rounded-xl shadow-sm">
                         <div class="flex justify-between item-center mb-3">
                             <h1 class="text-2xl font-bold">{{ product?.name }}</h1>
                             <div class="flex gap-1">
@@ -18,50 +18,37 @@
                         </div>
                         <div class="flex justify-between mb-3">
                             <p class="text-sm text-gray-500"><span>Mã: </span>{{ product?.product_code }}</p>
-                            <p class="text-sm text-gray-500"><span>Đã bán: </span>{{ product?.sold_quantity }}
+                            <p class="text-sm text-gray-500"><span>Trong kho: </span>{{
+                                formatNumber(product?.stock_quantity) }}
                                 <span>{{
                                     product?.unit.name }}</span>
                             </p>
                         </div>
-                        <p class="text-3xl font-bold text-green-600 mb-3">{{ Math.floor(product?.prices?.[0]?.price
-                            ??
-                            0).toLocaleString('vi-VN') }}<span class="text-xl underline">đ</span><span
-                                class="text-xl text-gray-500"> / {{ product?.unit.name
-                                }}</span></p>
-                        <hr class="border border-gray-200 mb-3">
-
-                        <p class="text-sm text-gray-500 mb-3 h-24 overflow-y-auto">{{ product?.description }}</p>
-
-                        <hr class="border border-gray-200 mb-3">
-
-                        <div class="grid grid-cols-1 lg:grid-cols-2 mb-1 gap-1">
-                            <p class="text-sm text-gray-900"><span class="text-gray-500">Nhà cung cấp giống:
-                                </span>{{
-                                    product?.seed_supplier }}
-                            </p>
-                            <p class="text-sm text-gray-900"><span class="text-gray-500">Diện tích canh tác:
-                                </span>{{
-                                    product?.cultivated_area
-                                }} m²
+                        <div class="mb-3">
+                            <p v-for="(price, index) in (product?.prices ?? []).slice().reverse()" :key="index"
+                                class="text-3xl font-bold text-green-600">
+                                {{ formatCurrency(price.price) }}
+                                <span class="text-xl text-gray-500"> / {{ product?.unit.name }}</span>
+                                <span  class="text-lg text-gray-500" v-if="price.quantity && (product?.prices?.length ?? 0) > 1">
+                                    (Từ {{ formatNumber(price.quantity) }} {{ product.unit.name }})
+                                </span>
                             </p>
                         </div>
-                        <div class="grid grid-cols-1 lg:grid-cols-2 mb-1 gap-1">
-                            <p class="text-sm text-gray-900"><span class="text-gray-500">Ngày gieo trồng: </span>{{
-                                new
-                                    Date(product?.sown_at ??
-                                        '').toLocaleDateString('vi-VN') }}</p>
-                            <p class="text-sm text-gray-900"><span class="text-gray-500">Ngày thu hoạch: </span>{{
-                                new
-                                    Date(product?.harvested_at
-                                        ?? '').toLocaleDateString('vi-VN') }}</p>
-                        </div>
                         <hr class="border border-gray-200 mb-3">
 
-                        <p class="text-sm text-gray-900 mb-1"><span class="text-gray-500">Người trồng: </span>{{
-                            product?.user?.full_name }}</p>
-                        <p class="text-sm text-gray-900 mb-1"><span class="text-gray-500">Nơi trồng: </span>{{
-                            address }}</p>
+                        <p class="text-gray-600 mb-3 h-24 overflow-y-auto">{{ product?.description }}</p>
 
+                        <hr class="border border-gray-200 mb-3">
+
+                        <div class="grid grid-cols-1 lg:grid-cols-2 mb-3 gap-1">
+                            <p class="text-gray-900"><span class="text-gray-500">Ngày gieo trồng: </span>{{
+                                formatDate(product.sown_at) }}</p>
+                            <p class="text-gray-900">
+                                <span class="text-gray-500">Ngày thu hoạch: </span>
+                                {{ formatDate(product.harvested_at ?? '') }}
+                            </p>
+                        </div>
+                        <hr class="border border-gray-200 mb-3">
                         <div class="mt-4 flex flex-col lg:flex-row gap-4 justify-center items-center md:justify-start">
                             <div class="flex items-center space-x-2">
                                 <button @click="decreaseQuantity"
@@ -86,6 +73,36 @@
                     </div>
                 </div>
             </div>
+            <div class="w-11/12 flex flex-col max-w-7xl mt-5 gap-5">
+                <div class="w-full">
+                    <div class="flex justify-between items-center mb-4 gap-3">
+                        <h2 class="text-left text-xl font-bold text-green-800">Xuất sứ</h2>
+                        <div class="flex-1 h-[3px] bg-green-500"></div>
+                    </div>
+                    <div class="flex flex-col md:flex-row gap-8 p-4 border border-gray-200 rounded-xl">
+                        <div class="w-full md:w-1/2">
+                            <div class="aspect-video rounded-lg overflow-hidden shadow-lg">
+                                <UiMap :latitude="farm?.latitude ?? 0" :longitude="farm?.longitude ?? 0" />
+                            </div>
+                        </div>
+
+                        <div class="w-full md:w-1/2">
+                            <div class="flex flex-col gap-1">
+                                <h3 class="text-xl font-semibold text-green-800">Hộ canh tác: {{ product.user?.full_name
+                                }}</h3>
+                                <p><strong>Địa chỉ:</strong> {{ address }}</p>
+                                <p><strong>Kinh độ:</strong> {{ farm?.longitude }} <strong>- Vĩ độ:</strong> {{
+                                    farm?.latitude }} </p>
+                                <p><strong>Nhà cung cấp giống:</strong> {{ product?.seed_supplier }}</p>
+                                <p><strong>Diện tích canh tác:</strong> {{ formatNumber(product?.cultivated_area) }} m²
+                                </p>
+                                <p>{{ farm?.description }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="w-11/12 flex flex-col max-w-7xl mt-5 gap-5">
                 <div class="w-full">
                     <div class="flex justify-between items-center mb-4 gap-3">
@@ -121,7 +138,7 @@
                                             log.pesticide_used
                                         }}</div>
                                     <div v-if="log.notes"><span class="font-semibold">Ghi chú:</span> {{ log.notes
-                                        }}
+                                    }}
                                     </div>
                                 </div>
                                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-2">

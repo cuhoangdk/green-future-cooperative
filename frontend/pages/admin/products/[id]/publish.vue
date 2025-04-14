@@ -214,6 +214,7 @@ const handleSubmit = async () => {
         formProductData.append('description', form.value.description)
         formProductData.append('pricing_type', form.value.pricing_type)
         formProductData.append('stock_quantity', form.value.stock_quantity)
+        formProductData.append('harvested_at', form.value.harvested_at)
         formProductData.append('status', 'selling')
 
         // Tạo FormData cho images

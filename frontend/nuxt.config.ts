@@ -3,7 +3,7 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineNuxtConfig({
   compatibilityDate: '2024-11-01',
   devtools: { enabled: true },
-  modules: ['@pinia/nuxt', '@vesp/nuxt-fontawesome', '@nuxt/image'],
+  modules: ['@pinia/nuxt', '@vesp/nuxt-fontawesome', '@nuxt/image', '@nuxtjs/leaflet'],
   css: ['sweetalert2/dist/sweetalert2.min.css','~/assets/css/tailwind.css'],
   // css: ['~/assets/css/tailwind.css'],
   vite: {

@@ -6,10 +6,14 @@
         <p v-if="status === 'pending'" class="skeleton text-sm lg:ml-5 text-gray-500 px-3">
             Đang tải...
         </p>
+        <p v-else-if="posts.length === 0" class="text-sm lg:ml-5 text-gray-500">
+            Không có bài viết nào.
+        </p>
         <p v-else class="text-sm lg:ml-5 w-11/12">
             <a :href="'/posts/' + posts[currentIndex].slug"
                 class="text-green-600 hover:text-green-400 transition-colors duration-200 line-clamp-1">
-                {{ posts[currentIndex].title }}</a>
+                {{ posts[currentIndex].title }}
+            </a>
         </p>
     </div>
 </template>

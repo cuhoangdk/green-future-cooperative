@@ -10,11 +10,24 @@ export const useCustomerAuth = () => {
     const currentCustomer = useCookie<Customer | null>('customer_current', {
         maxAge: 7200,
         default: () => null,
-        encode: (value) => JSON.stringify(value),
-        decode: (value) => (value ? JSON.parse(value) : null),
+        encode: (value) => {
+            if (!value) return ''
+            // Mã hóa JSON thành Base64 để tránh vấn đề Unicode
+            return btoa(encodeURIComponent(JSON.stringify(value)))
+        },
+        decode: (value) => {
+            if (!value) return null
+            try {
+                // Giải mã Base64 và parse JSON
+                return JSON.parse(decodeURIComponent(atob(value)))
+            } catch (e) {
+                console.error('Failed to decode currentUser cookie', e)
+                return null
+            }
+        },
     })
 
-    const register = async (email: string, full_name: string, phone_number: string, password: string , password_confirmation: string) => {
+    const register = async (email: string, full_name: string, phone_number: string, password: string, password_confirmation: string) => {
         const { data, error } = await post<LoginResponse>('/customer-auth/register', {
             email,
             full_name,
@@ -56,7 +69,7 @@ export const useCustomerAuth = () => {
         if (data.value && !error.value) {
             currentCustomer.value = data.value.data
             return data.value
-        } 
+        }
         // else {
         //     if (error.value?.statusCode === 401 && refreshToken.value) {
         //         await refreshAccessToken()

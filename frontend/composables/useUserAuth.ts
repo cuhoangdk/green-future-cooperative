@@ -11,8 +11,21 @@ export const useUserAuth = () => {
   const currentUser = useCookie<User | null>('user_current', {
     maxAge: 7200,
     default: () => null,
-    encode: (value) => JSON.stringify(value),
-    decode: (value) => (value ? JSON.parse(value) : null),
+    encode: (value) => {
+      if (!value) return ''
+      // Mã hóa JSON thành Base64 để tránh vấn đề Unicode
+      return btoa(encodeURIComponent(JSON.stringify(value)))
+    },
+    decode: (value) => {
+      if (!value) return null
+      try {
+        // Giải mã Base64 và parse JSON
+        return JSON.parse(decodeURIComponent(atob(value)))
+      } catch (e) {
+        console.error('Failed to decode currentUser cookie', e)
+        return null
+      }
+    },
   })
 
   const login = async (email: string, password: string) => {
@@ -30,7 +43,7 @@ export const useUserAuth = () => {
     }
   }
 
-  const logout = async() => {
+  const logout = async () => {
     await post('/user-auth/logout', { authType: AuthType.User })
     accessToken.value = null
     refreshToken.value = null
@@ -42,15 +55,11 @@ export const useUserAuth = () => {
       currentUser.value = null
       return null
     }
-  
+
     const { data, error } = await get<User>('/user-profile', { authType: AuthType.User })
     if (data.value && !error.value) {
-      const sanitizedUserData = JSON.parse(JSON.stringify(data.value.data || data.value, (key, value) => {
-        if (typeof value === 'function' || value === undefined) return null
-        return value
-      }))
-      currentUser.value = sanitizedUserData
-      return sanitizedUserData
+      currentUser.value = data.value.data
+      return data.value
     }
     //  else {
     //   if (error.value?.statusCode === 401 && refreshToken.value) {

@@ -35,7 +35,7 @@ export interface Product {
     user?: User;
     seed_supplier?: string;
     cultivated_area?: number;
-    sown_at?: string;
+    sown_at: string;
     harvested_at?: string;
     pricing_type: string;
     stock_quantity: number;

@@ -13,8 +13,8 @@
                         <div v-if="post.post_status === 'published'" class="badge badge-primary">Công khai</div>
                         <div v-else-if="post.post_status === 'draft'" class="badge badge-neutral">Nháp</div>
                         <div v-else class="badge badge-warning">Lưu trữ</div>
-                        <div v-if="post.is_hot" class="badge badge-info">Nổi bật</div>
-                        <div v-if="post.is_featured" class="badge badge-error">Hot</div>
+                        <div v-if="post.is_hot" class="badge badge-info">Hot</div>
+                        <div v-if="post.is_featured" class="badge badge-error">Nổi Bật</div>
                     </div>
                     <div class="flex gap-2 items-center">
                         <User class="w-4 h-4 text-gray-500" /> Tác giả:

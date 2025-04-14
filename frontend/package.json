@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@nuxt/image": "^1.9.0",
+    "@nuxtjs/leaflet": "^1.2.6",
     "@pinia/nuxt": "^0.10.1",
     "@tailwindcss/vite": "^4.0.13",
     "@vesp/nuxt-fontawesome": "^1.2.1",

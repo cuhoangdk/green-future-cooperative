@@ -2,7 +2,7 @@
     <div> <!-- Ảnh lớn -->
         <div class="relative">
             <img :src="activeImageUrl" :alt="images[activeImageIndex]?.title || 'Product Image'"
-                class="w-full aspect-[4/3] object-cover rounded-xl border border-gray-200"
+                class="w-full aspect-[4/3] object-cover rounded-xl shadow-sm border border-gray-200"
                 @error="event => { const target = event.target as HTMLImageElement; if (target) target.src = placeholderImage as string; }" />
             <!-- Nút điều hướng -->
             <button v-if="images && images.length > 1" @click="prevImage"

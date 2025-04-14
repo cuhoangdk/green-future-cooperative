@@ -99,25 +99,31 @@
                         <div class="relative" v-click-outside="closeUserMenu">
                             <button @click="toggleUserMenu"
                                 class="flex items-center space-x-2 hover:bg-gray-100 py-1 rounded-lg">
-                                <div class="avatar">
-                                    <div class="w-8 rounded">
+
+                            </button>
+
+                        </div>
+                        <div class="dropdown dropdown-bottom dropdown-end">
+                            <button tabindex="0">
+                            <div class="avatar">
+                                    <div class="w-8 rounded-full">
                                         <img :src="avatar" @error="avatar = defaultAvatar" />
                                     </div>
                                 </div>
                             </button>
-
-                            <div v-show="isUserMenuOpen"
-                                class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-1 z-50 border border-gray-200">
-                                <NuxtLink to="/admin/profile" v-click="closeUserMenu"
-                                    class="px-4 py-2 text-gray-700 hover:bg-gray-100 flex gap-2">
-                                    <User2Icon class="w-5 h-5" /> Profile
-                                </NuxtLink>
-                                <hr class="my-1 border-gray-200">
-                                <button @click="handleLogout"
-                                    class="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100 flex gap-2">
-                                    <LogOut class="w-5 h-5" /> Logout
-                                </button>
-                            </div>
+                            <ul tabindex="0"
+                                class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
+                                <li>
+                                    <NuxtLink to="profile" @click="closeDropdown">
+                                        Tài khoản
+                                    </NuxtLink>
+                                </li>
+                                <li>
+                                    <button @click="handleLogout" class="w-full text-left">
+                                        Đăng xuất
+                                    </button>
+                                </li>
+                            </ul>
                         </div>
                     </div>
                 </header>
@@ -261,6 +267,14 @@ onMounted(() => {
         window.removeEventListener('keydown', handleEscape)
     })
 })
+
+// Đóng dropdown khi chọn một mục
+const closeDropdown = () => {
+    const dropdownButton = document.activeElement as HTMLElement
+    if (dropdownButton) {
+        dropdownButton.blur() // Xóa focus khỏi button để đóng dropdown
+    }
+}
 </script>
 
 <style scoped>

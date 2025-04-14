@@ -7,7 +7,7 @@
             <!-- Product Code -->
             <div>
                 <label class="text-gray-700 font-semibold">Mã sản phẩm</label>
-                <div class="input input-primary w-full mt-1">{{ product?.product_code }}</div>
+                <div class="input input-primary w-full mt-1 bg-gray-200">{{ product?.product_code }}</div>
             </div>
 
             <!-- Product Name -->
@@ -274,7 +274,7 @@ watch(product, (newData) => {
         form.value.pricing_type = newData.pricing_type || ''
         form.value.expired = newData.expired || null
         form.value.harvested_at = newData.harvested_at ? new Date(newData.harvested_at).toISOString().slice(0, 10) : null
-
+        searchFarms({ user_id: Number(form.value.user_id) })
         // Load hình ảnh hiện tại
         if (newData.status === 'selling' && newData.images) {
             form.value.product_images = newData.images.map((img, index) => ({
