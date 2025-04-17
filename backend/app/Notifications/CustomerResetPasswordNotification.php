@@ -30,7 +30,7 @@ class CustomerResetPasswordNotification extends Notification
      */
     public function toMail($notifiable)
     {
-        $url = url('/password/reset/' . $this->token . '?email=' . urlencode($notifiable->email));
+        $url = env('FRONTEND_URL') . "/reset-password/token?={$this->token}&?email={$notifiable->email}";
 
         return (new MailMessage)
             ->subject('Thông Báo Đặt Lại Mật Khẩu')

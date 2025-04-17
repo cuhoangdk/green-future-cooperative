@@ -23,7 +23,7 @@ class VerifyCustomerAccount extends Notification
 
     public function toMail($notifiable)
     {
-        $url = config('app.url') . "/api/customer-auth/verify-account?token={$this->token}&email={$notifiable->email}";
+        $url = env('FRONTEND_URL') . "/verify-account?token={$this->token}&email={$notifiable->email}";
 
         return (new MailMessage)
             ->subject('Xác Minh Tài Khoản Của Bạn')
