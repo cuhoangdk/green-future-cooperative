@@ -117,10 +117,13 @@ class CustomerAuthController extends Controller
         try {
             $message = $this->authRepository->sendResetLink($request->email);
             return response()->json(['message' => $message], 200);
-        } catch (\Exception $e) {
-            return response()->json(['message' => $e->getMessage()], $e->getCode() ?: 400);
+        } catch (\Exception $e) {            
+            $validHttpCodes = [200, 201, 204, 400, 401, 403, 404, 422, 429, 500];            
+            $statusCode = (int) $e->getCode();            
+            $statusCode = in_array($statusCode, $validHttpCodes) ? $statusCode : 400;
+            return response()->json(['message' => $e->getMessage()], $statusCode);
         }
-}
+    }
 
 
     /**
