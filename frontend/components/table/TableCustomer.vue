@@ -32,6 +32,9 @@
             <span v-else class="badge badge-error">
               Đã bị cấm
             </span>
+            <span v-if="!customer.verified_at" class="badge badge-warning">
+              Chưa xác thực
+            </span>
           </td>
           <td class="py-1">
             <div class="flex space-x-1 items-center">

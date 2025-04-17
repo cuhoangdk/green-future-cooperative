@@ -43,7 +43,7 @@ export const useUnits = () => {
         unitData: FormData | Partial<Unit>,
         authType: AuthType = AuthType.User
     ) => {
-        return await post<Unit>('/product-units/', unitData, {
+        return await post<Unit>('/product-units', unitData, {
             authType,
         });
     };

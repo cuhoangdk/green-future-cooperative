@@ -49,7 +49,7 @@ watch(() => orders.value.orders, async (newData) => {
 
 const handlePageChange = (page: number) => {
     currentPage.value = page
-    getOrders()
+    getOrders(currentPage.value, perPage.value)
 }
 
 async function handleDelete(productId: number) {

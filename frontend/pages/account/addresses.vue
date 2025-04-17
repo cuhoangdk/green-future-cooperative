@@ -29,6 +29,4 @@ const addresses = computed<CustomerAddress[]>(() =>
             ? [dataAddresses.value.data] 
             : []
 );
-
-$toast.error('Không thể tải danh sách địa chỉ!')
 </script>

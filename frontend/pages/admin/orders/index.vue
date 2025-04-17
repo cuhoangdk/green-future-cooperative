@@ -56,7 +56,7 @@ const productStore = useProductStore()
 const router = useRouter()
 
 const currentPage = ref(1)
-const perPage = ref(1)
+const perPage = ref(10)
 const searchQuery = ref('')
 const selectedStatus = ref('')
 const selectedCategory = ref('')

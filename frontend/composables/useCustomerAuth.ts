@@ -27,13 +27,41 @@ export const useCustomerAuth = () => {
         },
     })
 
-    const register = async (email: string, full_name: string, phone_number: string, password: string, password_confirmation: string) => {
-        const { data, error } = await post<LoginResponse>('/customer-auth/register', {
+    const register = async (
+        email: string,
+        full_name: string,
+        phone_number: string,
+        password: string,
+        password_confirmation: string
+    ): Promise<{ success: true } | never> => {
+        const { data, error, status } = await post<LoginResponse>(
+            '/customer-auth/register',
+            {
+                email,
+                full_name,
+                phone_number,
+                password,
+                password_confirmation,
+            },
+            { authType: AuthType.Guest }
+        )
+        console.log('error', error.value?.statusCode);
+
+        if (status.value === 'success' && data.value) {
+            return { success: true }
+        }
+
+        // Ném lỗi với thông tin chi tiết từ API
+        throw new Error(JSON.stringify({
+            message: error.value?.message || 'Registration failed',
+            errors: error.value || {},
+        }))
+    }
+
+    const verifyAccount = async (email: string, token: string) => {
+        const { data, error } = await post<LoginResponse>('/customer-auth/verify-account', {
             email,
-            full_name,
-            phone_number,
-            password,
-            password_confirmation,
+            token,
         }, { authType: AuthType.Guest })
     }
 
@@ -138,6 +166,7 @@ export const useCustomerAuth = () => {
         refreshAccessToken,
         updateProfile,
         register,
+        verifyAccount,
         currentCustomer: readonly(currentCustomer),
         accessToken: readonly(accessToken),
         refreshToken: readonly(refreshToken),

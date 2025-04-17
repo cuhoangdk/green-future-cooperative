@@ -33,7 +33,7 @@
                 </div>
                 <div class="card-actions justify-end border-t pt-2 border-gray-100">
                     <div class="flex space-x-1 items-center">
-                        <UiEditButton :to="`orders/${order.id}/edit`" />
+                        <!-- <UiEditButton :to="`orders/${order.id}/edit`" /> -->
                         <UiCancelButton :to="`orders/${order.id}/cancel`" />
                     </div>
                 </div>

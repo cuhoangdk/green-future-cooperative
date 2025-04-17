@@ -24,8 +24,8 @@ export const useProductImages = () => {
     });
   };
 
-  const createImage = async (productId: number ,logData: FormData) => {
-    return await post<ProductImage>(`/products/${productId}/images/`, logData, {
+  const createImage = async (productId: number ,imgData: FormData) => {
+    return await post<ProductImage>(`/products/${productId}/images`, imgData, {
       authType: AuthType.User,
     });
   };

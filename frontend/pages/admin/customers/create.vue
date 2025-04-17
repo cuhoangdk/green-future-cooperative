@@ -91,9 +91,6 @@ definePageMeta({
 })
 
 import { useRuntimeConfig } from '#app';
-import { useVietnamAddress } from '#imports';
-import { useCustomer } from '#imports';
-
 const { provinces, districts, wards, fetchProvinces, fetchDistricts, fetchWards } = useVietnamAddress();
 const { createCustomer, createCustomerAddress } = useCustomer();
 const { $toast } = useNuxtApp()

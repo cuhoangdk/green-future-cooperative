@@ -46,7 +46,6 @@
 <script setup lang="ts">
 import { Trash, Plus, Minus } from 'lucide-vue-next'
 import type { CartItem } from "~/types/cart";
-import { useToast } from 'vue-toastification'
 import { debounce } from 'lodash' // Import debounce từ lodash
 
 interface Props {
@@ -54,7 +53,7 @@ interface Props {
 }
 
 const emit = defineEmits(['item-removed', 'quantity-updated']);
-const toast = useToast();
+const { $toast } = useNuxtApp()
 const { deleteCartItem, updateCartItem } = useCart();
 const config = useRuntimeConfig();
 const backendUrl = config.public.backendUrl;
@@ -74,10 +73,10 @@ const removeItem = async () => {
     try {
         await deleteCartItem(props.cartItem.id);
         isVisible.value = false;
-        toast.success('Sản phẩm đã được xóa!');
+        $toast.success('Sản phẩm đã được xóa!');
         emit('item-removed');
     } catch (error) {
-        toast.error('Có lỗi xảy ra khi xóa sản phẩm!');
+        $toast.error('Có lỗi xảy ra khi xóa sản phẩm!');
     }
 }
 
@@ -102,10 +101,10 @@ const debouncedUpdateQuantity = debounce(async () => {
         const { error } = await updateCartItem(props.cartItem.id, localQuantity.value);
         if (error.value) throw new Error('Thông tin sản phẩm không hợp lệ');
 
-        toast.success('Đã cập nhật số lượng!');
+        $toast.success('Đã cập nhật số lượng!');
         emit('quantity-updated');
     } catch (error) {
-        toast.error('Có lỗi khi cập nhật số lượng!');
+        $toast.error('Có lỗi khi cập nhật số lượng!');
         localQuantity.value = props.cartItem.quantity; // Khôi phục giá trị cũ nếu lỗi
     }
 }, 500); // Chờ 500ms sau lần nhấp cuối cùng mới gọi API

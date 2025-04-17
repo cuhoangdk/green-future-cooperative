@@ -25,7 +25,7 @@ export const useCultivationLogs = () => {
   };
 
   const createLog = async (productId: number ,logData: FormData) => {
-    return await post<CultivationLog>(`/products/${productId}/cultivation-logs/`, logData, {
+    return await post<CultivationLog>(`/products/${productId}/cultivation-logs`, logData, {
       authType: AuthType.User,
     });
   };

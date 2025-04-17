@@ -100,11 +100,10 @@
 
 <script setup lang="ts">
 import { Menu, ShoppingCart, Search as SearchIcon } from 'lucide-vue-next'
-import { useToast } from 'vue-toastification'
 
 const { logout ,currentCustomer, refreshToken } = useCustomerAuth()
 const route = useRoute()
-const toast = useToast();
+const { $toast } = useNuxtApp()
 const isMobileMenuOpen = ref(false)
 
 // Danh sách link cho cả desktop và mobile
@@ -147,11 +146,11 @@ const closeDropdown = () => {
 const handleLogout = async () => {
     try {
         await logout();
-        toast.success('Đăng xuất thành công!');
+        $toast.success('Đăng xuất thành công!');
         // Chuyển hướng về trang đăng nhập hoặc trang chủ
         useRouter().push('/login');
     } catch (error: any) {
-        toast.error(error.message || 'Đăng xuất thất bại!');
+        $toast.error(error.message || 'Đăng xuất thất bại!');
     }
 };
 </script>

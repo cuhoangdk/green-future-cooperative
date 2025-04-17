@@ -43,7 +43,7 @@ export const useProductCategories = () => {
         unitData: FormData | Partial<ProductCategory>,
         authType: AuthType = AuthType.User
     ) => {
-        return await post<ProductCategory>('/product-categories/', unitData, {
+        return await post<ProductCategory>('/product-categories', unitData, {
             authType,
         });
     };

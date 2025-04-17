@@ -110,13 +110,12 @@
 <script setup lang="ts">
 import { ShoppingCart, Plus, Minus, X } from 'lucide-vue-next'
 import type { Product } from "~/types/product";
-import { useToast } from 'vue-toastification';
 
 interface Props {
     product: Product;
 }
 
-const toast = useToast();
+const { $toast } = useNuxtApp()
 const { addCartItem } = useCart();
 const config = useRuntimeConfig();
 const placeholderImage = config.public.placeholderImage;
@@ -155,10 +154,10 @@ const addProductToCart = async () => {
     try {
         isAddingToCart.value = true;
         await addCartItem(props.product.id, quantity.value);
-        toast.success('Đã thêm sản phẩm vào giỏ hàng!');
+        $toast.success('Đã thêm sản phẩm vào giỏ hàng!');
         closeModal();
     } catch (error) {
-        toast.error('Có lỗi khi thêm sản phẩm vào giỏ hàng!');
+        $toast.error('Có lỗi khi thêm sản phẩm vào giỏ hàng!');
     } finally {
         isAddingToCart.value = false;
     }

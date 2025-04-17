@@ -27,7 +27,7 @@
                     </td>
                     <td class="py-1">
                         <div class="flex space-x-1 items-center" @click.stop>
-                            <UiEditButton v-if="displayEditButton" :to="`orders/${order.id}/edit`" />
+                            <!-- <UiEditButton v-if="displayEditButton" :to="`orders/${order.id}/edit`" /> -->
                             <UiCancelButton :to="`orders/${order.id}/cancel`"/>
                         </div>
                     </td>

@@ -89,7 +89,7 @@ export const useUsers = () => {
         userData: FormData | Partial<User>,
         authType: AuthType = AuthType.User
     ) => {
-        return await post<User>('/users/', userData, {
+        return await post<User>('/users', userData, {
             authType,
         });
     };

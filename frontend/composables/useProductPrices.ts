@@ -18,26 +18,26 @@ export const useProductPrices = () => {
     });
   };
 
-  const getPriceById = async (productId: number, imgId: number, authType: AuthType = AuthType.Guest) => {
-    return await get<ProductPrice>(`/products/${productId}/quantity-prices/${imgId}`, {
+  const getPriceById = async (productId: number, id: number, authType: AuthType = AuthType.Guest) => {
+    return await get<ProductPrice>(`/products/${productId}/quantity-prices/${id}`, {
       authType,
     });
   };
 
   const createPrice = async (productId: number ,logData: FormData) => {
-    return await post<ProductPrice>(`/products/${productId}/quantity-prices/`, logData, {
+    return await post<ProductPrice>(`/products/${productId}/quantity-prices`, logData, {
       authType: AuthType.User,
     });
   };
 
-  const updatePrice = async (productId: number, imgId: number, imgData: FormData) => {
-    return await put<ProductPrice>(`/products/${productId}/quantity-prices/${imgId}`, imgData, {
+  const updatePrice = async (productId: number, id: number, priceData: FormData) => {
+    return await put<ProductPrice>(`/products/${productId}/quantity-prices/${id}`, priceData, {
       authType: AuthType.User,
     });
   };
 
-  const deletePrice = async (productId: number, imgId: number) => {
-    return await del(`/products/${productId}/quantity-prices/${imgId}`, {
+  const deletePrice = async (productId: number, id: number) => {
+    return await del(`/products/${productId}/quantity-prices/${id}`, {
       authType: AuthType.User,
     });
   };

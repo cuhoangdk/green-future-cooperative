@@ -93,7 +93,7 @@ const handleSubmit = async () => {
         await login(form.email, form.password)
         await fetchCurrentUser()
         status.value = 'success'
-        await router.push('/')
+        await router.push('/admin')
     } catch (error: any) {
         status.value = 'error'
         // Lấy thông báo lỗi từ server hoặc đặt mặc định

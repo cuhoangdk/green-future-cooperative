@@ -58,7 +58,7 @@ export const useCustomer = () => {
         customerData: FormData | Partial<Customer>,
         authType: AuthType = AuthType.User
     ) => {
-        return await post<Customer>('/customers/', customerData, {
+        return await post<Customer>('/customers', customerData, {
             authType,
         });
     };

@@ -12,7 +12,7 @@
                 { 'translate-x-0': isSidebarOpen, '-translate-x-full': !isSidebarOpen && windowWidth < 1024 }
             ]">
                 <!-- Brand -->
-                <div class="p-3 bg-white border-b border-gray-200 text-center text-xl font-bold text-gray-800 flex items-center justify-between">
+                <div class="p-2 bg-white border-b border-gray-200 text-center text-xl font-bold text-gray-800 flex items-center justify-between">
                     <span v-show="!isCollapsed">Admin Panel</span>
                     <button @click="toggleCollapse" class="p-1 mx-auto hover:bg-gray-100 rounded">
                         <Expand class="w-5 h-5 text-gray-600" />
@@ -22,42 +22,28 @@
                 <!-- Navigation -->
                 <nav class="mt-4 px-2">
                     <ul class="space-y-2">
-                        <!-- Menu items không thuộc nhóm -->
-                        <li v-for="(menu, index) in nonGroupedMenus" :key="`non-group-${index}`">
-                            <NuxtLink :to="menu.route" :class="[
-                                'flex items-center py-3 rounded-lg transition-colors duration-200',
-                                'hover:bg-gray-100 hover:text-gray-900',
-                                isCollapsed ? 'px-2 justify-center' : 'px-4',
-                                { 'bg-gray-200 text-gray-900': isCurrentRoute(menu.route) },
-                                { 'text-gray-600': !isCurrentRoute(menu.route) }
-                            ]" :title="isCollapsed ? menu.label : ''">
-                                <component :is="menu.icon" class="w-5 h-5" :class="isCollapsed ? '' : 'mr-3'" />
-                                <span v-show="!isCollapsed">{{ menu.label }}</span>
-                            </NuxtLink>
-                        </li>
-
-                        <!-- Menu groups -->
-                        <li v-for="(group, groupIndex) in groupedMenus" :key="`group-${groupIndex}`">
+                        <!-- All menu items -->
+                        <li v-for="(menu, index) in filteredMenus" :key="`menu-${index}`">
                             <div class="relative">
-                                <NuxtLink :to="group.route" :class="[
+                                <NuxtLink :to="menu.route" :class="[
                                     'flex items-center w-full py-3 rounded-lg transition-colors duration-200',
                                     'hover:bg-gray-100 hover:text-gray-900',
                                     isCollapsed ? 'px-2 justify-center' : 'px-4',
-                                    { 'bg-gray-200 text-gray-900': isCurrentRoute(group.route) },
-                                    { 'text-gray-600': !isCurrentRoute(group.route) }
-                                ]" :title="isCollapsed ? group.label : ''">
-                                    <component :is="group.icon" class="w-5 h-5" :class="isCollapsed ? '' : 'mr-3'" />
-                                    <span v-show="!isCollapsed" class="flex-1 text-left">{{ group.label }}</span>
+                                    { 'bg-gray-200 text-gray-900': isCurrentRoute(menu.route) },
+                                    { 'text-gray-600': !isCurrentRoute(menu.route) }
+                                ]" :title="isCollapsed ? menu.label : ''">
+                                    <component :is="menu.icon" class="w-5 h-5" :class="isCollapsed ? '' : 'mr-3'" />
+                                    <span v-show="!isCollapsed" class="flex-1 text-left">{{ menu.label }}</span>
+                                    <ChevronDown v-if="menu.items && !isCollapsed" 
+                                        class="w-4 h-4 transition-transform" 
+                                        :class="{ 'rotate-180': menu.isOpen }" 
+                                        @click.prevent="toggleGroup(index)" />
                                 </NuxtLink>
-                                <button v-show="!isCollapsed" @click="toggleGroup(groupIndex)"
-                                    class="absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-200 rounded">
-                                    <ChevronDown class="w-4 h-4 transition-transform" :class="{ 'rotate-180': group.isOpen }" />
-                                </button>
                             </div>
 
                             <!-- Submenu -->
-                            <ul v-show="group.isOpen && !isCollapsed" class="ml-2 mt-1 space-y-1">
-                                <li v-for="(item, itemIndex) in group.items" :key="`item-${itemIndex}`">
+                            <ul v-if="menu.items && menu.isOpen && !isCollapsed" class="ml-2 mt-1 space-y-1">
+                                <li v-for="(item, itemIndex) in menu.items" :key="`item-${itemIndex}`">
                                     <NuxtLink :to="item.route" :class="[
                                         'flex items-center py-2 px-4 rounded-lg transition-colors duration-200',
                                         'hover:bg-gray-100 hover:text-gray-900',
@@ -96,16 +82,9 @@
                         </div>
 
                         <!-- User Dropdown -->
-                        <div class="relative" v-click-outside="closeUserMenu">
-                            <button @click="toggleUserMenu"
-                                class="flex items-center space-x-2 hover:bg-gray-100 py-1 rounded-lg">
-
-                            </button>
-
-                        </div>
                         <div class="dropdown dropdown-bottom dropdown-end">
                             <button tabindex="0">
-                            <div class="avatar">
+                                <div class="avatar">
                                     <div class="w-8 rounded-full">
                                         <img :src="avatar" @error="avatar = defaultAvatar" />
                                     </div>
@@ -114,7 +93,7 @@
                             <ul tabindex="0"
                                 class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
                                 <li>
-                                    <NuxtLink to="profile" @click="closeDropdown">
+                                    <NuxtLink to="/admin/profile" @click="closeDropdown">
                                         Tài khoản
                                     </NuxtLink>
                                 </li>
@@ -167,6 +146,7 @@ const defaultAvatar = useRuntimeConfig().public.placeholderImage
 const backendUrl = useRuntimeConfig().public.backendUrl
 const windowWidth = ref(window.innerWidth)
 const avatar = computed(() => currentUser.value?.avatar_url ? `${backendUrl}${currentUser.value.avatar_url}` : defaultAvatar)
+const isAdmin = computed(() => currentUser.value?.is_super_admin === true)
 
 const handleLogout = async () => {
     try {
@@ -179,21 +159,13 @@ const handleLogout = async () => {
     }
 };
 
-// Menu không thuộc nhóm
-const nonGroupedMenus = ref([
+// Unified menu with the requested order
+const menus = ref([
     { label: 'Trang chủ', route: '/admin', icon: Home },
-    { label: 'Thành viên', route: '/admin/users', icon: Users },
-    { label: 'Khách hàng', route: '/admin/customers', icon: User2Icon },
     { label: 'Nông trại', route: '/admin/farms', icon: Sprout },
-    { label: 'Đơn hàng', route: '/admin/orders', icon: Ticket },
-    { label: 'Cài đặt', route: '#', icon: Ruler },
-])
-
-// Menu nhóm (menu chính là trang index)
-const groupedMenus = ref([
-    {
+    { 
         label: 'Sản phẩm',
-        route: '/admin/products', // Trang index của nhóm
+        route: '/admin/products',
         icon: ShoppingBag,
         isOpen: false,
         items: [
@@ -201,16 +173,31 @@ const groupedMenus = ref([
             { label: 'Đơn vị', route: '/admin/units', icon: Ruler },
         ]
     },
-    {
+    { label: 'Đơn hàng', route: '/admin/orders', icon: Ticket },
+    { label: 'Khách hàng', route: '/admin/customers', icon: User2Icon },
+    { label: 'Thành viên', route: '/admin/users', icon: Users },
+    { 
         label: 'Bài viết',
-        route: '/admin/posts', // Trang index của nhóm
+        route: '/admin/posts',
         icon: Newspaper,
         isOpen: false,
         items: [
             { label: 'Loại bài viết', route: '/admin/post-categories', icon: Layers },
         ]
-    }
+    },
+    { label: 'Cài đặt', route: '#', icon: Ruler },
 ])
+
+const filteredMenus = computed(() => {
+    if (isAdmin.value) {
+        return menus.value
+    } else {
+        return menus.value.filter(menu =>
+            ['Trang chủ', 'Nông trại', 'Sản phẩm', 'Đơn hàng'].includes(menu.label)
+        )
+    }
+})
+
 
 const pageTitle = computed(() => {
     return route.meta.title || 'Dashboard'
@@ -236,8 +223,8 @@ const isCurrentRoute = (path: string) => {
     return route.path === path
 }
 
-const toggleGroup = (groupIndex: number) => {
-    groupedMenus.value[groupIndex].isOpen = !groupedMenus.value[groupIndex].isOpen
+const toggleGroup = (menuIndex: number) => {
+    menus.value[menuIndex].isOpen = !menus.value[menuIndex].isOpen
 }
 
 const updateWindowWidth = () => {
