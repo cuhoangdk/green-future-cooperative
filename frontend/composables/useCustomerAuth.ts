@@ -34,7 +34,7 @@ export const useCustomerAuth = () => {
         password: string,
         password_confirmation: string
     ): Promise<{ success: true } | never> => {
-        const { data, error, status } = await post<LoginResponse>(
+        const { error, status } = await post<LoginResponse>(
             '/customer-auth/register',
             {
                 email,
@@ -45,26 +45,37 @@ export const useCustomerAuth = () => {
             },
             { authType: AuthType.Guest }
         )
-        console.log('error', error.value?.statusCode);
+
+        if (status.value === 'success') {
+            return { success: true }
+        }
+
+        throw new Error(JSON.stringify({
+            message: error.value?.message || 'Đăng kí thất bại',
+            errors: error.value || {},
+        }))
+    }
+
+    const verifyAccount = async (
+        email: string,
+        token: string
+    ): Promise<{ success: true } | never> => {
+        const { data, error, status } = await post<LoginResponse>(
+            '/customer-auth/verify-account',
+            { email, token },
+            { authType: AuthType.Guest }
+        )
 
         if (status.value === 'success' && data.value) {
             return { success: true }
         }
 
-        // Ném lỗi với thông tin chi tiết từ API
         throw new Error(JSON.stringify({
-            message: error.value?.message || 'Registration failed',
-            errors: error.value || {},
+            message: data.value?.message || error.value?.message || 'Xác thực tài khoản thất bại',
+            errors: data.value?.errors || {},
+            statusCode: error.value?.statusCode, // Thêm statusCode vào lỗi
         }))
     }
-
-    const verifyAccount = async (email: string, token: string) => {
-        const { data, error } = await post<LoginResponse>('/customer-auth/verify-account', {
-            email,
-            token,
-        }, { authType: AuthType.Guest })
-    }
-
     const login = async (email: string, password: string) => {
         const { data, error } = await post<LoginResponse>('/customer-auth/login', {
             email,
@@ -76,7 +87,7 @@ export const useCustomerAuth = () => {
             refreshToken.value = data.value.original.refresh_token
             return { success: true }
         } else {
-            throw new Error(data.value?.original.message || 'Login failed')
+            throw new Error(data.value?.original.message || 'Đăng nhập thất bại')
         }
     }
 

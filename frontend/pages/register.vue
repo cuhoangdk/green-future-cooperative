@@ -184,25 +184,9 @@ const handleSubmit = async () => {
         status.value = 'success'
         $toast.success('Đăng ký thành công!')
     } catch (error: any) {
-        status.value = 'error'
-        
-        // Parse lỗi từ chuỗi JSON
-        let errorData;
-        try {
-            errorData = JSON.parse(error.message);
-        } catch {
-            errorData = { message: 'Đăng ký thất bại. Vui lòng thử lại.', errors: {} };
-        }
-
-        // Gán lỗi chi tiết
-        Object.keys(errorData.errors).forEach((key) => {
-            if (errors[key]) {
-                errors[key] = errorData.errors[key];
-            }
-        });
-
         // Gán thông báo lỗi chung
-        errorMessage.value = errorData.message;
+        status.value = 'error'
+        errorMessage.value = "Đăng ký thất bại! Vui lòng kiểm tra lại thông tin.";
         $toast.error(errorMessage.value);
     }
 }

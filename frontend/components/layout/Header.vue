@@ -101,7 +101,7 @@
 <script setup lang="ts">
 import { Menu, ShoppingCart, Search as SearchIcon } from 'lucide-vue-next'
 
-const { logout ,currentCustomer, refreshToken } = useCustomerAuth()
+const { logout ,currentCustomer, refreshToken, isAuthenticated } = useCustomerAuth()
 const route = useRoute()
 const { $toast } = useNuxtApp()
 const isMobileMenuOpen = ref(false)
@@ -117,7 +117,7 @@ const navLinks = [
 
 const mobileNavLinks = [
     ...navLinks,
-    { path: '/login', text: 'Đăng nhập / Đăng ký' }
+    ...(isAuthenticated ? [] : [{ path: '/login', text: 'Đăng nhập / Đăng ký' }])
 ]
 
 // Hàm kiểm tra trang đang active
