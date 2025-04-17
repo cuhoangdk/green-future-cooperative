@@ -102,7 +102,7 @@ Route::middleware('log.activity')->group(function () {
         }); 
     });
 
-    Route::prefix('admin/orders')->middleware(['auth:api_users', 'permission'])->group(function () {
+    Route::prefix('admin/orders')->middleware(['auth:api_users'])->group(function () {
         Route::get('/', [AdminOrderController::class, 'index'])->name('orders.admin.index');
         // sometimes: search, year, month, day, sort_by, sort_direction, per_page
         Route::get('/search', [AdminOrderController::class, 'search'])->name('orders.admin.search');
