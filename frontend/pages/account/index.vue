@@ -76,8 +76,11 @@
                 <!-- Submit Button -->
                 <div class="border-t border-gray-200 pt-5 flex justify-between">
                     <div>
+                        <Button @click="handleLogout" class="btn btn-secondary mr-2">
+                            <LogOut class="w-4 h-4" />
+                        </Button>
                         <NuxtLink to="/account/change-password" class="btn btn-warning mr-2">
-                            <Key class="w-4 h-4" /> Đổi mật khẩu
+                            <Key class="w-4 h-4" />
                         </NuxtLink>
                     </div>
                     <button type="submit" class="btn btn-primary px-6" :disabled="status === 'pending'">
@@ -91,7 +94,7 @@
 </template>
 
 <script setup lang="ts">
-import { Key } from 'lucide-vue-next';
+import { Key, LogOut  } from 'lucide-vue-next';
 import type { CustomerAddress } from '~/types/customer';
 
 const { currentCustomer, updateProfile, logout } = useCustomerAuth();
@@ -172,6 +175,17 @@ const handleSubmit = async () => {
         $toast.error(error.message || 'Cập nhật thông tin thất bại!');
     } finally {
         status.value = 'idle';
+    }
+};
+
+const handleLogout = async () => {
+    try {
+        await logout();
+        $toast.success('Đăng xuất thành công!');
+        // Chuyển hướng về trang đăng nhập hoặc trang chủ
+        useRouter().push('/login');
+    } catch (error: any) {
+        $toast.error(error.message || 'Đăng xuất thất bại!');
     }
 };
 </script>
