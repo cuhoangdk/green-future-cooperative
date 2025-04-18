@@ -1,14 +1,17 @@
 <template>
-    <div
-        class="min-h-screen flex items-center justify-center p-0 lg:p-4 bg-gradient-to-br from-green-50 to-green-100 relative overflow-hidden">
-        <!-- Animated Background Elements -->
-        <div class="absolute top-0 left-0 w-full h-full pointer-events-none">
-            <div class="absolute top-10 left-10 w-32 h-32 bg-green-300 rounded-full opacity-30 animate-blob"></div>
-            <div
-                class="absolute bottom-20 right-20 w-48 h-48 bg-green-400 rounded-full opacity-20 animate-blob animation-delay-2000">
+    <div>
+        <div
+            class="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-green-50 to-green-100 relative overflow-hidden">
+            <!-- Animated Background Elements -->
+            <div class="absolute top-0 left-0 w-full h-full pointer-events-none">
+                <div class="absolute top-10 left-10 w-32 h-32 bg-green-300 rounded-full opacity-30 animate-blob"></div>
+                <div
+                    class="absolute bottom-20 right-20 w-48 h-48 bg-green-400 rounded-full opacity-20 animate-blob animation-delay-2000">
+                </div>
             </div>
+            <slot />
         </div>
-        <slot/>
+        <LayoutFooter />
     </div>
 </template>
 
