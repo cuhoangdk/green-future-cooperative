@@ -11,6 +11,7 @@
             </thead>
             <tbody>
                 <tr v-for="productCategory in productCategories" :key="productCategory.id"
+                    @click="$router.push(`/admin/product-categories/${productCategory.id}`)"
                     class="border-b border-gray-100 hover:bg-gray-200 cursor-pointer">
                     <td class="py-1 pl-2">{{ productCategory.name }}</td>
                     <td class="py-1">{{ productCategory.description }}</td>

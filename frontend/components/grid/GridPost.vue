@@ -2,6 +2,7 @@
 <template>
     <div class="grid grid-cols-1 gap-4 p-3 md:hidden">
         <div v-for="post in posts" :key="post.id"
+            @click="$router.push(`posts/${post.id}/`)"
             class="card bg-base-100 border border-gray-400 hover:shadow-md transition-shadow cursor-pointer">
             <div class="card-body p-3">
                 <div class="flex justify-between items-start">

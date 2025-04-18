@@ -11,6 +11,7 @@
       </thead>
       <tbody>
         <tr v-for="customer in customers" :key="customer.id"
+          @click="$router.push(`customers/${customer.id}/edit`)"
           class="border-b border-gray-100 hover:bg-gray-200 cursor-pointer">
           <td class="py-1 pl-2">{{ customer.full_name }}</td>
           <td class="py-1">

@@ -12,6 +12,7 @@
             </thead>
             <tbody>
                 <tr v-for="post in posts" :key="post.id"
+                    @click="$router.push(`posts/${post.id}/`)"
                     class="border-b border-gray-100 hover:bg-gray-200 cursor-pointer">
                     <td class="py-1 pl-2 line-clamp-2">{{ post.title }}</td>
                     <td class="py-1">{{ post.user?.full_name }}</td>

@@ -11,6 +11,7 @@
             </thead>
             <tbody>
                 <tr v-for="unit in units" :key="unit.id"
+                    @click="$router.push(`units/${unit.id}`)"
                     class="border-b border-gray-100 hover:bg-gray-200 cursor-pointer">
                     <td class="py-1 pl-2">{{ unit.name }}</td>
                     <td class="py-1">{{ unit.description }}</td>

@@ -10,7 +10,9 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="user in users" :key="user.id" class="border-b border-gray-100 hover:bg-gray-200 cursor-pointer">
+        <tr v-for="user in users" :key="user.id"
+            @click="$router.push(`users/${user.id}/edit`)"
+            class="border-b border-gray-100 hover:bg-gray-200 cursor-pointer">
           <td class="py-1 pl-2">{{ user.full_name }}</td>
           <td class="py-1">
             <div class="flex flex-col">
