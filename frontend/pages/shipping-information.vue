@@ -13,7 +13,7 @@
             <div class="w-full lg:w-5/12 flex flex-col gap-3">
                 <div class="flex justify-between items-center">
                     <h1 class="w-full text-2xl font-bold text-green-800">Thông tin giao hàng</h1>
-                    <button class="btn btn-sm" onclick="my_modal_1.showModal()">Chọn địa chỉ</button>
+                    <div class="btn btn-sm" onclick="my_modal_1.showModal()">Chọn địa chỉ</div>
                 </div>
                 <div class="border border-gray-300 rounded-xl p-5 bg-white">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">

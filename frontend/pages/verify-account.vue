@@ -70,7 +70,6 @@
 definePageMeta({ layout: 'empty' })
 
 const { verifyAccount } = useCustomerAuth()
-const { $toast } = useNuxtApp()
 const router = useRouter()
 
 const token = useRoute().query.token as string
@@ -94,7 +93,6 @@ const verify = async () => {
 
         await verifyAccount(email, token)
         status.value = 'success'
-        $toast.success('Xác thực tài khoản thành công!')
     } catch (error: any) {
         status.value = 'error'
 
@@ -113,25 +111,16 @@ const verify = async () => {
             }
         });
 
-        // Gán thông báo lỗi chung và mã trạng thái
         errorMessage.value = 'Xác thực tài khoản thất bại.';
         errorStatusCode.value = errorData.statusCode || null;
 
-        // Hiển thị toast dựa trên mã trạng thái
-        if (errorStatusCode.value === 400) {
-            $toast.info('Tài khoản đã được xác thực trước đó!');
-        } else {
-            $toast.error('Xác thực tài khoản thất bại.');
-        }
 
-        // Tự động chuyển hướng sau 5 giây nếu lỗi
         setTimeout(() => {
             router.push('/login');
         }, 5000);
     }
 }
 
-// Gọi verify ngay khi component được mount
 verify()
 </script>
 
