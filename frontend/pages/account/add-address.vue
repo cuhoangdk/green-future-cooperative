@@ -142,7 +142,7 @@ const handleSubmit = async () => {
         }
 
         $toast.success('Thêm địa chỉ thành công!');
-        router.push('/account');
+        router.push('/account/addresses'); 
     } catch (error: any) {
         $toast.error(error.message || 'Thêm địa chỉ thất bại!');
     } finally {
