@@ -1,4 +1,3 @@
-// Định nghĩa interface cho dữ liệu trả về từ API
 interface AddressItem {
   id: string;
   name: string;
@@ -9,27 +8,41 @@ interface AddressItem {
   longitude: string;
 }
 
+interface AddressDetails extends AddressItem {
+  phuong: string;
+  quan: string;
+  tinh: string;
+}
+
 interface ApiResponse {
   error: number;
   error_text: string;
   data_name: string;
-  data: AddressItem[];
+  data: AddressItem[] ;
+}
+
+interface ApiResponseDetails {
+  error: number;
+  error_text: string;
+  data_name: string;
+  data: AddressDetails;
 }
 
 // Base URL của API
 const BASE_URL = 'https://esgoo.net/api-tinhthanh';
 
-// Hàm fetch dữ liệu chung
+// Hàm fetch dữ liệu chung với useAsyncData
 const fetchAddressData = async (type: number, id: string = '0') => {
   const url = `${BASE_URL}/${type}/${id}.htm`;
-  const response = await fetch(url);
-  const data: ApiResponse = await response.json();
+  const { data, error } = await useAsyncData<ApiResponse>(`address-${type}-${id}`, () =>
+    $fetch(url)
+  );
 
-  if (!response.ok || data.error !== 0) {
-    throw new Error(data.error_text || 'Failed to fetch address data');
+  if (error.value || data.value?.error !== 0) {
+    throw new Error(error.value?.message || data.value?.error_text || 'Failed to fetch address data');
   }
 
-  return data.data;
+  return data.value.data;
 };
 
 // Composable chính
@@ -79,21 +92,21 @@ export const useVietnamAddress = () => {
   const getFullAddressName = async (wardId: string) => {
     try {
       if (!wardId) return '';
-      
-      const response = await fetch(`https://esgoo.net/api-tinhthanh/5/${wardId}.htm`);
-      const data = await response.json();
 
-      if (!response.ok || data.error !== 0) {
-        throw new Error(data.error_text || 'Failed to fetch address name');
+      const { data, error } = await useAsyncData<ApiResponseDetails>(`full-address-${wardId}`, () =>
+        $fetch(`https://esgoo.net/api-tinhthanh/5/${wardId}.htm`)
+      );
+
+      if (error.value || data.value?.error !== 0) {
+        throw new Error(error.value?.message || data.value?.error_text || 'Failed to fetch address name');
       }
 
-      return data.data.full_name;
+      return data.value.data.full_name;
     } catch (error) {
       console.error('Error fetching address name:', error);
       return '';
     }
   };
-
 
   return {
     provinces,
