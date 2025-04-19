@@ -76,6 +76,46 @@ export const useCustomerAuth = () => {
             statusCode: error.value?.statusCode, // Thêm statusCode vào lỗi
         }))
     }
+
+    const forgotPassword = async (email: string): Promise<{ success: true } | never> => {
+        const { status } = await post<LoginResponse>(
+            '/customer-auth/forgot-password',
+            { email },
+            { authType: AuthType.Guest }
+        )
+
+        if (status.value === 'success') {
+            return { success: true }
+        }
+
+        throw new Error('Email không tồn tại')
+    }
+
+    const resetPassword = async (
+        email: string,
+        token: string,
+        password: string,
+        password_confirmation: string
+    ): Promise<{ success: true } | never> => {
+        const { data, error, status } = await post<LoginResponse>(
+            '/customer-auth/reset-password',
+            {
+                email,
+                token,
+                password,
+                password_confirmation,
+            },
+            { authType: AuthType.Guest }
+        )
+
+        if (status.value === 'success' && data.value) {
+            return { success: true }
+        }
+
+        throw new Error('Đổi mật khẩu thất bại')
+
+    }
+
     const login = async (email: string, password: string) => {
         const { data, error } = await post<LoginResponse>('/customer-auth/login', {
             email,
@@ -168,6 +208,17 @@ export const useCustomerAuth = () => {
         }
     }
 
+      // Đổi mật khẩu người dùng
+  const changePassword = async (
+    passwordData: { current_password: string; new_password: string; new_password_confirmation: string },
+    authType: AuthType = AuthType.Customer
+  ) => {
+    return await put<null>(`/customer-auth/change-password`, passwordData, {
+      authType,
+    });
+  };
+
+
     const isAuthenticated = computed(() => !!accessToken.value)
 
     return {
@@ -178,6 +229,9 @@ export const useCustomerAuth = () => {
         updateProfile,
         register,
         verifyAccount,
+        forgotPassword,
+        resetPassword,
+        changePassword,
         currentCustomer: readonly(currentCustomer),
         accessToken: readonly(accessToken),
         refreshToken: readonly(refreshToken),

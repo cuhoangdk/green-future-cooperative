@@ -43,6 +43,45 @@ export const useUserAuth = () => {
     }
   }
 
+  const forgotPassword = async (email: string): Promise<{ success: true } | never> => {
+    const { status } = await post<LoginResponse>(
+      '/user-auth/forgot-password',
+      { email },
+      { authType: AuthType.Guest }
+    )
+
+    if (status.value === 'success') {
+      return { success: true }
+    }
+
+    throw new Error('Email không tồn tại')
+  }
+
+  const resetPassword = async (
+    email: string,
+    token: string,
+    password: string,
+    password_confirmation: string
+  ): Promise<{ success: true } | never> => {
+    const { data, error, status } = await post<LoginResponse>(
+      '/user-auth/reset-password',
+      {
+        email,
+        token,
+        password,
+        password_confirmation,
+      },
+      { authType: AuthType.Guest }
+    )
+
+    if (status.value === 'success' && data.value) {
+      return { success: true }
+    }
+
+    throw new Error('Đổi mật khẩu thất bại')
+
+  }
+
   const logout = async () => {
     await post('/user-auth/logout', { authType: AuthType.User })
     accessToken.value = null
@@ -120,6 +159,17 @@ export const useUserAuth = () => {
     }
   }
 
+  // Đổi mật khẩu người dùng
+  const changePassword = async (
+    passwordData: { password: string; password_confirmation: string },
+    authType: AuthType = AuthType.User
+  ) => {
+    return await put<null>(`/user-auth/change-password`, passwordData, {
+      authType,
+    });
+  };
+
+
   const isAuthenticated = computed(() => !!accessToken.value)
 
   return {
@@ -128,6 +178,9 @@ export const useUserAuth = () => {
     fetchCurrentUser,
     refreshAccessToken,
     updateProfile,
+    forgotPassword,
+    resetPassword,
+    changePassword,
     currentUser: readonly(currentUser),
     accessToken: readonly(accessToken),
     refreshToken: readonly(refreshToken),

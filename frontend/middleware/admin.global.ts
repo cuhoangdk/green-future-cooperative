@@ -2,6 +2,10 @@ import { useUserAuth } from '~/composables/useUserAuth'
 
 export default defineNuxtRouteMiddleware(async (to, from) => {
   // Chỉ áp dụng middleware cho các route bắt đầu với /admin/
+  // Bỏ qua middleware cho trang reset password
+  if (to.path === '/admin/reset-password') {
+    return
+  }
   if (!to.path.startsWith('/admin')) {
     return
   }

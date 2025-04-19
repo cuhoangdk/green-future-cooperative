@@ -31,9 +31,8 @@
                 <div>
                     <div class="flex justify-between items-center mb-2">
                         <label class="block text-sm font-medium text-gray-700">Mật khẩu</label>
-                        <NuxtLink href="#" class="text-sm text-green-600 hover:text-green-800 transition-colors">
-                            Quên mật khẩu?
-                        </NuxtLink>
+                        <div class="text-sm text-green-600 hover:text-green-800 transition-colors cursor-pointer"
+                        onclick="my_modal_3.showModal()">Quên mật khẩu?</div>
                     </div>
                     <div class="relative">
                         <span class="absolute inset-y-0 left-0 pl-3 flex items-center z-10">
@@ -66,6 +65,30 @@
                 </div>
             </form>
         </div>
+        <dialog id="my_modal_3" class="modal m-0">
+            <div class="modal-box m-0">
+                <form method="dialog">
+                    <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+                </form>
+                <h3 class="text-lg font-bold">Tìm tài khoản của bạn!</h3>
+                <p class="py-4">
+                    Vui lòng nhập email hoặc số di động để tìm kiếm tài khoản của bạn.
+                </p>
+                <input v-model="forgotPasswordForm.email" type="text" placeholder="Nhập email"
+                    class="input input-primary w-full mb-4" />
+
+                <p class="text-red-600 text-sm text-center animate-fade-in">
+                    {{ errorForgotPassword }}
+                </p>
+                <hr class="my-2 border-gray-200" />
+                <button @click="hanldeForgotPassword" 
+                        class="btn btn-primary float-right" 
+                        :disabled="status === 'pending'">
+                    <span v-if="status === 'pending'" class="loading loading-spinner loading-md mr-2"></span>
+                    Tìm kiếm
+                </button>
+            </div>
+        </dialog>
     </div>
 </template>
 
@@ -73,18 +96,22 @@
 definePageMeta({ layout: 'empty' })
 import { User2, Lock, Eye, EyeClosed } from 'lucide-vue-next'
 
+const { login, fetchCurrentUser, forgotPassword } = useUserAuth()
+const router = useRouter()
+const showPassword = ref(false)
+const { $toast } = useNuxtApp()
+const status = ref<'idle' | 'pending' | 'success' | 'error'>('idle')
+const errorMessage = ref<string | null>(null)
+const errorForgotPassword = ref()
+
+const forgotPasswordForm = reactive({
+    email: '',
+})
+
 const form = reactive({
     email: '',
     password: '',
 })
-
-const status = ref<'idle' | 'pending' | 'success' | 'error'>('idle')
-const errorMessage = ref<string | null>(null) // Thêm state để lưu thông báo lỗi
-    const { login, fetchCurrentUser, accessToken } = useUserAuth()
-    const router = useRouter()
-const showPassword = ref(false)
-const showForgotPasswordModal = ref(false)
-const { $toast } = useNuxtApp()
 
 const handleSubmit = async () => {
     try {
@@ -100,5 +127,20 @@ const handleSubmit = async () => {
         errorMessage.value = error
         $toast.error(error) // Hiển thị toast thông báo lỗi
     }
+}
+
+const hanldeForgotPassword = async () => {
+    try{
+        status.value = 'pending'
+        errorMessage.value = null 
+        await forgotPassword(forgotPasswordForm.email)
+        status.value = 'success'
+        $toast.success("Đã gửi email khôi phục mật khẩu")
+    } catch (error: any) {
+        status.value = 'error'
+        errorForgotPassword.value = "Không tìm thấy email"
+        $toast.error("Không tìm thấy email") 
+    }
+    console.log('Quên mật khẩu')
 }
 </script>

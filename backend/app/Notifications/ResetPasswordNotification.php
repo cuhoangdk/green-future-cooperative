@@ -22,7 +22,7 @@ class ResetPasswordNotification extends Notification
 
     public function toMail($notifiable)
     {
-        $url = env('FRONTEND_URL') . "/admin/reset-password?token={$this->token}&?email={$notifiable->email}";
+        $url = env('FRONTEND_URL') . "/admin/reset-password?token={$this->token}&email={$notifiable->email}";
 
         return (new \Illuminate\Notifications\Messages\MailMessage)
             ->subject('Thông Báo Đặt Lại Mật Khẩu')

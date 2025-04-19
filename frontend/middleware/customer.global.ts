@@ -32,6 +32,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
   // Nếu có refreshToken nhưng accessToken hết hạn, làm mới token
   if (!accessToken.value && refreshToken.value) {
     const refreshed = await refreshAccessToken()
+    await fetchCurrentCustomer()
     if (refreshed) {
       await fetchCurrentCustomer() // Lấy lại thông tin user sau khi làm mới
     } else {

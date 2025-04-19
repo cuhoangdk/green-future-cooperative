@@ -80,7 +80,7 @@
 definePageMeta({ layout: 'empty' })
 import { Mail, Lock, Eye, EyeClosed } from 'lucide-vue-next'
 
-const { resetPassword } = useCustomerAuth()
+const { resetPassword } = useUserAuth()
 const router = useRouter()
 const { $toast } = useNuxtApp()
 
@@ -103,7 +103,7 @@ const handleSubmit = async () => {
         await resetPassword(email ,token, form.password, form.password_confirmation)
         status.value = 'success'
         $toast.success("Đổi mật khẩu thành công") 
-        await router.push('/login')
+        await router.push('/admin/login')
     } catch (error: any) {
         status.value = 'error'
         errorMessage.value = error
