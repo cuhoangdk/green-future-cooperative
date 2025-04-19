@@ -105,6 +105,17 @@ export const useUsers = () => {
         });
     };
 
+    // Đổi mật khẩu người dùng
+    const changeUserPassword = async (
+        id: number,
+        passwordData: { password: string; password_confirmation: string },
+        authType: AuthType = AuthType.User
+    ) => {
+        return await put<null>(`/users/change-password/${id}`, passwordData, {
+            authType,
+        });
+    };
+
     // Xóa mềm người dùng
     const deleteUser = async (
         id: number,
@@ -143,6 +154,7 @@ export const useUsers = () => {
         getUserByCode,
         createUser,
         updateUser,
+        changeUserPassword,
         deleteUser,
         restoreUser,
         forceDeleteUser,

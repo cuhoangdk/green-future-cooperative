@@ -32,17 +32,37 @@
                     <div>
                         <label class="text-gray-700 font-semibold block mb-1">Số điện thoại <span class="text-red-500">*</span></label>
                         <input v-model="form.phone_number" type="tel" class="input input-bordered input-primary w-full"
-                            placeholder="0123-456-789" required />
+                            placeholder="0998989839" required />
                     </div>
 
                     <div>
                         <label class="text-gray-700 font-semibold block mb-1">Giới tính</label>
-                        <select v-model="form.gender" class="select select-bordered select-primary w-full">
-                            <option value="">Chọn giới tính</option>
-                            <option value="male">Nam</option>
-                            <option value="female">Nữ</option>
-                            <option value="other">Khác</option>
-                        </select>
+                        <div class="flex items-center space-x-4">
+                            <label class="flex items-center space-x-2">
+                                <input type="radio" v-model="form.gender" value="male" class="radio radio-primary" />
+                                <span>Nam</span>
+                            </label>
+                            <label class="flex items-center space-x-2">
+                                <input type="radio" v-model="form.gender" value="female" class="radio radio-primary" />
+                                <span>Nữ</span>
+                            </label>
+                            <label class="flex items-center space-x-2">
+                                <input type="radio" v-model="form.gender" value="other" class="radio radio-primary" />
+                                <span>Khác</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="text-gray-700 font-semibold block mb-1">Mật khẩu <span class="text-red-500">*</span></label>
+                        <input v-model="form.password" type="password" class="input input-bordered input-primary w-full"
+                            placeholder="********" required />
+                    </div>
+
+                    <div>
+                        <label class="text-gray-700 font-semibold block mb-1">Xác nhận mật khẩu <span class="text-red-500">*</span></label>
+                        <input v-model="form.password_confirmation" type="password" class="input input-bordered input-primary w-full"
+                            placeholder="********" required />
                     </div>
 
                     <div>
@@ -56,18 +76,6 @@
                             <option :value="true">Quản trị viên</option>
                             <option :value="false">Người dùng</option>
                         </select>
-                    </div>
-
-                    <div>
-                        <label class="text-gray-700 font-semibold block mb-1">Mật khẩu <span class="text-red-500">*</span></label>
-                        <input v-model="form.password" type="password" class="input input-bordered input-primary w-full"
-                            placeholder="********" required />
-                    </div>
-
-                    <div>
-                        <label class="text-gray-700 font-semibold block mb-1">Xác nhận mật khẩu <span class="text-red-500">*</span></label>
-                        <input v-model="form.password_confirmation" type="password" class="input input-bordered input-primary w-full"
-                            placeholder="********" required />
                     </div>
                 </div>
             </div>

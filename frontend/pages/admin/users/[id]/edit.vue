@@ -7,14 +7,21 @@
             <!-- Phần 1: Thông tin cơ bản với avatar -->
             <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
                 <!-- Avatar Section -->
-                <div class="flex flex-col items-center md:col-span-1">
+                <div class="flex flex-col items-center justify-between md:col-span-1">
                     <div class="w-48 h-48 mb-3 cursor-pointer" @click="triggerFileInput">
                         <img :src="form.avatar_url || defaultAvatar" @error="form.avatar_url = defaultAvatar"
                             class="w-full h-full object-cover rounded-full border shadow-sm" alt="Avatar" />
+                        <div class="text-center text-gray-700 font-semibold mt-2">Ảnh đại diện</div>
                     </div>
                     <input ref="fileInput" type="file" accept="image/*"
                         class="file-input file-input-primary w-full max-w-xs" @change="handleFileChange" hidden />
-                    <label class="text-gray-700 font-semibold mt-2">Ảnh đại diện</label>
+
+                    <div class="flex justify-end items-end">
+                        <button type="button" @click="$router.push(`/admin/users/${userId}/change-password`)"
+                            class="btn">
+                            Đổi mật khẩu
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Thông tin cá nhân chính -->
@@ -22,9 +29,12 @@
                     <!-- User Code - Luôn hiển thị đầu tiên -->
                     <div class="sm:col-span-2">
                         <label class="text-gray-700 font-semibold block mb-1">Mã thành viên</label>
-                        <div class="input input-bordered w-full flex items-center bg-gray-100 font-medium">
-                            {{ user.usercode }}
-                        </div>
+                        <label class="input w-full bg-gray-200">
+                            <span class="label">TV</span>
+                            <div class="">
+                                {{ userId }}
+                            </div>
+                        </label>
                     </div>
 
                     <!-- Thông tin nhận dạng -->
@@ -77,7 +87,7 @@
                         <label class="text-gray-700 font-semibold block mb-1">Trạng thái</label>
                         <select v-model="form.is_banned" class="select select-bordered select-primary w-full">
                             <option :value="false">Hoạt động</option>
-                            <option :value="true">Đã bị cấm</option>
+                            <option :value="true">Bị cấm</option>
                         </select>
                     </div>
                 </div>
@@ -273,16 +283,16 @@ const handleSubmit = async () => {
         status.value = 'pending';
         const formData = new FormData();
 
-        if (form.value.full_name) {formData.append('full_name', form.value.full_name);}
-        if (form.value.email) { formData.append('email', form.value.email);}
-        if (form.value.phone_number) {formData.append('phone_number', form.value.phone_number);}
-        if (form.value.date_of_birth) {formData.append('date_of_birth', form.value.date_of_birth.toString());}
-        if (form.value.gender) {formData.append('gender', form.value.gender);}
+        if (form.value.full_name) { formData.append('full_name', form.value.full_name); }
+        if (form.value.email) { formData.append('email', form.value.email); }
+        if (form.value.phone_number) { formData.append('phone_number', form.value.phone_number); }
+        if (form.value.date_of_birth) { formData.append('date_of_birth', form.value.date_of_birth.toString()); }
+        if (form.value.gender) { formData.append('gender', form.value.gender); }
         formData.append('is_super_admin', form.value.is_super_admin ? '1' : '0');
         formData.append('is_banned', form.value.is_banned ? '1' : '0');
-        if (form.value.bank_name) {formData.append('bank_name', form.value.bank_name);}
-        if (form.value.bank_account_number) {formData.append('bank_account_number', form.value.bank_account_number);}
-        if (form.value.bio) {formData.append('bio', form.value.bio);}
+        if (form.value.bank_name) { formData.append('bank_name', form.value.bank_name); }
+        if (form.value.bank_account_number) { formData.append('bank_account_number', form.value.bank_account_number); }
+        if (form.value.bio) { formData.append('bio', form.value.bio); }
 
         if (form.value.address) {
             // Thêm address
