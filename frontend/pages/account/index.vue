@@ -1,5 +1,5 @@
 <template>
-    <div class="items-center flex flex-col mt-16 p-2 lg:mt-0">
+    <div class="min-h-screen items-center flex flex-col mt-16 p-2 lg:mt-0">
         <div class="w-full lg:w-7/12 bg-white border border-gray-200 rounded-2xl p-4 shadow-sm sm:p-5">
             <form @submit.prevent="handleSubmit" class="space-y-6">
                 <!-- Phần 1: Thông tin cơ bản với avatar -->
@@ -76,7 +76,7 @@
                 <!-- Submit Button -->
                 <div class="border-t border-gray-200 pt-5 flex justify-between">
                     <div>
-                        <Button @click="handleLogout" class="btn btn-secondary mr-2">
+                        <Button @click="handleLogout" class="btn btn-error mr-2">
                             <LogOut class="w-4 h-4" />
                         </Button>
                         <NuxtLink to="/account/change-password" class="btn btn-warning mr-2">
