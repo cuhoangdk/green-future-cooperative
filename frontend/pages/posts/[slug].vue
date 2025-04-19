@@ -70,8 +70,8 @@
             </div>
 
             <!-- Bài viết liên quan -->
-            <div class="w-11/12 max-w-7xl flex gap-5">
-                <div class="w-3/4">
+            <div class="w-11/12 max-w-7xl flex flex-col lg:flex-row gap-5">
+                <div class="w-full lg:w-3/4">
                     <div class="flex justify-between items-center my-5 gap-3">
                         <h2 class="text-left text-xl font-bold text-green-800">BÀI VIẾT</h2>
                         <div class="flex-1 h-[3px] bg-green-500"></div>
@@ -79,7 +79,7 @@
                     <PostList :posts="relatedPosts.posts" :meta="relatedPosts.meta" status=""
                         :links="relatedPosts.links" @page-change="handlePageChange" />
                 </div>
-                <div class="w-1/4 mt-5">
+                <div class="w-full lg:w-1/4 mt-5">
                     <PostCategoryList />
                 </div>
             </div>
