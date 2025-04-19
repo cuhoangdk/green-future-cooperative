@@ -75,7 +75,7 @@ const orders = computed<{ orders: Order[], meta: PaginationMeta | null, links: P
     links: data.value?.links ?? null,
 }))
 
-const addressData = ref<{ [key: number]: string }>({})
+const addressData = ref<{ [key: string]: string }>({})
 watch(() => orders.value.orders, async (newData) => {
     for (const order of newData) {
         if (order.ward) {

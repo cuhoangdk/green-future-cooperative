@@ -1,6 +1,12 @@
 <template>
     <div class="p-4">
         <form @submit.prevent="handleSubmit" class="space-y-4">
+            <!-- Product Id -->
+            <div>
+                <label class="text-gray-700 font-semibold">Mã sản phẩm</label>
+                <div class="input input-primary w-full mt-1 bg-gray-200">{{ product?.id }}</div>
+            </div>
+        
             <!-- Product Name -->
             <div>
                 <label class="text-gray-700 font-semibold">Tên sản phẩm</label>
@@ -129,7 +135,7 @@ const route = useRoute()
 const router = useRouter()
 
 const status = ref<'idle' | 'pending' | 'success' | 'error'>('idle')
-const productId = Number(route.params.id)
+const productId = String(route.params.id)
 const primaryImageIndex = ref<number>(0)
 
 // Lấy thông tin sản phẩm

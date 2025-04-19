@@ -19,7 +19,7 @@ export const useOrder = () => {
     };
 
     // Lấy thông tin chi tiết sản phẩm trong giỏ hàng
-    const getOrderById = async (id: number) => {
+    const getOrderById = async (id: string) => {
         return await get<Order>(`/orders/${id}`, {
             authType: AuthType.Customer,
         });
@@ -27,7 +27,7 @@ export const useOrder = () => {
 
 
     // Xóa sản phẩm khỏi giỏ hàng
-    const cancelOrder = async (id: number, cancelled_reason: string) => {
+    const cancelOrder = async (id: string, cancelled_reason: string) => {
         return await post(`/orders/${id}/cancel`,{
             cancelled_reason},{
             authType: AuthType.Customer,

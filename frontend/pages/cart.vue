@@ -17,19 +17,19 @@
             <div class="w-full lg:w-5/12">
                 <div class="flex flex-col gap-1">
                     <div class="bg-green-200 font-bold p-3 rounded-t-xl flex justify-between items-center">
-                        <p>Tiền hàng:</p><span>{{ formatPrice(totalPrice) }}</span>
+                        <p>Tiền hàng:</p><span>{{ formatCurrency(totalPrice) }}</span>
                     </div>
                     <div class="bg-green-300 font-bold p-3 flex justify-between items-center">
                         <div>
                             <p>Vận chuyển (COD): </p>
                             <p class="text-sm text-gray-500">(Nội tỉnh Bạc Liêu)</p>
                         </div>
-                        <p>5.000 đ</p>
+                        <p>{{ formatCurrency(Number(shippingFe?.value)) }}</p>
                     </div>
                     <div class="bg-green-500 rounded-b-xl font-bold p-5">
                         <div class="flex justify-between items-center">
                             <p>Tổng cộng: </p>
-                            <span>{{ formatPrice(totalPrice + 5000) }}</span>
+                            <span>{{ formatCurrency(totalPrice + 5000) }}</span>
                         </div>
                         <button @click="navigateToShippingInformation" class="text-center bg-white font-semibold text-green-600 px-4 py-2 rounded-full hover:bg-green-100 transition-colors duration-200 w-full mt-10">Tiếp tục thanh
                                 toán
@@ -49,8 +49,10 @@
 <script setup lang="ts">
 import { ShoppingCart } from 'lucide-vue-next';
 import type { CartItem } from '~/types/cart';
+import type { Parameter } from '~/types/parameter';
 
 const { getCartItems } = useCart();
+const { getShippingFee } = useShippingFee();
 
 // Thêm biến theo dõi lần tải đầu tiên
 const isFirstLoad = ref(true);
@@ -59,13 +61,14 @@ const { data, status, refresh } = await getCartItems();
 const cartItems = computed<CartItem[]>(() => 
     Array.isArray(data.value?.data) ? data.value.data : data.value ? [data.value.data] : []
 );
+
+const { data: dataShippingFee } = await getShippingFee()
+const shippingFe = computed<Parameter | null>(() => Array.isArray(dataShippingFee.value?.data) ? dataShippingFee.value.data[0] : dataShippingFee.value?.data || null)
+
 const totalPrice = computed(() => {
     return cartItems.value.reduce((sum, item) => sum + item.purchase_price * item.quantity, 0);
 });
 
-const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
-};
 
 // Xử lý khi sản phẩm bị xóa
 const handleItemRemoved = () => {

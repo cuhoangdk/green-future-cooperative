@@ -11,7 +11,7 @@ export const useCart = () => {
     };
 
     // Thêm sản phẩm vào giỏ hàng
-    const addCartItem = async (productId: number, quantity: number) => {
+    const addCartItem = async (productId: string, quantity: number) => {
         return await post<CartItem>('/cart', { product_id: productId, quantity }, {
             authType: AuthType.Customer,
         });

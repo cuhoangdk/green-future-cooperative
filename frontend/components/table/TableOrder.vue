@@ -15,7 +15,7 @@
                 <tr v-for="order in orders" :key="order.id"
                     @click="$router.push(`orders/${order.id}/`)"
                     class="border-b border-gray-100 hover:bg-gray-200 cursor-pointer">
-                    <td class="py-1 pl-2">{{ order.order_code }}</td>
+                    <td class="py-1 pl-2">{{ order.id }}</td>
                     <td class="py-1">{{ order.full_name }}<br/>{{ order.phone_number }}</td>
                     <td class="py-1">{{ formatCurrency(order.final_total_amount) }}</td>
                     <td class="py-1">{{ addressData[order.id] }}</td>
@@ -43,7 +43,7 @@ import { formatNumber, formatCurrency } from '~/utils/common'
 
 defineProps<{
     orders: Order[]
-    addressData: { [key: number]: string }
+    addressData: { [key: string]: string }
     displayEditButton?: boolean
 }>()
 </script>

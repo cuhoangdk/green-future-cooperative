@@ -5,7 +5,7 @@ export const useProductImages = () => {
   const { get, post, put, del } = useApi();
 
   const getImages = async (
-    productId: number,
+    productId: string,
     page: number = 1,
     perPage: number = 10,
     sortBy: string = 'created_at',
@@ -18,25 +18,25 @@ export const useProductImages = () => {
     });
   };
 
-  const getImageById = async (productId: number, imgId: number, authType: AuthType = AuthType.Guest) => {
+  const getImageById = async (productId: string, imgId: number, authType: AuthType = AuthType.Guest) => {
     return await get<ProductImage>(`/products/${productId}/images/${imgId}`, {
       authType,
     });
   };
 
-  const createImage = async (productId: number ,imgData: FormData) => {
+  const createImage = async (productId: string ,imgData: FormData) => {
     return await post<ProductImage>(`/products/${productId}/images`, imgData, {
       authType: AuthType.User,
     });
   };
 
-  const updateImage = async (productId: number, imgId: number, imgData: FormData) => {
+  const updateImage = async (productId: string, imgId: number, imgData: FormData) => {
     return await put<ProductImage>(`/products/${productId}/images/${imgId}`, imgData, {
       authType: AuthType.User,
     });
   };
 
-  const deleteImage = async (productId: number, imgId: number) => {
+  const deleteImage = async (productId: string, imgId: number) => {
     return await del(`/products/${productId}/images/${imgId}`, {
       authType: AuthType.User,
     });

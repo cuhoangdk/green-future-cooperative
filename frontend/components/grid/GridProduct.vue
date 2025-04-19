@@ -15,7 +15,7 @@
                 <div class="space-y-1 text-sm">
                     <div class="flex gap-2 items-center">
                         <Fingerprint class="w-4 h-4 text-gray-500" /> Mã:
-                        <span>{{ product.product_code }}</span>
+                        <span>{{ product.id }}</span>
 
                     </div>
                     <div class="flex gap-2 items-center">
@@ -63,6 +63,6 @@ import { formatNumber, formatCurrency } from '~/utils/common'
 
 defineProps<{
     products: Product[]
-    onDelete: (id: number) => void
+    onDelete: (id: string) => void
 }>()
 </script>

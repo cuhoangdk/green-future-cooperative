@@ -5,7 +5,7 @@ export const useCultivationLogs = () => {
   const { get, post, put, del } = useApi();
 
   const getLogs = async (
-    productId: number,
+    productId: string,
     page: number = 1,
     perPage: number = 10,
     sortBy: string = 'created_at',
@@ -18,25 +18,25 @@ export const useCultivationLogs = () => {
     });
   };
 
-  const getLogById = async (productId: number, logId: number, authType: AuthType = AuthType.Guest) => {
+  const getLogById = async (productId: string, logId: number, authType: AuthType = AuthType.Guest) => {
     return await get<CultivationLog>(`/products/${productId}/cultivation-logs/${logId}`, {
       authType,
     });
   };
 
-  const createLog = async (productId: number ,logData: FormData) => {
+  const createLog = async (productId: string ,logData: FormData) => {
     return await post<CultivationLog>(`/products/${productId}/cultivation-logs`, logData, {
       authType: AuthType.User,
     });
   };
 
-  const updateLog = async (productId: number, logId: number, logData: FormData) => {
+  const updateLog = async (productId: string, logId: number, logData: FormData) => {
     return await put<CultivationLog>(`/products/${productId}/cultivation-logs/${logId}`, logData, {
       authType: AuthType.User,
     });
   };
 
-  const deleteLog = async (productId: number, logId: number) => {
+  const deleteLog = async (productId: string, logId: number) => {
     return await del(`/products/${productId}/cultivation-logs/${logId}`, {
       authType: AuthType.User,
     });

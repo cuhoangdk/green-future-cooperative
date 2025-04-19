@@ -9,7 +9,7 @@
                 <div class="flex flex-col md:flex-row md:justify-between gap-4">
                     <div>
                         <p class="text-sm text-gray-500">Mã đơn hàng</p>
-                        <p class="font-semibold">{{ order.order_code }}</p>
+                        <p class="font-semibold">{{ order.id }}</p>
                     </div>
                     <div>
                         <p class="text-sm text-gray-500">Ngày đặt hàng</p>
@@ -91,7 +91,7 @@
                                     class="border-b border-gray-200 hover:bg-gray-50">
                                     <td class="py-2 pl-2">
                                         <span class="text-xs">
-                                            {{ item.product_snapshot.product_code }}
+                                            {{ item.product_snapshot.id }}
                                         </span>
                                         <br />
                                         {{ item.product_snapshot.product_name }}
@@ -200,10 +200,12 @@ import { ArrowLeft, Phone, Mail, User, MapPin, X } from 'lucide-vue-next'
 
 const { getOrderById } = useOrder()
 const { getFullAddressName } = useVietnamAddress()
+const route = useRoute()
 const { currentUser } = useUserAuth()
 
-const { id } = useRoute().params as { id: string }
-const { data, status } = await getOrderById(Number(id))
+const id = String(route.params.id)
+
+const { data, status } = await getOrderById(id)
 const addressData = ref<string>('')
 
 const order = computed<Order | null>(() => Array.isArray(data.value?.data) ? data.value.data[0] : data.value?.data || null)

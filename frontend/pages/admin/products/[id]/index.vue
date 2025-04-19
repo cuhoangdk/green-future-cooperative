@@ -7,7 +7,7 @@
             <!-- Product Code -->
             <div>
                 <label class="text-gray-700 font-semibold">Mã sản phẩm</label>
-                <div class="input input-primary w-full mt-1 bg-gray-200">{{ product?.product_code }}</div>
+                <div class="input input-primary w-full mt-1 bg-gray-200">{{ product?.id }}</div>
             </div>
 
             <!-- Product Name -->
@@ -222,7 +222,7 @@ const runtimeConfig = useRuntimeConfig()
 const backendUrl = runtimeConfig.public.backendUrl
 
 const status = ref<'idle' | 'pending' | 'success' | 'error'>('idle')
-const productId = Number(route.params.id)
+const productId = String(route.params.id)
 const primaryImageIndex = ref<number>(0)
 // Khởi tạo form
 const form = ref({

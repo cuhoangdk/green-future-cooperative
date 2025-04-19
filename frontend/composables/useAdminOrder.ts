@@ -33,21 +33,21 @@ export const useAdminOrder = () => {
     };
 
     // Lấy thông tin chi tiết đơn hàng
-    const getAdminOrderById = async (id: number) => {
+    const getAdminOrderById = async (id: string) => {
         return await get<Order>(`/admin/orders/${id}`, {
             authType: AuthType.User,
         });
     };
 
     // Cập nhật đơn hàng
-    const updateAdminOrder = async (id: number, formData: FormData) => {
+    const updateAdminOrder = async (id: string, formData: FormData) => {
         return await put<Order>(`/admin/orders/${id}`, formData, {
             authType: AuthType.User,
         });
     };
 
     // Hủy đơn hàng
-    const cancelAdminOrder = async (id: number, cancelledReason: string) => {
+    const cancelAdminOrder = async (id: string, cancelledReason: string) => {
         return await post(`/admin/orders/${id}/cancel`, { cancelled_reason: cancelledReason }, {
             authType: AuthType.User,
         });

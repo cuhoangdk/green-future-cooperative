@@ -5,7 +5,7 @@
             class="card bg-base-100 border border-gray-400 hover:shadow-md transition-shadow cursor-pointer">
             <div @click="$router.push(`orders/${order.id}/`)" class="card-body p-3">
                 <div class="flex justify-between items-start">
-                    <h3 class="card-title text-base line-clamp-2">{{ order.order_code }}</h3>
+                    <h3 class="card-title text-base line-clamp-2">{{ order.id }}</h3>
                 </div>
 
                 <div class="space-y-1 text-sm">
@@ -50,6 +50,6 @@ import { User, Phone, DollarSign } from 'lucide-vue-next'
 
 defineProps<{
     orders: Order[]
-    addressData: { [key: number]: string }
+    addressData: { [key: string]: string }
 }>()
 </script>

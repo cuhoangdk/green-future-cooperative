@@ -17,7 +17,7 @@
                             </div>
                         </div>
                         <div class="flex justify-between mb-3">
-                            <p class="text-sm text-gray-500"><span>Mã: </span>{{ product?.product_code }}</p>
+                            <p class="text-sm text-gray-500"><span>Mã: </span>{{ product?.id }}</p>
                             <p class="text-sm text-gray-500"><span>Trong kho: </span>{{
                                 formatNumber(product?.stock_quantity) }}
                                 <span>{{
@@ -209,7 +209,6 @@ const isAddingToCart = ref(false)
 const { data: productData, status: productStatus, error: productError } = await getProductBySlug(slug)
 const product = computed<Product | null>(() => Array.isArray(productData.value?.data) ? productData.value.data[0] : productData.value?.data || null)
 
-// Lấy thông tin trang trại
 const farm = ref<Farm | null>(null)
 watch(product, async (newProduct) => {
     if (newProduct?.farm_id) {
@@ -224,12 +223,12 @@ watch(farm, async (newFarm) => {
         address.value = await getFullAddressName(newFarm.address.ward)
     }
 })
-// Lấy thông tin logs
+
 const logs = ref<{ logs: CultivationLog[]; meta: PaginationMeta | null; links: PaginationLinks | null; status: string; }>({ logs: [], meta: null, links: null, status: 'pending', })
 
 watch(product, async (newProduct) => {
     if (newProduct) {
-        const { data: logsData, status: logsStatus } = await getLogs(Number(newProduct.id) || -1, currentLogPage.value, perLogPage)
+        const { data: logsData, status: logsStatus } = await getLogs(newProduct.id ?? '', currentLogPage.value, perLogPage)
         logs.value = {
             logs: Array.isArray(logsData.value?.data) ? (logsData.value.data as CultivationLog[]) : logsData.value?.data ? [logsData.value.data as CultivationLog] : [],
             meta: (logsData.value?.meta as PaginationMeta) ?? null,
@@ -253,7 +252,7 @@ const otherProducts = computed<{
 
 const handleLogsPageChange = (page: number) => {
     currentLogPage.value = page
-    getLogs(product.value?.id || -1, page, perLogPage)
+    getLogs(product.value?.id ?? '', page, perLogPage)
 }
 
 const handleProductsPageChange = (page: number) => {
@@ -270,7 +269,6 @@ const decreaseQuantity = () => {
     }
 }
 
-
 const addProductToCart = async () => {
     try {
         if (product.value) {
@@ -286,4 +284,105 @@ const addProductToCart = async () => {
         isAddingToCart.value = false
     }
 }
+
+// SEO với useHead
+useHead({
+  title: computed(() => product.value ? `${product.value.name} - Green Future Cooperative` : 'Sản phẩm - Green Future Cooperative'),
+  meta: [
+    {
+      name: 'description',
+      content: computed(() => product.value?.description?.slice(0, 160) || 'Mua rau củ organic tươi ngon từ Green Future Cooperative. Giao hàng nhanh tại Hà Nội và TP.HCM.'),
+    },
+    {
+      name: 'keywords',
+      content: computed(() => product.value ? `${product.value.name}, rau củ organic, rau sạch, ${product.value.seed_supplier || ''}, Green Future Cooperative` : 'rau củ organic, rau sạch, mua rau online'),
+    },
+    {
+      property: 'og:title',
+      content: computed(() => product.value ? `${product.value.name} - Green Future Cooperative` : 'Sản phẩm - Green Future Cooperative'),
+    },
+    {
+      property: 'og:description',
+      content: computed(() => product.value?.description?.slice(0, 160) || 'Mua rau củ organic tươi ngon từ Green Future Cooperative.'),
+    },
+    {
+      property: 'og:image',
+      content: computed(() => product.value?.images?.[0]?.image_url ? `${backendUrl}${product.value.images[0].image_url}` : config.public.placeholderImage),
+    },
+    {
+      property: 'og:url',
+      content: `${config.public.baseUrl}/products/${slug}`,
+    },
+    {
+      name: 'twitter:card',
+      content: 'summary_large_image',
+    },
+    {
+      name: 'twitter:title',
+      content: computed(() => product.value ? `${product.value.name} - Green Future Cooperative` : 'Sản phẩm - Green Future Cooperative'),
+    },
+    {
+      name: 'twitter:description',
+      content: computed(() => product.value?.description?.slice(0, 160) || 'Mua rau củ organic tươi ngon từ Green Future Cooperative.'),
+    },
+    {
+      name: 'twitter:image',
+      content: computed(() => product.value?.images?.[0]?.image_url ? `${backendUrl}${product.value.images[0].image_url}` : config.public.placeholderImage),
+    },
+  ],
+  link: [
+    {
+      rel: 'canonical',
+      href: `${config.public.baseUrl}/products/${slug}`,
+    },
+  ],
+  script: [
+    {
+      type: 'application/ld+json',
+      innerHTML: computed(() =>
+        JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'Product',
+          name: product.value?.name || 'Sản phẩm rau củ',
+          image: product.value?.images?.[0]?.image_url ? `${backendUrl}${product.value.images[0].image_url}` : config.public.placeholderImage,
+          description: product.value?.description || 'Rau củ organic tươi ngon từ Green Future Cooperative.',
+          sku: product.value?.id || '',
+          brand: {
+            '@type': 'Brand',
+            name: 'Green Future Cooperative',
+          },
+          offers: {
+            '@type': 'Offer',
+            priceCurrency: 'VND',
+            price: product.value?.prices?.[0]?.price || 0,
+            availability: (product.value?.stock_quantity ?? 0) > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+            url: `${config.public.baseUrl}/products/${slug}`,
+          },
+          additionalProperty: [
+            {
+              '@type': 'PropertyValue',
+              name: 'Sown At',
+              value: product.value?.sown_at ? formatDate(product.value.sown_at) : '',
+            },
+            {
+              '@type': 'PropertyValue',
+              name: 'Harvested At',
+              value: product.value?.harvested_at ? formatDate(product.value.harvested_at) : '',
+            },
+            {
+              '@type': 'PropertyValue',
+              name: 'Cultivated Area',
+              value: product.value?.cultivated_area ? `${formatNumber(product.value.cultivated_area)} m²` : '',
+            },
+            {
+              '@type': 'PropertyValue',
+              name: 'Seed Supplier',
+              value: product.value?.seed_supplier || '',
+            },
+          ],
+        })
+      ),
+    },
+  ],
+})
 </script>

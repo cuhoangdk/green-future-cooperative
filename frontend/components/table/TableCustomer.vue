@@ -10,10 +10,12 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="customer in customers" :key="customer.id"
-          @click="$router.push(`customers/${customer.id}/edit`)"
+        <tr v-for="customer in customers" :key="customer.id" @click="$router.push(`customers/${customer.id}/edit`)"
           class="border-b border-gray-100 hover:bg-gray-200 cursor-pointer">
-          <td class="py-1 pl-2">{{ customer.full_name }}</td>
+          <td class="py-1 pl-2">
+            <div class="text-sm text-gray-500">{{ customer.id }}</div>
+            <div>{{ customer.full_name }}</div>
+          </td>
           <td class="py-1">
             <div class="flex flex-col">
               <div class="flex items-center gap-1">
@@ -40,7 +42,7 @@
           <td class="py-1">
             <div class="flex space-x-1 items-center">
               <UiBanButton :is-banned="customer.is_banned" :on-click="() => onToggleStatus(customer)" />
-              <UiEditButton :to="`customers/${customer.id}/edit`"/>
+              <UiEditButton :to="`customers/${customer.id}/edit`" />
               <UiDeleteButton :on-click="() => onDelete(customer.id)" />
             </div>
           </td>

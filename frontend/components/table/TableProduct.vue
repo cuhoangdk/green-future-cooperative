@@ -16,7 +16,7 @@
                     @click="$router.push(`products/${product.id}/`)"
                     class="border-b border-gray-100 hover:bg-gray-200 cursor-pointer">
                     <td class="py-1 pl-2">
-                        <span class="text-sm">{{ product.product_code }}</span><br/>
+                        <span class="text-sm">{{ product.id }}</span><br/>
                         <span class="font-semibold">{{ product.name }}</span>
                     </td>
                     <td class="py-1">{{ product.user ? product.user.full_name : 'N/A' }}</td>
@@ -62,6 +62,6 @@ import { formatNumber, formatCurrency } from '~/utils/common'
 
 defineProps<{
     products: Product[]
-    onDelete: (id: number) => void
+    onDelete: (id: string) => void
 }>()
 </script>

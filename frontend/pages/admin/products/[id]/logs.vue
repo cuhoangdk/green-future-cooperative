@@ -2,7 +2,7 @@
     <div>
         <!-- Header -->
         <div class="flex flex-col md:flex-row justify-between items-start gap-3 border-gray-200 px-3 py-4">
-            <h1 class="text-xl font-semibold text-gray-800">{{ product?.product_code }} - {{ product?.name }}</h1>
+            <h1 class="text-xl font-semibold text-gray-800">{{ product?.id }} - {{ product?.name }}</h1>
             <NuxtLink to="log-create" class="btn btn-sm btn-primary w-full md:w-auto">
                 <Plus class="w-5 h-5" /> Thêm
             </NuxtLink>
@@ -42,7 +42,7 @@ const route = useRoute()
 
 const currentPage = ref(1)
 const perPage = ref(10)
-const productId = Number(route.params.id)
+const productId = String(route.params.id)
 // Lấy thông tin sản phẩm
 const { data: productData } = await getProductById(productId)
 const product = computed<Product | null>(() => Array.isArray(productData.value?.data) ? productData.value.data[0] : productData.value?.data || null)

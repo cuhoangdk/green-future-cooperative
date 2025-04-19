@@ -42,7 +42,7 @@ export const useProducts = () => {
 
 
     // Lấy sản phẩm theo ID
-    const getProductById = async (productId: number, authType: AuthType = AuthType.User
+    const getProductById = async (productId: string, authType: AuthType = AuthType.User
     ) => {
         return await get<Product>(`/products/${productId}`, {
             authType
@@ -62,20 +62,20 @@ export const useProducts = () => {
     };
 
     // Cập nhật sản phẩm
-    const updateProduct = async (productId: number, productData: FormData) => {
+    const updateProduct = async (productId: string, productData: FormData) => {
         return await put(`/products/${productId}`, productData, {
             authType: AuthType.User,
         });
     };
 
     // Xóa sản phẩm
-    const deleteProduct = async (productId: number) => {
+    const deleteProduct = async (productId: string) => {
         return await del(`/products/${productId}`, {
             authType: AuthType.User,
         });
     };
     // Lấy QR code của sản phẩm
-    const getProductQRCode = async (productId: number) => {
+    const getProductQRCode = async (productId: string) => {
         return await get<string>(`/products/${productId}/qrcode`, {
             authType: AuthType.User,
         });
@@ -92,7 +92,6 @@ export const useProducts = () => {
         category_id?: number,
         status?: string,
         name?: string,
-        product_code?: string,
         description?: string,
         unit_id?: number,
         farm_id?: number,

@@ -2,8 +2,7 @@ export type OrderStatus = 'pending' | 'processing' | 'delivering' | 'delivered' 
 export type AddressType = 'home' | 'work' | 'other';
 
 export interface Order {
-    id: number;
-    order_code: string;
+    id: string;
     customer_id: string;
     status: OrderStatus;
     full_name: string;
@@ -31,7 +30,7 @@ export interface Order {
 export interface OrderItem {
     id: number;
     order_id: number;
-    product_id: number;
+    product_id: string;
     product_snapshot: Product_Snapshot;
     quantity: number;
     total_item_price: number;
@@ -41,8 +40,7 @@ export interface OrderItem {
 }
 
 export interface Product_Snapshot {
-    id: number;
-    product_code: string;
+    id: string;
     product_name: string;
     user_full_name?: string | null;
     unit: string;

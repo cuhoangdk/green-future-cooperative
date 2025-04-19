@@ -13,7 +13,6 @@
             </thead>
             <tbody>
                 <tr v-for="log in logs" :key="log.id"
-                    @click="$router.push(`products/${productId}/logs/${log.id}/edit`)"
                     class="border-b border-gray-100 hover:bg-gray-200 cursor-pointer">
                     <td class="py-1 pl-2">{{ formatDateTime(log.created_at || '') }}</td>
                     <td class="py-1">{{ log.activity }}</td>
@@ -65,8 +64,8 @@ const $runtimeConfig = useRuntimeConfig();
 const backendUrl = $runtimeConfig.public.backendUrl;
 
 defineProps<{
-    productId: number
+    productId: string
     logs: CultivationLog[]
-    onDelete: (productId: number, logId: number) => void
+    onDelete: (productId: string, logId: number) => void
 }>()
 </script>

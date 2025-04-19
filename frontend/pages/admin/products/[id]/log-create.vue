@@ -67,7 +67,7 @@ const router = useRouter()
 
 const status = ref<'idle' | 'pending' | 'success' | 'error'>('idle')
 const previewImage = ref<string | null>(null)
-const productId = Number(route.params.id)
+const productId = String(route.params.id)
 
 // Khởi tạo form với các giá trị mặc định
 const form = ref({

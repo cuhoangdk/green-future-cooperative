@@ -36,7 +36,7 @@ const route = useRoute();
 const { cancelOrder } = useOrder();
 const { $toast } = useNuxtApp();
 const router = useRouter();
-const orderId = Number(route.params.id);
+const id = String(route.params.id)
 const status = ref<'idle' | 'pending' | 'success' | 'error'>('idle');
 
 const form = ref({
@@ -50,7 +50,7 @@ const isFormValid = computed(() => {
 const handleSubmit = async () => {
     try {
         status.value = 'pending';
-        const { error } = await cancelOrder(orderId, form.value.cancelled_reason);
+        const { error } = await cancelOrder(id, form.value.cancelled_reason);
 
         if (error.value) {
             throw new Error(error.value.message);

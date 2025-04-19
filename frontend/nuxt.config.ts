@@ -5,7 +5,6 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: ['@pinia/nuxt', '@vesp/nuxt-fontawesome', '@nuxt/image', '@nuxtjs/leaflet'],
   css: ['sweetalert2/dist/sweetalert2.min.css','~/assets/css/tailwind.css'],
-  // css: ['~/assets/css/tailwind.css'],
   vite: {
     plugins: [tailwindcss()],
   },

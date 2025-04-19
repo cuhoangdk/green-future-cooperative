@@ -20,7 +20,7 @@
 
                 <div class="flex-1 text-sm space-y-1">
                     <p><span class="font-semibold text-green-800">Tên sản phẩm:</span> {{ product?.name }}</p>
-                    <p><span class="font-semibold text-green-800">Mã sản phẩm:</span> {{ product?.product_code }}</p>
+                    <p><span class="font-semibold text-green-800">Mã sản phẩm:</span> {{ product?.id }}</p>
                     <p><span class="font-semibold text-green-800">Xuất xứ:</span> {{ addressData || 'Đang tải...' }}</p>
                     <p><span class="font-semibold text-green-800">Ngày thu hoạch:</span> {{ formatDate(havertedAt) }}</p>
                     <p><span class="font-semibold text-green-800">SĐT/Zalo:</span> 0917248016</p>
@@ -57,7 +57,7 @@ import domtoimage from 'dom-to-image'
 
 const route = useRoute()
 const runtimeConfig = useRuntimeConfig()
-const productId = Number(route.params.id)
+const productId = String(route.params.id)
 const logo = runtimeConfig.public.logo
 
 const { getProductQRCode, getProductById } = useProducts()
@@ -104,7 +104,7 @@ const downloadLabel = async () => {
     domtoimage.toPng(labelRef.value)
         .then(function (dataUrl) {
             const link = document.createElement('a')
-            link.download = `label-${product.value?.product_code || 'product'}-${new Date().getTime()}.png`
+            link.download = `label-${product.value?.id || 'product'}-${new Date().getTime()}.png`
             link.href = dataUrl
             link.click()
         })

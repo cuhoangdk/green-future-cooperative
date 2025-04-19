@@ -208,15 +208,14 @@ export const useCustomerAuth = () => {
         }
     }
 
-      // Đổi mật khẩu người dùng
-  const changePassword = async (
-    passwordData: { current_password: string; new_password: string; new_password_confirmation: string },
-    authType: AuthType = AuthType.Customer
-  ) => {
-    return await put<null>(`/customer-auth/change-password`, passwordData, {
-      authType,
-    });
-  };
+    const changePassword = async (
+        passwordData: { current_password: string; new_password: string; new_password_confirmation: string },
+        authType: AuthType = AuthType.Customer
+    ) => {
+        return await put<null>(`/customer-auth/change-password`, passwordData, {
+            authType,
+        });
+    };
 
 
     const isAuthenticated = computed(() => !!accessToken.value)

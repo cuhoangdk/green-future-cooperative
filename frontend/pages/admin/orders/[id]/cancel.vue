@@ -33,7 +33,7 @@ const route = useRoute();
 const { cancelAdminOrder } = useAdminOrder();
 const { $toast } = useNuxtApp();
 const router = useRouter();
-const orderId = Number(route.params.id);
+const orderId = String(route.params.id);
 const status = ref<'idle' | 'pending' | 'success' | 'error'>('idle');
 
 const form = ref({

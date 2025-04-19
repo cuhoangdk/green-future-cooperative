@@ -21,8 +21,7 @@ export interface ProductCategory {
 }
 
 export interface Product {
-    id: number;
-    product_code: string;
+    id: string;
     user_id: number;
     farm_id: number;
     category_id: number;
@@ -53,7 +52,7 @@ export interface Product {
 
 export interface CultivationLog {
     id: number;
-    product_id: number;
+    product_id: string;
     activity: string;
     fertilizer_used?: string | null;
     pesticide_used?: string | null;
@@ -67,7 +66,7 @@ export interface CultivationLog {
 
 export interface ProductImage {
     id: number;
-    product_id: number;
+    product_id: string;
     image_url: string;
     sort_order: number;
     is_primary: boolean;
@@ -78,7 +77,7 @@ export interface ProductImage {
 
 export interface ProductPrice {
     id: number;
-    product_id: number;
+    product_id: string;
     quantity: number;
     price: number;
     created_at?: string;
