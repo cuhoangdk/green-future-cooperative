@@ -16,7 +16,7 @@ class CultivationLogRepository implements CultivationLogRepositoryInterface
     }
 
     public function getAll(
-        int $productId,
+        string $productId,
         string $sortBy = 'created_at',
         string $sortDirection = 'desc',
         int $perPage = null
@@ -28,14 +28,14 @@ class CultivationLogRepository implements CultivationLogRepositoryInterface
         return $perPage ? $query->paginate($perPage) : $query->get();
     }
 
-    public function getById(int $productId, $id)
+    public function getById(string $productId, $id)
     {
         return $this->model->with('product')
             ->where('product_id', $productId)
             ->findOrFail($id);
     }
 
-    public function create(int $productId, array $data)
+    public function create(string $productId, array $data)
     {
         return DB::transaction(function () use ($productId, $data) {
             $data['product_id'] = $productId; // Gán product_id từ tham số
@@ -43,7 +43,7 @@ class CultivationLogRepository implements CultivationLogRepositoryInterface
         });
     }
 
-    public function update(int $productId, $id, array $data)
+    public function update(string $productId, $id, array $data)
     {
         return DB::transaction(function () use ($productId, $id, $data) {
             $log = $this->getById($productId, $id); // Kiểm tra product_id
@@ -52,7 +52,7 @@ class CultivationLogRepository implements CultivationLogRepositoryInterface
         });
     }
 
-    public function delete(int $productId, $id)
+    public function delete(string $productId, $id)
     {
         $log = $this->getById($productId, $id); // Kiểm tra product_id
         $log->delete();

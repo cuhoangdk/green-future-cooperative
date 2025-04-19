@@ -164,11 +164,7 @@ class OrderRepository implements OrderRepositoryInterface
                     'ward' => $data['ward'],
                     'street_address' => $data['street_address'],
                 ];
-            }
-
-            $timestamp = now()->format('YmdHis');
-            $randomSequence = str_pad(rand(0, 9999), 4, '0', STR_PAD_LEFT);
-            $orderCode = 'ORD' . $timestamp . $randomSequence;
+            }            
             
             $customerEmail = null;
             if ($customerId) {
@@ -177,7 +173,7 @@ class OrderRepository implements OrderRepositoryInterface
             }
             
             $orderData = array_merge($addressData, [
-                'order_code' => $orderCode,
+                
                 'customer_id' => $customerId,
                 'status' => 'pending',
                 'total_price' => $items->sum(fn($item) => $item->quantity * $item->calculated_price),
@@ -195,7 +191,6 @@ class OrderRepository implements OrderRepositoryInterface
                 $productSnapshot = [
                     'id' => $item->product->id,
                     'slug' => $item->product->slug,
-                    'product_code' => $item->product->product_code,
                     'product_name' => $item->product->name,
                     'user_full_name' => $item->product->user->full_name ?? null,
                     'unit' => $item->product->unit->name ?? null,
@@ -278,14 +273,10 @@ class OrderRepository implements OrderRepositoryInterface
                     'ward' => $data['ward'],
                     'street_address' => $data['street_address'],
                 ];
-            }
-
-            $timestamp = now()->format('YmdHis');
-            $randomSequence = str_pad(rand(0, 9999), 4, '0', STR_PAD_LEFT);
-            $orderCode = 'ORD' . $timestamp . $randomSequence;
+            }            
 
             $orderData = array_merge($addressData, [
-                'order_code' => $orderCode,
+                
                 'customer_id' => $customerId,
                 'status' => 'pending',
                 'total_price' => $items->sum(fn($item) => $item->quantity * $item->calculated_price),
@@ -301,7 +292,7 @@ class OrderRepository implements OrderRepositoryInterface
                 $totalItemPrice = $item->quantity * $item->calculated_price; // Tính total_item_price
                 $productSnapshot = [
                     'id' => $item->product->id,
-                    'product_code' => $item->product->product_code,
+                    'slug' => $item->product->slug,
                     'product_name' => $item->product->name,
                     'user_full_name' => $item->product->user->full_name ?? null,
                     'unit' => $item->product->unit->name ?? null,
@@ -390,8 +381,7 @@ class OrderRepository implements OrderRepositoryInterface
             $search = $filters['search'];
             $query->where(function ($q) use ($search) {
                 $q->where('full_name', 'like', "%{$search}%")
-                  ->orWhere('phone_number', 'like', "%{$search}%")
-                  ->orWhere('order_code', 'like', "%{$search}%")
+                  ->orWhere('phone_number', 'like', "%{$search}%")                  
                   ->orWhereHas('customer', function ($q) use ($search) {
                       $q->where('email', 'like', "%{$search}%");
                   });
@@ -412,7 +402,7 @@ class OrderRepository implements OrderRepositoryInterface
         return $query->orderBy($sortBy, $sortDirection)
             ->paginate($perPage);
     }  
-    protected function getPriceForQuantity(int $productId, float $quantity)
+    protected function getPriceForQuantity(string $productId, float $quantity)
     {
         // Lấy ngưỡng nhỏ nhất cho product_id
         $minQuantity = ProductQuantityPrice::where('product_id', $productId)

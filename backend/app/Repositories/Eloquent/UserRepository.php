@@ -36,13 +36,7 @@ class UserRepository implements UserRepositoryInterface
         return $this->model->with('address')->find($id);
     }
 
-    /**
-     * Lấy user theo usercode.
-     */
-    public function getByUsercode($usercode)
-    {
-        return $this->model->with('address')->where('usercode', $usercode)->first();
-    }
+
 
     /**
      * Tạo user mới.
@@ -175,8 +169,7 @@ class UserRepository implements UserRepositoryInterface
             $query->where(function (Builder $q) use ($search) {
                 $q->where('full_name', 'like', "%{$search}%")
                     ->orWhere('phone_number', 'like', "%{$search}%")
-                    ->orWhere('email', 'like', "%{$search}%")
-                    ->orWhere('usercode', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%")                    
                     ->orwhereHas('address', function (Builder $q) use ($search) {
                         $q->where('street_address', 'like', "%{$search}%");
                     });
@@ -227,8 +220,7 @@ class UserRepository implements UserRepositoryInterface
             $query->where(function (Builder $q) use ($search) {
                 $q->where('full_name', 'like', "%{$search}%")
                     ->orWhere('phone_number', 'like', "%{$search}%")
-                    ->orWhere('email', 'like', "%{$search}%")
-                    ->orWhere('usercode', 'like', "%{$search}%");
+                    ->orWhere('email', 'like', "%{$search}%");                    
                     
             });
         });

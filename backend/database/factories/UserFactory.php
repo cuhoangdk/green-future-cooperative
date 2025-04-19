@@ -33,7 +33,6 @@ class UserFactory extends Factory
             'is_banned' => $this->faker->boolean(5), // 5% cơ hội bị khóa
             'bank_account_number' => $this->faker->numerify('################'),
             'bank_name' => $this->faker->randomElement(['Vietcombank', 'Techcombank']),
-            'usercode' => null, // Sẽ được tự động tạo
             'last_login_at' => $this->faker->dateTimeBetween('-1 month', 'now'),
             'gender' => $this->faker->randomElement(['male', 'female', 'other']),
         ];
@@ -46,14 +45,7 @@ class UserFactory extends Factory
      */
     public function configure()
     {
-        return $this->afterMaking(function (User $user) {
-            // Tạo usercode tự động khi make
-            $user->usercode = $user->generateUserCode($user->full_name, User::class);
-        })->afterCreating(function (User $user) {
-            // Cập nhật usercode nếu cần sau khi tạo
-            if (empty($user->usercode)) {
-                $user->update(['usercode' => $user->generateUserCode($user->full_name, User::class)]);
-            }
+        return $this->afterMaking(function (User $user) {            
             // Tự động tạo địa chỉ trong bảng addresses
             $user->address()->save(Address::factory()->make());
         });

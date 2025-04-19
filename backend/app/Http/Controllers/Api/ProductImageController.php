@@ -23,7 +23,7 @@ class ProductImageController extends Controller
         $this->uploadFileService = $uploadFileService;
     }
 
-    public function index(int $productId, IndexProductImageRequest $request)
+    public function index(string $productId, IndexProductImageRequest $request)
     {
         $perPage = $request->input('per_page');
         $sortBy = $request->input('sort_by', 'created_at');
@@ -38,7 +38,7 @@ class ProductImageController extends Controller
         return ProductImageResource::collection($images);
     }
 
-    public function store(int $productId, StoreProductImageRequest $request)
+    public function store(string $productId, StoreProductImageRequest $request)
     {
         $data = $request->validated();
         $images = [];
@@ -67,13 +67,13 @@ class ProductImageController extends Controller
         return ProductImageResource::collection($images);
     }
 
-    public function show(int $productId, $id)
+    public function show(string $productId, $id)
     {
         $image = $this->repository->getById($productId, $id);
         return new ProductImageResource($image);
     }
 
-    public function update(int $productId, $id, UpdateProductImageRequest $request)
+    public function update(string $productId, $id, UpdateProductImageRequest $request)
     {
         $data = $request->validated();
         
@@ -101,7 +101,7 @@ class ProductImageController extends Controller
         return new ProductImageResource($updatedImage);
     }
 
-    public function destroy(int $productId, $id)
+    public function destroy(string $productId, $id)
     {
         $image = $this->repository->getById($productId, $id);
         if ($image->image_url) {

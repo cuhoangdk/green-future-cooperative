@@ -11,9 +11,12 @@ use Str;
 class Product extends Model
 {
     use HasFactory, SoftDeletes, GeneratesSlug;
+    protected $primaryKey = 'id';
+    public $incrementing = false;
+    protected $keyType = 'string';
 
     protected $fillable = [
-        'product_code',
+        'id',
         'user_id',
         'farm_id',
         'category_id',
@@ -74,12 +77,12 @@ class Product extends Model
 
         // Tạo slug khi creating
         static::creating(function ($product) {
+            if (empty($product->id)) {
+                $product->id = $product->generateProductCode();
+            }
             if (empty($product->slug)) {
                 $product->slug = static::generateUniqueSlug($product->name, static::class);
-            }
-            if (empty($product->product_code)) {
-                $product->product_code = $product->generateProductCode();
-            }
+            }            
         });
 
         // Cập nhật slug khi updating
@@ -115,13 +118,13 @@ class Product extends Model
         $prefix = "{$productCodePart}_{$userCodePart}";
 
         // Tạo số thứ tự 4 chữ số
-        $latestProduct = static::where('product_code', 'like', "{$prefix}_%")
-            ->orderBy('product_code', 'desc')->withTrashed()
+        $latestProduct = static::where('id', 'like', "{$prefix}_%")
+            ->orderBy('id', 'desc')->withTrashed()
             ->first();
 
         $sequence = 1;
         if ($latestProduct) {
-            $parts = explode('_', $latestProduct->product_code);
+            $parts = explode('_', $latestProduct->id);
             $sequence = (int)end($parts) + 1;
         }
 

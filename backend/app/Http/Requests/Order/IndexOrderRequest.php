@@ -23,7 +23,7 @@ class IndexOrderRequest extends FormRequest
     {
         return [
             'per_page' => 'nullable|integer|min:1|max:100',
-            'sort_by' => 'nullable|in:id,order_code,status,total_price,final_total_amount,created_at,updated_at',
+            'sort_by' => 'nullable|in:id,status,total_price,final_total_amount,created_at,updated_at',
             'sort_direction' => 'nullable|in:asc,desc',
         ];
     }

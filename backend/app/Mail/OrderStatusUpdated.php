@@ -32,7 +32,7 @@ class OrderStatusUpdated extends Mailable
         ];
         $translatedStatus = $statusTranslations[$this->order->status] ?? $this->order->status;
 
-        $subject = "Cập Nhật Trạng Thái Đơn Hàng #{$this->order->order_code} - {$translatedStatus}";
+        $subject = "Cập Nhật Trạng Thái Đơn Hàng #{$this->order->id} - {$translatedStatus}";
 
         return $this->subject($subject)
                     ->view('emails.order_status_updated')

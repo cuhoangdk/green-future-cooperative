@@ -52,7 +52,7 @@ class ProductRepository implements ProductRepositoryInterface
         return $query->orderBy($sortBy, $sortDirection)->paginate($perPage);
     }
 
-    public function getById($id)
+    public function getById(string $id)
     {
         $product = $this->model->when(!auth('api_users')->check(), function ($query) {
             $query->where('status', 'selling');
@@ -187,26 +187,7 @@ class ProductRepository implements ProductRepositoryInterface
 
         return $product ?: null; // Trả về null nếu không tìm thấy
     }
-
-    public function getByProductCode($productCode)
-    {
-        $product = $this->model->with(['category', 'unit', 'user', 'images' => function ($query) {
-            $query->orderBy('is_primary', 'desc'); // Sắp xếp để is_primary = true lên đầu
-        }, 'prices'])
-            ->when(!auth('api_users')->check(), function ($query) {
-                $query->where('status', 'selling');
-            })
-            ->where('product_code', $productCode)
-            ->first();
-
-        // Chỉ giới hạn cho user không phải super_admin
-        $user = Auth::guard('api_users')->user();
-        if ($user && !$user->is_super_admin && $product && $product->user_id !== $user->id) {
-            return null; // Hoặc throw exception nếu cần
-        }
-
-        return $product ?: null; // Trả về null nếu không tìm thấy
-    }
+    
 
     public function getFilteredProduct(
         string $sortBy = 'created_at',
@@ -236,7 +217,6 @@ class ProductRepository implements ProductRepositoryInterface
                         case 'search':
                             $query->where(function ($q) use ($value) {
                                 $q->where('name', 'like', "%{$value}%")
-                                  ->orWhere('product_code', '=', "$value")
                                   ->orWhere('description', 'like', "%{$value}%");
                             });
                             break;
@@ -297,8 +277,7 @@ class ProductRepository implements ProductRepositoryInterface
         }
 
         return $searchQuery->where(function ($q) use ($query) {
-            $q->where('name', 'like', "%{$query}%")
-              ->orWhere('product_code', '=', $query);
+            $q->where('name', 'like', "%{$query}%");
         })->orderBy($sortBy, $sortDirection)->paginate($perPage);
     }   
 }

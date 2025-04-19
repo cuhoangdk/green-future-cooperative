@@ -15,7 +15,7 @@ class ProductImageRepository implements ProductImageRepositoryInterface
         $this->model = $model;
     }
 
-    public function getAll(int $productId, string $sortBy = 'sort_order', string $sortDirection = 'asc', int $perPage = null)
+    public function getAll(string $productId, string $sortBy = 'sort_order', string $sortDirection = 'asc', int $perPage = null)
     {
         $query = $this->model->where('product_id', $productId)->orderBy($sortBy, $sortDirection);
 
@@ -23,13 +23,13 @@ class ProductImageRepository implements ProductImageRepositoryInterface
         return $perPage ? $query->paginate($perPage) : $query->get();        
     }
 
-    public function getById(int $productId, $id)
+    public function getById(string $productId, $id)
     {
         return $this->model->where('product_id', $productId)
             ->findOrFail($id);
     }
 
-    public function create(int $productId, array $data)
+    public function create(string $productId, array $data)
     {
         return DB::transaction(function () use ($productId, $data) {
             $data['product_id'] = $productId;
@@ -42,7 +42,7 @@ class ProductImageRepository implements ProductImageRepositoryInterface
         });
     }
 
-    public function update(int $productId, $id, array $data)
+    public function update(string $productId, $id, array $data)
     {
         return DB::transaction(function () use ($productId, $id, $data) {
             $image = $this->getById($productId, $id);
@@ -57,7 +57,7 @@ class ProductImageRepository implements ProductImageRepositoryInterface
         });
     }
 
-    public function delete(int $productId, $id)
+    public function delete(string $productId, $id)
     {
         $image = $this->getById($productId, $id);
         $image->delete();

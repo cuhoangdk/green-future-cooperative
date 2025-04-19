@@ -8,7 +8,6 @@ use App\Http\Requests\Users\SearchUserWithFiltersRequest;
 use App\Http\Requests\Users\StoreUserRequest;
 use App\Http\Requests\Users\UpdateUserRequest;
 use App\Http\Resources\UserResource;
-use App\Traits\GeneratesUserCode;
 use App\Http\Controllers\Controller;
 use App\Repositories\Contracts\UserRepositoryInterface;
 use App\Http\Requests\Users\IndexUserRequest;
@@ -16,7 +15,7 @@ use App\Services\UploadFileService;
 
 class UserController extends Controller
 {
-    use GeneratesUserCode;
+
     protected $userRepository;
     protected $uploadService;
     public function __construct(UserRepositoryInterface $userRepository, UploadFileService $uploadService)
@@ -60,22 +59,6 @@ class UserController extends Controller
         return new UserResource($user);
     }
     
-    /**
-     * Hiển thị chi tiết một người dùng.
-     *
-     * @param string $usercode
-     * @return UserResource|\Illuminate\Http\JsonResponse
-     */
-    public function showByUsercode($usercode)
-    {
-        $user = $this->userRepository->getByUsercode($usercode);
-
-        if (!$user) {
-            return response()->json(['message' => 'User not found'], 404);
-        }
-
-        return new UserResource($user);
-    }
 
     /**
      * Tạo mới một người dùng.

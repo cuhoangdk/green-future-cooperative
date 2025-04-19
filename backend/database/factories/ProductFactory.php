@@ -10,8 +10,7 @@ class ProductFactory extends Factory
     public function definition()
     {
         $name = $this->faker->word;
-        return [
-            'product_code' => 'ITEM_' . strtoupper($this->faker->userName) . '_' . str_pad($this->faker->numberBetween(1, 9999), 4, '0', STR_PAD_LEFT),
+        return [            
             'user_id' => 1,
             'farm_id' => 1,
             'category_id' => 1,

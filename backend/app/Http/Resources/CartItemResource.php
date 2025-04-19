@@ -29,7 +29,7 @@ class CartItemResource extends JsonResource
             'updated_at' => $this->updated_at->toDateTimeString(),
         ];
     }
-    protected function getPriceForQuantity(int $productId, float $quantity)
+    protected function getPriceForQuantity(string $productId, float $quantity)
     {
         $priceRecordExists = ProductQuantityPrice::where('product_id', $productId)->exists();
 

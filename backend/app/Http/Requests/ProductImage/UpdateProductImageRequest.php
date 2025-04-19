@@ -25,7 +25,7 @@ class UpdateProductImageRequest extends FormRequest
     public function withValidator($validator)
     {
         $validator->after(function ($validator) {
-            $routeProductId = (int) $this->route('product_id');
+            $routeProductId = (string) $this->route('product_id');
             $bodyProductId = $this->input('product_id');
 
             if ($bodyProductId !== null && $bodyProductId != $routeProductId) {

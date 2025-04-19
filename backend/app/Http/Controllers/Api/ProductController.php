@@ -81,7 +81,7 @@ class ProductController extends Controller
             $notificationRepo->create([
                 'user_type' => 'member',
                 'user_id' => $superAdmin->id,
-                'title' => "Sản phẩm có mã là {$product->product_code} vừa được cập nhật",
+                'title' => "Sản phẩm có mã là {$product->id} vừa được cập nhật",
                 'type' => 'updated_product',                
             ]);
         }
@@ -137,14 +137,6 @@ class ProductController extends Controller
         return new ProductResource($product);
     }
 
-    /**
-     * Lấy sản phẩm theo product_code
-     */
-    public function getByProductCode($productCode)
-    {
-        $product = $this->repository->getByProductCode($productCode);
-        return new ProductResource($product);
-    }
 
     /**
      * Tìm kiếm sản phẩm theo tên (gần đúng) hoặc product_code (chính xác)

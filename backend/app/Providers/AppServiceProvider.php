@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use App\Services\UploadFileService;
+use Route;
 
 class AppServiceProvider extends ServiceProvider
 {

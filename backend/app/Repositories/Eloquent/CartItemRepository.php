@@ -129,7 +129,7 @@ class CartItemRepository implements CartItemRepositoryInterface
     /**
      * Lấy giá từ product_quantity_prices dựa trên product_id và quantity
      */
-    protected function getPriceForQuantity(int $productId, float $quantity)
+    protected function getPriceForQuantity(string $productId, float $quantity)
     {
         $priceRecordExists = ProductQuantityPrice::where('product_id', $productId)->exists();
 

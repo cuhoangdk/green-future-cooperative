@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\Api;
 
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ProductQuantityPriceResource;
+use App\Repositories\Contracts\ProductQuantityPriceRepositoryInterface;
 use App\Http\Requests\ProductQuantityPrice\IndexProductQuantityPriceRequest;
 use App\Http\Requests\ProductQuantityPrice\StoreProductQuantityPriceRequest;
 use App\Http\Requests\ProductQuantityPrice\UpdateProductQuantityPriceRequest;
-use App\Http\Resources\ProductQuantityPriceResource;
-use App\Repositories\Contracts\ProductQuantityPriceRepositoryInterface;
 
 class ProductQuantityPriceController extends Controller
 {
@@ -18,19 +19,26 @@ class ProductQuantityPriceController extends Controller
         $this->repository = $repository;
     }
 
-    public function index(int $productId, IndexProductQuantityPriceRequest $request)
+    public function index(string $productId, IndexProductQuantityPriceRequest $request)
     {
         $prices = $this->repository->getAll(
             $productId,
             $request->get('sort_by', 'quantity'),
             $request->get('sort_direction', 'asc'),
             $request->get('per_page')
-        )->appends(request()->query());
+        );
+
+        // Kiểm tra nếu kết quả là phân trang, rồi mới thêm appends
+        if ($prices instanceof \Illuminate\Pagination\LengthAwarePaginator) {
+            $prices->appends(request()->query());
+        }
+
         return ProductQuantityPriceResource::collection($prices);
     }
 
-    public function store(int $productId, StoreProductQuantityPriceRequest $request)
-    {
+
+    public function store(string $productId, StoreProductQuantityPriceRequest $request)
+    {        
         $data = $request->validated();
         $prices = [];
 
@@ -46,26 +54,26 @@ class ProductQuantityPriceController extends Controller
         return ProductQuantityPriceResource::collection($prices); // $prices là mảng các model
     }
 
-    public function show(int $productId, $id)
+    public function show(string $productId, $id)
     {
         $price = $this->repository->getById($productId, $id);
         return new ProductQuantityPriceResource($price);
     }
 
-    public function update(int $productId, $id, UpdateProductQuantityPriceRequest $request)
+    public function update(string $productId, $id, UpdateProductQuantityPriceRequest $request)
     {
         $data = $request->validated();
         $price = $this->repository->update($productId, $id, $data);
         return new ProductQuantityPriceResource($price);
     }
 
-    public function destroy(int $productId, $id)
+    public function destroy(string $productId, $id)
     {
         $this->repository->delete($productId, $id);
         return response()->json(['message' => 'Product quantity price deleted successfully']);
     }
 
-    public function trashed(int $productId, IndexProductQuantityPriceRequest $request)
+    public function trashed(string $productId, IndexProductQuantityPriceRequest $request)
     {
         $prices = $this->repository->getTrashed(
             $productId,
@@ -76,13 +84,13 @@ class ProductQuantityPriceController extends Controller
         return ProductQuantityPriceResource::collection($prices);
     }
 
-    public function restore(int $productId, $id)
+    public function restore(string $productId, $id)
     {
         $price = $this->repository->restore($productId, $id);
         return new ProductQuantityPriceResource($price);
     }
 
-    public function forceDelete(int $productId, $id)
+    public function forceDelete(string $productId, $id)
     {
         $this->repository->forceDelete($productId, $id);
         return response()->json(['message' => 'Product quantity price permanently deleted']);

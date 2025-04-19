@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cập Nhật Trạng Thái Đơn Hàng #{{ $order->order_code }}</title>
+    <title>Cập Nhật Trạng Thái Đơn Hàng #{{ $order->id }}</title>
     <style>
         /* Reset CSS */
         body, h1, h2, h3, p, table, ul, li {
@@ -234,7 +234,7 @@
         </div>
 
         <div class="content">
-            <h2 class="order-title">Cập Nhật Trạng Thái Đơn Hàng #{{ $order->order_code }}</h2>
+            <h2 class="order-title">Cập Nhật Trạng Thái Đơn Hàng #{{ $order->id }}</h2>
 
             <?php
                 $statusTranslations = [
@@ -265,7 +265,7 @@
             <ul class="info-list">
                 <li>
                     <strong>Mã Hóa Đơn:</strong> 
-                    <a href="{{ env('FRONTEND_URL') }}/orders/{{ $order->id }}" style="color: #2e7d32;">{{ $order->order_code }}</a>
+                    <a href="{{ env('FRONTEND_URL') }}/orders/{{ $order->id }}" style="color: #2e7d32;">{{ $order->id }}</a>
                 </li>
                 <li><strong>Ngày Đặt:</strong> {{ $order->created_at->format('d/m/Y H:i:s') }}</li>
                 <li><strong>Tên Khách Hàng:</strong> {{ $order->full_name }}</li>
@@ -285,7 +285,7 @@
                 <tbody>
                     @foreach ($order->items as $item)
                         <tr>
-                            <td>{{ $item->product_snapshot['product_code'] }}</td>
+                            <td>{{ $item->product_snapshot['id'] }}</td>
                             <td><a href="{{ env('FRONTEND_URL') }}/products/{{ $item->product_snapshot['slug'] }}">{{ $item->product_snapshot['product_name'] }}</a></td>
                             <td>{{ $item->quantity }}</td>
                             <td>{{ number_format($item->product_snapshot['price'], 0) }} VND</td>

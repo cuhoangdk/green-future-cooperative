@@ -26,7 +26,7 @@ class CultivationLogController extends Controller
 
     public function index(IndexCultivationLogRequest $request)
     {
-        $productId = (int) $request->route('product_id');
+        $productId = (string) $request->route('product_id');
         $logs = $this->repository->getAll(
             $productId,
             $request->get('sort_by', 'created_at'),
@@ -40,7 +40,7 @@ class CultivationLogController extends Controller
         return CultivationLogResource::collection($logs);
     }
 
-    public function store(int $productId, StoreCultivationLogRequest $request)
+    public function store(string $productId, StoreCultivationLogRequest $request)
     {
         $data = $request->validated();
 
@@ -56,13 +56,13 @@ class CultivationLogController extends Controller
         return new CultivationLogResource($log);
     }
 
-    public function show(int $productId, $id)
+    public function show(string $productId, $id)
     {
         $log = $this->repository->getById($productId, $id);
         return new CultivationLogResource($log);
     }
 
-    public function update(int $productId, $id, UpdateCultivationLogRequest $request)
+    public function update(string $productId, $id, UpdateCultivationLogRequest $request)
     {
         $data = $request->validated();
 
@@ -82,7 +82,7 @@ class CultivationLogController extends Controller
         return new CultivationLogResource($log);
     }
 
-    public function destroy(int $productId, $id)
+    public function destroy(string $productId, $id)
     {
         $log = $this->repository->getById($productId, $id);
         if ($log->image_url) {

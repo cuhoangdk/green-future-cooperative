@@ -153,6 +153,7 @@ Route::middleware('log.activity')->group(function () {
             });
         });
         Route::prefix('{product_id}/quantity-prices')->group(function () {
+            
             // sometimes: sort_by, sort_direction, per_page
             Route::get('/', [ProductQuantityPriceController::class, 'index'])->name('quantity-prices.index');
             // required: prices[], prices.*.quantity, prices.*.price
@@ -166,7 +167,7 @@ Route::middleware('log.activity')->group(function () {
                 Route::delete('/{id}', [ProductQuantityPriceController::class, 'destroy'])->name('quantity-prices.destroy');            
                 // Route::patch('/restore/{id}', [ProductQuantityPriceController::class, 'restore'])->name('quantity-prices.restore');
                 // Route::delete('/force-delete/{id}', [ProductQuantityPriceController::class, 'forceDelete'])->name('quantity-prices.force-delete');
-            });
+            });           
         });
         Route::prefix('{product_id}/images')->group(function () {
             // sometimes: sort_by, sort_direction, per_page
@@ -181,7 +182,6 @@ Route::middleware('log.activity')->group(function () {
                 Route::delete('/{id}', [ProductImageController::class, 'destroy'])->name('product-images.destroy');
             });
         });
-        Route::get('/code/{productCode}', [ProductController::class, 'getByProductCode'])->name('products.get-by-product-code'); 
         Route::get('/{id}/qrcode', [ProductController::class, 'getQrCode'])->name('products.qrcode');
         Route::middleware(['auth:api_users'])->group(function () {
             Route::put('/{id}', [ProductController::class, 'update'])->name('products.update');
@@ -355,7 +355,6 @@ Route::middleware('log.activity')->group(function () {
         Route::get('/{id}', [UserController::class, 'show'])->name('users.show');        
         Route::put('/{id}', [UserController::class, 'update'])->name('users.update');
         Route::delete('/{id}', [UserController::class, 'destroy'])->name('users.destroy');
-        Route::get('/usercode/{usercode}', [UserController::class, 'showByUsercode'])->name('users.show-by-usercode');
         Route::patch('/restore/{id}', [UserController::class, 'restore'])->name('users.restore');        
         Route::delete('/force-delete/{id}', [UserController::class, 'forceDelete'])->name('users.force-delete');
         // required: password, password_confirmed
