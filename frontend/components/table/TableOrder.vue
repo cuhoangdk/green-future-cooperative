@@ -17,7 +17,7 @@
                     class="border-b border-gray-100 hover:bg-gray-200 cursor-pointer">
                     <td class="py-1 pl-2">{{ order.order_code }}</td>
                     <td class="py-1">{{ order.full_name }}<br/>{{ order.phone_number }}</td>
-                    <td class="py-1">{{ formatCurrency(order.total_price) }}</td>
+                    <td class="py-1">{{ formatCurrency(order.final_total_amount) }}</td>
                     <td class="py-1">{{ addressData[order.id] }}</td>
                     <td class="py-1">
                         <span v-if="order.status === 'pending'" class="badge badge-neutral">Chờ xác nhận</span>
@@ -27,8 +27,8 @@
                     </td>
                     <td class="py-1">
                         <div class="flex space-x-1 items-center" @click.stop>
-                            <!-- <UiEditButton v-if="displayEditButton" :to="`orders/${order.id}/edit`" /> -->
-                            <UiCancelButton :to="`orders/${order.id}/cancel`"/>
+                            <UiEditButton v-if="displayEditButton" :to="`orders/${order.id}`" />
+                            <UiCancelButton v-if="order.status != 'cancelled'" :to="`orders/${order.id}/cancel`"/>
                         </div>
                     </td>
                 </tr>

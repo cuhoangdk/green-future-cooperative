@@ -20,7 +20,7 @@
             </div>
             <!-- Submit Button -->
             <div class="flex justify-between">
-                <button type="button" class="btn mr-2" @click="router.back()">Quay lại</button>
+                <UiButtonBack />
                 <button type="submit" class="btn btn-primary" :disabled="submit === 'pending'">
                     <span v-if="submit === 'pending'" class="loading loading-spinner loading-md"></span>
                     <span>Cập nhật</span>

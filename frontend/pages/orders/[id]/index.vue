@@ -133,7 +133,7 @@
                         <div class="space-y-2 divide-y">
                             <div class="flex justify-between py-2">
                                 <span>Tạm tính:</span>
-                                <span class="font-medium">{{ formatCurrency(order.total_price - order.shipping_fee)
+                                <span class="font-medium">{{ formatCurrency(order.total_price)
                                     }}</span>
                             </div>
                             <div class="flex justify-between py-2">
@@ -142,7 +142,7 @@
                             </div>
                             <div class="flex justify-between py-2 text-lg">
                                 <span class="font-bold">Tổng cộng:</span>
-                                <span class="font-bold text-primary">{{ formatCurrency(order.total_price) }}</span>
+                                <span class="font-bold text-primary">{{ formatCurrency(order.final_total_amount) }}</span>
                             </div>
                         </div>
                     </div>

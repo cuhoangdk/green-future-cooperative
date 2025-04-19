@@ -107,10 +107,9 @@
                     placeholder="Nhập meta description"></textarea>
             </div> -->
 
-            <div class="flex justify-end mt-6">
-                <button type="button" class="btn btn-ghost mr-2" @click="$router.push('/admin/posts')">
-                    Hủy
-                </button>
+            <div class="flex justify-between items-center mt-4">
+                <UiButtonBack/>
+
                 <button type="submit" class="btn btn-primary" :disabled="submitStatus === 'pending'">
                     <span v-if="submitStatus === 'pending'" class="loading loading-spinner loading-md"></span>
                     <span>Tạo bài viết</span>

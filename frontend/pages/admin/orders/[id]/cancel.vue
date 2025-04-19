@@ -15,9 +15,7 @@
 
             <!-- Submit Button -->
             <div class="border-t border-gray-200 pt-5 flex justify-between items-center">
-                <button type="button" class="btn" @click="$router.back()">
-                    Quay lại
-                </button>
+                <UiButtonBack />
                 <button type="submit" class="btn btn-primary px-6" :disabled="status === 'pending' || !isFormValid">
                     <span v-if="status === 'pending'" class="loading loading-spinner loading-md"></span>
                     Hủy đơn

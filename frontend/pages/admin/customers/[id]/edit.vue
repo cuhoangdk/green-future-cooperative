@@ -99,9 +99,10 @@
                 </div>
             </div>
 
-            <div class="border-t border-gray-200 pt-5 flex justify-end">
-                <button type="button" @click="$router.push('/admin/customers')" class="btn btn-ghost mr-2">Hủy</button>
-                <button type="submit" class="btn btn-primary px-6" :disabled="submit === 'pending'">
+            <div class="border-t border-gray-200 pt-5 flex justify-between items-center">
+                <UiButtonBack />
+                <div>
+                    <button type="submit" class="btn btn-primary px-6" :disabled="submit === 'pending'">
                     <span v-if="submit === 'pending'" class="loading loading-spinner loading-md"></span>
                     Lưu
                 </button>
@@ -110,6 +111,7 @@
                     <span v-if="submit === 'pending'" class="loading loading-spinner loading-md"></span>
                     Xác thực
                 </button>
+                </div>
             </div>
         </form>
     </div>

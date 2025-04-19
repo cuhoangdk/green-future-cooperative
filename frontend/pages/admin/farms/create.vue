@@ -98,8 +98,8 @@
             </div>
 
             <!-- Submit Button -->
-            <div class="border-t border-gray-200 pt-5 flex justify-end">
-                <button type="button" @click="navigateTo('/admin/farms')" class="btn btn-ghost mr-2">Hủy</button>
+            <div class="border-t border-gray-200 pt-5 flex justify-between items-center">
+                <UiButtonBack/>
                 <button type="submit" class="btn btn-primary px-6" :disabled="status === 'pending'">
                     <span v-if="status === 'pending'" class="loading loading-spinner loading-md"></span>
                     Thêm

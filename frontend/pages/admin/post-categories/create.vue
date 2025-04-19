@@ -5,18 +5,20 @@
                 <!-- Category Name -->
                 <div class="w-full">
                     <label class="text-gray-700 font-semibold">Tên danh mục bài viết</label>
-                    <input v-model="form.name" class="input input-primary w-full mt-1" placeholder="Tin tức..." required />
+                    <input v-model="form.name" class="input input-primary w-full mt-1" placeholder="Tin tức..."
+                        required />
                 </div>
                 <!-- Description -->
                 <div class="w-full">
                     <label class="text-gray-700 font-semibold">Mô tả</label>
-                    <input v-model="form.description" class="input input-primary w-full mt-1" placeholder="Tin tức mới nhất..." required />
+                    <input v-model="form.description" class="input input-primary w-full mt-1"
+                        placeholder="Tin tức mới nhất..." required />
                 </div>
             </div>
             <!-- Submit Button -->
             <div class="flex justify-between">
-                <button type="button" class="btn mr-2" @click="router.back()">Quay lại</button>
-                    <button type="submit" class="btn btn-primary" :disabled="status === 'pending'">
+                <UiButtonBack />
+                <button type="submit" class="btn btn-primary" :disabled="status === 'pending'">
                     <span v-if="status === 'pending'" class="loading loading-spinner loading-md"></span>
                     <span>Thêm danh mục bài viết</span>
                 </button>
@@ -55,7 +57,7 @@ const handleSubmit = async () => {
         if (error.value?.message) throw new Error(data.value?.message || 'Thêm danh mục bài viết thất bại!')
 
         $toast.success('Thêm danh mục bài viết thành công!')
-        
+
         // Redirect to the index page
         useRouter().push('/admin/post-categories')
     } catch (error: any) {

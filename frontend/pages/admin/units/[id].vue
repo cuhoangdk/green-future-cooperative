@@ -1,7 +1,7 @@
 <template>
     <div v-if="status === 'pending'" class="flex justify-center items-center h-screen">
-            <span class="loading loading-spinner loading-lg"></span>
-        </div>
+        <span class="loading loading-spinner loading-lg"></span>
+    </div>
     <div v-else class="p-4">
         <form @submit.prevent="handleSubmit" class="space-y-4">
             <div class="flex flex-col gap-4">
@@ -17,14 +17,14 @@
                         placeholder="Kilogram/Gram..." required />
                 </div>
                 <label class="flex items-center w-full">
-                    <input v-model="form.allow_decimal" type="checkbox" class="toggle toggle-primary mr-2 mt-1" />Cho
+                    <input v-model="form.allow_decimal" type="checkbox" class="checkbox checkbox-secondary mr-2" />Cho
                     phép
                     số lượng lẻ
                 </label>
             </div>
             <!-- Submit Button -->
-            <div class="flex justify-end">
-                <button type="button" @click="$router.back()" class="btn btn-ghost mr-2">Hủy</button>
+            <div class="flex justify-between items-center mt-4">
+                <UiButtonBack />
                 <button type="submit" class="btn btn-primary" :disabled="submit === 'pending'">
                     <span v-if="submit === 'pending'" class="loading loading-spinner loading-md"></span>
                     <span>Lưu</span>

@@ -185,7 +185,7 @@ const menus = ref([
             { label: 'Loại bài viết', route: '/admin/post-categories', icon: Layers },
         ]
     },
-    { label: 'Cài đặt', route: '#', icon: Ruler },
+    { label: 'Cài đặt', route: '/admin/setting', icon: Ruler },
 ])
 
 const filteredMenus = computed(() => {

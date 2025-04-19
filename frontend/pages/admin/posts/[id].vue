@@ -118,8 +118,8 @@
         <textarea v-model="form.meta_description" class="textarea textarea-primary h-24 w-full mt-1"
           placeholder="Meta description" />
       </div> -->
-      <div class="flex justify-end mt-6">
-        <button type="button" @click="$router.back()" class="btn btn-ghost mr-2">Hủy</button>
+      <div class="flex justify-between mt-4">
+        <UiButtonBack/>
         <button type="submit" class="btn btn-primary" :disabled="submitStatus === 'pending'">
           <span v-if="submitStatus === 'pending'" class="loading loading-spinner loading-md"></span>
           <span>Lưu</span>

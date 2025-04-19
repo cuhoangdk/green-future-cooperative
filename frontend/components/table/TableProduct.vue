@@ -15,7 +15,10 @@
                 <tr v-for="product in products" :key="product.id"
                     @click="$router.push(`products/${product.id}/`)"
                     class="border-b border-gray-100 hover:bg-gray-200 cursor-pointer">
-                    <td class="py-1 pl-2"><span class="text-sm">{{ product.product_code }}</span><br/><span class="font-semibold">{{ product.name }}</span></td>
+                    <td class="py-1 pl-2">
+                        <span class="text-sm">{{ product.product_code }}</span><br/>
+                        <span class="font-semibold">{{ product.name }}</span>
+                    </td>
                     <td class="py-1">{{ product.user ? product.user.full_name : 'N/A' }}</td>
                     <td class="py-1">
                         <span v-if="product.prices && product.prices.length > 0">
@@ -24,7 +27,6 @@
                         </span>
                         <span v-else>Chưa bán</span>
                     </td>
-
                     <td class="py-1">
                         <span v-if="product.stock_quantity === 0" class="text-red-500">Bán hết</span>
                         <span v-else-if="product.stock_quantity < 10" class="text-red-500">
@@ -41,12 +43,11 @@
                     </td>
                     <td class="py-1">
                         <div class="flex space-x-1 items-center">
-                            <UiLogButton :to="`products/${product.id}/logs`" />
-                            <UiPublishButton v-if="product.status === 'growing'"
-                            :to="`products/${product.id}/publish`" />
-                            <UiQRCodeButton :to="`products/${product.id}/qrcode`" />
-                            <UiEditButton :to="`products/${product.id}/`" />
-                            <UiDeleteButton :on-click="() => onDelete(product.id)" />
+                            <UiLogButton @click.stop :to="`products/${product.id}/logs`" />
+                            <UiPublishButton v-if="product.status === 'growing'" @click.stop :to="`products/${product.id}/publish`" />
+                            <UiQRCodeButton @click.stop :to="`products/${product.id}/qrcode`" />
+                            <UiEditButton @click.stop :to="`products/${product.id}/`" />
+                            <UiDeleteButton @click.stop="() => onDelete(product.id)" />
                         </div>
                     </td>
                 </tr>

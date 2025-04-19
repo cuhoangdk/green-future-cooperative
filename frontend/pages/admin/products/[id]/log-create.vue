@@ -45,7 +45,7 @@
       </div>
       <!-- Submit Button -->
       <div class="flex justify-between">
-        <button type="button" @click="$router.back()" class="btn btn-ghost mr-2">Hủy</button>
+        <UiButtonBack />
         <button type="submit" class="btn btn-primary" :disabled="status === 'pending' || !isFormValid">
           <span v-if="status === 'pending'" class="loading loading-spinner loading-md"></span>
           <span>Thêm</span>

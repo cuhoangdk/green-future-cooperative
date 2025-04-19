@@ -3,7 +3,7 @@
     <div class="grid grid-cols-1 gap-4 p-3 md:hidden">
         <div v-for="order in orders" :key="order.id"
             class="card bg-base-100 border border-gray-400 hover:shadow-md transition-shadow cursor-pointer">
-            <div  @click="$router.push(`orders/${order.id}/`)" class="card-body p-3">
+            <div @click="$router.push(`orders/${order.id}/`)" class="card-body p-3">
                 <div class="flex justify-between items-start">
                     <h3 class="card-title text-base line-clamp-2">{{ order.order_code }}</h3>
                 </div>
@@ -25,7 +25,7 @@
                     </div>
                     <div class="flex gap-2 items-center">
                         <DollarSign class="w-4 h-4 text-gray-500" /> Tổng tiền:
-                        <span>{{ formatCurrency(order.total_price) }}</span>
+                        <span>{{ formatCurrency(order.final_total_amount) }}</span>
                     </div>
                     <div class="flex gap-2 items-center">
                         <span>{{ addressData[order.id] }}</span>
@@ -45,7 +45,7 @@
 <script setup lang="ts">
 import type { Order } from '~/types/order'
 import { formatNumber, formatCurrency } from '~/utils/common'
-import { User, Phone, MapPin, DollarSign } from 'lucide-vue-next'
+import { User, Phone, DollarSign } from 'lucide-vue-next'
 
 
 defineProps<{

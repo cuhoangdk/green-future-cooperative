@@ -89,7 +89,7 @@
                         <label class="flex gap-2"><input type="checkbox" checked class="checkbox" disabled />Tốc độ tiêu
                             chuẩn (từ 1 - 2 ngày)</label>
                     </div>
-                    <div>{{ 50000 }}</div>
+                    <div>{{ formatCurrency(Number(shippingFe?.value)) }}</div>
                 </div>
                 <h1 class="w-full text-2xl font-bold text-green-800">Phương thức thanh toán</h1>
                 <div class="flex justify-between border border-gray-300 rounded-xl p-5 bg-white">
@@ -121,12 +121,12 @@
                             <p>Vận chuyển (COD): </p>
                             <p class="text-sm text-gray-500">(Nội tỉnh Bạc Liêu)</p>
                         </div>
-                        <p>5.000 đ</p>
+                        <div>{{ formatCurrency(Number(shippingFe?.value)) }}</div>
                     </div>
                     <div class="bg-green-500 rounded-b-xl font-bold p-3">
                         <div class="flex justify-between items-center">
                             <p>Tổng cộng: </p>
-                            <span>{{ formatPrice(totalPrice + 5000) }}</span>
+                            <span>{{ formatPrice(totalPrice + Number(shippingFe?.value || 0)) }}</span>
                         </div>
                         <button type="submit" :disabled="submit"
                             class="text-center bg-white font-semibold text-green-600 px-4 py-2 rounded-full hover:bg-green-100 transition-colors duration-200 w-full mt-10">
@@ -170,11 +170,14 @@
 import type { CartItem } from '../types/cart';
 import { ShoppingCart } from 'lucide-vue-next';
 import type { CustomerAddress } from '~/types/customer';
+import type { Parameter } from '~/types/parameter'; 
 const { getCustomerAddress } = useCustomerAddress();
 
 const { provinces, districts, wards, fetchProvinces, fetchDistricts, fetchWards } = useVietnamAddress();
 const { getCartItems } = useCart();
 const { addOrder } = useOrder();
+const { getShippingFee } = useShippingFee()
+
 const { $toast } = useNuxtApp()
 const router = useRouter();
 const submit = ref(false);
@@ -199,6 +202,9 @@ const cartItems = computed<CartItem[]>(() =>
 const totalPrice = computed(() => {
     return cartItems.value.reduce((sum, item) => sum + item.purchase_price * item.quantity, 0);
 });
+
+const { data: dataShippingFee } = await getShippingFee()
+const shippingFe = computed<Parameter | null>(() => Array.isArray(dataShippingFee.value?.data) ? dataShippingFee.value.data[0] : dataShippingFee.value?.data || null)
 
 const { data: dataAddresses } = await getCustomerAddress();
 const addresses = computed<CustomerAddress[]>(() => Array.isArray(dataAddresses.value?.data) ? dataAddresses.value.data : dataAddresses.value ? [dataAddresses.value.data] : [])
@@ -239,6 +245,7 @@ const handleSubmit = async () => {
         formData.append('address_type', form.value.address_type);
         formData.append('cart_items', JSON.stringify(cartItems.value));
         formData.append('total_price', totalPrice.value.toString());
+        formData.append('shipping_fee', shippingFe.value?.value.toString() || '0');
 
         // Gửi request với FormData
         const { error } = await addOrder(formData);

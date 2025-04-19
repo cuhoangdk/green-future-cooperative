@@ -145,6 +145,10 @@
                     Cập nhật thông tin
                 </button>
             </div>
+
+            <div v-if="currentUser?.is_super_admin" class="text-red-500 mt-4">
+                <p>Chú ý: Bạn đang đăng nhập với quyền quản trị viên. Hãy cẩn thận khi thay đổi thông tin!</p>
+            </div>
         </form>
     </div>
 </template>
