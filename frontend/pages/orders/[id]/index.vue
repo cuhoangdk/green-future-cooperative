@@ -134,7 +134,7 @@
                             <div class="flex justify-between py-2">
                                 <span>Tạm tính:</span>
                                 <span class="font-medium">{{ formatCurrency(order.total_price - order.shipping_fee)
-                                }}</span>
+                                    }}</span>
                             </div>
                             <div class="flex justify-between py-2">
                                 <span>Phí vận chuyển:</span>
@@ -150,20 +150,20 @@
             </div>
 
             <!-- Cancellation Information -->
-            <div v-if="order.cancelled_at" class="card bg-error bg-opacity-10 border border-gray-200 shadow-xs mb-6">
+            <div v-if="order.cancelled_at" class="card bg-red-200 bg-opacity-10 border border-gray-200 shadow-xs mb-6">
                 <div class="card-body p-4">
-                    <h2 class="card-title text-lg text-error mb-2">Thông tin hủy đơn</h2>
+                    <h2 class="card-title text-lg">Thông tin hủy đơn</h2>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
-                            <p class="text-sm text-gray-500">Lý do hủy</p>
+                            <p>Lý do hủy</p>
                             <p>{{ order.cancelled_reason }}</p>
                         </div>
                         <div>
-                            <p class="text-sm text-gray-500">Thời gian hủy</p>
+                            <p>Thời gian hủy</p>
                             <p>{{ formatDateTime(order.cancelled_at) }}</p>
                         </div>
                         <div>
-                            <p class="text-sm text-gray-500">Người hủy</p>
+                            <p>Người hủy</p>
                             <p>{{ order.cancelled_by }}</p>
                         </div>
                     </div>
@@ -174,6 +174,9 @@
             <div class="flex justify-between  w-full mt-6">
                 <button @click="$router.back()" class="btn btn-ghost">
                     Quay lại
+                </button>
+                <button v-if="order && order.status !== 'cancelled'" @click="$router.push(`/orders/${order.id}/cancel`)" class="btn btn-error">
+                    Hủy đơn
                 </button>
             </div>
         </div>

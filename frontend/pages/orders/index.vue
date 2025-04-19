@@ -4,9 +4,13 @@
             <div>
                 <h1 class="text-xl m-4 font-bold">Danh sách đơn hàng</h1>
             </div>
-            <div>
-                <TableOrder :orders="orders.orders" :addressData="addressData" @delete="handleDelete" />
-                <GridOrder :orders="orders.orders" :addressData="addressData" @delete="handleDelete" />
+            <div class="relative">
+                <div v-if="status === 'pending'"
+                    class="absolute inset-0 bg-gray-50 opacity-25 flex justify-center items-center z-10">
+                    <span class="loading loading-spinner loading-lg"></span>
+                </div>
+                <TableOrder :orders="orders.orders" :addressData="addressData" />
+                <GridOrder :orders="orders.orders" :addressData="addressData" />
                 <div class="flex flex-col sm:flex-row justify-between items-center m-4 gap-2">
                     <div class="flex items-center space-x-2">
                         <p class="text-sm text-gray-600">{{ orders.orders.length }} / {{ orders.meta?.total }}</p>
@@ -28,10 +32,9 @@ import type { PaginationMeta, PaginationLinks } from '~/types/api'
 
 const currentPage = ref(Number(useRoute().query.page) || 1)
 const perPage = ref(10)
-const swal = useSwal()
 const { getFullAddressName } = useVietnamAddress()
 const { getOrders } = useOrder()
-const { data } = await getOrders(currentPage.value, perPage.value)
+const { data, status } = await getOrders(currentPage.value, perPage.value)
 const orders = computed<{ orders: Order[], meta: PaginationMeta | null, links: PaginationLinks | null }>(() => ({
     orders: Array.isArray(data.value?.data) ? data.value.data : data.value?.data ? [data.value.data] : [],
     meta: data.value?.meta ?? null,
@@ -51,28 +54,4 @@ const handlePageChange = (page: number) => {
     currentPage.value = page
     getOrders(currentPage.value, perPage.value)
 }
-
-async function handleDelete(productId: number) {
-    const result = await swal.fire({
-        title: 'Xác nhận xóa',
-        text: 'Bạn có chắc muốn xóa sản phẩm này không?',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Xóa',
-        cancelButtonText: 'Hủy',
-    })
-
-    // if (result.isConfirmed) {
-    //     try {
-    //         const { error } = await cancelAdminOrder(productId)
-    //         if (error.value) throw new Error(error.value.message)
-    //         orders.value.orders = orders.value.orders.filter((product: Product) => product.id !== productId)
-    //         expandedRows.value.delete(productId)
-    //         toast.success('Sản phẩm đã được xóa!')
-    //     } catch (err) {
-    //         toast.error(`Xóa thất bại: ${(err as Error).message || 'Unknown error'}`)
-    //     }
-    // }
-}
-
 </script>

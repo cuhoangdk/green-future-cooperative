@@ -6,23 +6,34 @@
         <form v-else @submit.prevent="handleSubmit" class="space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
                 <!-- Avatar Section -->
-                <div class="flex flex-col items-center md:col-span-1">
+                <div class="flex flex-col items-center justify-between md:col-span-1">
                     <div class="w-48 h-48 mb-3 cursor-pointer" @click="triggerFileInput">
                         <img :src="form.avatar_url || defaultAvatar" @error="form.avatar_url = defaultAvatar"
                             class="w-full h-full object-cover rounded-full border shadow-sm" alt="Avatar" />
+                        <div class="text-center text-gray-700 font-semibold mt-2">Ảnh đại diện</div>
                     </div>
+
                     <input ref="fileInput" type="file" accept="image/*"
                         class="file-input file-input-primary w-full max-w-xs" @change="handleFileChange" hidden />
-                    <label class="text-gray-700 font-semibold mt-2">Ảnh đại diện</label>
+
+                    <div class="flex justify-end items-end">
+                        <button type="button" @click="$router.push(`/admin/customers/${id}/change-password`)"
+                            class="btn">
+                            Đổi mật khẩu
+                        </button>
+                    </div>
                 </div>
 
                 <div class="md:col-span-3 grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <!-- User Code - Luôn hiển thị đầu tiên -->
                     <div class="sm:col-span-2">
                         <label class="text-gray-700 font-semibold block mb-1">Mã khách hàng</label>
-                        <div class="input input-bordered w-full flex items-center bg-gray-100 font-medium">
-                            {{ route.params.id }}
-                        </div>
+                        <label class="input w-full bg-gray-200">
+                            <span class="label">KH</span>
+                            <div class="">
+                                {{ route.params.id }}
+                            </div>
+                        </label>
                     </div>
 
                     <div>
@@ -84,8 +95,8 @@
             <div class="border-t border-gray-200 pt-5">
                 <h3 class="text-lg font-medium text-gray-800 mb-3">Thông tin địa chỉ</h3>
                 <div v-for="address in customer?.addresses" :key="address.id">
-                        <UiAddressCard :address="address" :addressDetailId="address.address.ward" />
-                    </div>
+                    <UiAddressCard :address="address" :addressDetailId="address.address.ward" />
+                </div>
             </div>
 
             <div class="border-t border-gray-200 pt-5 flex justify-end">
@@ -93,6 +104,11 @@
                 <button type="submit" class="btn btn-primary px-6" :disabled="submit === 'pending'">
                     <span v-if="submit === 'pending'" class="loading loading-spinner loading-md"></span>
                     Lưu
+                </button>
+                <button v-if="customer?.verified_at === null" type="button" @click="handleVerify"
+                    class="btn btn-secondary px-6 ml-2" :disabled="submit === 'pending'">
+                    <span v-if="submit === 'pending'" class="loading loading-spinner loading-md"></span>
+                    Xác thực
                 </button>
             </div>
         </form>
@@ -122,6 +138,9 @@ const backEndUrl = useRuntimeConfig().public.backendUrl;
 const fileInput = ref<HTMLInputElement | null>(null);
 const selectedFile = ref<File | null>(null);
 const submit = ref<'idle' | 'pending' | 'success' | 'error'>('idle');
+const id = Number(route.params.id);
+const { data: customerData, status, refresh } = await getCustomerById(id);
+const customer = computed<Customer | null>(() => Array.isArray(customerData.value?.data) ? customerData.value.data[0] : customerData.value?.data || null)
 
 // Khởi tạo form với dữ liệu mặc định
 const form = ref({
@@ -140,9 +159,6 @@ const form = ref({
         street_address: ''
     }
 });
-
-const { data: customerData, status, refresh } = await getCustomerById(Number(route.params.id));
-const customer = computed<Customer | null>(() => Array.isArray(customerData.value?.data) ? customerData.value.data[0] : customerData.value?.data || null)
 
 watch(customer, (newVal) => {
     if (newVal) {
@@ -165,6 +181,7 @@ watch(customer, (newVal) => {
     }
 });
 
+// Lấy tên địa chỉ đầy đủ từ wardId
 const addressData = ref<{ [key: number]: string }>({})
 watch(() => customer.value, async (newCustomer) => {
     if (newCustomer && newCustomer.addresses) {
@@ -232,6 +249,29 @@ const handleSubmit = async () => {
             throw new Error(error.value.message);
         }
 
+        $toast.success('Cập nhật thông tin khách hàng thành công!');
+        refresh();
+        router.push('/admin/customers');
+    } catch (error: any) {
+        $toast.error(error.message || 'Cập nhật thông tin khách hàng thất bại!');
+    } finally {
+        submit.value = 'idle';
+    }
+};
+
+const handleVerify = async () => {
+    try {
+        submit.value = 'pending';
+        // Tạo FormData để gửi dữ liệu multipart
+        const formData = new FormData();
+        // Gửi request với FormData
+        const { error } = await updateCustomer(
+            Number(customer?.value?.id),
+            formData
+        );
+        if (error.value) {
+            throw new Error(error.value.message);
+        }
         $toast.success('Cập nhật thông tin khách hàng thành công!');
         refresh();
         router.push('/admin/customers');

@@ -6,7 +6,7 @@ export const useOrder = () => {
     // Lấy danh sách sản phẩm trong giỏ hàng
     const getOrders = async (page: number = 1,perPage: number = 10) => {
         return await get<Order>('/orders', {
-            arams: { page, per_page: perPage },
+            params: { page, per_page: perPage },
             authType: AuthType.Customer,
         });
     };
@@ -27,8 +27,9 @@ export const useOrder = () => {
 
 
     // Xóa sản phẩm khỏi giỏ hàng
-    const cancelOrder = async (id: number) => {
-        return await post(`/orders/${id}/cancel`, {
+    const cancelOrder = async (id: number, cancelled_reason: string) => {
+        return await post(`/orders/${id}/cancel`,{
+            cancelled_reason},{
             authType: AuthType.Customer,
         });
     };
