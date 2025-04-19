@@ -285,10 +285,10 @@
                 <tbody>
                     @foreach ($order->items as $item)
                         <tr>
-                            <td>{{ $item->product_code }}</td>
-                            <td><a href="{{ env('FRONTEND_URL') }}/products/{{ $item->product_code }}">{{ $item->product_snapshot['product_name'] }}</a></td>
+                            <td>{{ $item->product_snapshot['product_code'] }}</td>
+                            <td><a href="{{ env('FRONTEND_URL') }}/products/{{ $item->product_snapshot['slug'] }}">{{ $item->product_snapshot['product_name'] }}</a></td>
                             <td>{{ $item->quantity }}</td>
-                            <td>{{ number_format($item->price, 0) }} VND</td>
+                            <td>{{ number_format($item->product_snapshot['price'], 0) }} VND</td>
                             <td>{{ number_format($item->total_item_price, 0) }} VND</td>
                         </tr>
                     @endforeach

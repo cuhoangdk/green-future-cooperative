@@ -194,6 +194,7 @@ class OrderRepository implements OrderRepositoryInterface
                 $totalItemPrice = $item->quantity * $item->calculated_price;
                 $productSnapshot = [
                     'id' => $item->product->id,
+                    'slug' => $item->product->slug,
                     'product_code' => $item->product->product_code,
                     'product_name' => $item->product->name,
                     'user_full_name' => $item->product->user->full_name ?? null,
