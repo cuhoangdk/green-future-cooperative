@@ -1,8 +1,8 @@
 <template>
   <div class="p-4">
     <div v-if="status === 'pending'" class="flex justify-center items-center h-screen">
-            <span class="loading loading-spinner loading-lg"></span>
-        </div>
+      <span class="loading loading-spinner loading-lg"></span>
+    </div>
     <form @submit.prevent="handleSubmit" class="space-y-4">
       <!-- Section 1: Farm Information -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -40,11 +40,6 @@
           <label class="text-gray-700 font-semibold block mb-1">Loại đất</label>
           <input v-model="form.soil_type" class="input input-bordered input-primary w-full"
             placeholder="Đất cát trắng" />
-        </div>
-        <div>
-          <label class="text-gray-700 font-semibold block mb-1">Phương pháp canh tác</label>
-          <input v-model="form.irrigation_method" class="input input-bordered input-primary w-full"
-            placeholder="Không sử dụng thuốc bảo vệ thực vật hóa học" />
         </div>
       </div>
 
@@ -88,15 +83,24 @@
       <!-- Section 4: Location -->
       <div class="border-t border-gray-200 pt-5">
         <h3 class="text-lg font-medium text-gray-800 mb-3">Vị trí</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="mb-4">
+          <LMap ref="map" style="height: 350px" :zoom="12" :center="[form.latitude ?? 0, form.longitude ?? 0]"
+            :use-global-leaflet="true">
+            <LTileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
+              layer-type="base" name="OpenStreetMap" />
+            <LMarker :lat-lng="[form.latitude ?? 0, form.longitude ?? 0]" draggable @moveend="updateMarkerPosition" />
+          </LMap>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
           <div>
             <label class="text-gray-700 font-semibold block mb-1">Kinh độ</label>
-            <input v-model="form.latitude" type="number" step="0.000001"
+            <input v-model.number="form.latitude" type="number" step="0.000001"
               class="input input-bordered input-primary w-full" placeholder="21.0285" />
           </div>
           <div>
             <label class="text-gray-700 font-semibold block mb-1">Vĩ độ</label>
-            <input v-model="form.longitude" type="number" step="0.000001"
+            <input v-model.number="form.longitude" type="number" step="0.000001"
               class="input input-bordered input-primary w-full" placeholder="105.8542" />
           </div>
         </div>
@@ -104,7 +108,7 @@
 
       <!-- Submit Button -->
       <div class="border-t border-gray-200 pt-5 flex justify-between items-center">
-        <UiButtonBack/>
+        <UiButtonBack />
         <button type="submit" class="btn btn-primary px-6" :disabled="submitStatus === 'pending'">
           <span v-if="submitStatus === 'pending'" class="loading loading-spinner loading-md"></span>
           Lưu
@@ -115,14 +119,13 @@
 </template>
 
 <script setup lang="ts">
-definePageMeta({ layout: 'user', title: 'Chỉnh sửa nông trại' })
-
-import { useFarms } from '~/composables/useFarms'
-import { useVietnamAddress, useUserAuth } from '#imports'
 import type { Farm } from '~/types/farm'
+
+definePageMeta({ layout: 'user', title: 'Chỉnh sửa nông trại' })
 
 const route = useRoute()
 const router = useRouter()
+const config = useRuntimeConfig()
 const { $toast } = useNuxtApp()
 const { currentUser } = useUserAuth()
 const { getFarmById, updateFarm } = useFarms()
@@ -137,7 +140,7 @@ const farm = computed<Farm | null>(() =>
   Array.isArray(farmData.value?.data) ? farmData.value.data[0] : farmData.value?.data || null
 )
 
-if (farmError.value) {
+if (status.value === 'error') {
   $toast.error('Không thể tải dữ liệu nông trại!')
   router.push('/admin/farms')
 }
@@ -198,6 +201,13 @@ watch(
   },
   { immediate: true }
 )
+
+// Xử lý kéo thả marker
+const updateMarkerPosition = (event: any) => {
+  const latLng = event.target.getLatLng()
+  form.value.latitude = Number(latLng.lat.toFixed(6))
+  form.value.longitude = Number(latLng.lng.toFixed(6))
+}
 
 const submitStatus = ref<'idle' | 'pending' | 'success' | 'error'>('idle')
 
