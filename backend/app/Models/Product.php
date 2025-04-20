@@ -107,6 +107,9 @@ class Product extends Model
         // Lấy tên người dùng từ quan hệ user
         $user = $this->user ?? auth()->user();
         $userName = $user ? $user->full_name : 'UNKNOWN';
+
+        // Chuyển đổi tên người dùng thành không dấu
+        $userName = Str::ascii($userName);
         $userNameParts = explode(' ', trim($userName));
         $userCodePart = '';
         foreach ($userNameParts as $part) {
