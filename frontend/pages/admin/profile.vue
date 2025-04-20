@@ -20,7 +20,7 @@
                     <div class="sm:col-span-2">
                         <label class="text-gray-700 font-semibold block mb-1">Mã thành viên</label>
                         <div class="input input-bordered w-full flex items-center bg-gray-100 font-medium">
-                            {{ currentUser?.usercode }}
+                            {{ currentUser?.id }}
                         </div>
                     </div>
 
@@ -140,9 +140,12 @@
 
             <!-- Submit Button -->
             <div class="border-t border-gray-200 pt-5 flex justify-end">
+                <button type="button" class="btn btn-secondary px-6 mr-2" @click="$router.push('/admin/change-password')">
+                    Đổi mật khẩu
+                </button>
                 <button type="submit" class="btn btn-primary px-6" :disabled="status === 'pending'">
                     <span v-if="status === 'pending'" class="loading loading-spinner loading-md mr-2"></span>
-                    Cập nhật thông tin
+                    Lưu
                 </button>
             </div>
 

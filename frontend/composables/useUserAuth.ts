@@ -161,7 +161,7 @@ export const useUserAuth = () => {
 
   // Đổi mật khẩu người dùng
   const changePassword = async (
-    passwordData: { password: string; password_confirmation: string },
+    passwordData: { current_password: string; new_password: string; new_password_confirmation: string },
     authType: AuthType = AuthType.User
   ) => {
     return await put<null>(`/user-auth/change-password`, passwordData, {
