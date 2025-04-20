@@ -2,14 +2,15 @@
 
 namespace App\Jobs;
 
-use App\Mail\OrderStatusUpdated;
+use App\Models\User;
 use App\Models\Order;
 use Illuminate\Bus\Queueable;
+use App\Mail\OrderStatusUpdated;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Mail;
 
 class SendOrderStatusEmail implements ShouldQueue
 {
@@ -44,7 +45,8 @@ class SendOrderStatusEmail implements ShouldQueue
                 }
                 break;
             case 'super_admin':
-                if ($superAdminEmail = config('mail.super_admin_email')) {
+                $superAdmins = User::where('is_super_admin', true)->pluck('email')->filter();
+                foreach ($superAdmins as $superAdminEmail) {
                     Mail::to($superAdminEmail)->send($email);
                 }
                 break;
