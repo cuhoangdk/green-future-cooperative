@@ -17,4 +17,5 @@ interface CustomerAuthRepositoryInterface
     public function changePassword(array $data);
     public function verifyAccount(array $data);
     public function refreshToken(string $refreshToken);
+    public function resendVerificationToken(string $email);
 }

@@ -122,7 +122,7 @@ class UserAuthRepository implements UserAuthRepositoryInterface
             function ($user, $password) {
                 $user->forceFill([
                     'password' => Hash::make($password),
-                    'remember_token' => Str::random(60),
+                    // 'remember_token' => Str::random(60),
                 ])->save();
             }
         );

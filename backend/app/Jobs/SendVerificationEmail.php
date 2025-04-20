@@ -15,20 +15,16 @@ class SendVerificationEmail implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $customer;
+    protected $token;
 
-    /**
-     * Create a new job instance.
-     */
-    public function __construct(Customer $customer)
+    public function __construct(Customer $customer, string $token)
     {
         $this->customer = $customer;
+        $this->token = $token;
     }
 
-    /**
-     * Execute the job.
-     */
-    public function handle(): void
+    public function handle()
     {
-        $this->customer->notify(new VerifyCustomerAccount($this->customer->remember_token));
+        $this->customer->notify(new VerifyCustomerAccount($this->token));
     }
 }

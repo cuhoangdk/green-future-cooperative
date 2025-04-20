@@ -2,18 +2,17 @@
 
 namespace App\Repositories\Eloquent;
 
-use App\Jobs\CustomerSendResetPasswordEmail;
-use App\Jobs\SendResetPasswordEmail;
-use App\Jobs\SendVerificationEmail;
+use Carbon\Carbon;
 use App\Models\Customer;
-use App\Repositories\Contracts\CustomerAuthRepositoryInterface;
-use App\Notifications\VerifyCustomerAccount;
-use App\Notifications\CustomerResetPasswordNotification;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use App\Jobs\SendVerificationEmail;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
-use Illuminate\Http\Request;
-use Illuminate\Support\Str;
+use App\Jobs\CustomerSendResetPasswordEmail;
+use App\Repositories\Contracts\CustomerAuthRepositoryInterface;
 
 class CustomerAuthRepository implements CustomerAuthRepositoryInterface
 {
@@ -82,14 +81,24 @@ class CustomerAuthRepository implements CustomerAuthRepositoryInterface
             return response()->json(['message' => 'Số điện thoại đã tồn tại trong hệ thống.'], 422);
         }
     
-        // Tạo token xác minh
-        $data['remember_token'] = Str::random(60);
+        
     
         // Tạo khách hàng
         $customer = Customer::create($data);
+
+        // Tạo token xác minh và lưu vào bảng email_verification_tokens
+        $token = Str::random(60); // Tạo token ngẫu nhiên
+        DB::table('email_verification_tokens')->updateOrInsert(
+            ['email' => $customer->email],
+            [
+                'email' => $customer->email,
+                'token' => Hash::make($token), // Lưu token đã mã hóa
+                'created_at' => now(),
+            ]
+        );
     
         // Gửi email xác minh
-        dispatch(new SendVerificationEmail($customer));
+        dispatch(new SendVerificationEmail($customer, $token));
     
         return $customer;
     }
@@ -153,16 +162,60 @@ class CustomerAuthRepository implements CustomerAuthRepositoryInterface
     {
         $customer = Customer::where('email', $data['email'])->first();
 
-        if (!$customer || $customer->verified_at || $customer->remember_token !== $data['token']) {
+        if (!$customer || $customer->verified_at) {
             return false;
         }
 
+        // Kiểm tra token trong bảng email_verification_tokens
+        $tokenRecord = DB::table('email_verification_tokens')
+            ->where('email', $data['email'])
+            ->first();
+
+        if (!$tokenRecord || !Hash::check($data['token'], $tokenRecord->token)) {
+            return false;
+        }
+
+        $createdAt = Carbon::parse($tokenRecord->created_at);
+        if ($createdAt->addHours(24) < now()) {
+            return false;
+        }
         $customer->update([
-            'verified_at' => now(),
-            'remember_token' => null,
+            'verified_at' => now(),            
         ]);
 
         return true;
+    }
+
+    public function resendVerificationToken(string $email)
+    {
+        // Tìm khách hàng theo email
+        $customer = Customer::where('email', $email)->first();
+
+        if (!$customer) {
+            return response()->json(['message' => 'Email không tồn tại.'], 404);
+        }
+
+        if ($customer->verified_at) {
+            return response()->json(['message' => 'Tài khoản đã được xác minh.'], 400);
+        }
+
+        // Tạo token mới và lưu vào bảng email_verification_tokens
+        $token = Str::random(60);
+        DB::table('email_verification_tokens')->updateOrInsert(
+            ['email' => $customer->email],
+            [
+                'email' => $customer->email,
+                'token' => Hash::make($token),
+                'created_at' => now(),
+            ]
+        );
+
+        // Gửi email xác minh với token mới
+        dispatch(new SendVerificationEmail($customer, $token));
+
+        return response()->json([
+            'message' => 'Email xác minh đã được gửi lại. Vui lòng kiểm tra hộp thư của bạn.',
+        ], 200);
     }
     public function refreshToken(string $refreshToken)
     {

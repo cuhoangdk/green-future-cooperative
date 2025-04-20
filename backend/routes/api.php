@@ -332,6 +332,7 @@ Route::middleware('log.activity')->group(function () {
         Route::post('/reset-password', [CustomerAuthController::class, 'resetPassword'])->name('customer-auth.reset-password');
         // required: email, token
         Route::post('/verify-account', [CustomerAuthController::class, 'verifyAccount'])->name('customer-auth.verify-account');
+        Route::post('/resend-verification', [CustomerAuthController::class, 'resendVerificationToken']);
         // required: refresh_token
         Route::post('/refresh-token', [CustomerAuthController::class, 'refreshToken'])->name('customer-auth.refresh-token');
         Route::middleware('auth:api_customers')->group(function () {

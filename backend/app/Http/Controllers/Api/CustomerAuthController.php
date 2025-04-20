@@ -99,7 +99,7 @@ class CustomerAuthController extends Controller
         $verified = $this->authRepository->verifyAccount($request->only('email', 'token'));
 
         if (!$verified) {
-            return response()->json(['message' => 'Sai token hoặc email'], 400);
+            return response()->json(['message' => 'Sai token hoặc email hoặc token đã hết hạn'], 400);
         }
 
         return response()->json(['message' => 'Kích hoạt tài khoản thành công'], 200);
@@ -169,5 +169,11 @@ class CustomerAuthController extends Controller
         }
 
         return response()->json($tokenData);
+    }
+
+    public function resendVerificationToken(ForgotPasswordCustomerRequest $request)
+    {        
+
+        return $this->authRepository->resendVerificationToken($request->email);
     }
 }
