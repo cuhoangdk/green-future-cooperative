@@ -39,7 +39,7 @@
                     <td class="py-1">
                         <span v-if="product.status === 'growing'" class="badge badge-primary">Đang trồng</span>
                         <span v-else-if="product.status === 'selling'" class="badge badge-secondary">Đang bán</span>
-                        <span v-else class="badge badge-error">Ngừng hoạt động</span>
+                        <span v-else class="badge badge-error">Ngừng bán</span>
                     </td>
                     <td class="py-1">
                         <div class="flex space-x-1 items-center">

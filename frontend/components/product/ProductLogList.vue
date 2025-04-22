@@ -6,7 +6,7 @@
         </div>
         <div class="relative">
             <div v-if="logsStatus === 'pending'"
-                class="absolute inset-0 flex items-center justify-center bg-gray-100/20 z-10">
+                class="absolute inset-0 bg-gray-50 opacity-25 flex justify-center items-center z-10">
                 <span class="loading loading-spinner loading-xl"></span>
             </div>
         </div>
@@ -14,26 +14,18 @@
             <div class="collapse collapse-arrow bg-base-100 border-green-500 border my-1.5">
                 <input type="checkbox" />
                 <div class="collapse-title font-semibold flex items-center ">
-                    {{
-                        log.created_at ? new Date(log.created_at).toLocaleString('vi-VN', {
-                            hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year:
-                                'numeric'
-                        })
-                            : ''
-                    }} - {{ log.activity }}
+                    {{ formatDateTime(log.created_at) }} - {{ log.activity }}
                 </div>
                 <div class="collapse-content text-sm">
                     <div class="flex flex-col space-y-2 mb-2">
                         <div v-if="log.fertilizer_used"><span class="font-semibold">Phân bón:</span> {{
                             log.fertilizer_used }}
                         </div>
-                        <div v-if="log.pesticide_used"><span class="font-semibold">Thuốc bảo vệ thực
-                                vật:</span>
-                            {{
-                                log.pesticide_used
-                            }}</div>
-                        <div v-if="log.notes"><span class="font-semibold">Ghi chú:</span> {{ log.notes
-                        }}
+                        <div v-if="log.pesticide_used"><span class="font-semibold">Thuốc bảo vệ thực vật:</span>
+                            {{ log.pesticide_used }}
+                        </div>
+                        <div v-if="log.notes"><span class="font-semibold">Ghi chú:</span>
+                            {{ log.notes }}
                         </div>
                     </div>
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-2">
@@ -65,12 +57,12 @@ const backendUrl = config.public.backendUrl
 const currentLogPage = ref(1)
 const perLogPage = 10
 interface Props {
-    productId: number;
+    productId: string;
 }
 
 const props = defineProps<Props>()
 
-const { data: logsData, status: logsStatus } = await getLogs(Number(props.productId) || -1, currentLogPage.value, perLogPage)
+const { data: logsData, status: logsStatus } = await getLogs(props.productId, currentLogPage.value, perLogPage)
 const logs = computed<{
     logs: CultivationLog[];
     meta: PaginationMeta | null;
@@ -81,10 +73,8 @@ const logs = computed<{
     links: (logsData.value?.links as PaginationLinks) ?? null,
 }));
 
-
-
 const handleLogsPageChange = (page: number) => {
     currentLogPage.value = page
-    getLogs(props.productId || -1, page, perLogPage)
+    getLogs(props.productId, currentLogPage.value, perLogPage)
 }
 </script>

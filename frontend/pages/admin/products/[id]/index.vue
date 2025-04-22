@@ -82,7 +82,7 @@
             <!-- Cultivated Area & Stock Quantity -->
             <div class="flex space-x-4">
                 <div class="w-1/2">
-                    <label class="text-gray-700 font-semibold">Diện tích trồng (mét vuông)</label>
+                    <label class="text-gray-700 font-semibold">Diện tích trồng (m²)</label>
                     <input v-model="form.cultivated_area" type="number" step="0.01"
                         class="input input-primary w-full mt-1" placeholder="700" />
                 </div>
@@ -100,19 +100,19 @@
                     placeholder="7" />
             </div>
 
-            <!-- Harvested At -->
-            <div>
-                <label class="text-gray-700 font-semibold">Bắt đầu thu hoạch</label>
-                <input v-model="form.harvested_at" type="date" class="input input-primary w-full mt-1" />
-            </div>
-
             <!-- Phần hình ảnh và giá cả (chỉ khi đã bán) -->
             <template v-if="product?.status === 'selling'">
+                <!-- Harvested At -->
+                <div>
+                    <label class="text-gray-700 font-semibold">Bắt đầu thu hoạch</label>
+                    <input v-model="form.harvested_at" type="date" class="input input-primary w-full mt-1" />
+                </div>
+                
                 <div class="border-t border-gray-200 pt-5">
                     <div class="text-lg font-medium text-gray-800 mb-3">Hình ảnh</div>
                     <div>
                         <div class="space-y-2">
-                            <input @change="handleImageUpload" type="file"
+                            <input @change="handleImageUpload" accept=".jpg,.jpeg,.png" type="file"
                                 class="file-input file-input-primary mt-1 w-full lg:w-1/2" multiple />
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                                 <div v-for="(image, index) in form.product_images" :key="index">
@@ -164,23 +164,24 @@
                     </div>
 
                     <div v-if="form.pricing_type === 'flexible'">
-                        <div class="flex justify-between items-center mb-2">
+                        <div class="flex justify-between items-center my-2">
                             <span class="text-gray-700 font-semibold">Danh sách giá</span>
                         </div>
                         <div v-for="(price, index) in form.product_prices" :key="index"
                             class="flex items-center gap-2 mb-2">
-                            <div>
-                                <label class="text-gray-700 font-semibold">Từ </label>
-                                <input v-model="price.quantity" type="number"
-                                    class="input input-primary w-15 text-center" placeholder="0" required />
-                                {{ product?.unit.name }}
-                                <span class="text-gray-700 font-semibold">-</span>
-                            </div>
-                            <input v-model="price.price" type="number" class="input input-primary w-24 text-center"
-                                placeholder="15000" required />
-                            <span>VNĐ</span>
+                            <label class="input">
+                                <span class="">Từ</span>
+                                <input v-model="price.quantity" type="number" class="" placeholder="0" required />
+                                <span class="">{{ product?.unit.name }}</span>
+                            </label>
+
+                            <label class="input">
+                                <input v-model="price.price" type="number" class="" placeholder="15000" required />
+                                <span class="">VNĐ</span>
+                            </label>
+
                             <button v-if="form.product_prices.length > 1" @click="removePrice(index)" type="button"
-                                class="btn btn-error btn-sm">
+                                class="btn btn-error btn-s">
                                 Xóa
                             </button>
                         </div>
@@ -291,8 +292,10 @@ watch(product, (newData) => {
         if (newData.status === 'selling' && newData.prices) {
             form.value.product_prices = newData.prices.map(price => ({
                 id: price.id,
-                quantity: price.quantity.toString(),
-                price: price.price.toString()
+                quantity: units.value.find(unit => unit.id === newData?.unit.id)?.allow_decimal
+                    ? price.quantity.toString()
+                    : Math.round(Number(price.quantity)).toString(),
+                price: Math.round(price.price).toString()
             }))
         } else if (newData.status === 'selling' && !form.value.product_prices.length) {
             form.value.product_prices.push({ quantity: '', price: '' })
@@ -387,7 +390,7 @@ const handleSubmit = async () => {
             for (const [index, image] of existingImages.entries()) {
                 const imageData = new FormData()
                 imageData.append('sort_order', image.sort_order.toString())
-                imageData.append('is_primary', index === primaryImageIndex.value && !newImages.length ? '1' : '0')
+                imageData.append('is_primary', index === primaryImageIndex.value ? '1' : '0')
                 const { error } = await updateImage(productId, image.id!, imageData)
                 if (error.value) throw new Error('Cập nhật ảnh thất bại')
             }

@@ -105,16 +105,12 @@ const owners = computed<User[]>(() =>
     Array.isArray(userData.value?.data) ? userData.value.data : userData.value?.data ? [userData.value.data] : []
 )
 
-const { data, status } = await searchProducts({ page: currentPage.value, per_page: perPage.value }, AuthType.User)
+const { data, status, refresh } = await searchProducts({ page: currentPage.value, per_page: perPage.value }, AuthType.User)
 const products = computed<{ products: Product[], meta: PaginationMeta | null, links: PaginationLinks | null }>(() => ({
     products: Array.isArray(data.value?.data) ? data.value.data : data.value?.data ? [data.value.data] : [],
     meta: data.value?.meta ?? null,
     links: data.value?.links ?? null,
 }))
-
-const toggleRow = (id: number) => {
-    expandedRows.value.has(id) ? expandedRows.value.delete(id) : expandedRows.value.add(id)
-}
 
 async function search() {
     const filters: any = {
@@ -139,7 +135,7 @@ const handlePageChange = (page: number) => {
     search()
 }
 
-async function handleDeleteProduct(productId: number) {
+async function handleDeleteProduct(productId: string) {
     const result = await swal.fire({
         title: 'Xác nhận xóa',
         text: 'Bạn có chắc muốn xóa sản phẩm này không?',
@@ -154,7 +150,7 @@ async function handleDeleteProduct(productId: number) {
             const { error } = await deleteProduct(productId)
             if (error.value) throw new Error(error.value.message)
             products.value.products = products.value.products.filter((product: Product) => product.id !== productId)
-            expandedRows.value.delete(productId)
+            refresh()
             $toast.success('Sản phẩm đã được xóa!')
         } catch (err) {
             $toast.error(`Xóa thất bại: ${(err as Error).message || 'Unknown error'}`)

@@ -5,25 +5,28 @@
             <img :src="`${img}`" :alt="product.name" class="rounded-lg aspect-[4/3] rounded-b-none object-cover w-full"
                 loading="lazy" @error="() => { img = placeholderImage; }" />
             <div class="text-center px-3 flex-grow">
-                <h3 class="text-lg font-semibold text-green-800">{{ product.name }}</h3>
-                <p class="font-bold text-red-600">
-                    {{ product?.prices?.[0]?.price && product.pricing_type !== 'contact' ?
-                        formatCurrency(product.prices[0].price) : 'Liên hệ' }}
-                    <span class="text-sm text-gray-500"
-                        v-if="product?.prices?.[0]?.price && product.pricing_type !== 'contact'">/ {{ product.unit.name
-                        }}</span>
+                <h2 class="text-lg font-semibold text-green-800">{{ product.name }}</h2>
+                <p v-if="product?.stock_quantity == 0" class="font-bold text-red-600">
+                    Hết hàng
+                </p>
+                <p v-else-if="product.pricing_type == 'contact'" class="font-bold text-red-600">
+                    Liên hệ
+                </p>
+                <p v-else-if="product?.prices?.[0]?.price" class="font-bold text-red-600">
+                    {{ formatCurrency(product.prices[0].price) }}
+                    <span class="text-sm text-gray-500">/ {{ product.unit.name }}</span>
                 </p>
             </div>
         </NuxtLink>
 
         <div class="px-3 pb-2">
-            <button @click="openModal"
-                class="bg-green-600 text-white font-semibold w-full py-2 rounded-full hover:bg-green-700 flex items-center justify-center">
-                <div class="flex gap-2">
+            <button v-if="product?.stock_quantity > 0 && product?.pricing_type != 'contact'" @click="openModal"
+                class="btn bg-green-600 text-white w-full rounded-full hover:bg-green-700 flex gap-2">
                     <ShoppingCart class="w-5 h-5 mr-1" />
                     Mua
-                </div>
             </button>
+
+            <ProductContactButton v-else/>
             <!-- <p class="text-xs text-center text-gray-500 mt-1">Người trồng: {{ product.user?.full_name }}</p> -->
         </div>
 
@@ -51,7 +54,8 @@
                                 </button>
                             </div>
 
-                            <div class="flex flex-col md:flex-row justify-center items-center md:justify-start md:items-start mb-6 gap-4">
+                            <div
+                                class="flex flex-col md:flex-row justify-center items-center md:justify-start md:items-start mb-6 gap-4">
                                 <img :src="img" :alt="product.name" class="w-44 h-44 object-cover rounded-lg" />
                                 <div>
                                     <div v-if="product?.prices?.length">
@@ -88,16 +92,8 @@
                                         </button>
                                     </div>
                                 </div>
-                                <button @click="addProductToCart" :disabled="isAddingToCart || quantity < 1"
-                                    class="btn btn-primary px-5 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white flex items-center gap-2"
-                                    :class="{ 'opacity-70 cursor-not-allowed': isAddingToCart || quantity < 1 }">
-                                    <span v-if="!isAddingToCart" class="flex items-center">
-                                        <ShoppingCart class="w-4 h-4 mr-1" /> Thêm vào giỏ
-                                    </span>
-                                    <span v-else class="flex items-center">
-                                        <span class="loading loading-spinner loading-sm mr-1"></span> Đang thêm...
-                                    </span>
-                                </button>
+                                <ProductBuyButton :addProductToCart="addProductToCart" :quantity="quantity"
+                                    :isAddingToCart="isAddingToCart" :stock-quantity="product.stock_quantity"/>
                             </div>
                         </div>
                     </transition>

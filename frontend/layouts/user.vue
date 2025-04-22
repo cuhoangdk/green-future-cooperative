@@ -13,7 +13,7 @@
             ]">
                 <!-- Brand -->
                 <div class="p-2 bg-white border-b border-gray-200 text-center text-xl font-bold text-gray-800 flex items-center justify-between">
-                    <span v-show="!isCollapsed">Admin Panel</span>
+                    <span v-show="!isCollapsed">Green Future</span>
                     <button @click="toggleCollapse" class="p-1 mx-auto hover:bg-gray-100 rounded">
                         <Expand class="w-5 h-5 text-gray-600" />
                     </button>
@@ -126,7 +126,7 @@ import {
     Users,
     Newspaper,
     Sprout,
-    ShoppingBag,
+    Tractor,
     Ruler,
     Layers,
     Ticket,
@@ -162,11 +162,11 @@ const handleLogout = async () => {
 // Unified menu with the requested order
 const menus = ref([
     { label: 'Trang chủ', route: '/admin', icon: Home },
-    { label: 'Nông trại', route: '/admin/farms', icon: Sprout },
+    { label: 'Nông trại', route: '/admin/farms', icon: Tractor },
     { 
         label: 'Sản phẩm',
         route: '/admin/products',
-        icon: ShoppingBag,
+        icon: Sprout,
         isOpen: false,
         items: [
             { label: 'Loại sản phẩm', route: '/admin/product-categories', icon: Layers },

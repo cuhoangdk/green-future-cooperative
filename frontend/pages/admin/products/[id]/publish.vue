@@ -34,7 +34,7 @@
             <div class="border-t border-gray-200 pt-5">
                 <div class="text-lg font-medium text-gray-800 mb-3">Hình ảnh</div>
                 <div class="space-y-2">
-                    <input @change="handleImageUpload" type="file"
+                    <input @change="handleImageUpload" type="file" accept=".jpg,.jpeg,.png"
                         class="file-input file-input-primary mt-1 w-full lg:w-1/2" multiple required />
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                         <div v-for="(image, index) in form.product_images" :key="index">
