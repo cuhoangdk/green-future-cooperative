@@ -9,8 +9,8 @@
                     class="rounded-2xl p-3 lg:p-5 w-full h-full object-cover" loading="lazy" />
             </div>
             <div class="text-left p-3 lg:p-5 w-full">
-                <h2 class="text-2xl font-bold text-green-800 mb-1">Hợp tác xã Tương Lai Xanh</h2>
-                <p class="text-gray-700 text-sm">
+                <h2 class="text-2xl font-bold text-green-800 mb-3">Hợp tác xã Tương Lai Xanh</h2>
+                <p class="text-gray-700">
                     Với phương châm "An toàn người trồng – Sức khỏe người dùng", chúng tôi cam kết mang lại những sản
                     phẩm nông nghiệp chất lượng cao, đảm bảo an toàn cho cả người sản xuất và người tiêu dùng.
                 </p>
@@ -45,6 +45,20 @@
                 <PostList :posts="postsData.posts" :meta="postsData.meta" :links="postsData.links" :status="postStatus"
                     :max-columns="4" @page-change="handlePostsPageChange" />
             </div>
+        </div>
+
+        <div class="w-11/12 max-w-7xl p-5 my-5 border border-gray-200 shadow-sm rounded-2xl bg-white">
+            <h2 class="text-2xl font-bold text-green-800 mb-3">🌿 Trải nghiệm đặc biệt</h2>
+            <p class="text-gray-700">
+                Khách hàng có thể ghé thăm HTX vào cuối tuần để trải nghiệm hái rau và chăm sóc rau ngay tại vườn.
+                Đây là cơ hội tuyệt vời để tận hưởng không gian xanh mát và lưu lại những bức ảnh đẹp cùng những
+                khoảnh khắc đáng nhớ. Nếu bạn muốn tham quan, vui lòng liên hệ với fanpage của HTX: Green Future
+                Cooperative.
+            </p>
+            <p class="text-gray-700 mt-2">
+                Nếu bạn yêu thích sản phẩm, hãy like và theo dõi fanpage của HTX để cập nhật những sản phẩm mới
+                trong thời gian tới.
+            </p>
         </div>
     </div>
 </template>

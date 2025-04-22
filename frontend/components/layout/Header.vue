@@ -2,11 +2,11 @@
     <div class="bg-white shadow-sm text-black lg:relative fixed top-0 w-full z-50">
         <!-- Top row with logo and user actions -->
         <div class="bg-green-600">
-            <div class="max-w-7xl mx-auto px-4 lg:px-8">
+            <div class="max-w-9xl mx-auto px-4 lg:px-8">
                 <div class="flex items-center justify-between py-1 gap-2">
                     <div class="flex items-center gap-2">
                         <img src="~/assets/images/logo.png" alt="Logo Green Future"
-                            class="rounded-full w-12 h-12 lg:w-16 lg:h-16 object-cover" />
+                            class="rounded-full w-12 h-12 lg:w-14 lg:h-14 object-cover" />
                         <h1 class="text-2xl lg:text-3xl font-bold text-white hidden lg:block">
                             <NuxtLink to="/" class="">Green Future</NuxtLink>
                         </h1>

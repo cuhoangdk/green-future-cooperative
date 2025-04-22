@@ -25,13 +25,13 @@
                 {{ formatPrice(cartItem.purchase_price) }} / {{ cartItem.product.unit.name }}
             </p>
             <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center">
-                <div class="flex items-center space-x-2">
-                    <button @click="decreaseQuantity" class="btn btn-outline btn-sm btn-primary btn-square">
+                <div class="join">
+                    <button @click="decreaseQuantity" class="btn btn-outline btn-sm btn-primary btn-square join-item rounded-l-full">
                         <Minus class="w-5 h-5" />
                     </button>
                     <input v-model.number="localQuantity" @change="debouncedUpdateQuantity" type="number" min="1"
-                        class="text-sm input input-sm w-24 text-center" />
-                    <button @click="increaseQuantity" class="btn btn-outline btn-sm btn-primary btn-square">
+                        class="text-sm input input-sm w-24 text-center join-item" />
+                    <button @click="increaseQuantity" class="btn btn-outline btn-sm btn-primary btn-square join-item rounded-r-full">
                         <Plus class="w-5 h-5" />
                     </button>
                 </div>
