@@ -23,5 +23,5 @@ export interface ApiResponse<T> {
     message?: string;
     status?: string;
     errors?: Record<string, string[]>;
-    // [key: string]: any;
+    [key: string]: any;
 }

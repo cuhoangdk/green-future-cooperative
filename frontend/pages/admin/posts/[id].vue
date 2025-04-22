@@ -36,18 +36,17 @@
       <!-- Nội dung -->
       <div>
         <label class="text-gray-700 font-semibold">Nội dung</label>
-        <textarea v-model="form.content" rows="30" class="textarea textarea-primary h-[700px] w-full mt-1"
-          placeholder="..." required />
+        <UiTinyEditor v-model="form.content" />
       </div>
 
       <!-- Ảnh bìa -->
       <div>
         <label class="text-gray-700 font-semibold">Ảnh bìa</label>
-        <input type="file" @change="handleImageUpload" class="hidden" id="fileInput" />
+        <input type="file" accept=".jpg,.jpeg,.png" @change="handleImageUpload" class="hidden" id="fileInput" />
         <label for="fileInput"
-          class="block w-full text-center py-2 border-2 border-green-200 border-dashed rounded-lg cursor-pointer hover:bg-gray-100 transition mt-1">
-          <span v-if="!previewImage" class="flex justify-center gap-3 py-8">
-            <FileArchive /> Chọn ảnh đại diện
+          class="mx-auto flex items-center justify-center text-center aspect-video h-52 border-2 border-green-200 border-dashed rounded-lg cursor-pointer hover:bg-gray-100 transition mt-1">
+          <span v-if="!previewImage" class="flex justify-center items-center gap-3 py-8">
+            <FileArchive /> Chọn ảnh bìa
           </span>
           <div v-else class="flex justify-center">
             <img :src="previewImage" class="aspect-video h-52 object-cover rounded-lg shadow" />

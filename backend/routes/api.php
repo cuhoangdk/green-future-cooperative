@@ -399,6 +399,7 @@ Route::middleware('log.activity')->group(function () {
             // nullable: summary, featured_image, post_status, is_hot, is_featured, tags, meta_title, meta_description, hot_order, featured_order
             Route::post('/', [PostController::class, 'store'])->name('posts.store');
             Route::get('/trashed', [PostController::class, 'trashed'])->name('posts.trashed');
+            Route::post('/upload-image', [PostController::class, 'uploadImage']);
         });
         Route::get('/{id}', [PostController::class, 'show'])->name('posts.show');
         Route::get('/slug/{slug}', [PostController::class, 'getBySlug'])->name('posts.get-by-slug');

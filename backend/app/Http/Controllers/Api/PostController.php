@@ -6,6 +6,7 @@ use App\Http\Requests\Posts\IndexPostRequest;
 use App\Http\Requests\Posts\SearchPostRequest;
 use App\Http\Requests\Posts\StorePostRequest;
 use App\Http\Requests\Posts\UpdatePostRequest;
+use App\Http\Requests\Posts\UploadImageRequest;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\PostResource;
 use App\Repositories\Contracts\PostRepositoryInterface;
@@ -36,8 +37,8 @@ class PostController extends Controller
         $sortDirection = $request->input('sort_direction', 'desc');
 
         $posts = $this->postRepository
-        ->getAll($sortBy, $sortDirection, $perPage)
-        ->appends(request()->query());
+            ->getAll($sortBy, $sortDirection, $perPage)
+            ->appends(request()->query());
         ;
 
         return PostResource::collection($posts);
@@ -214,7 +215,7 @@ class PostController extends Controller
         $post->load(['category', 'user']);
         return new PostResource($post);
     }
-     /**
+    /**
      * Xem danh sách bài viết theo loại.
      * 
      * @param int $category_id 
@@ -325,4 +326,12 @@ class PostController extends Controller
         return PostResource::collection($posts);
     }
 
+
+    public function uploadImage(UploadImageRequest $request)
+    {
+        $file = $request->file('file');
+        $path = $this->uploadService->uploadImage($file, 'posts'); // sử dụng uploadService để upload ảnh
+        $url = asset($path); // URL trả về cho TinyMCE
+        return response()->json(['location' => $url]);
+    }
 }

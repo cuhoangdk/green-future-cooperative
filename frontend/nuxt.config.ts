@@ -16,6 +16,10 @@ export default defineNuxtConfig({
           href: 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css',
         },
       ],
+      title: 'Hợp tác xã Tương Lai Xanh', // default fallback title
+      htmlAttrs: {
+        lang: 'en',
+      },
     },
     pageTransition: { name: 'page', mode: 'out-in' },
   },

@@ -100,6 +100,14 @@ export const usePosts = () => {
     })
   }
 
+  const uploadImage = async (image: File) => {
+    const formData = new FormData()
+    formData.append('file', image)
+    return await post('/posts/upload-image', formData, {
+      authType: AuthType.User,
+    })
+  }
+
   return {
     getPosts,
     getPostsByCategoryId,
@@ -112,5 +120,6 @@ export const usePosts = () => {
     updatePost,
     deletePost,
     searchPosts,
+    uploadImage
   }
 }
