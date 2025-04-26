@@ -172,6 +172,7 @@ class OrderRedisRepository implements OrderRepositoryInterface
                     'total_item_price' => $totalItemPrice,
                 ]);
                 $item->product->decrement('stock_quantity', $item->quantity);
+                $item->product->increment('sold_quantity', $item->quantity);
                 if ($customerId) {
                     CartItem::where('customer_id', $customerId)
                         ->where('product_id', $item->product_id)
@@ -274,6 +275,7 @@ class OrderRedisRepository implements OrderRepositoryInterface
                     'total_item_price' => $totalItemPrice, // Đảm bảo lưu giá trị đúng
                 ]);
                 $item->product->decrement('stock_quantity', $item->quantity);
+                $item->product->increment('sold_quantity', $item->quantity);
             }
 
             $order->load('customer', 'items.product.user');
@@ -324,6 +326,7 @@ class OrderRedisRepository implements OrderRepositoryInterface
 
             foreach ($order->items as $item) {
                 $item->product->increment('stock_quantity', $item->quantity);
+                $item->product->decrement('sold_quantity', $item->quantity);
             }
             // Tải lại quan hệ sau khi cập nhật
             $order = $order->fresh(['customer', 'items.product.user']);

@@ -1,37 +1,39 @@
 <?php
 
-use App\Http\Controllers\Api\ActivityLogController;
-use App\Http\Controllers\Api\AdminOrderController;
-use App\Http\Controllers\Api\ContactInformationController;
-use App\Http\Controllers\Api\OrderController;
-use App\Http\Controllers\Api\ParameterController;
-use App\Http\Controllers\Api\SliderImageController;
-use App\Http\Controllers\Api\SocialLinkController;
-use App\Http\Controllers\Api\CartItemController;
-use App\Http\Controllers\Api\CultivationLogController;
-use App\Http\Controllers\Api\FarmController;
-use App\Http\Controllers\Api\ProductCategoryController;
-use App\Http\Controllers\Api\ProductImageController;
-use App\Http\Controllers\Api\ProductQuantityPriceController;
-use App\Http\Controllers\Api\ProductUnitController;
-use App\Http\Controllers\Api\ProductController;
-use App\Http\Controllers\Api\UserAuthController;
-use App\Http\Controllers\Api\PostController;
-use App\Http\Controllers\Api\PostCategoryController;
-use App\Http\Controllers\Api\UserController;
-use App\Http\Controllers\Api\CustomerAuthController;
-use App\Http\Controllers\Api\CustomerProfileController;
-use App\Http\Controllers\Api\PostCommentController;
-use App\Http\Controllers\Api\CustomerController;
-use App\Http\Controllers\Api\CustomerAddressController;
-use App\Http\Controllers\Api\RoleController;
-use App\Http\Controllers\Api\PermissionController;
-use App\Http\Controllers\Api\NotificationController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\FarmController;
+use App\Http\Controllers\Api\PostController;
+use App\Http\Controllers\Api\RoleController;
+use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\OrderController;
+use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\CartItemController;
+use App\Http\Controllers\Api\CustomerController;
+use App\Http\Controllers\Api\UserAuthController;
+use App\Http\Controllers\Api\ParameterController;
+use App\Http\Controllers\Api\AdminOrderController;
+use App\Http\Controllers\Api\PermissionController;
+use App\Http\Controllers\Api\SocialLinkController;
+use App\Http\Controllers\Api\StatisticsController;
+use App\Http\Controllers\Api\ActivityLogController;
+use App\Http\Controllers\Api\PostCommentController;
+use App\Http\Controllers\Api\ProductUnitController;
+use App\Http\Controllers\Api\SliderImageController;
+use App\Http\Controllers\Api\CustomerAuthController;
+use App\Http\Controllers\Api\NotificationController;
+use App\Http\Controllers\Api\PostCategoryController;
+use App\Http\Controllers\Api\ProductImageController;
+use App\Http\Controllers\Api\CultivationLogController;
+use App\Http\Controllers\Api\CustomerAddressController;
+use App\Http\Controllers\Api\CustomerProfileController;
+use App\Http\Controllers\Api\ProductCategoryController;
+use App\Http\Controllers\Api\ContactInformationController;
+use App\Http\Controllers\Api\ProductQuantityPriceController;
 
 
 
 Route::middleware('log.activity')->group(function () {
+    Route::middleware(['auth:api_users'])->get('/statistics', [StatisticsController::class, 'getStatistics'])->name('statistics.index');
     Route::prefix('shipping-fee')->group(function () {
         Route::get('/', [ParameterController::class, 'show'])->name('shipping-fee.show');
         Route::middleware(['auth:api_users', 'permission'])->put('/', [ParameterController::class, 'update'])->name('shipping-fee.update');
