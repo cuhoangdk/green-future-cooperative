@@ -58,13 +58,23 @@ class StatisticsController extends Controller
             'cancelled' => $ordersByStatus['cancelled'] ?? 0,
         ];
 
-        // 5. Số đơn hàng mỗi ngày
+        // 5. Số đơn hàng mỗi ngày (đếm tất cả đơn hàng, tổng tiền chỉ cho status = 'delivered')
         $ordersPerDay = Order::whereBetween('created_at', [$startDate, $endDate])
-            ->select(DB::raw('DATE(created_at) as date'), DB::raw('COUNT(*) as count'))
-            ->groupBy('date')
-            ->orderBy('date')
-            ->pluck('count', 'date')
-            ->toArray();
+        ->select(
+            DB::raw('DATE(created_at) as date'),
+            DB::raw('COUNT(*) as count'),
+            DB::raw('SUM(CASE WHEN status = "delivered" THEN final_total_amount ELSE 0 END) as total_amount')
+        )
+        ->groupBy('date')
+        ->orderBy('date')
+        ->get()
+        ->mapWithKeys(function ($item) {
+            return [$item->date => [
+                'count' => (int) $item->count,
+                'total_amount' => (float) $item->total_amount
+            ]];
+        })
+        ->toArray();
 
         // 6. Tổng doanh thu (tổng final_total_amount của đơn hàng delivered)
         $totalRevenue = Order::where('status', 'delivered')
