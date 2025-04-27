@@ -15,27 +15,22 @@
                         <p class="text-sm text-gray-500">Ngày đặt hàng</p>
                         <p class="font-semibold">{{ formatDateTime(order.created_at) }}</p>
                     </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Cập nhật lần cuối</p>
+                        <p class="font-semibold">{{ formatDateTime(order.updated_at) }}</p>
+                    </div>
                     <div v-if="order.expected_delivery_date">
                         <p class="text-sm text-gray-500">Ngày giao hàng dự kiến</p>
                         <p class="font-semibold">{{ order.expected_delivery_date }}</p>
                     </div>
                     <div>
-                        <p class="text-sm text-gray-500">Cập nhật lần cuối</p>
-                        <p class="font-semibold">{{ formatDateTime(order.updated_at) }}</p>
-                    </div>
-                    <div class="badge badge-lg" :class="{
-                        'badge-warning': order.status === 'processing',
-                        'badge-error': order.status === 'cancelled',
-                        'badge-info': order.status === 'pending'
-                    }">
-                        {{ order.status === 'processing' ? 'Đang xử lý' : order.status === 'cancelled' ? 'Đã hủy' :
-                            order.status === 'pending' ? 'Chờ xác nhận' : '' }}
+                        <OrderTimeline :status="order.status" />
                     </div>
                 </div>
             </div>
 
             <!-- Customer Information -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-x-0 gap-y-6 md:gap-6 mb-6">
                 <div class="card bg-base-100 border border-gray-200">
                     <div class="p-4">
                         <h2 class="card-title text-lg mb-2">Thông tin khách hàng</h2>
@@ -85,7 +80,8 @@
                                     <th class="py-2 text-left w-[25%] min-w-44">Số lượng × Đơn giá</th>
                                     <th class="py-2 text-left w-[25%] min-w-44">Thành tiền</th>
                                     <th v-if="currentUser?.is_super_admin === true"
-                                        class="py-2 text-left w-[25%] min-w-44">Thuộc về</th>
+                                        class="py-2 text-left w-[25%] min-w-44">
+                                        Thuộc về</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -99,8 +95,9 @@
                                         {{ item.product_snapshot.product_name }}
                                     </td>
                                     <td>
-                                        {{ formatNumber(item.quantity) }} {{ item.product_snapshot.unit }} × {{formatCurrency(item.product_snapshot.price) }}
-                                            </td>
+                                        {{ formatNumber(item.quantity) }} {{ item.product_snapshot.unit }} ×
+                                        {{ formatCurrency(item.product_snapshot.price) }}
+                                    </td>
                                     <td class="font-semibold">{{ formatCurrency(item.total_item_price) }}</td>
                                     <td v-if="item.flag === false && currentUser?.is_super_admin === true">
                                         <span class="text-gray-500">
@@ -148,7 +145,8 @@
                             </div>
                             <div class="flex justify-between py-2 text-lg">
                                 <span class="font-bold">Tổng cộng:</span>
-                                <span class="font-bold text-primary">{{ formatCurrency(order.final_total_amount) }}</span>
+                                <span class="font-bold text-primary">{{ formatCurrency(order.final_total_amount)
+                                    }}</span>
                             </div>
                         </div>
                     </div>
@@ -177,16 +175,9 @@
             </div>
 
             <!-- Action Buttons -->
-            <div class="flex justify-between  w-full mt-6">
+            <div class="flex justify-between w-full mt-6">
                 <UiButtonBack />
-                <!-- <div class="space-x-2">
-                    <button class="btn btn-primary">
-                        In 
-                    </button>
-                    <button class="btn btn-outline btn-primary">
-                        Lưu
-                    </button>
-                </div> -->
+                <OrderConfirmButton :status="order.status" @click="handleChangeStatus" />
             </div>
         </div>
 
@@ -203,13 +194,16 @@
 
 <script setup lang="ts">
 definePageMeta({ layout: 'user', title: 'Chi tiết đơn hàng', description: 'Quản lý đơn hàng' })
-import type { Order } from '~/types/order'
-import { ArrowLeft, Phone, Mail, User, MapPin , X } from 'lucide-vue-next'
+import type { Order, OrderStatus } from '~/types/order'
+import { ArrowLeft, Phone, Mail, User, MapPin, X } from 'lucide-vue-next'
 
-const { getAdminOrderById } = useAdminOrder()
+
+const { getAdminOrderById, updateAdminOrder } = useAdminOrder()
 const { getFullAddressName } = useVietnamAddress()
 const { currentUser } = useUserAuth()
 const route = useRoute()
+const router = useRouter()
+const { $toast } = useNuxtApp();
 
 const id = String(route.params.id);
 
@@ -223,4 +217,32 @@ watch(order, async (newOrder) => {
     }
 });
 
+
+const handleChangeStatus = async () => {
+    try {
+        if (!order.value) return;
+
+        const statusOrder: OrderStatus[] = ['pending', 'processing', 'delivering', 'delivered'];
+        const currentIndex = statusOrder.indexOf(order.value.status);
+        if (currentIndex === -1 || currentIndex === statusOrder.length - 1) return;
+
+        const nextStatus = statusOrder[currentIndex + 1];
+
+        status.value = 'pending';
+        const formData = new FormData();
+        formData.append('status', nextStatus);
+        const { error } = await updateAdminOrder(id, formData);
+
+        if (error.value) {
+            throw new Error(error.value.message);
+        }
+
+        $toast.success(`Cập nhật trạng thái đơn hàng thành công: ${nextStatus}`);
+        router.push('/admin/orders');
+    } catch (error: any) {
+        $toast.error('Có lỗi xảy ra trong quá trình cập nhật trạng thái đơn hàng!');
+    } finally {
+        status.value = 'idle';
+    }
+};
 </script>

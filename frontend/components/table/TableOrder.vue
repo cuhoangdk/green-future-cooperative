@@ -20,15 +20,12 @@
                     <td class="py-1">{{ formatCurrency(order.final_total_amount) }}</td>
                     <td class="py-1">{{ addressData[order.id] }}</td>
                     <td class="py-1">
-                        <span v-if="order.status === 'pending'" class="badge badge-neutral">Chờ xác nhận</span>
-                        <span v-else-if="order.status === 'processing'" class="badge badge-warning">Đang xử lý</span>
-                        <span v-else-if="order.status === 'delivered'" class="badge badge-primary">Đang giao</span>
-                        <span v-else-if="order.status === 'cancelled'" class="badge badge-error">Đã hủy</span>
+                        <OrderStatus :status="order.status" />
                     </td>
                     <td class="py-1">
                         <div class="flex space-x-1 items-center" @click.stop>
                             <UiEditButton v-if="displayEditButton" :to="`orders/${order.id}`" />
-                            <UiCancelButton v-if="order.status != 'cancelled'" :to="`orders/${order.id}/cancel`"/>
+                            <UiCancelButton v-if="order.status != 'cancelled' && order.status != 'delivered'" :to="`orders/${order.id}/cancel`"/>
                         </div>
                     </td>
                 </tr>

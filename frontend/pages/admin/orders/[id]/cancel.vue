@@ -28,7 +28,6 @@
 <script setup lang="ts">
 definePageMeta({ layout: 'user', title: 'Hủy đơn hàng', description: 'Quản lý đơn hàng' })
 
-import { ref, computed } from 'vue';
 const route = useRoute();
 const { cancelAdminOrder } = useAdminOrder();
 const { $toast } = useNuxtApp();

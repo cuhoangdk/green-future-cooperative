@@ -10,10 +10,7 @@
 
                 <div class="space-y-1 text-sm">
                     <div class="flex gap-1 items-center">
-                        <span v-if="order.status === 'pending'" class="badge badge-neutral">Chờ xác nhận</span>
-                        <span v-else-if="order.status === 'processing'" class="badge badge-warning">Đang xử lý</span>
-                        <span v-else-if="order.status === 'delivered'" class="badge badge-primary">Đang giao</span>
-                        <span v-else-if="order.status === 'cancelled'" class="badge badge-error">Đã hủy</span>
+                        <OrderStatus :status="order.status" />
                     </div>
                     <div class="flex gap-2 items-center">
                         <User class="w-4 h-4 text-gray-500" /> Người đặt:
@@ -33,8 +30,8 @@
                 </div>
                 <div class="card-actions justify-end border-t pt-2 border-gray-100">
                     <div class="flex space-x-1 items-center">
-                        <!-- <UiEditButton :to="`orders/${order.id}/edit`" /> -->
-                        <UiCancelButton :to="`orders/${order.id}/cancel`" />
+                        <UiEditButton :to="`orders/${order.id}/edit`" />
+                        <UiCancelButton v-if="order.status != 'cancelled' && order.status != 'delivered'" :to="`orders/${order.id}/cancel`"/>
                     </div>
                 </div>
             </div>

@@ -23,19 +23,12 @@
                         <p class="text-sm text-gray-500">Cập nhật lần cuối</p>
                         <p class="font-semibold">{{ formatDateTime(order.updated_at) }}</p>
                     </div>
-                    <div class="badge badge-lg" :class="{
-                        'badge-warning': order.status === 'processing',
-                        'badge-error': order.status === 'cancelled',
-                        'badge-info': order.status === 'pending'
-                    }">
-                        {{ order.status === 'processing' ? 'Đang xử lý' : order.status === 'cancelled' ? 'Đã hủy' :
-                            order.status === 'pending' ? 'Chờ xác nhận' : '' }}
-                    </div>
+                    <OrderTimeline :status="order.status" :order="order"/>
                 </div>
             </div>
 
             <!-- Customer Information -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-x-0 gap-y-6 md:gap-6 mb-6">
                 <div class="card bg-base-100 border border-gray-200">
                     <div class="p-4">
                         <h2 class="card-title text-lg mb-2">Thông tin khách hàng</h2>
