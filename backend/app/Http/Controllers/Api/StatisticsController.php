@@ -59,22 +59,39 @@ class StatisticsController extends Controller
         ];
 
         // 5. Số đơn hàng mỗi ngày (đếm tất cả đơn hàng, tổng tiền chỉ cho status = 'delivered')
+        $dateRange = [];
+        $currentDate = $startDate->copy();
+        while ($currentDate <= $endDate) {
+            $dateRange[$currentDate->toDateString()] = [
+                'count' => 0,
+                'total_amount' => 0.0
+            ];
+            $currentDate->addDay();
+        }
+
+        // Fetch orders data
         $ordersPerDay = Order::whereBetween('created_at', [$startDate, $endDate])
-        ->select(
-            DB::raw('DATE(created_at) as date'),
-            DB::raw('COUNT(*) as count'),
-            DB::raw('SUM(CASE WHEN status = "delivered" THEN final_total_amount ELSE 0 END) as total_amount')
-        )
-        ->groupBy('date')
-        ->orderBy('date')
-        ->get()
-        ->mapWithKeys(function ($item) {
-            return [$item->date => [
-                'count' => (int) $item->count,
-                'total_amount' => (float) $item->total_amount
-            ]];
-        })
-        ->toArray();
+            ->select(
+                DB::raw('DATE(created_at) as date'),
+                DB::raw('COUNT(*) as count'),
+                DB::raw('SUM(CASE WHEN status = "delivered" THEN final_total_amount ELSE 0 END) as total_amount')
+            )
+            ->groupBy('date')
+            ->orderBy('date')
+            ->get()
+            ->mapWithKeys(function ($item) {
+                return [
+                    $item->date => [
+                        'count' => (int) $item->count,
+                        'total_amount' => (float) $item->total_amount
+                    ]
+                ];
+            })
+            ->toArray();
+
+        // Merge date range with orders data
+        $ordersPerDay = array_merge($dateRange, $ordersPerDay);
+        ksort($ordersPerDay); // Sort by date to maintain chronological order
 
         // 6. Tổng doanh thu (tổng final_total_amount của đơn hàng delivered)
         $totalRevenue = Order::where('status', 'delivered')
@@ -178,22 +195,24 @@ class StatisticsController extends Controller
 
         // Response
         return response()->json([
-            'start_date' => $startDate->toDateString(),
-            'end_date' => $endDate->toDateString(),
-            'new_customers' => $newCustomers,
-            'new_users' => $newUsers,
-            'new_products' => $newProducts,
-            'products_by_status' => $productsByStatus,
-            'new_orders' => $newOrders,
-            'orders_by_status' => $ordersByStatus,
-            'orders_per_day' => $ordersPerDay,
-            'total_revenue' => $totalRevenue,
-            'top_products_by_revenue' => $topProductsByRevenue,
-            'top_products_by_quantity' => $topProductsByQuantity,
-            'top_users_by_revenue' => $topUsersByRevenue,
-            'top_customers_by_revenue' => $topCustomersByRevenue,
-            'products_by_category' => $productsByCategory,
-            'purchased_by_category' => $purchasedByCategory,
+            'data' => [
+                'start_date' => $startDate->toDateString(),
+                'end_date' => $endDate->toDateString(),
+                'new_customers' => $newCustomers,
+                'new_users' => $newUsers,
+                'new_products' => $newProducts,
+                'products_by_status' => $productsByStatus,
+                'new_orders' => $newOrders,
+                'orders_by_status' => $ordersByStatus,
+                'orders_per_day' => $ordersPerDay,
+                'total_revenue' => $totalRevenue,
+                'top_products_by_revenue' => $topProductsByRevenue,
+                'top_products_by_quantity' => $topProductsByQuantity,
+                'top_users_by_revenue' => $topUsersByRevenue,
+                'top_customers_by_revenue' => $topCustomersByRevenue,
+                'products_by_category' => $productsByCategory,
+                'purchased_by_category' => $purchasedByCategory,
+            ]
         ]);
     }
 }
