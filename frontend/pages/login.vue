@@ -123,6 +123,7 @@ const handleSubmit = async () => {
         await login(form.email, form.password)
         await fetchCurrentCustomer()
         status.value = 'success'
+        $toast.success("Đăng nhập thành công") 
         await router.push('/')
     } catch (error: any) {
         status.value = 'error'

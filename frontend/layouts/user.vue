@@ -131,6 +131,8 @@ import {
     Layers,
     Ticket,
     Expand,
+    Settings,
+    Mail
 } from 'lucide-vue-next'
 import { useRuntimeConfig } from '#app'
 import { useToast } from 'vue-toastification';
@@ -140,7 +142,7 @@ const toast = useToast();
 
 const isSidebarOpen = ref(false)
 const isUserMenuOpen = ref(false)
-const isCollapsed = ref(false)
+const isCollapsed = ref(true)
 const route = useRoute()
 const defaultAvatar = useRuntimeConfig().public.placeholderImage
 const backendUrl = useRuntimeConfig().public.backendUrl
@@ -185,7 +187,9 @@ const menus = ref([
             { label: 'Loại bài viết', route: '/admin/post-categories', icon: Layers },
         ]
     },
-    { label: 'Cài đặt', route: '/admin/setting', icon: Ruler },
+    
+    { label: 'Tin nhắn liên hệ', route: '/admin/contact-messages', icon: Mail },
+    { label: 'Cài đặt', route: '/admin/setting', icon: Settings },
 ])
 
 const filteredMenus = computed(() => {

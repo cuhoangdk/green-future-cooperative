@@ -176,7 +176,7 @@ const { getCustomerAddress } = useCustomerAddress();
 const { provinces, districts, wards, fetchProvinces, fetchDistricts, fetchWards } = useVietnamAddress();
 const { getCartItems } = useCart();
 const { addOrder } = useOrder();
-const { getShippingFee } = useShippingFee()
+const { getShippingFee } = useParameters()
 
 const { $toast } = useNuxtApp()
 const router = useRouter();

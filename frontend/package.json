@@ -16,6 +16,7 @@
     "@tailwindcss/vite": "^4.0.13",
     "@tinymce/tinymce-vue": "^6.1.0",
     "@vesp/nuxt-fontawesome": "^1.2.1",
+    "chart.js": "^4.4.9",
     "dom-to-image": "^2.6.0",
     "lodash-es": "^4.17.21",
     "lucide-vue-next": "^0.475.0",
@@ -24,6 +25,7 @@
     "qrcode": "^1.5.4",
     "sweetalert2": "^11.6.13",
     "vue": "latest",
+    "vue-chartjs": "^5.3.2",
     "vue-router": "latest",
     "vue-toastification": "^2.0.0-rc.5"
   },

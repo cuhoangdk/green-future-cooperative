@@ -142,9 +142,11 @@ class CustomerAuthRepository implements CustomerAuthRepositoryInterface
             }
         );
 
-        return $status === Password::PASSWORD_RESET
-            ? 'Mật khẩu đã được đổi thành công.'
-            : 'Token không hợp lệ.';
+        if ($status === Password::PASSWORD_RESET) {
+            return 'Mật khẩu đã được đổi thành công.';
+        }
+
+        throw new \Exception('Token không hợp lệ.', 400);
     }
 
 

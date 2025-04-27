@@ -29,25 +29,34 @@ use App\Http\Controllers\Api\CustomerProfileController;
 use App\Http\Controllers\Api\ProductCategoryController;
 use App\Http\Controllers\Api\ContactInformationController;
 use App\Http\Controllers\Api\ProductQuantityPriceController;
-
-
+use App\Http\Controllers\Api\ContactMessageController;
 
 Route::middleware('log.activity')->group(function () {
     Route::middleware(['auth:api_users'])->get('/statistics', [StatisticsController::class, 'getStatistics'])->name('statistics.index');
-    Route::prefix('shipping-fee')->group(function () {
+    Route::prefix('parameters')->group(function () {
         Route::get('/', [ParameterController::class, 'show'])->name('shipping-fee.show');
         Route::middleware(['auth:api_users', 'permission'])->put('/', [ParameterController::class, 'update'])->name('shipping-fee.update');
+    });
+    Route::prefix('contact-messages')->group(function () {
+        Route::post('/', [ContactMessageController::class, 'store'])->name('contact-messages.store');
+        Route::middleware(['auth:api_users', 'permission'])->group(function () {
+            // required: full_name, email, phone_number, message
+            Route::get('/', [ContactMessageController::class, 'index'])->name('contact-messages.index');
+            Route::get('/{id}', [ContactMessageController::class, 'show'])->name('contact-messages.show');
+            Route::put('/{id}', [ContactMessageController::class, 'update'])->name('contact-messages.update');
+            Route::delete('/{id}', [ContactMessageController::class, 'destroy'])->name('contact-messages.destroy');
+        });
     });
     Route::middleware(['auth:api_users,api_customers'])->group(function () {
         Route::prefix('notifications')->group(function () {
             Route::get('/', [NotificationController::class, 'index'])->name('notifications.index');
             Route::put('/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.read-all');
             Route::get('/{id}', [NotificationController::class, 'show'])->name('notifications.show');
-            Route::put('/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');        
+            Route::put('/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
             Route::delete('/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
         });
     });
-    Route::prefix('activity-logs')->middleware(['auth:api_users', 'permission'])->group(function () {   
+    Route::prefix('activity-logs')->middleware(['auth:api_users', 'permission'])->group(function () {
         // sometimes: sort_by, sort_direction, per_page
         Route::get('/', [ActivityLogController::class, 'index'])->name('activity-logs.index');
         Route::get('/search', [ActivityLogController::class, 'search'])->name('activity-logs.search');
@@ -80,15 +89,15 @@ Route::middleware('log.activity')->group(function () {
     });
 
     Route::prefix('social-links')->group(function () {
-        Route::get('/', [SocialLinkController::class, 'index'])->name('social-links.index');    
+        Route::get('/', [SocialLinkController::class, 'index'])->name('social-links.index');
         Route::middleware(['auth:api_users', 'permission'])->group(function () {
             // required: platform, url
             // sometimes: is_active            
-            Route::post('/', [SocialLinkController::class, 'store'])->name('social-links.store');       
+            Route::post('/', [SocialLinkController::class, 'store'])->name('social-links.store');
             Route::put('/{id}', [SocialLinkController::class, 'update'])->name('social-links.update');
             Route::delete('/{id}', [SocialLinkController::class, 'destroy'])->name('social-links.destroy');
-        });   
-        Route::get('/{id}', [SocialLinkController::class, 'show'])->name('social-links.show'); 
+        });
+        Route::get('/{id}', [SocialLinkController::class, 'show'])->name('social-links.show');
     });
 
     Route::prefix('orders')->group(function () {
@@ -101,7 +110,7 @@ Route::middleware('log.activity')->group(function () {
             Route::get('/{id}', [OrderController::class, 'show'])->name('orders.show');
             // required: cancelled_reason
             Route::post('/{id}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
-        }); 
+        });
     });
 
     Route::prefix('admin/orders')->middleware(['auth:api_users'])->group(function () {
@@ -155,7 +164,7 @@ Route::middleware('log.activity')->group(function () {
             });
         });
         Route::prefix('{product_id}/quantity-prices')->group(function () {
-            
+
             // sometimes: sort_by, sort_direction, per_page
             Route::get('/', [ProductQuantityPriceController::class, 'index'])->name('quantity-prices.index');
             // required: prices[], prices.*.quantity, prices.*.price
@@ -166,14 +175,14 @@ Route::middleware('log.activity')->group(function () {
                 Route::get('/{id}', [ProductQuantityPriceController::class, 'show'])->name('quantity-prices.show');
                 // sometimes: quantity, price
                 Route::put('/{id}', [ProductQuantityPriceController::class, 'update'])->name('quantity-prices.update');
-                Route::delete('/{id}', [ProductQuantityPriceController::class, 'destroy'])->name('quantity-prices.destroy');            
+                Route::delete('/{id}', [ProductQuantityPriceController::class, 'destroy'])->name('quantity-prices.destroy');
                 // Route::patch('/restore/{id}', [ProductQuantityPriceController::class, 'restore'])->name('quantity-prices.restore');
                 // Route::delete('/force-delete/{id}', [ProductQuantityPriceController::class, 'forceDelete'])->name('quantity-prices.force-delete');
-            });           
+            });
         });
         Route::prefix('{product_id}/images')->group(function () {
             // sometimes: sort_by, sort_direction, per_page
-            Route::get('/', [ProductImageController::class, 'index'])->name('product-images.index');            
+            Route::get('/', [ProductImageController::class, 'index'])->name('product-images.index');
             Route::middleware(['auth:api_users'])->group(function () {
                 // required: images[],images[].*.image_url
                 // nullable: images[].*.title
@@ -203,15 +212,15 @@ Route::middleware('log.activity')->group(function () {
             // sometimes: description
             Route::post('/', [ProductCategoryController::class, 'store'])->name('product-categories.store');
             Route::get('/trashed', [ProductCategoryController::class, 'trashed'])->name('product-categories.trashed');
-        });   
-        Route::get('/{id}', [ProductCategoryController::class, 'show'])->name('product-categories.show'); 
+        });
+        Route::get('/{id}', [ProductCategoryController::class, 'show'])->name('product-categories.show');
         Route::get('/slug/{slug}', [ProductCategoryController::class, 'getBySlug'])->name('product-categories.get-by-slug');
         Route::middleware(['auth:api_users', 'permission'])->group(function () {
             Route::put('/{id}', [ProductCategoryController::class, 'update'])->name('product-categories.update');
             Route::delete('/{id}', [ProductCategoryController::class, 'destroy'])->name('product-categories.destroy');
             Route::patch('/restore/{id}', [ProductCategoryController::class, 'restore'])->name('product-categories.restore');
             Route::delete('/force-delete/{id}', [ProductCategoryController::class, 'forceDelete'])->name('product-categories.force-delete');
-        });  
+        });
     });
 
     Route::prefix('product-units')->group(function () {
@@ -222,14 +231,14 @@ Route::middleware('log.activity')->group(function () {
             // description: nullable
             Route::post('/', [ProductUnitController::class, 'store'])->name('product-units.store');
             Route::get('/trashed', [ProductUnitController::class, 'trashed'])->name('product-units.trashed');
-        });   
-        Route::get('/{id}', [ProductUnitController::class, 'show'])->name('product-units.show'); 
+        });
+        Route::get('/{id}', [ProductUnitController::class, 'show'])->name('product-units.show');
         Route::middleware(['auth:api_users', 'permission'])->group(function () {
             Route::put('/{id}', [ProductUnitController::class, 'update'])->name('product-units.update');
             Route::delete('/{id}', [ProductUnitController::class, 'destroy'])->name('product-units.destroy');
             Route::patch('/restore/{id}', [ProductUnitController::class, 'restore'])->name('product-units.restore');
             Route::delete('/force-delete/{id}', [ProductUnitController::class, 'forceDelete'])->name('product-units.force-delete');
-        });  
+        });
     });
 
     Route::prefix('farms')->group(function () {
@@ -244,14 +253,14 @@ Route::middleware('log.activity')->group(function () {
             // sometimes: sort_by, sort_direction, per_page, search
             Route::get('/search', [FarmController::class, 'search'])->name('farms.search');
             Route::get('/trashed', [FarmController::class, 'trashed'])->name('farms.trashed');
-        }); 
+        });
         Route::get('/{id}', [FarmController::class, 'show'])->name('farms.show');
         Route::middleware(['auth:api_users'])->group(function () {
             Route::put('/{id}', [FarmController::class, 'update'])->name('farms.update');
-            Route::delete('/{id}', [FarmController::class, 'destroy'])->name('farms.destroy');    
+            Route::delete('/{id}', [FarmController::class, 'destroy'])->name('farms.destroy');
             Route::patch('/restore/{id}', [FarmController::class, 'restore'])->name('farms.restore');
             Route::delete('/force-delete/{id}', [FarmController::class, 'forceDelete'])->name('farms.force-delete');
-        }); 
+        });
     });
 
     Route::middleware(['auth:api_users', 'permission'])->prefix('roles')->group(function () {
@@ -323,7 +332,7 @@ Route::middleware('log.activity')->group(function () {
         Route::delete('/addresses/{id}', [CustomerProfileController::class, 'deleteAddress'])->name('customer-profile.addresses.destroy');
     });
 
-    Route::prefix('customer-auth')->group(function () {    
+    Route::prefix('customer-auth')->group(function () {
         // required: email, password
         Route::post('/login', [CustomerAuthController::class, 'login'])->name('customer-auth.login')->middleware(['throttle:15,1', 'throttle:emailLogin']);
         // required: full_name, email, password_confirmed, phone_number
@@ -355,14 +364,14 @@ Route::middleware('log.activity')->group(function () {
         // required: email, password, password_confirmed, full_name, phone_number, date_of_birth, address.province, address.district, address.ward, address.street_address, gender
         // nullable: bank_account_number, bank_name, avatar_url, bio, is_super_admin, is_banned
         Route::post('/', [UserController::class, 'store'])->name('users.store');
-        Route::get('/{id}', [UserController::class, 'show'])->name('users.show');        
+        Route::get('/{id}', [UserController::class, 'show'])->name('users.show');
         Route::put('/{id}', [UserController::class, 'update'])->name('users.update');
         Route::delete('/{id}', [UserController::class, 'destroy'])->name('users.destroy');
-        Route::patch('/restore/{id}', [UserController::class, 'restore'])->name('users.restore');        
+        Route::patch('/restore/{id}', [UserController::class, 'restore'])->name('users.restore');
         Route::delete('/force-delete/{id}', [UserController::class, 'forceDelete'])->name('users.force-delete');
         // required: password, password_confirmed
         Route::put('/change-password/{id}', [UserController::class, 'changePassword'])->name('users.change-password');
-    
+
     });
 
     Route::middleware(['auth:api_users'])->group(function () {

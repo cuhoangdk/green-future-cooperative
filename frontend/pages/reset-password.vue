@@ -96,6 +96,7 @@ const form = reactive({
     password_confirmation: '', // Thêm trường xác nhận mật khẩu
 })
 
+
 const handleSubmit = async () => {
     try {
         status.value = 'pending'

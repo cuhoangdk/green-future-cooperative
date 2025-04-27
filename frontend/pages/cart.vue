@@ -52,7 +52,7 @@ import type { CartItem } from '~/types/cart';
 import type { Parameter } from '~/types/parameter';
 
 const { getCartItems } = useCart();
-const { getShippingFee } = useShippingFee();
+const { getShippingFee } = useParameters();
 
 // Thêm biến theo dõi lần tải đầu tiên
 const isFirstLoad = ref(true);

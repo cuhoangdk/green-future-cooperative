@@ -48,3 +48,10 @@ export function formatDateTime(dateString?: string): string {
   return `${hours}:${minutes} ${day}/${month}/${year}`;
 }
 
+export function formatJson(data: string | null): string {
+  try {
+    return JSON.stringify(JSON.parse(data || '{}'), null, 2);
+  } catch {
+    return data || '-';
+  }
+}

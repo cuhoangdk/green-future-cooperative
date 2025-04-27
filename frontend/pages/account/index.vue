@@ -76,9 +76,9 @@
                 <!-- Submit Button -->
                 <div class="border-t border-gray-200 pt-5 flex justify-between">
                     <div>
-                        <Button @click="handleLogout" class="btn btn-error mr-2">
+                        <div @click="handleLogout" class="btn btn-error mr-2">
                             <LogOut class="w-4 h-4" />
-                        </Button>
+                        </div>
                         <NuxtLink to="/account/change-password" class="btn btn-warning mr-2">
                             <Key class="w-4 h-4" />
                         </NuxtLink>
