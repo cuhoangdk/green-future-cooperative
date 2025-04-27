@@ -15,7 +15,7 @@ class UpdateSliderImageRequest extends FormRequest
     {
         return [
             'title' => 'sometimes|string|max:255',
-            'image_url' => 'sometimes|url|max:255',
+            'image_url' => 'sometimes|image|mimes:jpeg,png,jpg|max:2048',
             'link_url' => 'nullable|nullable|url|max:255',
             'sort_order' => 'sometimes|integer|min:0',
             'is_active' => 'sometimes|boolean',

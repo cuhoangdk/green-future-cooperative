@@ -14,8 +14,8 @@ class StoreSliderImageRequest extends FormRequest
     public function rules()
     {
         return [
-            'title' => 'required|string|max:255',
-            'image_url' => 'required|url|max:255',
+            'title' => 'nullable|string|max:255',
+            'image_url' => 'required|image|mimes:jpeg,png,jpg|max:2048',
             'link_url' => 'nullable|url|max:255',
             'sort_order' => 'sometimes|integer|min:0',
             'is_active' => 'sometimes|boolean',
