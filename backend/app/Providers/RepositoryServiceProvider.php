@@ -6,6 +6,7 @@ use App\Models\ProductImage;
 use App\Repositories\Contracts\ActivityLogRepositoryInterface;
 use App\Repositories\Contracts\CartItemRepositoryInterface;
 use App\Repositories\Contracts\ContactInformationRepositoryInterface;
+use App\Repositories\Contracts\ContactMessageRepositoryInterface;
 use App\Repositories\Contracts\CultivationLogRepositoryInterface;
 use App\Repositories\Contracts\CustomerProfileRepositoryInterface;
 use App\Repositories\Contracts\CustomerRepositoryInterface;
@@ -27,6 +28,7 @@ use App\Repositories\Contracts\UserRepositoryInterface;
 use App\Repositories\Eloquent\ActivityLogRepository;
 use App\Repositories\Eloquent\CartItemRepository;
 use App\Repositories\Eloquent\ContactInformationRepository;
+use App\Repositories\Eloquent\ContactMessageRepository;
 use App\Repositories\Eloquent\CultivationLogRepository;
 use App\Repositories\Eloquent\CustomerProfileRepository;
 use App\Repositories\Eloquent\CustomerRepository;
@@ -83,6 +85,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(ActivityLogRepositoryInterface::class, ActivityLogRepository::class);
         $this->app->bind(NotificationRepositoryInterface::class, NotificationRepository::class);
         $this->app->bind(ParameterRepositoryInterface::class, ParameterRepository::class);
+        $this->app->bind(ContactMessageRepositoryInterface::class, ContactMessageRepository::class);
     }
 
     /**
