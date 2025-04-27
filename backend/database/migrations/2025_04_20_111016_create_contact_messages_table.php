@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('contact_messages', function (Blueprint $table) {
             $table->id(); // Khóa chính, tự động tăng (BIGINT)
+            $table->string('name'); // Cột name, VARCHAR(255), NOT NULL
             $table->string('email'); // Cột email, VARCHAR(255), NOT NULL
             $table->string('phone', 20); // Cột phone, VARCHAR(20), có thể để trống
             $table->enum('gender', ['male', 'female', 'other'])->nullable(); // Cột gender, ENUM, có thể để trống
