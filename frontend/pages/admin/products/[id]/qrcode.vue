@@ -92,7 +92,9 @@ watch(product, async (newProduct) => {
 const addressData = ref('')
 watch(farm, async (newFarm) => {
     if (newFarm?.address?.ward) {
-        addressData.value = await getFullAddressName(newFarm.address.ward)
+        addressData.value = newFarm.address.street_address 
+            ? `${newFarm.address.street_address}, ${await getFullAddressName(newFarm.address.ward)}`
+            : await getFullAddressName(newFarm.address.ward)
     }
 })
 

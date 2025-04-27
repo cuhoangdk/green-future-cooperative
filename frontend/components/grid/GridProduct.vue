@@ -31,14 +31,18 @@
                         <span v-else>Chưa bán</span>
                     </div>
                     <div class="flex gap-2 items-center">
-                        <Leaf class="w-4 h-4 text-gray-500" /> Số lượng:
-                        <span v-if="product.stock_quantity === 0" class="text-red-500">Bán hết</span>
+                        <Leaf class="w-4 h-4 text-gray-500" /> Trong kho:
+                        <span v-if="product.stock_quantity == 0" class="text-red-500">Bán hết</span>
                         <span v-else-if="product.stock_quantity < 10" class="text-red-500">
                             {{ formatNumber(product.stock_quantity) }} {{ product.unit.name }}
                         </span>
                         <span v-else>
                             {{ formatNumber(product.stock_quantity) }} {{ product.unit.name }}
                         </span>
+                    </div>
+                    <div class="flex gap-2 items-center">
+                        <Leaf class="w-4 h-4 text-gray-500" /> Đã bán:
+                            {{ formatNumber(product.sold_quantity) }} {{ product.unit.name }}
                     </div>
                 </div>
 

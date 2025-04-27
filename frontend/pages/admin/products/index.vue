@@ -80,8 +80,6 @@ const { getProductCategories } = useProductCategories()
 const { getUsers } = useUsers()
 const swal = useSwal()
 const { $toast } = useNuxtApp()
-const productStore = useProductStore()
-const router = useRouter()
 
 const currentPage = ref(Number(useRoute().query.page) || 1)
 const perPage = ref(10)
@@ -90,7 +88,6 @@ const selectedStatus = ref('')
 const selectedCategory = ref('')
 const selectedOwner = ref('')
 const sortBy = ref('')
-const expandedRows = ref(new Set<number>())
 const debouncedSearch = debounce(search, 500)
 
 // Lấy danh sách danh mục

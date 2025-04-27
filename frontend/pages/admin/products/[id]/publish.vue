@@ -6,7 +6,7 @@
                 <label class="text-gray-700 font-semibold">Mã sản phẩm</label>
                 <div class="input input-primary w-full mt-1 bg-gray-200">{{ product?.id }}</div>
             </div>
-        
+
             <!-- Product Name -->
             <div>
                 <label class="text-gray-700 font-semibold">Tên sản phẩm</label>
@@ -22,8 +22,10 @@
             <div class="flex space-x-4">
                 <div class="w-1/2">
                     <label class="text-gray-700 font-semibold">Số lượng ({{ product?.unit.name }})</label>
-                    <input v-model="form.stock_quantity" type="number" min="0" class="input input-primary w-full mt-1"
-                        placeholder="100" required />
+                    <input v-model="form.stock_quantity" :step="product?.unit.allow_decimal ? 0.1 : 1"
+                        :class="{ 'input-primary': true, 'input-error': form.stock_quantity !== null && form.stock_quantity % 1 !== 0 && !product?.unit.allow_decimal }"
+                        type="number" class="input w-full mt-1" placeholder="300"
+                        @input="!product?.unit.allow_decimal && form.stock_quantity !== null && (form.stock_quantity = Math.floor(form.stock_quantity))" />
                 </div>
                 <div class="w-1/2">
                     <label class="text-gray-700 font-semibold">Ngày thu hoạch</label>
@@ -79,9 +81,11 @@
                             Thêm giá
                         </button>
                         <div class="flex gap-2 items-center" v-if="form.pricing_type === 'fix'">
-                            <input v-model="form.product_prices[0].price" class="input input-primary w-24"
-                                placeholder="15000" required />
-                            <span>VNĐ</span>
+                            <label class="input">
+                                <input v-model="form.product_prices[0].price" type="number" class="" placeholder="15000"
+                                    required />
+                                <span class="">VNĐ</span>
+                            </label>
                         </div>
                     </div>
                 </div>
@@ -94,25 +98,28 @@
 
                 </div>
                 <div v-for="(price, index) in form.product_prices" :key="index" class="flex items-center gap-2 mb-2">
-                    <div>
-                        <label class="text-gray-700 font-semibold">Từ </label>
-                        <input v-model="price.quantity" class="input input-primary w-15 text-center" placeholder="0"
+                    <label class="input">
+                        <span class="">Từ</span>
+                        <input v-model="price.quantity" type="number" class="" placeholder="0" :disabled="index === 0"
                             required />
-                        {{ product?.unit.name }}
-                        <span class="text-gray-700 font-semibold">-</span>
-                    </div>
-                    <input v-model="price.price" class="input input-primary w-24 text-center" placeholder="15000"
-                        required />
-                    <span>VNĐ</span>
-                    <button v-if="form.product_prices.length > 1" @click="removePrice(index)" type="button"
-                        class="btn btn-error btn-sm">
+                        <span class="">{{ product?.unit.name }}</span>
+                    </label>
+
+                    <label class="input">
+                        <input v-model="price.price" type="number" class="" placeholder="15000" required />
+                        <span class="">VNĐ</span>
+                    </label>
+
+                    <button v-if="form.product_prices.length > 1 && index !== 0" @click="removePrice(index)"
+                        type="button" class="btn btn-error">
                         Xóa
                     </button>
                 </div>
             </div>
 
             <!-- Submit Button -->
-            <div class="flex justify-end mt-5">
+            <div class="flex justify-between mt-5">
+                <UiButtonBack />
                 <button type="submit" class="btn btn-primary" :disabled="status === 'pending'">
                     <span v-if="status === 'pending'" class="loading loading-spinner loading-md"></span>
                     <span>Mở bán</span>
@@ -147,7 +154,7 @@ const form = ref({
     name: '',
     description: '',
     pricing_type: '',
-    stock_quantity: '',
+    stock_quantity: null as number | null,
     harvested_at: new Date().toISOString().slice(0, 10),
     product_images: [] as Array<{
         image_url: File | null,
@@ -155,10 +162,8 @@ const form = ref({
         sort_order: number,
         is_primary: boolean
     }>,
-    product_prices: [] as Array<{
-        quantity: string,
-        price: string
-    }>
+    product_prices: [{ quantity: '0', price: '' }] as Array<{ quantity: string, price: string }>
+
 })
 
 // Khởi tạo giá trị mặc định
@@ -167,7 +172,7 @@ watch(product, (newData) => {
         form.value.name = newData.name || ''
         form.value.description = newData.description || ''
         form.value.pricing_type = newData.pricing_type || ''
-        form.value.stock_quantity = newData.stock_quantity?.toString() || ''
+        form.value.stock_quantity = newData.stock_quantity ? parseFloat(newData.stock_quantity.toString()) : null
 
         // Khởi tạo một giá mặc định nếu chưa có
         if (!form.value.product_prices.length) {
@@ -219,7 +224,7 @@ const handleSubmit = async () => {
         formProductData.append('name', form.value.name)
         formProductData.append('description', form.value.description)
         formProductData.append('pricing_type', form.value.pricing_type)
-        formProductData.append('stock_quantity', form.value.stock_quantity)
+        formProductData.append('stock_quantity', form.value.stock_quantity?.toString() || '')
         formProductData.append('harvested_at', form.value.harvested_at)
         formProductData.append('status', 'selling')
 
@@ -250,7 +255,7 @@ const handleSubmit = async () => {
         toast.success('Mở bán thành công!')
         router.push(`/admin/products`)
     } catch (error: any) {
-        toast.error(error.message || 'Mở bán thất bại')
+        toast.error('Mở bán thất bại')
     } finally {
         status.value = 'idle'
     }

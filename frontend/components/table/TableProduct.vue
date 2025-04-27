@@ -3,10 +3,11 @@
         <table class="w-full">
             <thead>
                 <tr class="bg-gray-100 text-gray-700">
-                    <th class="py-2 pl-2 w-[25%] text-left">Tên</th>
+                    <th class="py-2 pl-2 w-[20%] text-left">Tên</th>
                     <th class="py-2 w-[15%] text-left">Thành viên</th>
                     <th class="py-2 w-[10%] text-left">Giá (cơ bản)</th>
                     <th class="py-2 w-[10%] text-left">Trong kho</th>
+                    <th class="py-2 w-[10%] text-left">Đã bán</th>
                     <th class="py-2 w-[10%] text-left">Trạng thái</th>
                     <th class="py-2 w-[30%] text-left">Thao tác</th>
                 </tr>
@@ -28,13 +29,16 @@
                         <span v-else>Chưa bán</span>
                     </td>
                     <td class="py-1">
-                        <span v-if="product.stock_quantity === 0" class="text-red-500">Bán hết</span>
+                        <span v-if="product.stock_quantity == 0" class="text-red-500">Bán hết</span>
                         <span v-else-if="product.stock_quantity < 10" class="text-red-500">
                             {{ formatNumber(product.stock_quantity) }} {{ product.unit.name }}
                         </span>
                         <span v-else>
                             {{ formatNumber(product.stock_quantity) }} {{ product.unit.name }}
                         </span>
+                    </td>
+                    <td class="py-1">
+                        <span>{{ formatNumber(product.sold_quantity) }} {{ product.unit.name }}</span>
                     </td>
                     <td class="py-1">
                         <span v-if="product.status === 'growing'" class="badge badge-primary">Đang trồng</span>

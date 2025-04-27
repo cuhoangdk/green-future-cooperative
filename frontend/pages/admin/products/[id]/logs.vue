@@ -8,16 +8,11 @@
             </NuxtLink>
         </div>
 
-        <TableProductLog :logs="logs.logs" :product-id="product?.id ?? -1"  v-on:delete="handleDeleteLog" />
-        <GridProductLog :logs="logs.logs" :product-id="product?.id ?? -1" v-on:delete="handleDeleteLog" />
+        <TableProductLog :logs="logs.logs" :product-id="product?.id ?? ''"  v-on:delete="handleDeleteLog" />
+        <GridProductLog :logs="logs.logs" :product-id="product?.id ?? ''" v-on:delete="handleDeleteLog" />
 
         <div class="flex flex-col lg:flex-row justify-between items-center gap-2 m-4">
-            <div class="flex items-center space-x-2">
-                <p class="text-sm text-gray-600 w-32">{{ logs.logs.length }} / {{ logs.meta?.total }}</p>
-                <select v-model="perPage" class="select select-sm select-primary" @change="search">
-                        <option v-for="n in [10, 25, 50, 100]" :value="n" :key="n">{{ n }}</option>
-                    </select>
-            </div>
+            <UiButtonBack/>
             <UiPagination :links="logs.links" :meta="logs.meta" :show-first-last="true" :show-numbers="true"
                 @page-change="handlePageChange" />
         </div>
@@ -64,7 +59,7 @@ const handlePageChange = (page: number) => {
     getLogs(productId, currentPage.value, perPage.value)
 }
 
-async function handleDeleteLog(productId: number, logId: number) {
+async function handleDeleteLog(productId: string, logId: number) {
     const result = await swal.fire({
         title: 'Xác nhận xóa',
         text: 'Bạn có chắc muốn nhật ký này không?',
@@ -87,9 +82,4 @@ async function handleDeleteLog(productId: number, logId: number) {
     }
 }
 
-async function search() {
-    currentPage.value = 1
-    const { data, error } = await getLogs(productId, perPage.value, currentPage.value)
-    if (error.value) swal.fire('Lỗi', 'Không thể tải danh sách sản phẩm!', 'error')
-}
 </script>

@@ -5,15 +5,25 @@
         </div>
         <form v-else @submit.prevent="handleSubmit" class="space-y-4">
             <!-- Product Code -->
-            <div>
-                <label class="text-gray-700 font-semibold">Mã sản phẩm</label>
-                <div class="input input-primary w-full mt-1 bg-gray-200">{{ product?.id }}</div>
+            <div class="flex flex-col md:flex-row md:space-x-4">
+                <div class="w-full md:w-1/2">
+                    <label class="text-gray-700 font-semibold">Mã sản phẩm</label>
+                    <div class="input input-primary w-full mt-1 bg-gray-200">{{ product?.id }}</div>
+                </div>
+                <div class="w-full md:w-1/2 mt-4 md:mt-0">
+                    <label class="text-gray-700 font-semibold">Tên sản phẩm</label>
+                    <input v-model="form.name" class="input input-primary w-full mt-1" placeholder="Rau cải" required />
+                </div>
             </div>
 
-            <!-- Product Name -->
-            <div>
-                <label class="text-gray-700 font-semibold">Tên sản phẩm</label>
-                <input v-model="form.name" class="input input-primary w-full mt-1" placeholder="Rau cải" required />
+            <!-- Product Status -->
+            <div v-if="product?.status !== 'growing'">
+                <label class="text-gray-700 font-semibold">Trạng thái</label>
+                <select v-model="form.status" class="select select-primary w-full mt-1" required>
+                    <option value="" disabled selected>Chọn trạng thái</option>
+                    <option class="text-blue-600" value="selling">Đang bán</option>
+                    <option class="text-red-600" value="stopped">Dừng bán</option>
+                </select>
             </div>
 
             <!-- User (for super admin) -->
@@ -41,7 +51,9 @@
                 </div>
                 <div class="w-1/3">
                     <label class="text-gray-700 font-semibold">Đơn vị</label>
-                    <select v-model="form.unit_id" class="select select-primary w-full mt-1" required>
+                    <select v-model="form.unit_id" class="select select-primary w-full mt-1"                         
+                    @change="!units.find(unit => unit.id === Number(form.unit_id))?.allow_decimal && form.stock_quantity !== null && (form.stock_quantity = Math.floor(form.stock_quantity))" 
+                        required>
                         <option value="" disabled selected>Chọn đơn vị</option>
                         <option v-for="unit in units" :key="unit.id" :value="unit.id">
                             {{ unit.name }}
@@ -87,9 +99,15 @@
                         class="input input-primary w-full mt-1" placeholder="700" />
                 </div>
                 <div class="w-1/2">
-                    <label class="text-gray-700 font-semibold">Sản lượng dự kiến ({{ product?.unit.name }})</label>
-                    <input v-model="form.stock_quantity" type="number" step="0.1"
-                        class="input input-primary w-full mt-1" placeholder="300" />
+                    <label class="text-gray-700 font-semibold">Sản lượng ({{ units.find(unit => unit.id === Number(form.unit_id))?.name || '' }})</label>
+                    <input 
+                        v-model="form.stock_quantity" 
+                        :step="form.unit_id && units.find(unit => unit.id === Number(form.unit_id))?.allow_decimal ? 0.1 : 1"
+                        :class="{ 'input-primary': true, 'input-error': form.stock_quantity !== null && form.stock_quantity % 1 !== 0 && !units.find(unit => unit.id === Number(form.unit_id))?.allow_decimal }"
+                        type="number" 
+                        class="input w-full mt-1" 
+                        placeholder="300" 
+                        @input="!units.find(unit => unit.id === Number(form.unit_id))?.allow_decimal && form.stock_quantity !== null && (form.stock_quantity = Math.floor(form.stock_quantity))" />
                 </div>
             </div>
 
@@ -107,7 +125,7 @@
                     <label class="text-gray-700 font-semibold">Bắt đầu thu hoạch</label>
                     <input v-model="form.harvested_at" type="date" class="input input-primary w-full mt-1" />
                 </div>
-                
+
                 <div class="border-t border-gray-200 pt-5">
                     <div class="text-lg font-medium text-gray-800 mb-3">Hình ảnh</div>
                     <div>
@@ -156,9 +174,10 @@
                                 Thêm giá
                             </button>
                             <div class="flex gap-2 items-center" v-if="form.pricing_type === 'fix'">
-                                <input v-model="form.product_prices[0].price" type="number"
-                                    class="input input-primary w-24" placeholder="15000" required />
-                                <span>VNĐ</span>
+                                <label class="input">
+                                    <input v-model="form.product_prices[0].price" type="number" class="" placeholder="15000" required />
+                                    <span class="">VNĐ</span>
+                                </label>
                             </div>
                         </div>
                     </div>
@@ -171,7 +190,8 @@
                             class="flex items-center gap-2 mb-2">
                             <label class="input">
                                 <span class="">Từ</span>
-                                <input v-model="price.quantity" type="number" class="" placeholder="0" required />
+                                <input v-model="price.quantity" type="number" class="" placeholder="0"
+                                    :disabled="index === 0" required />
                                 <span class="">{{ product?.unit.name }}</span>
                             </label>
 
@@ -180,8 +200,8 @@
                                 <span class="">VNĐ</span>
                             </label>
 
-                            <button v-if="form.product_prices.length > 1" @click="removePrice(index)" type="button"
-                                class="btn btn-error btn-s">
+                            <button v-if="form.product_prices.length > 1 && index !== 0" @click="removePrice(index)"
+                                type="button" class="btn btn-error btn-s">
                                 Xóa
                             </button>
                         </div>
@@ -240,13 +260,14 @@ const form = ref({
     pricing_type: '',
     expired: null as number | null,
     harvested_at: null as string | null,
+    status: '',
     product_images: [] as Array<{ id?: number, image_url: string | File | null, preview: string, sort_order: number, is_primary: boolean }>,
-    product_prices: [] as Array<{ id?: number, quantity: string, price: string }>
+    product_prices: [{ id: undefined, quantity: '0', price: '' }] as Array<{ id?: number, quantity: string, price: string }>
 })
 
 
 // Lấy thông tin sản phẩm
-const { data: productData, status: productStatus } = await getProductById(productId)
+const { data: productData, status: productStatus, refresh } = await getProductById(productId)
 const product = computed<Product | null>(() => Array.isArray(productData.value?.data) ? productData.value.data[0] : productData.value?.data || null)
 
 // Gọi API để lấy dữ liệu
@@ -275,6 +296,7 @@ watch(product, (newData) => {
         form.value.pricing_type = newData.pricing_type || ''
         form.value.expired = newData.expired || null
         form.value.harvested_at = newData.harvested_at ? new Date(newData.harvested_at).toISOString().slice(0, 10) : null
+        form.value.status = newData.status || ''
         searchFarms({ user_id: Number(form.value.user_id) })
         // Load hình ảnh hiện tại
         if (newData.status === 'selling' && newData.images) {
@@ -371,10 +393,8 @@ const handleSubmit = async () => {
         formProductData.append('stock_quantity', form.value.stock_quantity?.toString() || '')
         formProductData.append('expired', form.value.expired?.toString() || '')
         formProductData.append('harvested_at', form.value.harvested_at || '')
-        if (product.value?.status === 'selling') {
-            formProductData.append('pricing_type', form.value.pricing_type)
-            formProductData.append('status', 'selling')
-        }
+        formProductData.append('status', form.value.status || '')
+        formProductData.append('pricing_type', form.value.pricing_type)
 
         // Cập nhật hoặc tạo sản phẩm
         const { error: productError } = product.value ? await updateProduct(productId, formProductData) : await createProduct(formProductData)
@@ -412,27 +432,42 @@ const handleSubmit = async () => {
             const existingPrices = form.value.product_prices.filter(price => price.id)
 
             // Cập nhật giá hiện tại
-            for (const price of existingPrices) {
+            if (form.value.pricing_type === 'flexible') {
+                for (const price of existingPrices) {
+                    const priceData = new FormData()
+                    priceData.append('quantity', price.quantity)
+                    priceData.append('price', price.price)
+                    const { error } = await updatePrice(productId, price.id!, priceData)
+                    if (error.value) throw new Error('Cập nhật giá thất bại')
+                }
+                // Tạo giá mới
+                if (newPrices.length > 0) {
+                    const formPriceData = new FormData()
+                    newPrices.forEach((price, index) => {
+                        formPriceData.append(`prices[${index}][quantity]`, price.quantity)
+                        formPriceData.append(`prices[${index}][price]`, price.price)
+                    })
+                    const { error } = await createPrice(productId, formPriceData)
+                    if (error.value) throw new Error('Thêm giá mới thất bại')
+                }
+            } else if (form.value.pricing_type === 'fix') {
                 const priceData = new FormData()
-                priceData.append('quantity', form.value.pricing_type === 'fix' ? '0' : price.quantity)
-                priceData.append('price', price.price)
-                const { error } = await updatePrice(productId, price.id!, priceData)
+                priceData.append('quantity', '0')
+                priceData.append('price', form.value.product_prices[0].price)
+                const { error } = await updatePrice(productId, form.value.product_prices[0].id!, priceData)
+                // Xóa tất cả các giá khác
+                for (const price of form.value.product_prices.slice(1)) {
+                    if (price.id) {
+                        const { error } = await deletePrice(productId, price.id)
+                        if (error.value) throw new Error('Xóa giá thất bại')
+                    }
+                }
                 if (error.value) throw new Error('Cập nhật giá thất bại')
-            }
-
-            // Tạo giá mới
-            if (newPrices.length > 0) {
-                const formPriceData = new FormData()
-                newPrices.forEach((price, index) => {
-                    formPriceData.append(`prices[${index}][quantity]`, form.value.pricing_type === 'fix' ? '0' : price.quantity)
-                    formPriceData.append(`prices[${index}][price]`, price.price)
-                })
-                const { error } = await createPrice(productId, formPriceData)
-                if (error.value) throw new Error('Thêm giá mới thất bại')
             }
         }
 
         toast.success('Cập nhật sản phẩm thành công!')
+        refresh()
         router.push(`/admin/products`)
     } catch (error: any) {
         toast.error(error.message || 'Cập nhật sản phẩm thất bại')

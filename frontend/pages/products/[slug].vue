@@ -66,8 +66,10 @@
                                     <Minus />
                                 </button>
                                 <input v-model.number="quantity" type="number" min="1" :max="product?.stock_quantity"
-                                    class="input input-bordered join-item w-[100px] h-[40px] text-center text-sm"
-                                    :class="{ 'input-error': quantity > product?.stock_quantity }" />
+                                    class="input input-bordered join-item w-[100px] h-[40px] text-center"
+                                    :class="{ 'input-error': quantity > product?.stock_quantity }"
+                                    :step="product?.unit?.allow_decimal ? 'any' : '1'"
+                                    @input="!product?.unit?.allow_decimal && (quantity = Math.floor(quantity))" />
                                 <button @click="increaseQuantity"
                                     class="btn btn-outline btn-primary join-item rounded-r-full w-[40px] h-[40px] p-0"
                                     :disabled="quantity >= product?.stock_quantity">

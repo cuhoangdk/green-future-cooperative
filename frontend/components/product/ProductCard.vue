@@ -22,11 +22,11 @@
         <div class="px-3 pb-2">
             <button v-if="product?.stock_quantity > 0 && product?.pricing_type != 'contact'" @click="openModal"
                 class="btn bg-green-600 text-white w-full rounded-full hover:bg-green-700 flex gap-2">
-                    <ShoppingCart class="w-5 h-5 mr-1" />
-                    Mua
+                <ShoppingCart class="w-5 h-5 mr-1" />
+                Mua
             </button>
 
-            <ProductContactButton v-else/>
+            <ProductContactButton v-else />
             <!-- <p class="text-xs text-center text-gray-500 mt-1">Người trồng: {{ product.user?.full_name }}</p> -->
         </div>
 
@@ -58,9 +58,18 @@
                                 class="flex flex-col md:flex-row justify-center items-center md:justify-start md:items-start mb-6 gap-4">
                                 <img :src="img" :alt="product.name" class="w-44 h-44 object-cover rounded-lg" />
                                 <div>
+                                    <div class="flex justify-between gap-2 mb-2">
+                                        <p class="text-sm text-gray-700">
+                                            Mã: <span class="font-medium">{{ product.id }}</span>
+                                        </p>
+                                        <p class="text-sm text-gray-700">
+                                            Kho: <span class="font-medium">{{ formatNumber(product.stock_quantity) }} {{
+                                                product.unit.name }}</span>
+                                        </p>
+                                    </div>
                                     <div v-if="product?.prices?.length">
                                         <p v-for="(price, index) in product.prices" :key="index"
-                                            class="text-red-600 font-bold">
+                                            class="text-green-600 font-bold">
                                             {{ formatCurrency(price.price) }}
                                             <span class="text-sm text-gray-500">/ {{ product.unit.name }}</span>
                                             <span v-if="price.quantity && product.prices.length > 1"
@@ -75,25 +84,29 @@
                                 </div>
                             </div>
 
-
-
                             <div class="flex flex-col lg:flex-row justify-center gap-4">
                                 <div>
-                                    <div class="flex items-center justify-center  gap-2">
+                                    <div class="join">
                                         <button @click="decreaseQuantity"
-                                            class="btn btn-outline btn-primary w-10 h-10 p-0 flex items-center justify-center">
-                                            <Minus class="w-4 h-4" />
+                                            class="btn btn-outline btn-primary join-item rounded-l-full w-[40px] h-[40px] p-0"
+                                            :disabled="quantity <= 1">
+                                            <Minus />
                                         </button>
-                                        <input v-model.number="quantity" type="float" min="1"
-                                            class="text-sm input w-24 h-10 text-center" />
+                                        <input v-model.number="quantity" type="number" min="1"
+                                            :max="product?.stock_quantity"
+                                            class="input join-item w-[100px] h-[40px] text-center"
+                                            :class="{ 'input-error': quantity > product?.stock_quantity }"
+                                            :step="product?.unit?.allow_decimal ? 'any' : '1'"
+                                            @input="!product?.unit?.allow_decimal && (quantity = Math.floor(quantity))" />
                                         <button @click="increaseQuantity"
-                                            class="btn btn-outline btn-primary w-10 h-10 p-0 flex items-center justify-center">
-                                            <Plus class="w-4 h-4" />
+                                            class="btn btn-outline btn-primary join-item rounded-r-full w-[40px] h-[40px] p-0"
+                                            :disabled="quantity >= product?.stock_quantity">
+                                            <Plus />
                                         </button>
                                     </div>
                                 </div>
                                 <ProductBuyButton :addProductToCart="addProductToCart" :quantity="quantity"
-                                    :isAddingToCart="isAddingToCart" :stock-quantity="product.stock_quantity"/>
+                                    :isAddingToCart="isAddingToCart" :stock-quantity="product.stock_quantity" />
                             </div>
                         </div>
                     </transition>
