@@ -99,8 +99,8 @@ class StatisticsController extends Controller
             ->sum('final_total_amount');
 
         // 7. Top mặt hàng bán nhiều tiền nhất và nhiều số lượng nhất
-        $topProductsByRevenue = OrderItem::join('orders', 'order_items.order_id', '=', 'orders.id')
-            ->join('products', 'order_items.product_id', '=', 'products.id')
+        $topProductsByRevenue = Product::join('order_items', 'products.id', '=', 'order_items.product_id')
+            ->join('orders', 'order_items.order_id', '=', 'orders.id')
             ->join('product_units', 'products.unit_id', '=', 'product_units.id')
             ->where('orders.status', 'delivered')
             ->whereBetween('orders.created_at', [$startDate, $endDate])
@@ -113,7 +113,15 @@ class StatisticsController extends Controller
             ->groupBy('products.id', 'products.name', 'product_units.name')
             ->orderByDesc('total_revenue')
             ->limit(10)
-            ->get();
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'id' => (string) $item->id,
+                    'name' => $item->name,
+                    'product_unit' => $item->product_unit,
+                    'total_revenue' => (float) $item->total_revenue
+                ];
+            });
 
         $topProductsByQuantity = Product::join('order_items', 'products.id', '=', 'order_items.product_id')
             ->join('orders', 'order_items.order_id', '=', 'orders.id')
