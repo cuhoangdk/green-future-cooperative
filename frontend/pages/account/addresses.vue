@@ -12,7 +12,7 @@
                     <span class="loading loading-spinner loading-lg"></span>
                 </div>
                 <div v-else v-for="address in addresses" :key="address.id">
-                    <UiAddressCard :address="address" :addressDetailId="address.address.ward" />
+                    <UiAddressCard :address="address" :addressDetailId="address.address.ward" :handleDelete="handleDelete" />
                 </div>
             </div>
         </div>
@@ -23,8 +23,32 @@
 import type { CustomerAddress } from '~/types/customer';
 
 const { getCustomerAddress } = useCustomerAddress();
-const { $toast } = useNuxtApp()
+const { deleteCustomerAddress } = useCustomerAddress();
+const { $toast } = useNuxtApp();
+const swal = useSwal()
 
-const { data, status } = await getCustomerAddress();
+const { data, status, refresh } = await getCustomerAddress();
 const addresses = computed<CustomerAddress[]>(() => Array.isArray(data.value?.data) ? data.value.data : data.value ? [data.value.data] : []);
+
+async function handleDelete(id: number) {
+  const result = await swal.fire({
+    title: 'Xác nhận xóa',
+    text: 'Bạn có chắc muốn xóa địa chỉ này không?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Xóa',
+    cancelButtonText: 'Hủy',
+  })
+
+  if (result.isConfirmed) {
+    try {
+      const { status } = await deleteCustomerAddress(id)
+      if (status.value === 'error') throw new Error()
+      refresh()
+      $toast.success('Xóa địa chỉ thành công!`)')
+    } catch (err) {
+      $toast.error(`Xóa thất bại`)
+    }
+  }
+}
 </script>
