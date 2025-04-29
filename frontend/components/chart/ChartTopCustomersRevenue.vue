@@ -60,11 +60,7 @@
         },
         ticks: {
           callback: function(value) {
-            return new Intl.NumberFormat('vi-VN', { 
-              style: 'currency', 
-              currency: 'VND',
-              maximumFractionDigits: 0 
-            }).format(value);
+            return formatCurrency(value);
           }
         }
       }
@@ -80,10 +76,7 @@
             if (label) {
               label += ': ';
             }
-            label += new Intl.NumberFormat('vi-VN', { 
-              style: 'currency', 
-              currency: 'VND' 
-            }).format(context.raw);
+            label += formatCurrency(context.raw);
             return label;
           }
         }
