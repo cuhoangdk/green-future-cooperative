@@ -55,7 +55,9 @@ const linkErrors = reactive<{ [key: string]: boolean }>({
 watch(socialLinksData, (newValue) => {
     if (newValue) {
         newValue.forEach((item: { name: string; value: string }) => {
-            socialLinks[item.name] = item.value
+            if (['instagram', 'facebook', 'tiktok'].includes(item.name)) {
+                socialLinks[item.name] = item.value
+            }
         })
     }
 }, { immediate: true })

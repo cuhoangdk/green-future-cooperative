@@ -151,4 +151,16 @@ const handlePageChange = async (page: number) => {
         await fetchRelatedPosts(post.value.category.id, page)
     }
 }
+
+useHead({
+  title: `${post.value?.title} - Hợp tác xã Tương Lai Xanh`,
+  meta: [
+    { name: 'description', content: post.value?.summary },
+    { name: 'keywords', content: post.value?.category?.name },
+    { property: 'og:title', content: post.value?.title },
+    { property: 'og:description', content: post.value?.summary },
+    { property: 'og:image', content: `${backendUrl}${post.value?.featured_image}` },
+    { property: 'og:url', content: `${config.public.frontendUrl}/posts/${post.value?.slug}` },
+  ],
+});
 </script>

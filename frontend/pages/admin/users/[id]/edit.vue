@@ -15,13 +15,6 @@
                     </div>
                     <input ref="fileInput" type="file" accept="image/*"
                         class="file-input file-input-primary w-full max-w-xs" @change="handleFileChange" hidden />
-
-                    <div class="flex justify-end items-end">
-                        <button type="button" @click="$router.push(`/admin/users/${userId}/change-password`)"
-                            class="btn">
-                            Đổi mật khẩu
-                        </button>
-                    </div>
                 </div>
 
                 <!-- Thông tin cá nhân chính -->
@@ -61,12 +54,20 @@
 
                     <div>
                         <label class="text-gray-700 font-semibold block mb-1">Giới tính</label>
-                        <select v-model="form.gender" class="select select-bordered select-primary w-full">
-                            <option value="">Chọn giới tính</option>
-                            <option value="male">Nam</option>
-                            <option value="female">Nữ</option>
-                            <option value="other">Khác</option>
-                        </select>
+                        <div class="flex items-center space-x-4">
+                            <label class="flex items-center space-x-2">
+                                <input type="radio" v-model="form.gender" value="male" class="radio radio-primary" />
+                                <span>Nam</span>
+                            </label>
+                            <label class="flex items-center space-x-2">
+                                <input type="radio" v-model="form.gender" value="female" class="radio radio-primary" />
+                                <span>Nữ</span>
+                            </label>
+                            <label class="flex items-center space-x-2">
+                                <input type="radio" v-model="form.gender" value="other" class="radio radio-primary" />
+                                <span>Khác</span>
+                            </label>
+                        </div>
                     </div>
 
                     <div>
@@ -176,10 +177,15 @@
             <!-- Submit Button -->
             <div class="border-t border-gray-200 pt-4 flex justify-between items-center">
                 <UiButtonBack />
-                <button type="submit" class="btn btn-primary px-6" :disabled="status === 'pending'">
-                    <span v-if="status === 'pending'" class="loading loading-spinner loading-md"></span>
-                    Lưu
-                </button>
+                <div>
+                    <div type="button" @click="$router.push(`/admin/users/${userId}/change-password`)" class="btn mr-2">
+                        Đổi mật khẩu
+                    </div>
+                    <button type="submit" class="btn btn-primary px-6" :disabled="status === 'pending'">
+                        <span v-if="status === 'pending'" class="loading loading-spinner loading-md"></span>
+                        Lưu
+                    </button>
+                </div>
             </div>
         </form>
     </div>

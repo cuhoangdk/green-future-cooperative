@@ -24,7 +24,8 @@ export const useApi = () => {
       authType = AuthType.Customer, 
       customHeaders = {} as Record<string, string>,
       lazy = true, 
-      server = true, 
+      server = true,
+      cache = true, // Thêm tùy chọn cache, mặc định là true (bật cache)
     } = options as {
       body?: any
       params?: Record<string, any>
@@ -32,6 +33,7 @@ export const useApi = () => {
       customHeaders?: Record<string, string>
       lazy?: boolean
       server?: boolean
+      cache?: boolean
     }
 
     let token: string | null = null
@@ -77,16 +79,26 @@ export const useApi = () => {
       headers['Authorization'] = `Bearer ${token}`
     }
 
+    // Thêm header chống cache nếu cache bị tắt
+    if (!cache) {
+      headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+      headers['Pragma'] = 'no-cache'
+      headers['Expires'] = '0'
+    }
+
     const url = `${baseURL}${endpoint}`
     
+    // Tạo key duy nhất cho useAsyncData, thêm timestamp nếu cache bị tắt
+    const fetchKey = cache ? `${method}-${endpoint}` : `${method}-${endpoint}-${Date.now()}`
+
     const { data, status, error, refresh } = await useAsyncData(
-      `${method}-${endpoint}`,
+      fetchKey,
       () =>
         $fetch<ApiResponse<T>>(url, {
           method,
           headers,
           body: body instanceof FormData ? body : body ? JSON.stringify(body) : undefined,
-          query: params,
+          query: cache ? params : { ...params, _t: Date.now() }, // Thêm timestamp vào query để chống cache trình duyệt
         }),
       { lazy }
     )

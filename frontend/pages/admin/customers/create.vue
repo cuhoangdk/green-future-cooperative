@@ -37,12 +37,20 @@
 
                     <div>
                         <label class="text-gray-700 font-semibold block mb-1">Giới tính</label>
-                        <select v-model="form.gender" class="select select-bordered select-primary w-full">
-                            <option value="">Chọn giới tính</option>
-                            <option value="male">Nam</option>
-                            <option value="female">Nữ</option>
-                            <option value="other">Khác</option>
-                        </select>
+                        <div class="flex items-center space-x-4">
+                            <label class="flex items-center space-x-2">
+                                <input type="radio" v-model="form.gender" value="male" class="radio radio-primary" />
+                                <span>Nam</span>
+                            </label>
+                            <label class="flex items-center space-x-2">
+                                <input type="radio" v-model="form.gender" value="female" class="radio radio-primary" />
+                                <span>Nữ</span>
+                            </label>
+                            <label class="flex items-center space-x-2">
+                                <input type="radio" v-model="form.gender" value="other" class="radio radio-primary" />
+                                <span>Khác</span>
+                            </label>
+                        </div>
                     </div>
 
                     <div>

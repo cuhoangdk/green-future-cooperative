@@ -9,3 +9,8 @@
         <LayoutDock />
     </div>
 </template>
+
+<script setup lang="ts">
+const {fetchParameters} = useParametersStore()
+fetchParameters()
+</script>

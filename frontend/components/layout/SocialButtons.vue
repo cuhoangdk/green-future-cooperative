@@ -15,13 +15,8 @@
 
 <script setup lang="ts">
 import { ArrowUp, Phone } from 'lucide-vue-next'
-import type { Parameter } from '~/types/parameter'
 
-const { getPhoneContact, updatePhoneContact } = useParameters()
-const { $toast } = useNuxtApp()
-const { data, status } = await getPhoneContact()
-
-const phone = computed<Parameter | null>(() => Array.isArray(data.value?.data) ? data.value.data[0] : data.value?.data || null)
+const { parameters } = useParametersStore()
 
 const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -30,13 +25,13 @@ const scrollToTop = () => {
 const socialLinks = [
     {
         name: 'Zalo',
-        url: phone.value ? `https://zalo.me/${phone.value.value}` : 'https://zalo.me/yourbusiness',
+        url: parameters.phone_contact ? `https://zalo.me/${parameters.phone_contact}` : 'https://zalo.me/yourbusiness',
         icon: () => h('img', { src: '/images/zalo_icon.png', class: 'w-6 h-6' }),
         bgColor: 'bg-blue-500'
     },
     {
         name: 'Phone',
-        url: phone.value ? `tel:${phone.value.value}` : 'tel:yourbusiness',
+        url: parameters.phone_contact ? `tel:${parameters.phone_contact}` : 'tel:yourbusiness',
         icon: Phone,
         bgColor: 'bg-blue-500'
     },

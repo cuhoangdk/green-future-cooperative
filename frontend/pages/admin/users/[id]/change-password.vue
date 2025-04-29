@@ -1,21 +1,19 @@
 <template>
     <div class="min-h-screen items-center flex flex-col">
         <div class="w-full lg:w-1/3 rounded-2xl p-4 sm:p-5">
-            <form @submit.prevent="handleSubmit" class="space-y-6">
+            <form @submit.prevent="handleSubmit" class="space-y-4">
                 <div>
-                    <div>
-                        <label class="text-gray-700 font-semibold block mb-1">Mật khẩu <span
-                                class="text-red-500">*</span></label>
-                        <input v-model="form.password" type="password" class="input input-bordered input-primary w-full"
-                            placeholder="********" required />
-                    </div>
+                    <label class="text-gray-700 font-semibold block mb-1">Mật khẩu <span
+                            class="text-red-500">*</span></label>
+                    <input v-model="form.password" type="password" class="input input-bordered input-primary w-full"
+                        placeholder="********" required />
+                </div>
 
-                    <div>
-                        <label class="text-gray-700 font-semibold block mb-1">Xác nhận mật khẩu <span
-                                class="text-red-500">*</span></label>
-                        <input v-model="form.password_confirmation" type="password"
-                            class="input input-bordered input-primary w-full" placeholder="********" required />
-                    </div>
+                <div>
+                    <label class="text-gray-700 font-semibold block mb-1">Xác nhận mật khẩu <span
+                            class="text-red-500">*</span></label>
+                    <input v-model="form.password_confirmation" type="password"
+                        class="input input-bordered input-primary w-full" placeholder="********" required />
                 </div>
 
                 <!-- Submit Button -->

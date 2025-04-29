@@ -4,6 +4,24 @@ import type { Parameter } from '~/types/parameter';
 export const useParameters = () => {
     const { get, put } = useApi();
 
+    const getParameters = async (names: string[], authType: AuthType = AuthType.Guest) => {
+        return await get<Parameter>('/parameters', {
+            authType,
+            params: { name: names.join(' ') },
+            cache: false
+        });
+    };
+
+    const updateParameters = async (
+        name: string,
+        value: string,
+        authType: AuthType = AuthType.User
+    ) => {
+        return await put('/parameters', { name, value }, {
+            authType,
+        });
+    };
+
     const getShippingFee = async (authType: AuthType = AuthType.Guest) => {
         return await get<Parameter>('/parameters', {
             authType,
@@ -60,5 +78,7 @@ export const useParameters = () => {
         updatePhoneContact,
         getSocialLinks,
         updateSocialLink,
+        getParameters,
+        updateParameters,
     };
 };

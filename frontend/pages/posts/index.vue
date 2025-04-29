@@ -62,4 +62,12 @@ const handlePageChange = async (page: number) => {
 if (error.value) {
     console.error('Failed to load initial posts:', error.value)
 }
+
+useHead({
+  title: `Bài viết - Hợp tác xã Tương Lai Xanh`,
+  meta: [
+    { name: 'description', content: 'Bài viết - Hợp tác xã Tương Lai Xanh' },
+    { name: 'keywords', content: 'bài viết, hợp tác xã, tương lai xanh' },
+  ],
+});
 </script>

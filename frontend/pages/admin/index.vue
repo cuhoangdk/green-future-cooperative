@@ -54,20 +54,20 @@
                 <ChartPurchasedByCategory :data="statistic.purchased_by_category" />
             </div>
 
-            <!-- Line Chart -->
-            <div v-if="statistic.orders_per_day" class="bg-white p-4 rounded-lg shadow md:col-span-2">
-                <ChartOrdersPerDay :data="statistic.orders_per_day" />
+            <div v-if="statistic.orders_per_day" class="  md:col-span-4">
+                <div class="shadow bg-white p-4 rounded-lg w-full md:w-3/4 mx-auto">
+                    <ChartOrdersPerDay :data="statistic.orders_per_day" />
+                </div>
             </div>
 
             <div v-if="statistic.top_products_by_revenue" class="bg-white p-4 rounded-lg shadow md:col-span-2">
                 <ChartTopProductsRevenue :data="statistic.top_products_by_revenue" />
             </div>
 
-            <!-- <div v-if="statistic.top_products_by_revenue" class="bg-white p-4 rounded-lg shadow md:col-span-2">
-                <ChartTopProductsRevenue :data="statistic.top_products_by_quantity" />
-            </div> -->
+            <div v-if="statistic.top_products_by_revenue" class="bg-white p-4 rounded-lg shadow md:col-span-2">
+                <ChartTopProductsQuantity :data="statistic.top_products_by_quantity" />
+            </div>
 
-            <!-- Bar Charts - These take full width on all devices -->
             <div v-if="statistic.top_customers_by_revenue" class="bg-white p-4 rounded-lg shadow md:col-span-2">
                 <ChartTopCustomersRevenue :data="statistic.top_customers_by_revenue" />
             </div>

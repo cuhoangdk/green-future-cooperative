@@ -15,13 +15,6 @@
 
                     <input ref="fileInput" type="file" accept="image/*"
                         class="file-input file-input-primary w-full max-w-xs" @change="handleFileChange" hidden />
-
-                    <div class="flex justify-end items-end">
-                        <button type="button" @click="$router.push(`/admin/customers/${id}/change-password`)"
-                            class="btn">
-                            Đổi mật khẩu
-                        </button>
-                    </div>
                 </div>
 
                 <div class="md:col-span-3 grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -59,12 +52,20 @@
 
                     <div>
                         <label class="text-gray-700 font-semibold block mb-1">Giới tính</label>
-                        <select v-model="form.gender" class="select select-bordered select-primary w-full">
-                            <option value="">Chọn giới tính</option>
-                            <option value="male">Nam</option>
-                            <option value="female">Nữ</option>
-                            <option value="other">Khác</option>
-                        </select>
+                        <div class="flex items-center space-x-4">
+                            <label class="flex items-center">
+                                <input type="radio" v-model="form.gender" value="male" class="radio radio-primary" />
+                                <span class="ml-2">Nam</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="radio" v-model="form.gender" value="female" class="radio radio-primary" />
+                                <span class="ml-2">Nữ</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="radio" v-model="form.gender" value="other" class="radio radio-primary" />
+                                <span class="ml-2">Khác</span>
+                            </label>
+                        </div>
                     </div>
 
                     <div>
@@ -102,15 +103,18 @@
             <div class="border-t border-gray-200 pt-5 flex justify-between items-center">
                 <UiButtonBack />
                 <div>
+                    <div type="button" @click="$router.push(`/admin/customers/${id}/change-password`)" class="btn mr-2">
+                        Đổi mật khẩu
+                    </div>
                     <button type="submit" class="btn btn-primary px-6" :disabled="submit === 'pending'">
-                    <span v-if="submit === 'pending'" class="loading loading-spinner loading-md"></span>
-                    Lưu
-                </button>
-                <button v-if="customer?.verified_at === null" type="button" @click="handleVerify"
-                    class="btn btn-secondary px-6 ml-2" :disabled="submit === 'pending'">
-                    <span v-if="submit === 'pending'" class="loading loading-spinner loading-md"></span>
-                    Xác thực
-                </button>
+                        <span v-if="submit === 'pending'" class="loading loading-spinner loading-md"></span>
+                        Lưu
+                    </button>
+                    <button v-if="customer?.verified_at === null" type="button" @click="handleVerify"
+                        class="btn btn-secondary px-6 ml-2" :disabled="submit === 'pending'">
+                        <span v-if="submit === 'pending'" class="loading loading-spinner loading-md"></span>
+                        Xác thực
+                    </button>
                 </div>
             </div>
         </form>
