@@ -22,7 +22,7 @@ class UpdateOrderRequest extends FormRequest
         // Nếu trạng thái là pending, cho phép sửa tất cả các trường
         if ($order->status === 'pending') {
             return [
-            'status' => 'sometimes|in:pending,processing,delivered',
+            'status' => 'sometimes|in:pending,processing,delivering,delivered',
             'full_name' => 'sometimes|string|max:255',
             'phone_number' => 'sometimes|string|max:20',
             'address_type' => 'sometimes|in:home,work,other',

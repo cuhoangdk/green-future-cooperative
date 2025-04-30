@@ -21,17 +21,22 @@ use App\Http\Controllers\Api\ProductUnitController;
 use App\Http\Controllers\Api\SliderImageController;
 use App\Http\Controllers\Api\CustomerAuthController;
 use App\Http\Controllers\Api\NotificationController;
+use App\Http\Controllers\Api\OrderHistoryController;
 use App\Http\Controllers\Api\PostCategoryController;
 use App\Http\Controllers\Api\ProductImageController;
+use App\Http\Controllers\Api\ContactMessageController;
 use App\Http\Controllers\Api\CultivationLogController;
 use App\Http\Controllers\Api\CustomerAddressController;
 use App\Http\Controllers\Api\CustomerProfileController;
 use App\Http\Controllers\Api\ProductCategoryController;
 use App\Http\Controllers\Api\ContactInformationController;
 use App\Http\Controllers\Api\ProductQuantityPriceController;
-use App\Http\Controllers\Api\ContactMessageController;
 
 Route::middleware('log.activity')->group(function () {
+    Route::prefix('order-histories')->group(function () {
+        // Cả admin (api_users) và khách hàng (api_customers) được phép xem lịch sử
+        Route::get('/{orderId}', [OrderHistoryController::class, 'index'])->middleware('auth:api_users,api_customers');
+    });
     Route::middleware(['auth:api_users'])->get('/statistics', [StatisticsController::class, 'getStatistics'])->name('statistics.index');
     Route::prefix('parameters')->group(function () {
         Route::get('/', [ParameterController::class, 'show'])->name('shipping-fee.show');

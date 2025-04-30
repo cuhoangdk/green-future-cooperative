@@ -7,20 +7,33 @@ use App\Models\Product;
 use App\Models\CartItem;
 use App\Models\Customer;
 use App\Models\CustomerAddress;
-use App\Mail\OrderStatusUpdated;
 use App\Jobs\SendOrderStatusEmail;
 use Illuminate\Support\Facades\DB;
 use App\Models\ProductQuantityPrice;
-use Illuminate\Support\Facades\Mail;
 use App\Repositories\Contracts\OrderRepositoryInterface;
+use App\Repositories\Contracts\OrderHistoryRepositoryInterface;
+use Illuminate\Support\Str;
 
 class OrderRepository implements OrderRepositoryInterface
 {
     protected $model;
+    protected $orderHistoryRepository;
 
-    public function __construct(Order $model)
-    {
+    // Mảng ánh xạ trạng thái tiếng Anh sang tiếng Việt
+    protected $statusTranslations = [
+        'pending' => 'đang chờ xử lý',
+        'processing' => 'đang xử lý',
+        'delivering' => 'đang giao',
+        'delivered' => 'đã giao',
+        'cancelled' => 'đã hủy',
+    ];
+
+    public function __construct(
+        Order $model,
+        OrderHistoryRepositoryInterface $orderHistoryRepository
+    ) {
         $this->model = $model;
+        $this->orderHistoryRepository = $orderHistoryRepository;
     }
 
     protected function sendOrderStatusEmails(Order $order)
@@ -34,13 +47,11 @@ class OrderRepository implements OrderRepositoryInterface
     {
         $query = $this->model->with('items.product.user');
     
-        // Nếu có customerId, lọc theo customer_id
         if ($customerId !== null) {
             return $query->where('customer_id', $customerId)->orderBy($sortBy, $sortDirection)
-            ->paginate($perPage);;
+                ->paginate($perPage);
         }
     
-        // Nếu không phải super admin, chỉ lấy order liên quan đến user hiện tại
         if (!$this->isSuperAdmin()) {
             $userId = auth('api_users')->id();
             $query->whereHas('items.product', function ($q) use ($userId) {
@@ -150,7 +161,6 @@ class OrderRepository implements OrderRepositoryInterface
                     'street_address' => $data['street_address'],
                 ];
             }            
-            
             $customerEmail = null;
             if ($customerId) {
                 $customer = Customer::find($customerId);
@@ -158,7 +168,6 @@ class OrderRepository implements OrderRepositoryInterface
             }
             
             $orderData = array_merge($addressData, [
-                
                 'customer_id' => $customerId,
                 'status' => 'pending',
                 'total_price' => $items->sum(fn($item) => $item->quantity * $item->calculated_price),
@@ -198,6 +207,15 @@ class OrderRepository implements OrderRepositoryInterface
             }
 
             $order->load('customer', 'items.product.user');
+
+            // Lưu lịch sử trạng thái
+            $this->orderHistoryRepository->create([
+                'order_id' => $order->id,
+                'status' => $order->status,
+                'notes' => 'Đơn hàng được tạo bởi ' . ($customerId ? 'khách hàng' : 'khách vãng lai'),
+                'changed_by' => auth('api_users')->id() ?? auth('api_customers')->id() ?? null,
+            ]);
+
             $this->sendOrderStatusEmails($order);
 
             return $order;
@@ -262,7 +280,6 @@ class OrderRepository implements OrderRepositoryInterface
             }            
 
             $orderData = array_merge($addressData, [
-                
                 'customer_id' => $customerId,
                 'status' => 'pending',
                 'total_price' => $items->sum(fn($item) => $item->quantity * $item->calculated_price),
@@ -275,7 +292,7 @@ class OrderRepository implements OrderRepositoryInterface
             $order = $this->model->create($orderData);
 
             foreach ($items as $item) {
-                $totalItemPrice = $item->quantity * $item->calculated_price; // Tính total_item_price
+                $totalItemPrice = $item->quantity * $item->calculated_price;
                 $productSnapshot = [
                     'id' => $item->product->id,
                     'slug' => $item->product->slug,
@@ -289,26 +306,35 @@ class OrderRepository implements OrderRepositoryInterface
                     'product_snapshot' => $productSnapshot,
                     'quantity' => $item->quantity,
                     'price' => $item->calculated_price,
-                    'total_item_price' => $totalItemPrice, // Đảm bảo lưu giá trị đúng
+                    'total_item_price' => $totalItemPrice,
                 ]);
                 $item->product->decrement('stock_quantity', $item->quantity);
                 $item->product->increment('sold_quantity', $item->quantity);
             }
 
             $order->load('customer', 'items.product.user');
+
+            // Lưu lịch sử trạng thái
+            $this->orderHistoryRepository->create([
+                'order_id' => $order->id,
+                'status' => $order->status,
+                'notes' => 'Đơn hàng được tạo bởi admin',
+                'changed_by' => auth('api_users')->id(),
+            ]);
+
             $this->sendOrderStatusEmails($order);
 
             return $order;
         });
     }
 
-    public function update(?int $customerId = null, $id, array $data)
+    public function update(?int $customerId = null,  $id, array $data)
     {
         $order = $this->getById($customerId, $id);
         $oldStatus = $order->status;
 
         $order->update($data);
-        // Nếu trạng thái mới là 'delivered' và trạng thái cũ không phải 'delivered'
+
         if (isset($data['status']) && $data['status'] === 'delivered' && $oldStatus !== 'delivered') {
             $customer = Customer::find($order->customer_id);
             if ($customer) {
@@ -316,9 +342,18 @@ class OrderRepository implements OrderRepositoryInterface
                 $customer->increment('total_orders');
             }
         }
+
         if (isset($data['status']) && $data['status'] !== $oldStatus && in_array($data['status'], ['pending', 'processing', 'delivering', 'delivered', 'cancelled'])) {
             $order->load('customer', 'items.product.user');
             if ($order instanceof Order) {
+                // Lưu lịch sử trạng thái
+                $translatedStatus = $this->statusTranslations[$data['status']] ?? $data['status'];
+                $this->orderHistoryRepository->create([
+                    'order_id' => $order->id,
+                    'status' => $data['status'],
+                    'notes' => "Trạng thái đơn hàng cập nhật thành {$translatedStatus}",
+                    'changed_by' => auth('api_users')->id() ?? auth('api_customers')->id() ?? null,
+                ]);
                 $this->sendOrderStatusEmails($order);
             }
         }
@@ -345,13 +380,25 @@ class OrderRepository implements OrderRepositoryInterface
                 $item->product->increment('stock_quantity', $item->quantity);
                 $item->product->decrement('sold_quantity', $item->quantity);
             }
-            // Tải lại quan hệ sau khi cập nhật
+
             $order = $order->fresh(['customer', 'items.product.user']);
+
+            // Lưu lịch sử trạng thái
+            $translatedStatus = $this->statusTranslations['cancelled'] ?? 'đã hủy';
+            $notes = "Đơn hàng đã bị hủy: " . ($data['cancelled_reason'] ?? 'Không có lý do được cung cấp');
+            $this->orderHistoryRepository->create([
+                'order_id' => $order->id,
+                'status' => 'cancelled',
+                'notes' => $notes,
+                'changed_by' => auth('api_users')->id() ?? auth('api_customers')->id(),
+            ]);
+
             $this->sendOrderStatusEmails($order);
 
             return $order;
         });
     }
+
     public function search(?int $customerId = null, int $perPage = 10, array $filters = [], string $sortBy = 'created_at', string $sortDirection = 'desc')
     {        
         $query = $this->model->when(!$this->isSuperAdmin(), function ($query) {
@@ -390,19 +437,18 @@ class OrderRepository implements OrderRepositoryInterface
         return $query->orderBy($sortBy, $sortDirection)
             ->paginate($perPage);
     }  
+
     protected function getPriceForQuantity(string $productId, float $quantity)
     {
-        // Lấy ngưỡng nhỏ nhất cho product_id
         $minQuantity = ProductQuantityPrice::where('product_id', $productId)
             ->min('quantity');
 
-        // Nếu quantity nhỏ hơn ngưỡng nhỏ nhất, báo lỗi
         if ($minQuantity !== null && $quantity < $minQuantity) {
             throw new \Exception("Quantity {$quantity} for product ID {$productId} is below the minimum allowed quantity ({$minQuantity})");
         }
         $priceRecord = ProductQuantityPrice::where('product_id', $productId)
-            ->where('quantity', '<=', $quantity) // Lấy ngưỡng nhỏ hơn hoặc bằng quantity
-            ->orderBy('quantity', 'desc') // Sắp xếp giảm dần để lấy ngưỡng cao nhất phù hợp
+            ->where('quantity', '<=', $quantity)
+            ->orderBy('quantity', 'desc')
             ->first();
 
         return $priceRecord ? $priceRecord->price : null;
