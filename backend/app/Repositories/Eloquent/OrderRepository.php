@@ -2,16 +2,17 @@
 
 namespace App\Repositories\Eloquent;
 
-use App\Mail\OrderStatusUpdated;
+use App\Models\Order;
+use App\Models\Product;
 use App\Models\CartItem;
 use App\Models\Customer;
 use App\Models\CustomerAddress;
-use App\Models\Order;
-use App\Models\Product;
-use App\Models\ProductQuantityPrice;
-use App\Repositories\Contracts\OrderRepositoryInterface;
+use App\Mail\OrderStatusUpdated;
+use App\Jobs\SendOrderStatusEmail;
 use Illuminate\Support\Facades\DB;
+use App\Models\ProductQuantityPrice;
 use Illuminate\Support\Facades\Mail;
+use App\Repositories\Contracts\OrderRepositoryInterface;
 
 class OrderRepository implements OrderRepositoryInterface
 {
@@ -24,25 +25,9 @@ class OrderRepository implements OrderRepositoryInterface
 
     protected function sendOrderStatusEmails(Order $order)
     {
-        // Người mua (customer)       
-        if ($order->customer && $order->customer->email) {
-            Mail::to($order->customer->email)->queue(new OrderStatusUpdated($order, 'customer'));
-        } elseif ($order->email) {
-            Mail::to($order->email)->queue(new OrderStatusUpdated($order, 'customer'));
-        }
-
-        // Người bán (seller) - Lấy từ user_id trong products
-        $sellers = $order->items->map(function ($item) {
-            return $item->product->user->email ?? null;
-        })->filter()->unique();
-        foreach ($sellers as $sellerEmail) {
-            Mail::to($sellerEmail)->queue(new OrderStatusUpdated($order, 'seller'));
-        }
-
-        // Super Admin
-        if ($superAdminEmail = config('mail.super_admin_email')) {
-            Mail::to($superAdminEmail)->queue(new OrderStatusUpdated($order, 'super_admin'));
-        }
+        SendOrderStatusEmail::dispatch($order, 'customer')->onQueue('emails');
+        SendOrderStatusEmail::dispatch($order, 'seller')->onQueue('emails');
+        SendOrderStatusEmail::dispatch($order, 'super_admin')->onQueue('emails');
     }
 
     public function getAll(?int $customerId = null, string $sortBy = 'created_at', string $sortDirection = 'desc', int $perPage = 10)
