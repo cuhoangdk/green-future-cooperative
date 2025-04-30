@@ -96,7 +96,9 @@ class OrderController extends Controller
         }
 
         // Thông báo cho super admins
-        $superAdmins = User::where('is_super_admin', true)->get();
+        $superAdmins = User::where('is_super_admin', true)
+            ->whereNotIn('id', $productUserIds) // Bỏ qua super admin có trong productUserIds
+            ->get();
         foreach ($superAdmins as $superAdmin) {
             $this->notificationRepository->create([
                 'user_type' => 'member',

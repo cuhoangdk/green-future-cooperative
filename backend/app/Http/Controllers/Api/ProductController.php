@@ -47,7 +47,16 @@ class ProductController extends Controller
         $data = $request->validated();
         $product = $this->repository->create($data);
         $notificationRepo = app(NotificationRepositoryInterface::class);
-        $superAdmins = User::where('is_super_admin', true)->get();
+        $user = auth('api_users')->user();
+        $notificationRepo->create([
+            'user_type' => 'member',
+            'user_id' => $user->id,
+            'title' => "Sản phẩm mới được thêm: {$product->name}",
+            'type' => 'new_product',                
+        ]);
+        $superAdmins = User::where('is_super_admin', true)
+                    ->where('id', '!=', $user->id)
+                    ->get();
         foreach ($superAdmins as $superAdmin) {
             $notificationRepo->create([
                 'user_type' => 'member',
@@ -76,7 +85,16 @@ class ProductController extends Controller
         $data = $request->validated();
         $product = $this->repository->update($id, $data);
         $notificationRepo = app(NotificationRepositoryInterface::class);
-        $superAdmins = User::where('is_super_admin', true)->get();
+        $user = auth('api_users')->user();
+        $notificationRepo->create([
+            'user_type' => 'member',
+            'user_id' => $user->id,
+            'title' => "Sản phẩm có mã là {$product->id} vừa được cập nhật",
+            'type' => 'updated_product',                
+        ]);
+        $superAdmins = User::where('is_super_admin', true)
+                    ->where('id', '!=', $user->id)
+                    ->get();
         foreach ($superAdmins as $superAdmin) {
             $notificationRepo->create([
                 'user_type' => 'member',
@@ -94,6 +112,25 @@ class ProductController extends Controller
     public function destroy($id)
     {
         $this->repository->delete($id);
+        $notificationRepo = app(NotificationRepositoryInterface::class);
+        $user = auth('api_users')->user();
+        $notificationRepo->create([
+            'user_type' => 'member',
+            'user_id' => $user->id,
+            'title' => "Sản phẩm có mã là {$id} vừa bị xóa",
+            'type' => 'deleted_product',                
+        ]);
+        $superAdmins = User::where('is_super_admin', true)
+                    ->where('id', '!=', $user->id)
+                    ->get();
+        foreach ($superAdmins as $superAdmin) {
+            $notificationRepo->create([
+                'user_type' => 'member',
+                'user_id' => $superAdmin->id,
+                'title' => "Sản phẩm có mã là {$id} vừa bị xóa",
+                'type' => 'deleted_product',                
+            ]);
+        }
         return response()->json(['message' => 'Product deleted successfully'], 200);
     }
 

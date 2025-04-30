@@ -20,48 +20,19 @@ class NotificationRepository implements NotificationRepositoryInterface
     {
         $query = $this->model->query();
 
-        \Log::debug('getAllForUser input', ['userType' => $userType, 'userId' => $userId]);
-
         if ($userType === 'App\Models\User') {
-            $user = Auth::guard('api_users')->user();
-            if ($user && $user->is_super_admin) {
-                // Super admin nhận thông báo của họ và các loại thông báo cụ thể
-                $query->where(function ($q) use ($userId) {
-                    $q->where('user_type', 'App\Models\User')
-                      ->where('user_id', $userId);
-                });
-            } else {
-                // Người dùng không phải super admin nhận thông báo của họ và order_status liên quan đến sản phẩm
-                $query->where(function ($q) use ($userId) {
-                    $q->where('user_type', 'App\Models\User')
-                      ->where('user_id', $userId)
-                      ->where(function ($subQuery) use ($userId) {
-                          $subQuery->whereNotIn('type', ['order_status'])
-                                   ->orWhere(function ($orderStatusQuery) use ($userId) {
-                                       $orderStatusQuery->where('type', 'order_status')
-                                                        ->where('title', 'LIKE', 'Đơn hàng #%')
-                                                        ->whereExists(function ($existsQuery) use ($userId) {
-                                                            $existsQuery->selectRaw(1)
-                                                                        ->from('orders')
-                                                                        ->join('order_items', 'orders.id', '=', 'order_items.order_id')
-                                                                        ->join('products', 'order_items.product_id', '=', 'products.id')
-                                                                        ->whereRaw('orders.id = CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(notifications.title, "#", -1), " ", 1) AS UNSIGNED)')
-                                                                        ->where('products.user_id', $userId);
-                                                        });
-                                   });
-                      });
-                });
-            }
+            $user = Auth::guard('api_users')->user();            
+            $query->where(function ($q) use ($userId) {
+                $q->where('user_type', 'App\Models\User')
+                    ->where('user_id', $userId);   
+            });             
         } elseif ($userType === 'App\Models\Customer') {
             // Khách hàng chỉ nhận thông báo của chính họ
             $query->where('user_type', 'App\Models\Customer')
                   ->where('user_id', $userId);
         } else {
-            // Loại người dùng không hợp lệ, trả về tập rỗng
             $query->whereRaw('1 = 0');
         }
-
-        \Log::debug('Notification query executed', ['sql' => $query->toSql(), 'bindings' => $query->getBindings()]);
         return $query->orderBy('created_at', 'desc')->paginate($perPage);
     }
 
@@ -98,13 +69,6 @@ class NotificationRepository implements NotificationRepositoryInterface
     public function markAllAsRead(string $userType, int $userId)
     {
         $query = $this->model->where('user_type', $userType)->where('user_id', $userId);
-        if ($userType === 'App\Models\User') {
-            $user = Auth::guard('api_users')->user();
-            if ($user && !$user->is_super_admin) {
-                // Người dùng không phải super admin không thể đánh dấu new_customer/new_product là đã đọc
-                $query->whereNotIn('type', ['new_customer', 'new_product']);
-            }
-        }
         return $query->where('is_read', false)->update([
             'is_read' => true,
             'read_at' => now(),
