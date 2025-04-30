@@ -98,6 +98,7 @@ class ActivityLogService
             'users' => 'App\\Models\\User',
             'shipping-fee' => 'App\\Models\\Parameter',
             'customer-profile' => 'App\\Models\\Customer',
+            'notifications' => 'App\\Models\\Notification',
         ];
 
         return $map[$entityType] ?? 'App\\Models\\' . ucfirst(Str::camel($entityType));

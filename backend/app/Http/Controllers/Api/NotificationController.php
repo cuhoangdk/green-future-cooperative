@@ -26,13 +26,16 @@ class NotificationController extends Controller
             return response()->json(['message' => 'Unauthorized'], 401);
         }
 
-        $notifications = $this->repository->getAllForUser($userType, $userId, $request->get('per_page', 10))->appends(request()->query());
+        // Chuẩn hóa userType
+        $normalizedUserType = $this->normalizeUserType($userType);
+
+        $notifications = $this->repository->getAllForUser($normalizedUserType, $userId, $request->get('per_page', 10))->appends(request()->query());
         return NotificationResource::collection($notifications);
     }
 
     public function show($id)
     {
-        $notification = $this->repository->getById($id);
+        $notification = $this->repository->getById((int) $id); // Ép kiểu int
         if (!$notification || !$this->canAccess($notification)) {
             return response()->json(['message' => 'Notification not found or unauthorized'], 404);
         }
@@ -41,11 +44,11 @@ class NotificationController extends Controller
 
     public function markAsRead($id)
     {
-        $notification = $this->repository->getById($id);
+        $notification = $this->repository->getById((int) $id); // Ép kiểu int
         if (!$notification || !$this->canAccess($notification)) {
             return response()->json(['message' => 'Notification not found or unauthorized'], 404);
         }
-        $this->repository->markAsRead($id);
+        $this->repository->markAsRead((int) $id); // Ép kiểu int
         return new NotificationResource($notification->refresh());
     }
 
@@ -58,19 +61,23 @@ class NotificationController extends Controller
             return response()->json(['message' => 'Unauthorized'], 401);
         }
 
-        $this->repository->markAllAsRead($userType, $userId);
+        // Chuẩn hóa userType
+        $normalizedUserType = $this->normalizeUserType($userType);
+
+        $this->repository->markAllAsRead($normalizedUserType, $userId);
         return response()->json(['message' => 'All notifications marked as read'], 200);
     }
 
     public function destroy($id)
     {
-        $notification = $this->repository->getById($id);
+        $notification = $this->repository->getById((int) $id); // Ép kiểu int
         if (!$notification || !$this->canAccess($notification)) {
             return response()->json(['message' => 'Notification not found or unauthorized'], 404);
         }
-        $this->repository->delete($id);
+        $this->repository->delete((int) $id); // Ép kiểu int
         return response()->json(['message' => 'Notification deleted'], 200);
     }
+
 
     protected function getUserType()
     {
@@ -96,6 +103,18 @@ class NotificationController extends Controller
     {
         $userType = $this->getUserType();
         $userId = $this->getUserId();
-        return $notification->user_type === $userType && $notification->user_id === $userId;
+        // Chuẩn hóa userType để so sánh
+        $normalizedUserType = $this->normalizeUserType($userType);
+        return $notification->user_type === $normalizedUserType && $notification->user_id === $userId;
+    }
+
+    protected function normalizeUserType($userType)
+    {
+        if ($userType === 'member') {
+            return 'App\Models\User';
+        } elseif ($userType === 'customer') {
+            return 'App\Models\Customer';
+        }
+        return $userType;
     }
 }

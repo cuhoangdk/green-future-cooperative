@@ -19,6 +19,12 @@ class AdminOrderController extends Controller
     protected $orderRepository;
     protected $notificationRepository;
 
+    protected $statusTranslations = [
+        'processing' => 'đang xử lý',
+        'delivering' => 'đang giao',
+        'delivered' => 'đã giao',
+    ];
+
     public function __construct(
         OrderRepositoryInterface $orderRepository,
         NotificationRepositoryInterface $notificationRepository
@@ -68,7 +74,7 @@ class AdminOrderController extends Controller
             $order = $this->orderRepository->createForAdmin($customerId, $data);
 
             // Gửi thông báo
-            $this->sendOrderNotifications($order, 'created');
+            $this->sendOrderNotifications($order, 'tạo');
 
             return new OrderResource($order);
         } catch (\Exception $e) {
@@ -88,7 +94,10 @@ class AdminOrderController extends Controller
 
         // Gửi thông báo nếu trạng thái thay đổi
         if ($request->has('status')) {
-            $this->sendOrderNotifications($order, $request->validated()['status']);
+            $status = $request->validated()['status'];
+            // Dịch trạng thái sang tiếng Việt, mặc định giữ nguyên nếu không tìm thấy
+            $translatedStatus = $this->statusTranslations[$status] ?? $status;
+            $this->sendOrderNotifications($order, $translatedStatus);
         }
 
         return new OrderResource($order);
@@ -100,7 +109,7 @@ class AdminOrderController extends Controller
             $order = $this->orderRepository->cancel(null, $id, $request->all());
 
             // Gửi thông báo
-            $this->sendOrderNotifications($order, 'cancelled');
+            $this->sendOrderNotifications($order, 'huỷ');
 
             return new OrderResource($order);
         } catch (\Exception $e) {

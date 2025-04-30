@@ -44,7 +44,7 @@ class OrderController extends Controller
             $order = $this->orderRepository->createForCustomer($customerId, $request->validated());
 
             // Gửi thông báo
-            $this->sendOrderNotifications($order, 'created');
+            $this->sendOrderNotifications($order, 'tạo');
 
             return new OrderResource($order);
         } catch (\Exception $e) {
@@ -66,7 +66,7 @@ class OrderController extends Controller
             $order = $this->orderRepository->cancel($customerId, $id, $request->validated());
 
             // Gửi thông báo
-            $this->sendOrderNotifications($order, 'cancelled');
+            $this->sendOrderNotifications($order, 'huỷ');
 
             return new OrderResource($order);
         } catch (\Exception $e) {
