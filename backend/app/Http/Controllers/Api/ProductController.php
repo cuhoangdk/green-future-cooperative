@@ -51,7 +51,7 @@ class ProductController extends Controller
         $notificationRepo->create([
             'user_type' => 'member',
             'user_id' => $user->id,
-            'title' => "Sản phẩm mới được thêm: {$product->name}",
+            'title' => "Sản phẩm mới được thêm có mã là {$product->id}",
             'type' => 'new_product',                
         ]);
         $superAdmins = User::where('is_super_admin', true)
@@ -61,7 +61,7 @@ class ProductController extends Controller
             $notificationRepo->create([
                 'user_type' => 'member',
                 'user_id' => $superAdmin->id,
-                'title' => "Sản phẩm mới được thêm: {$product->name}",
+                'title' => "Sản phẩm mới được thêm có mã là {$product->id}",
                 'type' => 'new_product',                
             ]);
         }
