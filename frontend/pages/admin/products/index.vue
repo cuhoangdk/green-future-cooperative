@@ -147,7 +147,7 @@ async function handleDeleteProduct(productId: string) {
             const { error } = await deleteProduct(productId)
             if (error.value) throw new Error(error.value.message)
             products.value.products = products.value.products.filter((product: Product) => product.id !== productId)
-            refresh()
+            search()
             $toast.success('Sản phẩm đã được xóa!')
         } catch (err) {
             $toast.error(`Xóa thất bại: ${(err as Error).message || 'Unknown error'}`)

@@ -40,6 +40,10 @@ class Product extends Model
     ];
 
     protected $dates = ['sown_at', 'harvested_at', 'deleted_at'];
+    protected $casts = [
+        'sown_at' => 'date:Y-m-d',
+        'harvested_at' => 'date:Y-m-d',
+    ];
 
     public function category()
     {

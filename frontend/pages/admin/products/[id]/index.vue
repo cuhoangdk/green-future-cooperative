@@ -4,209 +4,209 @@
             <span class="loading loading-spinner loading-lg"></span>
         </div>
         <form v-else @submit.prevent="handleSubmit" class="space-y-4">
-            <!-- Product Code -->
-            <div class="flex flex-col md:flex-row md:space-x-4">
-                <div class="w-full md:w-1/2">
-                    <label class="text-gray-700 font-semibold">Mã sản phẩm</label>
-                    <div class="input input-primary w-full mt-1 bg-gray-200">{{ product?.id }}</div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="w-full">
+                            <label class="text-gray-700 font-semibold">Mã sản phẩm</label>
+                            <div class="input input-primary w-full mt-1 bg-gray-200">{{ product?.id }}</div>
+                        </div>
+                        <div class="w-full">
+                            <label class="text-gray-700 font-semibold">Tên sản phẩm</label>
+                            <input v-model="form.name" class="input input-primary w-full mt-1" placeholder="Rau cải"
+                                required />
+                        </div>
+                        <div v-if="product?.status !== 'growing'">
+                            <label class="text-gray-700 font-semibold">Trạng thái</label>
+                            <select v-model="form.status" class="select select-primary w-full mt-1" required>
+                                <option value="" disabled selected>Chọn trạng thái</option>
+                                <option class="text-blue-600" value="selling">Đang bán</option>
+                                <option class="text-red-600" value="stopped">Dừng bán</option>
+                            </select>
+                        </div>
+                        <div v-if="currentUser?.is_super_admin">
+                            <label class="text-gray-700 font-semibold">Thành viên</label>
+                            <select
+                                @change="(event) => searchFarms({ user_id: Number((event.target as HTMLSelectElement).value) })"
+                                v-model="form.user_id" class="select select-primary w-full mt-1" required>
+                                <option value="" disabled selected>Chọn chủ của sản phẩm</option>
+                                <option v-for="user in users" :key="user.id" :value="user.id">
+                                    {{ user.full_name }}
+                                </option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-gray-700 font-semibold">Nông trại</label>
+                            <select v-model="form.farm_id" class="select select-primary w-full mt-1" required>
+                                <option value="" disabled selected>Chọn nông trại</option>
+                                <option v-for="farm in farms" :key="farm.id" :value="farm.id">
+                                    {{ farm.name }}
+                                </option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-gray-700 font-semibold">Đơn vị</label>
+                            <select v-model="form.unit_id" class="select select-primary w-full mt-1"
+                                @change="!units.find(unit => unit.id === Number(form.unit_id))?.allow_decimal && form.stock_quantity !== null && (form.stock_quantity = Math.floor(form.stock_quantity))"
+                                required>
+                                <option value="" disabled selected>Chọn đơn vị</option>
+                                <option v-for="unit in units" :key="unit.id" :value="unit.id">
+                                    {{ unit.name }}
+                                </option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-gray-700 font-semibold">Loại</label>
+                            <select v-model="form.category_id" class="select select-primary w-full mt-1" required>
+                                <option value="" disabled selected>Chọn loại</option>
+                                <option v-for="category in productCategories" :key="category.id" :value="category.id">
+                                    {{ category.name }}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
-                <div class="w-full md:w-1/2 mt-4 md:mt-0">
-                    <label class="text-gray-700 font-semibold">Tên sản phẩm</label>
-                    <input v-model="form.name" class="input input-primary w-full mt-1" placeholder="Rau cải" required />
+
+                <!-- Description -->
+                <div>
+                    <label class="text-gray-700 font-semibold">Mô tả</label>
+                    <textarea v-model="form.description" class="textarea textarea-primary w-full h-52 mt-1"
+                        placeholder="Sản phẩm được trồng..." />
                 </div>
             </div>
 
-            <!-- Product Status -->
-            <div v-if="product?.status !== 'growing'">
-                <label class="text-gray-700 font-semibold">Trạng thái</label>
-                <select v-model="form.status" class="select select-primary w-full mt-1" required>
-                    <option value="" disabled selected>Chọn trạng thái</option>
-                    <option class="text-blue-600" value="selling">Đang bán</option>
-                    <option class="text-red-600" value="stopped">Dừng bán</option>
-                </select>
-            </div>
-
-            <!-- User (for super admin) -->
-            <div v-if="currentUser?.is_super_admin">
-                <label class="text-gray-700 font-semibold">Thành viên</label>
-                <select @change="(event) => searchFarms({ user_id: Number((event.target as HTMLSelectElement).value) })"
-                    v-model="form.user_id" class="select select-primary w-full mt-1" required>
-                    <option value="" disabled selected>Chọn chủ của sản phẩm</option>
-                    <option v-for="user in users" :key="user.id" :value="user.id">
-                        {{ user.full_name }}
-                    </option>
-                </select>
-            </div>
-
-            <!-- Farm, Unit, Category -->
-            <div class="flex space-x-4">
-                <div class="w-1/3">
-                    <label class="text-gray-700 font-semibold">Nông trại</label>
-                    <select v-model="form.farm_id" class="select select-primary w-full mt-1" required>
-                        <option value="" disabled selected>Chọn nông trại</option>
-                        <option v-for="farm in farms" :key="farm.id" :value="farm.id">
-                            {{ farm.name }}
-                        </option>
-                    </select>
-                </div>
-                <div class="w-1/3">
-                    <label class="text-gray-700 font-semibold">Đơn vị</label>
-                    <select v-model="form.unit_id" class="select select-primary w-full mt-1"                         
-                    @change="!units.find(unit => unit.id === Number(form.unit_id))?.allow_decimal && form.stock_quantity !== null && (form.stock_quantity = Math.floor(form.stock_quantity))" 
-                        required>
-                        <option value="" disabled selected>Chọn đơn vị</option>
-                        <option v-for="unit in units" :key="unit.id" :value="unit.id">
-                            {{ unit.name }}
-                        </option>
-                    </select>
-                </div>
-                <div class="w-1/3">
-                    <label class="text-gray-700 font-semibold">Loại</label>
-                    <select v-model="form.category_id" class="select select-primary w-full mt-1" required>
-                        <option value="" disabled selected>Chọn loại</option>
-                        <option v-for="category in productCategories" :key="category.id" :value="category.id">
-                            {{ category.name }}
-                        </option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- Description -->
-            <div>
-                <label class="text-gray-700 font-semibold">Mô tả</label>
-                <textarea v-model="form.description" class="textarea textarea-primary w-full h-24 mt-1"
-                    placeholder="Sản phẩm được trồng..." />
-            </div>
-
-            <!-- Sown Date & Seed Supplier -->
-            <div class="flex space-x-4">
-                <div class="w-1/2">
-                    <label class="text-gray-700 font-semibold">Ngày gieo hạt</label>
-                    <input v-model="form.sown_at" type="date" class="input input-primary w-full mt-1" />
-                </div>
-                <div class="w-1/2">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div>
                     <label class="text-gray-700 font-semibold">Nhà cung cấp giống</label>
                     <input v-model="form.seed_supplier" class="input input-primary w-full mt-1"
                         placeholder="Cửa hàng..." />
                 </div>
-            </div>
 
-            <!-- Cultivated Area & Stock Quantity -->
-            <div class="flex space-x-4">
-                <div class="w-1/2">
+                <!-- Cultivated Area -->
+                <div>
                     <label class="text-gray-700 font-semibold">Diện tích trồng (m²)</label>
                     <input v-model="form.cultivated_area" type="number" step="0.01"
                         class="input input-primary w-full mt-1" placeholder="700" />
                 </div>
-                <div class="w-1/2">
-                    <label class="text-gray-700 font-semibold">Sản lượng ({{ units.find(unit => unit.id === Number(form.unit_id))?.name || '' }})</label>
-                    <input 
-                        v-model="form.stock_quantity" 
+
+                <!-- Stock Quantity -->
+                <div>
+                    <label class="text-gray-700 font-semibold">Sản lượng ({{units.find(unit => unit.id ===
+                        Number(form.unit_id))?.name || ''}})</label>
+                    <input v-model="form.stock_quantity"
                         :step="form.unit_id && units.find(unit => unit.id === Number(form.unit_id))?.allow_decimal ? 0.1 : 1"
                         :class="{ 'input-primary': true, 'input-error': form.stock_quantity !== null && form.stock_quantity % 1 !== 0 && !units.find(unit => unit.id === Number(form.unit_id))?.allow_decimal }"
-                        type="number" 
-                        class="input w-full mt-1" 
-                        placeholder="300" 
+                        type="number" class="input w-full mt-1" placeholder="300"
                         @input="!units.find(unit => unit.id === Number(form.unit_id))?.allow_decimal && form.stock_quantity !== null && (form.stock_quantity = Math.floor(form.stock_quantity))" />
                 </div>
-            </div>
 
-            <!-- Expired -->
-            <div>
-                <label class="text-gray-700 font-semibold">Hạn sử dụng (ngày từ khi thu hoạch)</label>
-                <input v-model="form.expired" type="number" step="1" class="input input-primary w-full mt-1"
-                    placeholder="7" />
+                <!-- Expired -->
+                <div>
+                    <label class="text-gray-700 font-semibold">Hạn sử dụng (ngày)</label>
+                    <input v-model="form.expired" type="number" step="1" class="input input-primary w-full mt-1"
+                        placeholder="7" />
+                </div>
+                <div class="md:col-span-2">
+                    <label class="text-gray-700 font-semibold">Ngày gieo hạt</label>
+                    <input v-model="form.sown_at" type="date" class="input input-primary w-full mt-1" />
+                </div>
+                <div class="md:col-span-2">
+                    <label class="text-gray-700 font-semibold">Bắt đầu thu hoạch</label>
+                    <input v-model="form.harvested_at" type="date" class="input input-primary w-full mt-1" />
+                </div>
             </div>
 
             <!-- Phần hình ảnh và giá cả (chỉ khi đã bán) -->
             <template v-if="product?.status === 'selling'">
                 <!-- Harvested At -->
-                <div>
-                    <label class="text-gray-700 font-semibold">Bắt đầu thu hoạch</label>
-                    <input v-model="form.harvested_at" type="date" class="input input-primary w-full mt-1" />
-                </div>
-
-                <div class="border-t border-gray-200 pt-5">
-                    <div class="text-lg font-medium text-gray-800 mb-3">Hình ảnh</div>
-                    <div>
-                        <div class="space-y-2">
-                            <input @change="handleImageUpload" accept=".jpg,.jpeg,.png" type="file"
-                                class="file-input file-input-primary mt-1 w-full lg:w-1/2" multiple />
-                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                                <div v-for="(image, index) in form.product_images" :key="index">
-                                    <div class="relative w-full">
-                                        <img :src="image.preview || `${backendUrl}${image.image_url}`"
-                                            class="aspect-video w-full object-cover rounded-lg shadow mt-2" />
-                                        <div
-                                            class="absolute inset-0 flex flex-col justify-between items-end p-2 rounded-lg">
-                                            <label class="flex items-center text-black bg-white px-2 py-1 rounded-full">
-                                                <span class="text-sm font-semibold">Ảnh chính</span>
-                                                <input type="radio" v-model="primaryImageIndex" :value="index"
-                                                    class="radio radio-primary ml-2" />
-                                            </label>
-                                            <button @click="removeImage(index)" type="button"
-                                                class="btn btn-error btn-sm mt-2">
-                                                Xóa
-                                            </button>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    <div class="border-t border-gray-200 pt-5">
+                        <div class="text-lg font-medium text-gray-800 mb-3">Hình ảnh</div>
+                        <div>
+                            <div class="space-y-2">
+                                <div class="grid grid-cols-2 lg:grid-cols-3 gap-4">
+                                    <label
+                                        class="flex items-center justify-center w-full aspect-[4/3] border-2 border-dashed border-gray-300 rounded-lg cursor-pointer">
+                                        <span class="text-gray-500 text-2xl">+</span>
+                                        <input @change="handleImageUpload" accept=".jpg,.jpeg,.png" type="file"
+                                            class="hidden" multiple />
+                                    </label>
+                                    <div v-for="(image, index) in form.product_images" :key="index">
+                                        <div class="relative w-full">
+                                            <img :src="image.preview || `${backendUrl}${image.image_url}`"
+                                                class="aspect-[4/3] w-full object-cover rounded-lg shadow" />
+                                            <div
+                                                class="absolute inset-0 flex flex-col justify-between items-end p-2 rounded-lg">
+                                                <label
+                                                    class="flex items-center text-black bg-white px-2 py-1 rounded-full">
+                                                    <span class="text-sm font-semibold">Ảnh chính</span>
+                                                    <input type="radio" v-model="primaryImageIndex" :value="index"
+                                                        class="radio radio-primary ml-2" />
+                                                </label>
+                                                <button @click="removeImage(index)" type="button"
+                                                    class="btn btn-error btn-sm mt-2">
+                                                    Xóa
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="border-t border-gray-200 pt-5">
-                    <div class="text-lg font-medium text-gray-800 mb-3">Thông tin giá cả</div>
-                    <div class="flex space-x-4">
-                        <div class="w-1/2">
-                            <label class="text-gray-700 font-semibold">Kiểu giá</label>
-                            <select v-model="form.pricing_type" class="select select-primary w-full mt-1" required>
-                                <option value="" disabled>Chọn kiểu giá</option>
-                                <option value="fix">Cố định</option>
-                                <option value="flexible">Theo số lượng</option>
-                                <option value="contact">Liên hệ</option>
-                            </select>
-                        </div>
-                        <div class="w-1/2 flex items-end">
-                            <button v-if="form.pricing_type === 'flexible'" @click="addPrice" type="button"
-                                class="btn btn-primary">
-                                Thêm giá
-                            </button>
-                            <div class="flex gap-2 items-center" v-if="form.pricing_type === 'fix'">
-                                <label class="input">
-                                    <input v-model="form.product_prices[0].price" type="number" class="" placeholder="15000" required />
+                    <div class="border-t border-gray-200 pt-5">
+                        <div class="text-lg font-medium text-gray-800 mb-3">Thông tin giá cả</div>
+                        <div class="flex space-x-4">
+                            <div class="w-1/2">
+                                <label class="text-gray-700 font-semibold">Kiểu giá</label>
+                                <select v-model="form.pricing_type" class="select select-primary w-full mt-1" required>
+                                    <option value="" disabled>Chọn kiểu giá</option>
+                                    <option value="fix">Cố định</option>
+                                    <option value="flexible">Theo số lượng</option>
+                                    <option value="contact">Liên hệ</option>
+                                </select>
+                            </div>
+                            <div class="w-1/2 flex items-end">
+                                <button v-if="form.pricing_type === 'flexible'" @click="addPrice" type="button"
+                                    class="btn btn-primary">
+                                    Thêm giá
+                                </button>
+                                <label v-if="form.pricing_type === 'fix'" class="input w-full">
+                                    <input v-model="form.product_prices[0].price" type="number" class=""
+                                        placeholder="15000" required />
                                     <span class="">VNĐ</span>
                                 </label>
                             </div>
                         </div>
-                    </div>
 
-                    <div v-if="form.pricing_type === 'flexible'">
-                        <div class="flex justify-between items-center my-2">
-                            <span class="text-gray-700 font-semibold">Danh sách giá</span>
-                        </div>
-                        <div v-for="(price, index) in form.product_prices" :key="index"
-                            class="flex items-center gap-2 mb-2">
-                            <label class="input">
-                                <span class="">Từ</span>
-                                <input v-model="price.quantity" type="number" class="" placeholder="0"
-                                    :disabled="index === 0" required />
-                                <span class="">{{ product?.unit.name }}</span>
-                            </label>
+                        <div v-if="form.pricing_type === 'flexible'">
+                            <div class="flex justify-between items-center my-2">
+                                <span class="text-gray-700 font-semibold">Danh sách giá</span>
+                            </div>
+                            <div v-for="(price, index) in form.product_prices" :key="index"
+                                class="flex items-center gap-2 mb-2">
+                                <label class="input">
+                                    <span class="">Từ</span>
+                                    <input v-model="price.quantity" type="number" class="" placeholder="0"
+                                        :disabled="index === 0" required />
+                                    <span class="">{{ product?.unit.name }}</span>
+                                </label>
 
-                            <label class="input">
-                                <input v-model="price.price" type="number" class="" placeholder="15000" required />
-                                <span class="">VNĐ</span>
-                            </label>
+                                <label class="input">
+                                    <input v-model="price.price" type="number" class="" placeholder="15000" required />
+                                    <span class="">VNĐ</span>
+                                </label>
 
-                            <button v-if="form.product_prices.length > 1 && index !== 0" @click="removePrice(index)"
-                                type="button" class="btn btn-error btn-s">
-                                Xóa
-                            </button>
+                                <button v-if="form.product_prices.length > 1 && index !== 0" @click="removePrice(index)"
+                                    type="button" class="btn btn-error btn-s">
+                                    Xóa
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
+
             </template>
 
             <!-- Submit Button -->

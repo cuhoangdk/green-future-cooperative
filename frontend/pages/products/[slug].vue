@@ -104,7 +104,6 @@
                                 <p><strong>Kinh độ:</strong> {{ farm?.longitude }} <strong>- Vĩ độ:</strong> {{
                                     farm?.latitude }} </p>
                                 <p><strong>Nhà cung cấp giống:</strong> {{ product?.seed_supplier }}</p>
-                                <p><strong>Loại đất:</strong> {{ farm?.soil_type }}</p>
                                 <p><strong>Diện tích canh tác:</strong> {{ formatNumber(product?.cultivated_area) }} m²
                                 </p>
                                 <p>{{ farm?.description }}</p>
