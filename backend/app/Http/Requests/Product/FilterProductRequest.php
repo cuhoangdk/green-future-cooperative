@@ -20,7 +20,7 @@ class FilterProductRequest extends FormRequest
     public function rules()
     {
         return [
-            'search' => 'sometimes|string|max:255',
+            'search' => 'sometimes|max:255',
             'category_id' => 'sometimes|exists:product_categories,id',
             'unit_id' => 'sometimes|exists:product_units,id',
             'user_id' => 'sometimes|exists:users,id',

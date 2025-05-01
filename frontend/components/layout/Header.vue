@@ -14,12 +14,7 @@
 
                     <!-- Search bar -->
                     <div class="w-1/2">
-                        <div class="relative">
-                            <input type="search" placeholder="Tìm kiếm..."
-                                class="pl-4 pr-12 py-2 rounded-full border-2 border-green-500 bg-green-700 text-white placeholder-green-200 focus:border-green-400 focus:outline-none w-full" />
-                            <SearchIcon
-                                class="w-8 h-8 p-1.5 bg-green-500 text-white hover:bg-white hover:text-gray-800 transition-colors duration-150 rounded-full absolute right-2 top-1/2 transform -translate-y-1/2" />
-                        </div>
+                        <ProductSearchInput />
                     </div>
 
                     <!-- Cart and Login -->
@@ -103,6 +98,7 @@ import { Menu, ShoppingCart, Search as SearchIcon } from 'lucide-vue-next'
 
 const { logout ,currentCustomer, refreshToken, isAuthenticated } = useCustomerAuth()
 const route = useRoute()
+const router = useRouter()
 const { $toast } = useNuxtApp()
 const isMobileMenuOpen = ref(false)
 
@@ -153,4 +149,5 @@ const handleLogout = async () => {
         $toast.error(error.message || 'Đăng xuất thất bại!');
     }
 };
+
 </script>

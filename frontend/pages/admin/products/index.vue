@@ -11,8 +11,8 @@
                     <select v-model="selectedCategory" class="select select-sm select-primary w-full sm:w-[150px]"
                         @change="search">
                         <option value="">Tất cả danh mục</option>
-                        <option v-for="category in categories" :key="category.id" :value="category.id">{{ category.name
-                            }}
+                        <option v-for="category in categories" :key="category.id" :value="category.id">
+                            {{ category.name }}
                         </option>
                     </select>
                     <select v-model="selectedStatus" class="select select-sm select-primary w-full sm:w-[150px]"
@@ -48,8 +48,8 @@
                 class="absolute inset-0 bg-gray-50 opacity-25 flex justify-center items-center z-10">
                 <span class="loading loading-spinner loading-lg"></span>
             </div>
-        <TableProduct :products="products.products" v-on:delete="handleDeleteProduct" />
-        <GridProduct :products="products.products" v-on:delete="handleDeleteProduct" />
+            <TableProduct :products="products.products" v-on:delete="handleDeleteProduct" />
+            <GridProduct :products="products.products" v-on:delete="handleDeleteProduct" />
         </div>
         <div class="flex flex-col lg:flex-row justify-between items-center gap-2 m-4">
             <div class="flex items-center space-x-2">

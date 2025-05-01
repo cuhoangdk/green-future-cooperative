@@ -14,10 +14,8 @@
     <!-- Danh mục -->
     <ul v-else class="text-left space-y-2">
       <li v-for="category in categories" :key="category.id">
-        <a
-          @click.prevent="updateQuery(category.slug, category.id)"
-          class="text-left text-xl font-semibold text-green-600 hover:text-green-400 transition-colors duration-200 cursor-pointer"
-        >
+        <a @click.prevent="updateQuery(category.slug, category.id)"
+          class="text-left text-xl font-semibold text-green-600 hover:text-green-400 transition-colors duration-200 cursor-pointer">
           {{ category.name }}
         </a>
       </li>
