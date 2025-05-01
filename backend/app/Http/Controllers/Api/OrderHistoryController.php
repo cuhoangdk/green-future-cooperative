@@ -35,6 +35,6 @@ class OrderHistoryController extends Controller
         }
 
         $histories = $this->orderHistoryRepository->getByOrderId($orderId);
-        return OrderHistoryResource::collection($histories);
+        return OrderHistoryResource::collection($histories->load('changeable'));
     }
 }

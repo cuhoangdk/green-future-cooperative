@@ -23,7 +23,6 @@ class OrderHistoryRepository implements OrderHistoryRepositoryInterface
     public function getByOrderId(string $orderId): Collection
     {
         return $this->model->where('order_id', $orderId)
-            ->with('user')
             ->orderBy('created_at', 'desc')
             ->get();
     }

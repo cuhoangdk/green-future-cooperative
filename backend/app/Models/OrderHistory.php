@@ -9,15 +9,15 @@ class OrderHistory extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['order_id', 'status', 'notes', 'changed_by'];
+    protected $fillable = ['order_id', 'status', 'notes', 'changeable_id', 'changeable_type'];
 
     public function order()
     {
-        return $this->belongsTo(Order::class);
+        return $this->belongsTo(Order::class, 'order_id', 'id');
     }
 
-    public function user()
+    public function changeable()
     {
-        return $this->belongsTo(User::class, 'changed_by');
+        return $this->morphTo();
     }
 }

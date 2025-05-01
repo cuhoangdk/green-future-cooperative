@@ -2,24 +2,24 @@
 
 namespace App\Repositories\Eloquent;
 
+use App\Models\User;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\CartItem;
 use App\Models\Customer;
+use Illuminate\Support\Str;
 use App\Models\CustomerAddress;
 use App\Jobs\SendOrderStatusEmail;
 use Illuminate\Support\Facades\DB;
 use App\Models\ProductQuantityPrice;
 use App\Repositories\Contracts\OrderRepositoryInterface;
 use App\Repositories\Contracts\OrderHistoryRepositoryInterface;
-use Illuminate\Support\Str;
 
 class OrderRepository implements OrderRepositoryInterface
 {
     protected $model;
     protected $orderHistoryRepository;
 
-    // Mảng ánh xạ trạng thái tiếng Anh sang tiếng Việt
     protected $statusTranslations = [
         'pending' => 'đang chờ xử lý',
         'processing' => 'đang xử lý',
@@ -38,6 +38,7 @@ class OrderRepository implements OrderRepositoryInterface
 
     protected function sendOrderStatusEmails(Order $order)
     {
+        \Log::info('Dispatching SendOrderStatusEmail for order: ' . $order->id);
         SendOrderStatusEmail::dispatch($order, 'customer')->onQueue('emails');
         SendOrderStatusEmail::dispatch($order, 'seller')->onQueue('emails');
         SendOrderStatusEmail::dispatch($order, 'super_admin')->onQueue('emails');
@@ -208,12 +209,13 @@ class OrderRepository implements OrderRepositoryInterface
 
             $order->load('customer', 'items.product.user');
 
-            // Lưu lịch sử trạng thái
+            // Lưu lịch sử trạng thái với quan hệ đa hình
             $this->orderHistoryRepository->create([
                 'order_id' => $order->id,
                 'status' => $order->status,
                 'notes' => 'Đơn hàng được tạo bởi ' . ($customerId ? 'khách hàng' : 'khách vãng lai'),
-                'changed_by' => auth('api_users')->id() ?? auth('api_customers')->id() ?? null,
+                'changeable_id' => $customerId ? auth('api_customers')->id() : null,
+                'changeable_type' => $customerId ? Customer::class : null,
             ]);
 
             $this->sendOrderStatusEmails($order);
@@ -314,12 +316,13 @@ class OrderRepository implements OrderRepositoryInterface
 
             $order->load('customer', 'items.product.user');
 
-            // Lưu lịch sử trạng thái
+            // Lưu lịch sử trạng thái với quan hệ đa hình
             $this->orderHistoryRepository->create([
                 'order_id' => $order->id,
                 'status' => $order->status,
                 'notes' => 'Đơn hàng được tạo bởi admin',
-                'changed_by' => auth('api_users')->id(),
+                'changeable_id' => auth('api_users')->id(),
+                'changeable_type' => User::class,
             ]);
 
             $this->sendOrderStatusEmails($order);
@@ -328,7 +331,7 @@ class OrderRepository implements OrderRepositoryInterface
         });
     }
 
-    public function update(?int $customerId = null,  $id, array $data)
+    public function update(?int $customerId = null, $id, array $data)
     {
         $order = $this->getById($customerId, $id);
         $oldStatus = $order->status;
@@ -346,13 +349,14 @@ class OrderRepository implements OrderRepositoryInterface
         if (isset($data['status']) && $data['status'] !== $oldStatus && in_array($data['status'], ['pending', 'processing', 'delivering', 'delivered', 'cancelled'])) {
             $order->load('customer', 'items.product.user');
             if ($order instanceof Order) {
-                // Lưu lịch sử trạng thái
+                // Lưu lịch sử trạng thái với quan hệ đa hình
                 $translatedStatus = $this->statusTranslations[$data['status']] ?? $data['status'];
                 $this->orderHistoryRepository->create([
                     'order_id' => $order->id,
                     'status' => $data['status'],
                     'notes' => "Trạng thái đơn hàng cập nhật thành {$translatedStatus}",
-                    'changed_by' => auth('api_users')->id() ?? auth('api_customers')->id() ?? null,
+                    'changeable_id' => auth('api_users')->id() ?? auth('api_customers')->id() ?? null,
+                    'changeable_type' => auth('api_users')->check() ? User::class : (auth('api_customers')->check() ? Customer::class : null),
                 ]);
                 $this->sendOrderStatusEmails($order);
             }
@@ -383,14 +387,15 @@ class OrderRepository implements OrderRepositoryInterface
 
             $order = $order->fresh(['customer', 'items.product.user']);
 
-            // Lưu lịch sử trạng thái
+            // Lưu lịch sử trạng thái với quan hệ đa hình
             $translatedStatus = $this->statusTranslations['cancelled'] ?? 'đã hủy';
             $notes = "Đơn hàng đã bị hủy: " . ($data['cancelled_reason'] ?? 'Không có lý do được cung cấp');
             $this->orderHistoryRepository->create([
                 'order_id' => $order->id,
                 'status' => 'cancelled',
                 'notes' => $notes,
-                'changed_by' => auth('api_users')->id() ?? auth('api_customers')->id(),
+                'changeable_id' => auth('api_users')->id() ?? auth('api_customers')->id(),
+                'changeable_type' => auth('api_users')->check() ? User::class : Customer::class,
             ]);
 
             $this->sendOrderStatusEmails($order);
