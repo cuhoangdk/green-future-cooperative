@@ -1,5 +1,5 @@
 import { useApi, AuthType } from './useApi';
-import type { Order } from '~/types/order';
+import type { Order, OrderHistory } from '~/types/order';
 
 export const useAdminOrder = () => {
     const { get, post, put } = useApi();
@@ -19,8 +19,14 @@ export const useAdminOrder = () => {
         is_hot?: number,
         is_featured?: number,
       }, authType: AuthType = AuthType.User) => {
-        return await get<Order>('/admin/orders', {
+        return await get<Order>('/admin/orders/search', {
             params: {  ...filters, sort_by: filters.sort_by ?? 'updated_at'  },
+            authType
+        });
+    };
+
+    const getOrderHistories = async (orderId: string, authType: AuthType = AuthType.User) => {
+        return await get<OrderHistory>(`/order-histories/${orderId}`, {
             authType
         });
     };
@@ -59,5 +65,6 @@ export const useAdminOrder = () => {
         getAdminOrderById,
         updateAdminOrder,
         cancelAdminOrder,
+        getOrderHistories
     };
 };

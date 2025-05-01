@@ -9,22 +9,18 @@
                 <div class="flex flex-col md:flex-row md:justify-between gap-4">
                     <div>
                         <p class="text-sm text-gray-500">Mã đơn hàng</p>
-                        <p class="font-semibold">{{ order.id }}</p>
+                        <div class="flex items-center gap-2 mb-1">
+                            <p class="font-semibold">{{ order.id }}</p>
+                            <OrderStatus :status="order.status" />
+                        </div>
                     </div>
                     <div>
                         <p class="text-sm text-gray-500">Ngày đặt hàng</p>
                         <p class="font-semibold">{{ formatDateTime(order.created_at) }}</p>
                     </div>
-                    <div v-if="order.expected_delivery_date">
-                        <p class="text-sm text-gray-500">Ngày giao hàng dự kiến</p>
-                        <p class="font-semibold">{{ order.expected_delivery_date }}</p>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-500">Cập nhật lần cuối</p>
-                        <p class="font-semibold">{{ formatDateTime(order.updated_at) }}</p>
-                    </div>
-                    <OrderTimeline :status="order.status" :order="order"/>
                 </div>
+                <OrderTimeline :order-id="order.id"/>
+
             </div>
 
             <!-- Customer Information -->
@@ -137,27 +133,6 @@
                                 <span class="font-bold">Tổng cộng:</span>
                                 <span class="font-bold text-primary">{{ formatCurrency(order.final_total_amount) }}</span>
                             </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Cancellation Information -->
-            <div v-if="order.cancelled_at" class="card bg-red-200 bg-opacity-10 border border-gray-200 shadow-xs mb-6">
-                <div class="card-body p-4">
-                    <h2 class="card-title text-lg">Thông tin hủy đơn</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div>
-                            <p>Lý do hủy</p>
-                            <p>{{ order.cancelled_reason }}</p>
-                        </div>
-                        <div>
-                            <p>Thời gian hủy</p>
-                            <p>{{ formatDateTime(order.cancelled_at) }}</p>
-                        </div>
-                        <div>
-                            <p>Người hủy</p>
-                            <p>{{ order.cancelled_by }}</p>
                         </div>
                     </div>
                 </div>

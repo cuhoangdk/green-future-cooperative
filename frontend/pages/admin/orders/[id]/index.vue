@@ -3,34 +3,37 @@
         <div v-if="status === 'pending'" class="flex justify-center items-center h-screen">
             <span class="loading loading-spinner loading-lg"></span>
         </div>
-        <div v-if="order">
+        <div v-else-if="order">
             <!-- Header Section -->
             <div class="border-b pb-4 mb-6">
                 <div class="flex flex-col md:flex-row md:justify-between gap-4">
                     <div>
                         <p class="text-sm text-gray-500">Mã đơn hàng</p>
-                        <p class="font-semibold">{{ order.id }}</p>
+                        <div class="flex items-center gap-2 mb-1">
+                            <p class="font-semibold">{{ order.id }}</p>
+                            <OrderStatus :status="order.status" />
+                        </div>
                     </div>
                     <div>
                         <p class="text-sm text-gray-500">Ngày đặt hàng</p>
                         <p class="font-semibold">{{ formatDateTime(order.created_at) }}</p>
                     </div>
-                    <div>
+                    <!-- <div>
                         <p class="text-sm text-gray-500">Cập nhật lần cuối</p>
                         <p class="font-semibold">{{ formatDateTime(order.updated_at) }}</p>
                     </div>
                     <div v-if="order.expected_delivery_date">
                         <p class="text-sm text-gray-500">Ngày giao hàng dự kiến</p>
                         <p class="font-semibold">{{ order.expected_delivery_date }}</p>
-                    </div>
-                    <div>
-                        <OrderTimeline :status="order.status" />
-                    </div>
+                    </div> -->
+                </div>
+                <div>
+                    <OrderTimeline :status="order.status" :order-id="order.id" />
                 </div>
             </div>
 
             <!-- Customer Information -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-x-0 gap-y-6 md:gap-6 mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-x-0 gap-y-4 md:gap-4 mb-4">
                 <div class="card bg-base-100 border border-gray-200">
                     <div class="p-4">
                         <h2 class="card-title text-lg mb-2">Thông tin khách hàng</h2>
@@ -69,7 +72,7 @@
             </div>
 
             <!-- Order Items -->
-            <div class="card bg-base-100 border border-gray-200 shadow-xs mb-6">
+            <div class="card bg-base-100 border border-gray-200 shadow-xs mb-4">
                 <div class="p-4">
                     <h2 class="card-title text-lg mb-4">Sản phẩm đã đặt</h2>
                     <div class="w-full max-w-[80vw] sm:max-w-[90vw] overflow-x-auto">
@@ -112,7 +115,7 @@
             </div>
 
             <!-- Order Summary -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                 <div class="md:col-span-2 card bg-base-100 border border-gray-200 shadow-xs">
                     <div class="card-body p-4">
                         <h2 class="card-title text-lg mb-2">Ghi chú</h2>
@@ -153,29 +156,8 @@
                 </div>
             </div>
 
-            <!-- Cancellation Information -->
-            <div v-if="order.cancelled_at" class="card bg-red-200 bg-opacity-10 border border-gray-200 shadow-xs mb-6">
-                <div class="card-body p-4">
-                    <h2 class="card-title text-lg">Thông tin hủy đơn</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div>
-                            <p>Lý do hủy</p>
-                            <p>{{ order.cancelled_reason }}</p>
-                        </div>
-                        <div>
-                            <p>Thời gian hủy</p>
-                            <p>{{ formatDateTime(order.cancelled_at) }}</p>
-                        </div>
-                        <div>
-                            <p>Người hủy</p>
-                            <p>{{ order.cancelled_by }}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <!-- Action Buttons -->
-            <div class="flex justify-between w-full mt-6">
+            <div class="flex justify-between w-full mt-4">
                 <UiButtonBack />
                 <OrderConfirmButton :status="order.status" @click="handleChangeStatus" />
             </div>

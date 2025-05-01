@@ -1,3 +1,4 @@
+import type { User } from './user';
 export type OrderStatus = 'pending' | 'processing' | 'delivering' | 'delivered' | 'cancelled';
 export type AddressType = 'home' | 'work' | 'other';
 
@@ -45,4 +46,15 @@ export interface Product_Snapshot {
     user_full_name?: string | null;
     unit: string;
     price: number;
+}
+
+export interface OrderHistory {
+    id: number;
+    order_id: string;
+    status: OrderStatus;
+    notes: string;
+    created_at: string;
+    updated_at: string;
+    changeable_type: 'App\\Models\\User' | 'App\\Models\\Customer';
+    changeable: Pick<User, 'id' | 'email' | 'full_name' | 'phone_number'>;
 }
