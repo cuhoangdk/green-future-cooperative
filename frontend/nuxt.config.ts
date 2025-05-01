@@ -52,7 +52,7 @@ export default defineNuxtConfig({
           href: 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css',
         },
         // Thêm favicon
-        { rel: 'icon', type: 'image/png', href: '/favicon.png' }, // Thay bằng favicon thực tế
+        { rel: 'icon', type: 'image/png', href: '/favicon.ico' }, // Thay bằng favicon thực tế
         // Thêm canonical URL
         { rel: 'canonical', href: process.env.BASE_URL, }, // Thay bằng URL thực tế
       ],

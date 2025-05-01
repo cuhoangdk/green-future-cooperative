@@ -50,7 +50,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $casts = [
-        'date_of_birth' => 'date',
+        'date_of_birth' => 'date:Y-m-d',
         'is_super_admin' => 'boolean',
         'is_banned' => 'boolean',
         'last_login_at' => 'datetime',

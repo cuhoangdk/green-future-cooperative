@@ -32,7 +32,7 @@ class Customer extends Authenticatable
     protected $hidden = ['password', 'remember_token',];
 
     protected $casts = [
-        'date_of_birth' => 'date',
+        'date_of_birth' => 'date:Y-m-d',
         'newsletter_subscribed' => 'boolean',
         'is_banned' => 'boolean',
         'verified_at' => 'datetime',

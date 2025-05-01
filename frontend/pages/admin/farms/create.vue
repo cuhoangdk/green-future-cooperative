@@ -21,6 +21,14 @@
                         </option>
                     </select>
                 </div>
+                <div v-else>
+                    <label class="text-gray-700 font-semibold block mb-1">Thành viên <span
+                            class="text-red-500">*</span></label>
+                    <div class="input w-full">
+                        {{ currentUser?.full_name }}
+
+                    </div>
+                </div>
             </div>
 
             <!-- Description -->
@@ -31,7 +39,7 @@
             </div>
 
             <!-- Section 2: Farm Details -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label class="text-gray-700 font-semibold block mb-1">Kích thước (m2)</label>
                     <input v-model="form.farm_size" type="number" step="0.01"
@@ -42,72 +50,76 @@
                     <input v-model="form.soil_type" class="input input-bordered input-primary w-full"
                         placeholder="Đất cát trắng" />
                 </div>
-            </div>
+            </div> -->
 
             <!-- Section 3: Address -->
-            <div class="border-t border-gray-200 pt-5">
-                <h3 class="text-lg font-medium text-gray-800 mb-3">Địa chỉ</h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div>
-                        <label class="text-gray-700 font-semibold block mb-1">Tỉnh/T.Phố</label>
-                        <select v-model="form.address.province"
-                            @change="(event) => fetchDistricts((event.target as HTMLSelectElement).value)"
-                            class="select select-bordered select-primary w-full" required>
-                            <option value="" disabled>Tỉnh/thành phố</option>
-                            <option v-for="p in provinces" :key="p.id" :value="p.id">{{ p.name }}</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="text-gray-700 font-semibold block mb-1">Quận/Huyện</label>
-                        <select v-model="form.address.district"
-                            @change="(event) => fetchWards((event.target as HTMLSelectElement).value)"
-                            class="select select-bordered select-primary w-full" required>
-                            <option value="" disabled>Quận/huyện</option>
-                            <option v-for="d in districts" :key="d.id" :value="d.id">{{ d.name }}</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="text-gray-700 font-semibold block mb-1">Phường/Xã</label>
-                        <select v-model="form.address.ward" class="select select-bordered select-primary w-full"
-                            required>
-                            <option value="" disabled>Phường/xã</option>
-                            <option v-for="w in wards" :key="w.id" :value="w.id">{{ w.name }}</option>
-                        </select>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <div class="border-t border-gray-200 pt-5">
+                    <h3 class="text-lg font-medium text-gray-800 mb-3">Địa chỉ</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-gray-700 font-semibold block mb-1">Tỉnh/T.Phố</label>
+                            <select v-model="form.address.province"
+                                @change="(event) => fetchDistricts((event.target as HTMLSelectElement).value)"
+                                class="select select-bordered select-primary w-full" required>
+                                <option value="" disabled>Tỉnh/thành phố</option>
+                                <option v-for="p in provinces" :key="p.id" :value="p.id">{{ p.name }}</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-gray-700 font-semibold block mb-1">Quận/Huyện</label>
+                            <select v-model="form.address.district"
+                                @change="(event) => fetchWards((event.target as HTMLSelectElement).value)"
+                                class="select select-bordered select-primary w-full" required>
+                                <option value="" disabled>Quận/huyện</option>
+                                <option v-for="d in districts" :key="d.id" :value="d.id">{{ d.name }}</option>
+                            </select>
+                        </div>
+                        <!-- Phần select xã/phường -->
+                        <div>
+                            <label class="text-gray-700 font-semibold block mb-1">Phường/Xã</label>
+                            <select v-model="form.address.ward" @change="updateMapPosition"
+                                class="select select-bordered select-primary w-full" required>
+                                <option value="" disabled>Phường/xã</option>
+                                <option v-for="w in wards" :key="w.id" :value="w.id">{{ w.name }}</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-gray-700 font-semibold block mb-1">Địa chỉ chi tiết</label>
+                            <input v-model="form.address.street_address"
+                                class="input input-bordered input-primary w-full" placeholder="Số nhà, tên đường..."
+                                required />
+                        </div>
+
+                        <div>
+                            <label class="text-gray-700 font-semibold block mb-1">Kinh độ</label>
+                            <input v-model="form.latitude" type="number" step="0.000000001"
+                                class="input input-bordered input-primary w-full" placeholder="21.0285" />
+                        </div>
+                        <div>
+                            <label class="text-gray-700 font-semibold block mb-1">Vĩ độ</label>
+                            <input v-model="form.longitude" type="number" step="0.000000001"
+                                class="input input-bordered input-primary w-full" placeholder="105.8542" />
+                        </div>
                     </div>
                 </div>
-                <div class="mt-4">
-                    <label class="text-gray-700 font-semibold block mb-1">Địa chỉ chi tiết</label>
-                    <input v-model="form.address.street_address" class="input input-bordered input-primary w-full"
-                        placeholder="Số nhà, tên đường..." required />
+                <div class="border-t border-gray-200 pt-5">
+                    <h3 class="text-lg font-medium text-gray-800 mb-3">Vị trí</h3>
+                    <div class="mb-4">
+                        <LMap ref="map" style="height: 350px" :zoom="12"
+                            :center="[form.latitude ?? 0, form.longitude ?? 0]" :use-global-leaflet="true">
+                            <LTileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
+                                layer-type="base" name="OpenStreetMap" />
+                            <LMarker :lat-lng="[form.latitude ?? 0, form.longitude ?? 0]" draggable
+                                @moveend="updateMarkerPosition" />
+                        </LMap>
+                    </div>
                 </div>
             </div>
 
+
             <!-- Section 4: Location -->
-            <div class="border-t border-gray-200 pt-5">
-                <h3 class="text-lg font-medium text-gray-800 mb-3">Vị trí</h3>
-                <div class="mb-4">
-                    <LMap ref="map" style="height: 350px" :zoom="12" :center="[form.latitude ?? 0, form.longitude ?? 0]"
-                        :use-global-leaflet="true">
-                        <LTileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                            attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
-                            layer-type="base" name="OpenStreetMap" />
-                        <LMarker :lat-lng="[form.latitude ?? 0, form.longitude ?? 0]" draggable
-                            @moveend="updateMarkerPosition" />
-                    </LMap>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="text-gray-700 font-semibold block mb-1">Kinh độ</label>
-                        <input v-model="form.latitude" type="number" step="0.000001"
-                            class="input input-bordered input-primary w-full" placeholder="21.0285" />
-                    </div>
-                    <div>
-                        <label class="text-gray-700 font-semibold block mb-1">Vĩ độ</label>
-                        <input v-model="form.longitude" type="number" step="0.000001"
-                            class="input input-bordered input-primary w-full" placeholder="105.8542" />
-                    </div>
-                </div>
-            </div>
 
             <!-- Submit Button -->
             <div class="border-t border-gray-200 pt-5 flex justify-between items-center">
@@ -147,7 +159,7 @@ const users = computed<User[]>(() =>
 
 // Khởi tạo form với các giá trị mặc định
 const form = ref({
-    name: '',
+    name: 'Nông trại của ' + currentUser.value?.full_name,
     user_id: currentUser.value?.id || '',
     description: '',
     farm_size: null as number | null,
@@ -167,6 +179,15 @@ const updateMarkerPosition = (event: any) => {
     const latLng = event.target.getLatLng()
     form.value.latitude = Number(latLng.lat.toFixed(6))
     form.value.longitude = Number(latLng.lng.toFixed(6))
+}
+
+// Cập nhật bản đồ khi chọn xã/phường
+const updateMapPosition = () => {
+    const selectedWard = wards.value.find((w: any) => w.id === form.value.address.ward)
+    if (selectedWard && selectedWard.latitude && selectedWard.longitude) {
+        form.value.latitude = Number(selectedWard.latitude)
+        form.value.longitude = Number(selectedWard.longitude)
+    }
 }
 
 // Tải danh sách tỉnh/thành phố khi khởi tạo
