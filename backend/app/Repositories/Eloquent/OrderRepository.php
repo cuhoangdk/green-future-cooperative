@@ -39,9 +39,9 @@ class OrderRepository implements OrderRepositoryInterface
     protected function sendOrderStatusEmails(Order $order)
     {
         \Log::info('Dispatching SendOrderStatusEmail for order: ' . $order->id);
-        SendOrderStatusEmail::dispatch($order, 'customer')->onQueue('emails');
-        SendOrderStatusEmail::dispatch($order, 'seller')->onQueue('emails');
-        SendOrderStatusEmail::dispatch($order, 'super_admin')->onQueue('emails');
+        SendOrderStatusEmail::dispatch($order, 'customer')->onQueue('default');
+        SendOrderStatusEmail::dispatch($order, 'seller')->onQueue('default');
+        SendOrderStatusEmail::dispatch($order, 'super_admin')->onQueue('default');
     }
 
     public function getAll(?int $customerId = null, string $sortBy = 'created_at', string $sortDirection = 'desc', int $perPage = 10)
