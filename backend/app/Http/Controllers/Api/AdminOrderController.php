@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Order\IndexOrderRequest;
 use App\Http\Requests\Order\CancelOrderRequest;
+use App\Http\Requests\Order\QuickStoreOrderRequest;
 use App\Http\Requests\Order\UpdateOrderRequest;
 use App\Http\Requests\Order\StoreOrderRequest;
 use App\Http\Requests\Order\SearchOrderRequest;
@@ -13,6 +14,7 @@ use App\Repositories\Contracts\OrderRepositoryInterface;
 use App\Repositories\Contracts\NotificationRepositoryInterface;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Mockery\QuickDefinitionsConfiguration;
 
 class AdminOrderController extends Controller
 {
@@ -70,6 +72,7 @@ class AdminOrderController extends Controller
     {
         try {
             $data = $request->validated();
+            unset($data['status']);
             $customerId = $data['customer_id'];
             $order = $this->orderRepository->createForAdmin($customerId, $data);
 
@@ -81,6 +84,45 @@ class AdminOrderController extends Controller
             return response()->json(['message' => $e->getMessage()], 422);
         }
     }
+
+    public function quickStore(QuickStoreOrderRequest $request)
+    {
+        try {
+            // Lấy dữ liệu đã xác thực
+            $data = $request->validated();            
+
+            // Chuẩn bị dữ liệu đơn hàng
+            $orderData = [
+                "full_name" => null,
+                "phone_number" => null,
+                "customer_id" => null,
+                "province" => null,
+                "district" => null,
+                "ward" => null,
+                "street_address" => null,
+                "email" => null,
+                'status' => 'delivered', 
+                'items' => [
+                    [
+                        'product_id' => $data['product_id'],
+                        'quantity' => $data['quantity'],
+                    ],
+                ],
+            ];
+
+            // Tạo đơn hàng thông qua repository
+            $order = $this->orderRepository->createForAdmin(null, $orderData);
+
+            // Gửi thông báo với trạng thái đã dịch
+            $translatedStatus = $this->statusTranslations['delivered'];
+            $this->sendOrderNotifications($order, $translatedStatus);
+
+            return new OrderResource($order);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
+    }
+
 
     public function show($id)
     {

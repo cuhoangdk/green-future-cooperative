@@ -127,6 +127,7 @@ Route::middleware('log.activity')->group(function () {
         // nullable: customer_address_id, notes, expected_delivery_date
         // sometimes: address_type, shipping_fee  
         Route::post('/', [AdminOrderController::class, 'store'])->name('orders.admin.store');
+        Route::post('/quick-store', [AdminOrderController::class, 'quickStore'])->name('orders.admin.quick-store');
         Route::get('/{id}', [AdminOrderController::class, 'show'])->name('orders.admin.show');
         Route::put('/{id}', [AdminOrderController::class, 'update'])->name('orders.admin.update');
         // required: cancelled_reason
