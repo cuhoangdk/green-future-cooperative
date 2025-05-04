@@ -224,7 +224,7 @@ class OrderRepository implements OrderRepositoryInterface
         });
     }
 
-    public function createForAdmin(int $customerId, array $data)
+    public function createForAdmin(?int $customerId, array $data)
     {
         return DB::transaction(function () use ($customerId, $data) {
             $items = collect($data['items'])->map(function ($item) {
@@ -283,7 +283,7 @@ class OrderRepository implements OrderRepositoryInterface
 
             $orderData = array_merge($addressData, [
                 'customer_id' => $customerId,
-                'status' => 'pending',
+                'status' => $data['status'] ?? 'pending',
                 'total_price' => $items->sum(fn($item) => $item->quantity * $item->calculated_price),
                 'shipping_fee' => $data['shipping_fee'] ?? 0,
                 'final_total_amount' => $items->sum(fn($item) => $item->quantity * $item->calculated_price) + ($data['shipping_fee'] ?? 0),
