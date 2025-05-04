@@ -23,8 +23,8 @@
                     <div>
                         <select class="select rounded-full" v-model="sortBy" @change="search()">
                             <option value="">Sắp xếp theo</option>
-                            <option value="sown_at+desc">Mới nhất</option>
-                            <option value="sown_at+asc">Cũ nhất</option>
+                            <option value="created_at+desc">Mới nhất</option>
+                            <option value="created_at+asc">Cũ nhất</option>
                             <option value="price+asc">giá</option>
 
                             <option value="name">Theo tên</option>
@@ -51,7 +51,7 @@ const route = useRoute()
 const perPage = 15
 const currentPage = ref(1)
 
-const searchQuery = ref<string>(route.query.search ? route.query.search : '')
+const searchQuery = ref<string>(route.query.search ? String(route.query.search) : '')
 const selectedCategory = ref('')
 const sortBy = ref('')
 

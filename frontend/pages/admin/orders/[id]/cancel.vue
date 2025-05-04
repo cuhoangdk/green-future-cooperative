@@ -1,5 +1,5 @@
 <template>
-    <div class="p-4">
+    <div class="p-4 max-w-xl mx-auto">
         <form @submit.prevent="handleSubmit" class="space-y-6">
             <!-- Phần 3: Thông tin tài chính và khác -->
             <div>

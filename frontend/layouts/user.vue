@@ -219,7 +219,6 @@ const menus = ref([
     },
 
     { label: 'Tin nhắn liên hệ', route: '/admin/contact-messages', icon: Mail },
-    { label: 'Thông báo', route: '/admin/notifications', icon: Bell },
     { label: 'Cài đặt', route: '/admin/setting', icon: Settings },
 ])
 

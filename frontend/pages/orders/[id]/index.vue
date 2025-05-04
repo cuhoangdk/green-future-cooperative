@@ -143,7 +143,7 @@
                 <button @click="$router.back()" class="btn btn-ghost">
                     Quay lại
                 </button>
-                <button v-if="order && order.status !== 'cancelled'" @click="$router.push(`/orders/${order.id}/cancel`)" class="btn btn-error">
+                <button v-if="order && (order.status == 'pending' || order.status == 'processing')" @click="$router.push(`/orders/${order.id}/cancel`)" class="btn btn-error">
                     Hủy đơn
                 </button>
             </div>

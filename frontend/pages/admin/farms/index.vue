@@ -4,7 +4,7 @@
             <div class="flex flex-col w-full md:flex-row gap-2">
                 <div class="relative w-full md:w-auto">
                     <Search class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 z-10 w-5 h-5" />
-                    <input v-model="searchQuery" type="search" placeholder="Tìm kiếm khách hàng..."
+                    <input v-model="searchQuery" type="search" placeholder="Tìm kiếm nông trại..."
                         class="input input-sm input-primary w-full pl-10" @input="debouncedSearch" />
                 </div>
             </div>
