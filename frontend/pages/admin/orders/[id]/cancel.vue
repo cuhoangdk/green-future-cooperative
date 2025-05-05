@@ -27,13 +27,29 @@
 
 <script setup lang="ts">
 definePageMeta({ layout: 'user', title: 'Hủy đơn hàng', description: 'Quản lý đơn hàng' })
+import type { Order } from '~/types/order'
 
 const route = useRoute();
-const { cancelAdminOrder } = useAdminOrder();
+const { cancelAdminOrder, getAdminOrderById } = useAdminOrder();
 const { $toast } = useNuxtApp();
 const router = useRouter();
 const orderId = String(route.params.id);
 const status = ref<'idle' | 'pending' | 'success' | 'error'>('idle');
+
+
+
+const { data, } = await getAdminOrderById(orderId)
+const addressData = ref<string>('')
+
+const order = computed<Order | null>(() => Array.isArray(data.value?.data) ? data.value.data[0] : data.value?.data || null)
+
+watch(order, (newOrder) => {
+    if (newOrder) {
+        if (newOrder.status == 'delivered' || newOrder.status == 'cancelled') {
+            router.push('/admin/orders')
+        }
+    }
+}, { immediate: true })
 
 const form = ref({
     cancelled_reason: '',

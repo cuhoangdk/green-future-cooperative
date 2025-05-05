@@ -50,6 +50,7 @@
                     <div class="flex space-x-1 items-center">
                         <UiLogButton :to="`products/${product.id}/logs`" />
                         <UiPublishButton v-if="product.status === 'growing'" :to="`products/${product.id}/publish`" />
+                        <UiQuickSellButton v-else-if="product.status === 'selling'" @click.stop :to="`products/${product.id}/sell`" />
                         <UiQRCodeButton :to="`products/${product.id}/qrcode`" />
                         <UiEditButton :to="`products/${product.id}/`" />
                         <UiDeleteButton :on-click="() => onDelete(product.id)" />
