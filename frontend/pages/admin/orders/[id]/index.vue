@@ -33,7 +33,7 @@
             </div>
 
             <!-- Customer Information -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-x-0 gap-y-4 md:gap-4 mb-4">
+            <div v-if="order.phone_number" class="grid grid-cols-1 md:grid-cols-3 gap-x-0 gap-y-4 md:gap-4 mb-4">
                 <div class="card bg-base-100 border border-gray-200">
                     <div class="p-4">
                         <h2 class="card-title text-lg mb-2">Thông tin khách hàng</h2>

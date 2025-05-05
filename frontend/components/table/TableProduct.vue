@@ -49,6 +49,7 @@
                         <div class="flex space-x-1 items-center">
                             <UiLogButton @click.stop :to="`products/${product.id}/logs`" />
                             <UiPublishButton v-if="product.status === 'growing'" @click.stop :to="`products/${product.id}/publish`" />
+                            <UiQuickSellButton v-else-if="product.status === 'selling'" @click.stop :to="`products/${product.id}/sell`" />
                             <UiQRCodeButton @click.stop :to="`products/${product.id}/qrcode`" />
                             <UiEditButton @click.stop :to="`products/${product.id}/`" />
                             <UiDeleteButton @click.stop="() => onDelete(product.id)" />
@@ -61,6 +62,7 @@
 </template>
 
 <script setup lang="ts">
+import { UiQuickSellButton } from '#components';
 import type { Product } from '~/types/product'
 import { formatNumber, formatCurrency } from '~/utils/common'
 

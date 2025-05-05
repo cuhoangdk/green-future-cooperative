@@ -5,8 +5,8 @@
                 <tr class="bg-gray-100 text-gray-700">
                     <th class="py-2 pl-2 w-[15%] text-left">Mã</th>
                     <th class="py-2 w-[10%] text-left">Người nhận</th>
-                    <th class="py-2 w-[10%] text-left">Tổng tiền</th>
                     <th class="py-2 w-[25%] text-left">Địa chỉ</th>
+                    <th class="py-2 w-[10%] text-left">Tổng tiền</th>
                     <th class="py-2 w-[10%] text-left">Trạng thái</th>
                     <th class="py-2 w-[10%] text-left">Thao tác</th>
                 </tr>
@@ -16,9 +16,23 @@
                     @click="$router.push(`orders/${order.id}/`)"
                     class="border-b border-gray-100 hover:bg-gray-200 cursor-pointer">
                     <td class="py-1 pl-2">{{ order.id }}<br/>{{ formatDateTime(order.created_at) }}</td>
-                    <td class="py-1">{{ order.full_name }}<br/>{{ order.phone_number }}</td>
+                    <td class="py-1">
+                        <div v-if="order.full_name">
+                            {{ order.full_name }}<br/>{{ order.phone_number }}
+                        </div>
+                        <div v-else>
+                            <User class="w-4 h-4 text-gray-500" /> Bán bên ngoài
+                        </div>
+                    </td>
+                    <td class="py-1">
+                        <div v-if="order.ward">
+                            {{ addressData[order.id] }}
+                        </div>
+                        <div v-else>
+                        <span>{{ order.items[0]?.product_snapshot.product_name || 'N/A' }}</span>
+                        </div>
+                    </td>
                     <td class="py-1">{{ formatCurrency(order.final_total_amount) }}</td>
-                    <td class="py-1">{{ addressData[order.id] }}</td>
                     <td class="py-1">
                         <OrderStatus :status="order.status" />
                     </td>

@@ -12,11 +12,11 @@
                     <div class="flex gap-1 items-center">
                         <OrderStatus :status="order.status" />
                     </div>
-                    <div class="flex gap-2 items-center">
+                    <div v-if="order.full_name" class="flex gap-2 items-center">
                         <User class="w-4 h-4 text-gray-500" /> Người đặt:
                         <span>{{ order.full_name }} </span>
                     </div>
-                    <div class="flex gap-2 items-center">
+                    <div v-if="order.phone_number" class="flex gap-2 items-center">
                         <Phone class="w-4 h-4 text-gray-500" /> Số điện thoại:
                         <span>{{ order.phone_number }}</span>
                     </div>
@@ -24,8 +24,12 @@
                         <DollarSign class="w-4 h-4 text-gray-500" /> Tổng tiền:
                         <span>{{ formatCurrency(order.final_total_amount) }}</span>
                     </div>
-                    <div class="flex gap-2 items-center">
+                    <div v-if="order.ward" class="flex gap-2 items-center">
                         <span>{{ addressData[order.id] }}</span>
+                    </div>
+                    <div v-else class="flex gap-2 items-center">
+                        <User class="w-4 h-4 text-gray-500" />
+                        <span>Bán bên ngoài</span>
                     </div>
                 </div>
                 <div class="card-actions justify-end border-t pt-2 border-gray-100">

@@ -59,12 +59,20 @@ export const useAdminOrder = () => {
         });
     };
 
+    // Tạo đơn hàng nhanh
+    const quickStoreAdminOrder = async (productID: string, quantity: number) => {
+        return await post<Order>('/admin/orders/quick-store', {product_id:productID, quantity}, {
+            authType: AuthType.User,
+        });
+    };
+
     return {
         getAdminOrders,
         createAdminOrder,
         getAdminOrderById,
         updateAdminOrder,
         cancelAdminOrder,
-        getOrderHistories
+        getOrderHistories,
+        quickStoreAdminOrder,
     };
 };
