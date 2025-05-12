@@ -31,12 +31,17 @@
                             <p>Tổng cộng: </p>
                             <span>{{ formatCurrency(totalPrice + 5000) }}</span>
                         </div>
-                        <button @click="navigateToShippingInformation" class="text-center bg-white font-semibold text-green-600 px-4 py-2 rounded-full hover:bg-green-100 transition-colors duration-200 w-full mt-10">Tiếp tục thanh
+
+                        <button v-if="ableToCheckout" @click="navigateToShippingInformation" class="text-center bg-white font-semibold text-green-600 px-4 py-2 rounded-full hover:bg-green-100 w-full mt-10">Tiếp tục thanh
                                 toán
                         </button>
+                        <div v-else class="text-center bg-white font-semibold text-red-600 px-4 py-2 rounded-full hover:bg-green-100 w-full mt-10">
+                            Số lượng sản phẩm trong giỏ hàng lớn hơn số lượng có sẵn
+                        </div>
                     </div>
                 </div>
             </div>
+            <!-- <pre>{{ cartItems }}</pre> -->
         </div>
         <div v-else class="text-center text-gray-500 h-96 flex flex-col justify-center items-center">
             <ShoppingCart class="w-20 h-20 mx-auto mb-4" />
@@ -67,6 +72,12 @@ const shippingFe = computed<Parameter | null>(() => Array.isArray(dataShippingFe
 
 const totalPrice = computed(() => {
     return cartItems.value.reduce((sum, item) => sum + item.purchase_price * item.quantity, 0);
+});
+
+const ableToCheckout = computed(() => {
+    return cartItems.value.every(cartItem => {
+        return Number(cartItem.product.stock_quantity) >= Number(cartItem.quantity);
+    });
 });
 
 

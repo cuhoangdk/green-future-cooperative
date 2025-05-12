@@ -126,6 +126,7 @@ interface Props {
 
 const { $toast } = useNuxtApp()
 const { addCartItem } = useCart();
+const { isAuthenticated } = useCustomerAuth();
 const config = useRuntimeConfig();
 const placeholderImage = config.public.placeholderImage;
 const backendUrl = config.public.backendUrl;
@@ -161,6 +162,10 @@ const closeModalOnBackdrop = (event: { target: any; currentTarget: any; }) => {
 
 const addProductToCart = async () => {
     try {
+        if (!isAuthenticated.value) {
+            $toast.error('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng!')
+            return
+        }
         isAddingToCart.value = true;
         await addCartItem(props.product.id, quantity.value);
         $toast.success('Đã thêm sản phẩm vào giỏ hàng!');

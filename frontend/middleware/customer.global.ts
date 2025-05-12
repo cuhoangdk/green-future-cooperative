@@ -14,7 +14,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
   }
 
   // Handle account and order protected routes
-  if (to.path.startsWith('/account') || to.path.startsWith('/order')) {
+  if (to.path.startsWith('/account') || to.path.startsWith('/order') || to.path.startsWith('/cart') || to.path.startsWith('/shipping-information')) {
     // Nếu không có token nào và không ở trang login, chuyển về login
     if (!accessToken.value && !refreshToken.value) {
       if (to.path !== '/login') {

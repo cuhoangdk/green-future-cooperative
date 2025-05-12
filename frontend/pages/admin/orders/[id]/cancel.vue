@@ -29,6 +29,7 @@
 definePageMeta({ layout: 'user', title: 'Hủy đơn hàng', description: 'Quản lý đơn hàng' })
 import type { Order } from '~/types/order'
 
+const { currentUser } = useUserAuth()
 const route = useRoute();
 const { cancelAdminOrder, getAdminOrderById } = useAdminOrder();
 const { $toast } = useNuxtApp();
@@ -76,4 +77,7 @@ const handleSubmit = async () => {
         status.value = 'idle';
     }
 };
+if(!currentUser.value?.is_super_admin){
+    router.push('/admin/orders')
+}
 </script>

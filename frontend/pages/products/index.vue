@@ -25,8 +25,6 @@
                             <option value="">Sắp xếp theo</option>
                             <option value="created_at+desc">Mới nhất</option>
                             <option value="created_at+asc">Cũ nhất</option>
-                            <option value="price+asc">giá</option>
-
                             <option value="name">Theo tên</option>
                         </select>
                     </div>

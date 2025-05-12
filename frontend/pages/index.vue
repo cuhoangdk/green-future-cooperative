@@ -71,7 +71,7 @@ import type { Post } from '~/types/post'
 const { getProducts } = useProducts()
 const { getPosts } = usePosts()
 
-const perPage = 5
+const perPage = 10
 const perPagePost = 4
 const currentProductPage = ref(1)
 const currentPostPage = ref(1)

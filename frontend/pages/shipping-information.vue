@@ -17,18 +17,18 @@
                 </div>
                 <div class="border border-gray-300 rounded-xl p-5 bg-white">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div class="sm:col-span-2">
+                        <div>
                             <input v-model="form.full_name" class="input input-bordered input-primary w-full"
                                 placeholder="Họ và tên" required />
                         </div>
 
-                        <div class="sm:col-span-2">
+                        <div>
                             <input v-model="form.phone_number" type="tel"
                                 class="input input-bordered input-primary w-full" placeholder="Số điện thoại"
                                 required />
                         </div>
                         <!-- Province -->
-                        <div class="col-span-2">
+                        <div class="sm:col-span-2">
                             <select v-model="form.province"
                                 @change="(event) => fetchDistricts((event.target as HTMLSelectElement).value)"
                                 class="select select-bordered select-primary w-full" required>
@@ -66,6 +66,7 @@
                             <input v-model="form.street_address" class="input input-bordered input-primary w-full"
                                 placeholder="Số nhà, tên đường..." required />
                         </div>
+                        
                         <div class="sm:col-span-2">
                             <select v-model="form.address_type" class="select select-bordered select-primary w-full"
                                 required>
@@ -148,7 +149,6 @@
                 <h3 class="text-lg font-bold mb-2">Danh sách địa chỉ</h3>
                 <div v-for="address in addresses" :key="address.id">
                     <form method="dialog">
-                        <!-- if there is a button in form, it will close the modal -->
                         <button class="w-full">                    
                             <UiAddressCard @click="handleAddressChange(address)" :address="address"
                             :addressDetailId="address.address.ward" /></button>
@@ -157,7 +157,6 @@
                 </div>
                 <div class="modal-action">
                     <form method="dialog">
-                        <!-- if there is a button in form, it will close the modal -->
                         <button class="btn">Close</button>
                     </form>
                 </div>
@@ -182,7 +181,6 @@ const { $toast } = useNuxtApp()
 const router = useRouter();
 const submit = ref(false);
 
-// Khởi tạo form với các giá trị mặc định
 const form = ref({
     full_name: '',
     phone_number: '',
@@ -209,7 +207,6 @@ const shippingFe = computed<Parameter | null>(() => Array.isArray(dataShippingFe
 const { data: dataAddresses } = await getCustomerAddress();
 const addresses = computed<CustomerAddress[]>(() => Array.isArray(dataAddresses.value?.data) ? dataAddresses.value.data : dataAddresses.value ? [dataAddresses.value.data] : [])
 
-// Lấy danh sách tỉnh/thành phố khi component được tạo
 await fetchProvinces();
 
 const handleAddressChange = async (address: CustomerAddress) => {
@@ -228,7 +225,7 @@ const handleAddressChange = async (address: CustomerAddress) => {
 const handleSubmit = async () => {
     try {
         submit.value = true;
-        // Tạo FormData để gửi dữ liệu multipart
+
         const formData = new FormData();
         formData.append('full_name', form.value.full_name);
         formData.append('phone_number', form.value.phone_number);
@@ -242,18 +239,17 @@ const handleSubmit = async () => {
         formData.append('total_price', totalPrice.value.toString());
         formData.append('shipping_fee', shippingFe.value?.value.toString() || '0');
 
-        // Gửi request với FormData
         const { error } = await addOrder(formData);
-
+        
         if (error.value) {
-            throw new Error(error.value.message);
+            throw new Error((error.value?.data as { message: string })?.message || 'Unknown error');
         }
 
         $toast.success('Đặt hàng thành công!');
-        // Chuyển hướng đến trang cảm ơn hoặc trang khác
         router.push('/');
     } catch (error: any) {
-        $toast.error(error.message || 'Đặt hàng thất bại!');
+        $toast.error('Đặt hàng thất bại!');
+        router.push('/cart');
     } finally {
         submit.value = false;
     }

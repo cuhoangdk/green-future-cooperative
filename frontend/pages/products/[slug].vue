@@ -148,6 +148,7 @@ const route = useRoute()
 const slug = String(route.params.slug)
 const config = useRuntimeConfig()
 const backendUrl = config.public.backendUrl
+const { isAuthenticated } = useCustomerAuth()
 const { $toast } = useNuxtApp()
 
 const { getProductBySlug, getProducts } = useProducts()
@@ -210,6 +211,10 @@ const decreaseQuantity = () => {
 
 const addProductToCart = async () => {
     try {
+        if (!isAuthenticated.value) {
+            $toast.error('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng!')
+            return
+        }
         if (product.value && quantity.value <= product.value.stock_quantity) {
             isAddingToCart.value = true
             const { status } = await addCartItem(product.value.id, quantity.value)

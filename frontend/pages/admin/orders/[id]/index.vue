@@ -87,7 +87,7 @@
                                         Thuộc về</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody v-if="currentUser?.is_super_admin === true">
                                 <tr v-for="item in order?.items" :key="item.id"
                                     class="border-b border-gray-200 hover:bg-gray-50">
                                     <td class="py-2 pl-2">
@@ -102,12 +102,31 @@
                                         {{ formatCurrency(item.product_snapshot.price) }}
                                     </td>
                                     <td class="font-semibold">{{ formatCurrency(item.total_item_price) }}</td>
-                                    <td v-if="item.flag === false && currentUser?.is_super_admin === true">
+                                    <td>
                                         <span class="text-gray-500">
                                             {{ item.product_snapshot.user_full_name }}
                                         </span>
                                     </td>
                                 </tr>
+                            </tbody>
+                            <tbody v-else>
+                                <template v-for="item in order?.items" :key="item.id">
+                                    <tr v-if="item.flag == false"
+                                    class="border-b border-gray-200 hover:bg-gray-50">
+                                    <td class="py-2 pl-2">
+                                        <span class="text-xs">
+                                            {{ item.product_snapshot.id }}
+                                        </span>
+                                        <br />
+                                        {{ item.product_snapshot.product_name }}
+                                    </td>
+                                    <td>
+                                        {{ formatNumber(item.quantity) }} {{ item.product_snapshot.unit }} ×
+                                        {{ formatCurrency(item.product_snapshot.price) }}
+                                    </td>
+                                    <td class="font-semibold">{{ formatCurrency(item.total_item_price) }}</td>
+                                </tr>
+                                </template>
                             </tbody>
                         </table>
                     </div>
