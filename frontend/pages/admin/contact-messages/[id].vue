@@ -1,6 +1,9 @@
 <template>
     <div class="p-4">
-        <div class="space-y-6">
+        <div v-if="status === 'pending'" class="flex justify-center items-center h-screen">
+            <span class="loading loading-spinner loading-lg"></span>
+        </div>
+        <div v-else class="space-y-6">
             <div class="border-gray-200">
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <!-- Name -->
@@ -41,7 +44,7 @@ import type { PaginationMeta, PaginationLinks } from '~/types/api'
 const id = Number(useRoute().params.id)
 
 const { getMessageById, deleteMessage } = useContactMessages()
-const { data } = await getMessageById(id);
+const { data, status } = await getMessageById(id);
 const message = computed<ContactMessage | null>(() => (data.value ? data.value.data : null))
 
 </script>

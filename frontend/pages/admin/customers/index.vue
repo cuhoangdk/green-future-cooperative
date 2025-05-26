@@ -23,6 +23,9 @@
           </select>
         </div>
       </div>
+      <button @click="exportToExcel" class="btn btn-sm btn-secondary w-full md:w-auto">
+        Xuất Excel
+      </button>
       <button @click="$router.push('/admin/customers/create')" class="btn btn-sm btn-primary w-full md:w-auto">
         <Plus class="w-5 h-5" /> Thêm
       </button>
@@ -72,6 +75,7 @@ import { debounce } from 'lodash-es'
 import { useSwal } from '~/composables/useSwal'
 import type { PaginationMeta, PaginationLinks } from '~/types/api'
 import type { Customer } from '~/types/customer'
+import * as XLSX from 'xlsx';
 
 const { searchCustomers, deleteCustomer, updateCustomer } = useCustomer()
 const { getFullAddressName } = useVietnamAddress()
@@ -147,6 +151,70 @@ async function handleToggleStatus(customer: Customer) {
   } catch (err) {
     $toast.error(`Thao tác thất bại: ${(err as Error).message || 'Unknown error'}`)
   }
+}
+
+function exportToExcel() {
+  // Kiểm tra nếu không có khách hàng
+  if (!customers.value.customers.length) {
+    $toast.error('Không có khách hàng để xuất!');
+    return;
+  }
+
+  // Chuẩn bị dữ liệu khách hàng
+  const exportData = customers.value.customers.map(customer => ({
+    'Mã khách hàng': customer.id,
+    'Họ và tên': customer.full_name,
+    'Email': customer.email || 'N/A',
+    'Số điện thoại': customer.phone_number || 'N/A',
+    'Trạng thái': customer.is_banned ? 'Bị cấm' : 'Hoạt động',
+  }));
+
+  // Tạo workbook và worksheet
+  const workbook = XLSX.utils.book_new();
+  const worksheet = XLSX.utils.json_to_sheet([]); // Tạo sheet rỗng
+
+  // Thêm dòng tiêu đề
+  XLSX.utils.sheet_add_aoa(worksheet, [['BÁO CÁO KHÁCH HÀNG']], { origin: 'A1' });
+  XLSX.utils.sheet_add_aoa(worksheet, [[]], { origin: 'A2' }); // Dòng trống
+
+  // Thêm header và dữ liệu khách hàng
+  XLSX.utils.sheet_add_json(worksheet, exportData, { origin: 'A3', skipHeader: false });
+
+  // Tùy chỉnh độ rộng cột
+  worksheet['!cols'] = [
+    { wch: 15 }, // Mã khách hàng
+    { wch: 25 }, // Họ và tên
+    { wch: 30 }, // Email
+    { wch: 15 }, // Số điện thoại
+    { wch: 15 }  // Trạng thái
+  ];
+
+  // Định dạng tiêu đề và header
+  // Tiêu đề chính
+  worksheet['A1'].s = {
+    font: { bold: true, sz: 16 },
+    alignment: { horizontal: 'center' }
+  };
+
+  // Định dạng header (dòng A3:E3)
+  const headerRowIndex = 3;
+  for (let col = 0; col < 5; col++) {
+    const cellAddress = XLSX.utils.encode_cell({ r: headerRowIndex - 1, c: col });
+    worksheet[cellAddress].s = {
+      font: { bold: true },
+      alignment: { horizontal: 'center' }
+    };
+  }
+
+  // Gộp ô cho tiêu đề
+  worksheet['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 4 } }];
+
+  // Thêm sheet vào workbook
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Khách hàng');
+
+  // Xuất file
+  const fileName = `KhachHang_${new Date().toISOString().slice(0, 10)}.xlsx`;
+  XLSX.writeFile(workbook, fileName);
 }
 
 </script>

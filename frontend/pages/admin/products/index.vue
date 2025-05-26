@@ -38,9 +38,13 @@
                     </select>
                 </div>
             </div>
+            <button @click="exportToExcel" class="btn btn-sm btn-secondary w-full md:w-auto">
+                Xuất Excel
+            </button>
             <NuxtLink to="products/create" class="btn btn-sm btn-primary w-full md:w-auto">
                 <Plus class="w-5 h-5" /> Thêm
             </NuxtLink>
+
         </div>
         <div class="relative">
             <!-- Loading Overlay specific to table/grid -->
@@ -74,6 +78,7 @@ import { useSwal } from '~/composables/useSwal'
 import type { PaginationMeta, PaginationLinks } from '~/types/api'
 import type { Product, ProductCategory } from '~/types/product'
 import type { User } from '~/types/user'
+import * as XLSX from 'xlsx';
 
 const { searchProducts, deleteProduct } = useProducts()
 const { getProductCategories } = useProductCategories()
@@ -153,5 +158,79 @@ async function handleDeleteProduct(productId: string) {
             $toast.error(`Xóa thất bại: ${(err as Error).message || 'Unknown error'}`)
         }
     }
+}
+
+function exportToExcel() {
+    // Kiểm tra nếu không có sản phẩm
+    if (!products.value.products.length) {
+        $toast.error('Không có sản phẩm để xuất!');
+        return;
+    }
+
+    // Chuẩn bị dữ liệu sản phẩm
+    const exportData = products.value.products.map(product => ({
+        'Mã sản phẩm': product.id,
+        'Tên sản phẩm': product.name,
+        'Chủ sở hữu': product.user?.full_name || 'N/A',
+        'Giá': product.prices?.length
+            ? product.pricing_type === 'contact'
+                ? 'Liên hệ'
+                : `${formatCurrency(product.prices[0].price)} - ${formatCurrency(product.prices[product.prices.length - 1].price)}`
+            : 'Chưa bán',
+        'Tồn kho': `${formatNumber(product.stock_quantity)} ${product.unit?.name || ''}`,
+        'Đã bán': `${formatNumber(product.sold_quantity)} ${product.unit?.name || ''}`,
+        'Trạng thái': product.status === 'growing' ? 'Đang trồng' : product.status === 'selling' ? 'Đang bán' : 'Ngừng bán',
+        'Ngày gieo': product.sown_at ? new Date(product.sown_at).toLocaleDateString('vi-VN') : 'N/A'
+    }));
+
+    // Tạo workbook và worksheet
+    const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.json_to_sheet([]); // Tạo sheet rỗng
+
+    // Thêm dòng tiêu đề
+    XLSX.utils.sheet_add_aoa(worksheet, [['BÁO CÁO SẢN PHẨM']], { origin: 'A1' });
+    XLSX.utils.sheet_add_aoa(worksheet, [[]], { origin: 'A2' }); // Dòng trống
+
+    // Thêm header và dữ liệu sản phẩm
+    XLSX.utils.sheet_add_json(worksheet, exportData, { origin: 'A3', skipHeader: false });
+
+    // Tùy chỉnh độ rộng cột
+    worksheet['!cols'] = [
+        { wch: 20 }, // Mã sản phẩm
+        { wch: 30 }, // Tên sản phẩm
+        { wch: 25 }, // Chủ sở hữu
+        { wch: 20 }, // Giá
+        { wch: 15 }, // Tồn kho
+        { wch: 15 }, // Đã bán
+        { wch: 15 }, // Trạng thái
+        { wch: 15 }  // Ngày gieo
+    ];
+
+    // Định dạng tiêu đề và header
+    // Tiêu đề chính
+    worksheet['A1'].s = { 
+        font: { bold: true, sz: 16 }, 
+        alignment: { horizontal: 'center' }
+    };
+
+    // Định dạng header (dòng A3:H3)
+    const headerRowIndex = 3;
+    for (let col = 0; col < 8; col++) {
+        const cellAddress = XLSX.utils.encode_cell({ r: headerRowIndex - 1, c: col });
+        worksheet[cellAddress].s = { 
+            font: { bold: true },
+            alignment: { horizontal: 'center' }
+        };
+    }
+
+    // Gộp ô cho tiêu đề
+    worksheet['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 7 } }];
+
+    // Thêm sheet vào workbook
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Sản phẩm');
+
+    // Xuất file
+    const fileName = `SanPham_${new Date().toISOString().slice(0, 10)}.xlsx`;
+    XLSX.writeFile(workbook, fileName);
 }
 </script>

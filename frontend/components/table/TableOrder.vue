@@ -39,7 +39,7 @@
                     <td class="py-1">
                         <div class="flex space-x-1 items-center" @click.stop>
                             <UiEditButton v-if="displayEditButton" :to="`orders/${order.id}`" />
-                            <UiCancelButton v-if="order.status != 'cancelled' && order.status != 'delivered'" :to="`orders/${order.id}/cancel`"/>
+                            <UiCancelButton  v-if="order.status != 'cancelled' && order.status != 'delivered' && currentUser?.is_super_admin" :to="`orders/${order.id}/cancel`"/>
                         </div>
                     </td>
                 </tr>
@@ -50,7 +50,7 @@
 
 <script setup lang="ts">
 import type { Order } from '~/types/order'
-import { formatNumber, formatCurrency } from '~/utils/common'
+const { currentUser } = useUserAuth()
 
 defineProps<{
     orders: Order[]

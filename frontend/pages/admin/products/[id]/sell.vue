@@ -9,7 +9,7 @@
         <div v-else class="flex flex-col lg:flex-row gap-4">
             <!-- Header with title and back button -->
             <!-- Product info card -->
-            <div class="lg:w-2/3 bg-white rounded-lg shadow-md p-6">
+            <div class="lg:w-2/3 bg-white rounded-lg border border-gray-300 shadow-xs p-6">
                 <h2 class="text-xl font-semibold text-gray-700 mb-4 border-b pb-2">Sản phẩm</h2>
                 <!-- Basic product information -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -82,7 +82,7 @@
 
             <!-- Sale form -->
             <div class="lg:w-1/3 ">
-                <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="bg-white rounded-lg border border-gray-300 shadow-xs p-6">
                     <h2 class="text-xl font-semibold text-gray-700 mb-4 border-b pb-2">Thông tin bán hàng</h2>
                     <div class="max-w-md mx-auto">
                         <div class="form-control mb-6">

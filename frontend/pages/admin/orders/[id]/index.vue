@@ -112,21 +112,27 @@
                             <tbody v-else>
                                 <template v-for="item in order?.items" :key="item.id">
                                     <tr v-if="item.flag == false"
-                                    class="border-b border-gray-200 hover:bg-gray-50">
-                                    <td class="py-2 pl-2">
-                                        <span class="text-xs">
-                                            {{ item.product_snapshot.id }}
-                                        </span>
-                                        <br />
-                                        {{ item.product_snapshot.product_name }}
-                                    </td>
-                                    <td>
-                                        {{ formatNumber(item.quantity) }} {{ item.product_snapshot.unit }} ×
-                                        {{ formatCurrency(item.product_snapshot.price) }}
-                                    </td>
-                                    <td class="font-semibold">{{ formatCurrency(item.total_item_price) }}</td>
-                                </tr>
+                                        class="border-b border-gray-200 hover:bg-gray-50">
+                                        <td class="py-2 pl-2">
+                                            <span class="text-xs">
+                                                {{ item.product_snapshot.id }}
+                                            </span>
+                                            <br />
+                                            {{ item.product_snapshot.product_name }}
+                                        </td>
+                                        <td>
+                                            {{ formatNumber(item.quantity) }} {{ item.product_snapshot.unit }} ×
+                                            {{ formatCurrency(item.product_snapshot.price) }}
+                                        </td>
+                                        <td class="font-semibold">{{ formatCurrency(item.total_item_price) }}</td>
+                                    </tr>
                                 </template>
+                                <tr class="bg-gray-50 font-semibold">
+                                    <td colspan="2" class="py-2 pl-2 text-right">Tổng cộng:</td>
+                                    <td class="py-2 font-bold text-primary">
+                                        {{ formatCurrency(order.final_total_amount) }}
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -178,7 +184,7 @@
             <!-- Action Buttons -->
             <div class="flex justify-between w-full mt-4">
                 <UiButtonBack />
-                <OrderConfirmButton :status="order.status" @click="handleChangeStatus" />
+                <OrderConfirmButton v-if="currentUser?.is_super_admin" :status="order.status" @click="handleChangeStatus" />
             </div>
         </div>
 

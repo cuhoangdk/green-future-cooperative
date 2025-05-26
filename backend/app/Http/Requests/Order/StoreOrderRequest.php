@@ -100,7 +100,7 @@ class StoreOrderRequest extends FormRequest
                     if ($quantity > $product->stock_quantity) {
                         $validator->errors()->add(
                             "items.{$index}.quantity",
-                            "The quantity for product ID {$productId} must not exceed the available stock ({$product->stock_quantity})."
+                            "Số lượng cho sản phẩm ID {$productId} không được vượt quá số lượng tồn kho ({$product->stock_quantity})."
                         );
                     }
                 }

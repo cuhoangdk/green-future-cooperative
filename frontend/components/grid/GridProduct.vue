@@ -1,8 +1,7 @@
 <!-- components/customer/CustomerGrid.vue -->
 <template>
     <div class="grid grid-cols-1 gap-4 p-3 md:hidden">
-        <div v-for="product in products" :key="product.id"
-            @click="$router.push(`products/${product.id}/`)"
+        <div v-for="product in products" :key="product.id" @click="$router.push(`products/${product.id}/`)"
             class="card bg-base-100 border border-gray-400 hover:shadow-md transition-shadow cursor-pointer">
             <div class="card-body p-3">
                 <div class="flex justify-between items-start">
@@ -26,7 +25,13 @@
                         <DollarSign class="w-4 h-4 text-gray-500" /> Giá cả:
                         <span v-if="product.prices && product.prices.length > 0">
                             <span v-if="product.pricing_type === 'contact'">Liên hệ</span>
-                            <span v-else>{{ formatCurrency(product.prices[0].price) }}</span>
+                            <span v-else-if="product.pricing_type === 'flexible'">
+                                {{ formatCurrency(product.prices[0].price) }} - {{
+                                    formatCurrency(product.prices[product.prices.length - 1].price) }}
+                            </span>
+                            <span v-else>
+                                {{ formatCurrency(product.prices[0].price) }}
+                            </span>
                         </span>
                         <span v-else>Chưa bán</span>
                     </div>
@@ -42,7 +47,7 @@
                     </div>
                     <div class="flex gap-2 items-center">
                         <Leaf class="w-4 h-4 text-gray-500" /> Đã bán:
-                            {{ formatNumber(product.sold_quantity) }} {{ product.unit.name }}
+                        {{ formatNumber(product.sold_quantity) }} {{ product.unit.name }}
                     </div>
                 </div>
 
@@ -50,7 +55,8 @@
                     <div class="flex space-x-1 items-center">
                         <UiLogButton :to="`products/${product.id}/logs`" />
                         <UiPublishButton v-if="product.status === 'growing'" :to="`products/${product.id}/publish`" />
-                        <UiQuickSellButton v-else-if="product.status === 'selling'" @click.stop :to="`products/${product.id}/sell`" />
+                        <UiQuickSellButton v-else-if="product.status === 'selling'" @click.stop
+                            :to="`products/${product.id}/sell`" />
                         <UiQRCodeButton :to="`products/${product.id}/qrcode`" />
                         <UiEditButton :to="`products/${product.id}/`" />
                         <UiDeleteButton :on-click="() => onDelete(product.id)" />
@@ -63,7 +69,7 @@
 
 <script setup lang="ts">
 import type { Product } from '~/types/product'
-import { Leaf, DollarSign, User, Fingerprint  } from 'lucide-vue-next'
+import { Leaf, DollarSign, User, Fingerprint } from 'lucide-vue-next'
 import { formatNumber, formatCurrency } from '~/utils/common'
 
 defineProps<{

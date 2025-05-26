@@ -27,7 +27,7 @@ class SearchOrderRequest extends FormRequest
             'month' => 'nullable|integer|min:1|max:12',
             'day' => 'nullable|integer|min:1|max:31',
             'status' => 'nullable|in:pending,processing,delivering,delivered,cancelled',
-            'per_page' => 'nullable|integer|min:1|max:100',
+            'per_page' => 'nullable|integer|min:1|max:100000',
             'sort_by' => 'nullable|in:id,status,total_price,final_total_amount,created_at,updated_at',
             'sort_direction' => 'nullable|in:asc,desc',
         ];

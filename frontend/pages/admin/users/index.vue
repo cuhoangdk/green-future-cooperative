@@ -30,6 +30,9 @@
                     </select>
                 </div>
             </div>
+            <button @click="exportToExcel" class="btn btn-sm btn-secondary w-full md:w-auto">
+                Xuất Excel
+            </button>
             <button @click="$router.push('/admin/users/create')" class="btn btn-sm btn-primary w-full md:w-auto">
                 <Plus class="w-5 h-5" /> Thêm
             </button>
@@ -40,12 +43,10 @@
                 class="absolute inset-0 bg-gray-50 opacity-25 flex justify-center items-center z-10">
                 <span class="loading loading-spinner loading-lg"></span>
             </div>
-        <!-- Desktop Table View -->
-        <TableUser :users="users.users" :on-toggle-status="handleToggleStatus" 
-            :on-delete="handleDeleteUser" />
+            <!-- Desktop Table View -->
+            <TableUser :users="users.users" :on-toggle-status="handleToggleStatus" :on-delete="handleDeleteUser" />
 
-        <GridUser :users="users.users" :on-toggle-status="handleToggleStatus" 
-            :on-delete="handleDeleteUser" />
+            <GridUser :users="users.users" :on-toggle-status="handleToggleStatus" :on-delete="handleDeleteUser" />
         </div>
         <!-- Pagination -->
         <div class="flex flex-col sm:flex-row justify-between items-center gap-4 m-4">
@@ -68,6 +69,7 @@ definePageMeta({ layout: 'user', title: 'Người dùng', description: 'Quản l
 import { ChevronDown, ChevronRight, Search, Plus } from 'lucide-vue-next'
 import { debounce } from 'lodash-es'
 import { useSwal } from '~/composables/useSwal'
+import * as XLSX from 'xlsx';
 import type { PaginationMeta, PaginationLinks } from '~/types/api'
 import type { User } from '~/types/user'
 
@@ -151,4 +153,48 @@ async function handleToggleStatus(user: User) {
     }
 }
 
+
+function exportToExcel() {
+    // Kiểm tra nếu không có khách hàng
+    if (!users.value.users.length) {
+        $toast.error('Không có khách hàng để xuất!');
+        return;
+    }
+
+    // Chuẩn bị dữ liệu khách hàng
+    const exportData = users.value.users.map(user => ({
+        'Mã khách hàng': user.id,
+        'Họ và tên': user.full_name,
+        'Email': user.email || 'N/A',
+        'Số điện thoại': user.phone_number || 'N/A',
+        'Trạng thái': user.is_banned ? 'Bị cấm' : 'Hoạt động',
+    }));
+
+    // Tạo workbook và worksheet
+    const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.json_to_sheet([]); // Tạo sheet rỗng
+
+    // Thêm dòng tiêu đề
+    XLSX.utils.sheet_add_aoa(worksheet, [['BÁO CÁO KHÁCH HÀNG']], { origin: 'A1' });
+    XLSX.utils.sheet_add_aoa(worksheet, [[]], { origin: 'A2' }); // Dòng trống
+
+    // Thêm header và dữ liệu khách hàng
+    XLSX.utils.sheet_add_json(worksheet, exportData, { origin: 'A3', skipHeader: false });
+
+    // Tùy chỉnh độ rộng cột
+    worksheet['!cols'] = [
+        { wch: 15 }, // Mã khách hàng
+        { wch: 25 }, // Họ và tên
+        { wch: 30 }, // Email
+        { wch: 15 }, // Số điện thoại
+        { wch: 15 }  // Trạng thái
+    ];
+
+    // Thêm sheet vào workbook
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Khách hàng');
+
+    // Xuất file
+    const fileName = `KhachHang_${new Date().toISOString().slice(0, 10)}.xlsx`;
+    XLSX.writeFile(workbook, fileName);
+}
 </script>
