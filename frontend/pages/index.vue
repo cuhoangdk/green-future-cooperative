@@ -32,7 +32,7 @@
             </div>
         </div>
 
-        <div class="w-11/12 flex max-w-7xl gap-2">
+        <div class="w-11/12 flex  flex-col max-w-7xl gap-2">
             <div>
                 <div class="flex justify-between items-center mb-4 gap-3">
                     <h2 class="text-left text-xl font-bold text-green-800">BÀI VIẾT</h2>
@@ -42,8 +42,10 @@
                         Tất cả
                     </NuxtLink>
                 </div>
-                <PostList :posts="postsData.posts" :meta="postsData.meta" :links="postsData.links" :status="postStatus"
-                    :max-columns="4" @page-change="handlePostsPageChange" />
+                <!-- <PostList :posts="postsData.posts" :meta="postsData.meta" :links="postsData.links" :status="postStatus"
+                    :max-columns="4" @page-change="handlePostsPageChange" /> -->
+                <PostSlide :posts="postsData.posts" :status="postStatus" :auto-play="true"
+                    :auto-play-interval="5000" />
             </div>
         </div>
 
@@ -72,7 +74,7 @@ const { getProducts } = useProducts()
 const { getPosts } = usePosts()
 
 const perPage = 30
-const perPagePost = 4
+const perPagePost = 10
 const currentProductPage = ref(1)
 const currentPostPage = ref(1)
 

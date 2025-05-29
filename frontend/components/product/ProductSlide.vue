@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full rounded-2xl">
+    <div class="w-full">
         <div class="relative">
             <div ref="carousel" class="carousel carousel-center rounded-box w-full space-x-4 py-4">
                 <div v-for="(product, index) in products" :key="product.id" :id="`item${index}`"
@@ -9,12 +9,12 @@
             </div>
             
             <button v-if="products.length > 0" @click="scrollLeft"
-                class="absolute left-2 top-1/2 -translate-y-1/2 btn btn-circle btn-active btn-sm bg-white/90 hover:bg-white border-0 shadow-lg z-10">
+                class="absolute left-2 top-1/2 -translate-y-1/2 btn btn-circle btn-active btn-sm bg-white/70 hover:bg-white border-0 shadow-lg z-10">
                     <ChevronLeft class="h-4 w-4" />
             </button>
 
             <button v-if="products.length > 0" @click="scrollRight"
-                class="absolute right-2 top-1/2 -translate-y-1/2 btn btn-circle btn-active btn-sm bg-white/90 hover:bg-white border-0 shadow-lg z-10">
+                class="absolute right-2 top-1/2 -translate-y-1/2 btn btn-circle btn-active btn-sm bg-white/70 hover:bg-white border-0 shadow-lg z-10">
                     <ChevronRight class="h-4 w-4" />
             </button>
 

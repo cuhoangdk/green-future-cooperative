@@ -19,17 +19,15 @@
 
         <!-- Navigation arrows -->
         <div class="absolute inset-y-0 left-3 flex items-center">
-            <button @click="prevSlide"
-                class="btn btn-square btn-soft rounded-full opacity-70" >
+            <button @click="prevSlide" class="btn btn-square btn-soft rounded-full opacity-70">
                 <span class="sr-only">Previous</span>
                 <ChevronLeft class="h-6 w-6" />
             </button>
         </div>
 
         <div class="absolute inset-y-0 right-3 flex items-center">
-            <button @click="nextSlide"
-            class="btn btn-square btn-soft rounded-full opacity-70" >
-            <span class="sr-only">Next</span>
+            <button @click="nextSlide" class="btn btn-square btn-soft rounded-full opacity-70">
+                <span class="sr-only">Next</span>
                 <ChevronRight class="h-6 w-6" />
             </button>
         </div>
@@ -44,8 +42,7 @@
         </div>
 
         <!-- Play/Pause button -->
-        <button @click="toggleAutoplay"
-            class="absolute btn btn-sm btn-ghost btn-square top-4 right-4 ">
+        <button @click="toggleAutoplay" class="absolute btn btn-sm btn-ghost btn-square top-4 right-4 ">
             <span class="sr-only">{{ isPlaying ? 'Pause' : 'Play' }}</span>
             <StopCircle v-if="isPlaying" class="h-5 w-5" />
             <PlayCircle v-else class="h-5 w-5" />
