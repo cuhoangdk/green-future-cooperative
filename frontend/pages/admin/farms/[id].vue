@@ -3,7 +3,10 @@
     <div v-if="status === 'pending'" class="flex justify-center items-center h-screen">
       <span class="loading loading-spinner loading-lg"></span>
     </div>
-    <form @submit.prevent="handleSubmit" class="space-y-4">
+    <div v-else-if="status === 'error'">
+      <UiNotExist />
+    </div>
+    <form v-else @submit.prevent="handleSubmit" class="space-y-4">
       <!-- Section 1: Farm Information -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <!-- Farm Name -->
@@ -96,7 +99,7 @@
         <div class="border-t border-gray-200 pt-5">
           <h3 class="text-lg font-medium text-gray-800 mb-3">Vị trí</h3>
           <div class="mb-4">
-            <LMap ref="map" style="height: 350px" :zoom="12" :center="[form.latitude ?? 0, form.longitude ?? 0]"
+            <LMap class="z-1" ref="map" style="height: 350px" :zoom="12" :center="[form.latitude ?? 0, form.longitude ?? 0]"
               :use-global-leaflet="true">
               <LTileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'

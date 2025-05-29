@@ -111,8 +111,7 @@
                             </tbody>
                             <tbody v-else>
                                 <template v-for="item in order?.items" :key="item.id">
-                                    <tr v-if="item.flag == false"
-                                        class="border-b border-gray-200 hover:bg-gray-50">
+                                    <tr v-if="item.flag == false" class="border-b border-gray-200 hover:bg-gray-50">
                                         <td class="py-2 pl-2">
                                             <span class="text-xs">
                                                 {{ item.product_snapshot.id }}
@@ -130,8 +129,9 @@
                                 <tr class="bg-gray-50 font-semibold">
                                     <td colspan="2" class="py-2 pl-2 text-right">Tổng cộng:</td>
                                     <td class="py-2 font-bold text-primary">
-                                        {{ formatCurrency(order.final_total_amount) }}
-                                    </td>
+                                        {{formatCurrency(Number(order.items.filter(item => !item.flag).reduce((sum,
+                                            item) => sum +
+                                        Number(item.total_item_price), 0))) }} </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -140,7 +140,7 @@
             </div>
 
             <!-- Order Summary -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <div v-if="currentUser?.is_super_admin" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                 <div class="md:col-span-2 card bg-base-100 border border-gray-200 shadow-xs">
                     <div class="card-body p-4">
                         <h2 class="card-title text-lg mb-2">Ghi chú</h2>
@@ -165,7 +165,7 @@
                             <div class="flex justify-between py-2">
                                 <span>Tạm tính:</span>
                                 <span class="font-medium">{{ formatCurrency(order.total_price)
-                                    }}</span>
+                                }}</span>
                             </div>
                             <div class="flex justify-between py-2">
                                 <span>Phí vận chuyển:</span>
@@ -174,7 +174,7 @@
                             <div class="flex justify-between py-2 text-lg">
                                 <span class="font-bold">Tổng cộng:</span>
                                 <span class="font-bold text-primary">{{ formatCurrency(order.final_total_amount)
-                                    }}</span>
+                                }}</span>
                             </div>
                         </div>
                     </div>
@@ -184,7 +184,8 @@
             <!-- Action Buttons -->
             <div class="flex justify-between w-full mt-4">
                 <UiButtonBack />
-                <OrderConfirmButton v-if="currentUser?.is_super_admin" :status="order.status" @click="handleChangeStatus" />
+                <OrderConfirmButton v-if="currentUser?.is_super_admin" :status="order.status"
+                    @click="handleChangeStatus" />
             </div>
         </div>
 
@@ -193,7 +194,7 @@
             <div class="text-5xl text-gray-300 mb-4">
                 <i class="fa-solid fa-box-open"></i>
             </div>
-            <p class="text-lg text-gray-600 mb-6">Đơn hàng không tồn tại hoặc đã bị xóa</p>
+            <p class="text-lg text-gray-600 mb-6">Thông tin không tồn tại</p>
             <UiButtonBack />
         </div>
     </div>

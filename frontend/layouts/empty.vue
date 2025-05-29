@@ -11,7 +11,6 @@
             </div>
             <slot />
         </div>
-        <LayoutFooter />
     </div>
 </template>
 

@@ -96,7 +96,7 @@
 definePageMeta({ layout: 'empty' })
 import { User2, Lock, Eye, EyeClosed } from 'lucide-vue-next'
 
-const { login, fetchCurrentUser, forgotPassword } = useUserAuth()
+const { login, fetchCurrentUser, forgotPassword, currentUser } = useUserAuth()
 const router = useRouter()
 const showPassword = ref(false)
 const { $toast } = useNuxtApp()
@@ -120,7 +120,12 @@ const handleSubmit = async () => {
         await login(form.email, form.password)
         await fetchCurrentUser()
         status.value = 'success'
-        await router.push('/admin')
+        if (currentUser.value?.is_super_admin) {
+            await router.push('/admin')
+        }
+        else {
+            await router.push('/admin/products')
+        }
     } catch (error: any) {
         status.value = 'error'
         // Lấy thông báo lỗi từ server hoặc đặt mặc định

@@ -32,10 +32,11 @@
                         <span>{{ order.items[0]?.product_snapshot.product_name || 'N/A' }}</span>
                         </div>
                     </td>
-                    <td class="py-1">{{ formatCurrency(order.final_total_amount) }}</td>
+                    <td v-if="currentUser?.is_super_admin" class="py-1">{{ formatCurrency(order.final_total_amount) }}</td>
+                    <td v-else class="py-1">{{formatCurrency(Number(order.items.filter(item => !item.flag).reduce((sum, item) => sum + Number(item.total_item_price), 0))) }}</td>
                     <td class="py-1">
                         <OrderStatus :status="order.status" />
-                    </td>
+                    </td> 
                     <td class="py-1">
                         <div class="flex space-x-1 items-center" @click.stop>
                             <UiEditButton v-if="displayEditButton" :to="`orders/${order.id}`" />

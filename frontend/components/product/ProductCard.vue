@@ -84,29 +84,39 @@
                                 </div>
                             </div>
 
-                            <div class="flex flex-col lg:flex-row justify-center gap-4">
-                                <div>
-                                    <div class="join">
-                                        <button @click="decreaseQuantity"
-                                            class="btn btn-outline btn-primary join-item rounded-l-full w-[40px] h-[40px] p-0"
-                                            :disabled="quantity <= 1">
-                                            <Minus />
-                                        </button>
-                                        <input v-model.number="quantity" type="number" min="1"
-                                            :max="product?.stock_quantity"
-                                            class="input join-item w-[100px] h-[40px] text-center"
-                                            :class="{ 'input-error': quantity > product?.stock_quantity }"
-                                            :step="product?.unit?.allow_decimal ? 'any' : '1'"
-                                            @input="!product?.unit?.allow_decimal && (quantity = Math.floor(quantity))" />
-                                        <button @click="increaseQuantity"
-                                            class="btn btn-outline btn-primary join-item rounded-r-full w-[40px] h-[40px] p-0"
-                                            :disabled="quantity >= product?.stock_quantity">
-                                            <Plus />
-                                        </button>
+                            <div class="flex flex-col lg:flex-row justify-center items-center gap-4">
+                                <template v-if="isAuthenticated">
+                                    <div>
+                                        <div class="join">
+                                            <button @click="decreaseQuantity"
+                                                class="btn btn-outline btn-primary join-item rounded-l-full w-[40px] h-[40px] p-0"
+                                                :disabled="quantity <= 1">
+                                                <Minus />
+                                            </button>
+                                            <input v-model.number="quantity" type="number" min="1"
+                                                :max="product?.stock_quantity"
+                                                class="input join-item w-[100px] h-[40px] text-center"
+                                                :class="{ 'input-error': quantity > product?.stock_quantity }"
+                                                :step="product?.unit?.allow_decimal ? 'any' : '1'"
+                                                @input="!product?.unit?.allow_decimal && (quantity = Math.floor(quantity))" />
+                                            <button @click="increaseQuantity"
+                                                class="btn btn-outline btn-primary join-item rounded-r-full w-[40px] h-[40px] p-0"
+                                                :disabled="quantity >= product?.stock_quantity">
+                                                <Plus />
+                                            </button>
+                                        </div>
                                     </div>
-                                </div>
-                                <ProductBuyButton :addProductToCart="addProductToCart" :quantity="quantity"
-                                    :isAddingToCart="isAddingToCart" :stock-quantity="product.stock_quantity" />
+                                    <ProductBuyButton :addProductToCart="addProductToCart" :quantity="quantity"
+                                        :isAddingToCart="isAddingToCart" :stock-quantity="product.stock_quantity" />
+                                </template>
+                                <template v-else>
+                                    <div class="flex items-center justify-center gap-3 w-full">
+                                        <div class="text-red-600 font-bold">Bạn cần đăng nhập để đặt hàng!</div>
+                                        <NuxtLink to="/login" class="btn btn-primary rounded-full">
+                                            Đăng nhập
+                                        </NuxtLink>
+                                    </div>
+                                </template>
                             </div>
                         </div>
                     </transition>

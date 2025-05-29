@@ -24,6 +24,9 @@ useSeoMeta({
   twitterDescription: 'Mua rau sạch hữu cơ tại Tương Lai Xanh. Tươi ngon, an toàn, thân thiện môi trường.',
   twitterImage: '/images/banner.png',
 });
+
+const {fetchParameters} = useParametersStore()
+await fetchParameters()
 </script>
 
 <style>
@@ -37,4 +40,5 @@ useSeoMeta({
   opacity: 0;
   filter: blur(0.3rem);
 }
+
 </style>

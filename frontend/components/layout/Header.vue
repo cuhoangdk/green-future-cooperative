@@ -4,11 +4,11 @@
         <div class="bg-green-600">
             <div class="max-w-9xl mx-auto px-4 lg:px-8">
                 <div class="flex items-center justify-between py-1 gap-2">
-                    <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-2 cursor-pointer" @click="router.push('/')">
                         <img src="~/assets/images/logo.png" alt="Logo Green Future"
                             class="rounded-full w-12 h-12 lg:w-14 lg:h-14 object-cover" />
                         <h1 class="text-2xl lg:text-3xl font-bold text-white hidden lg:block">
-                            <NuxtLink to="/" class="">Green Future</NuxtLink>
+                            Green Future
                         </h1>
                     </div>
 
@@ -113,7 +113,7 @@ const navLinks = [
 
 const mobileNavLinks = [
     ...navLinks,
-    ...(isAuthenticated ? [] : [{ path: '/login', text: 'Đăng nhập / Đăng ký' }])
+    ...(isAuthenticated.value === true ? [] : [{ path: '/login', text: 'Đăng nhập / Đăng ký' }])
 ]
 
 // Hàm kiểm tra trang đang active

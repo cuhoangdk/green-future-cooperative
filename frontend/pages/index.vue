@@ -27,8 +27,8 @@
                         Tất cả
                     </NuxtLink>
                 </div>
-                <ProductList :products="products.products" :meta="products.meta" :links="products.links"
-                    :status="status" @page-change="handleProductsPageChange" />
+                <ProductSlide :products="products.products" :status="status"  :auto-play="true"
+                    :auto-play-interval="5000" />
             </div>
         </div>
 
@@ -71,7 +71,7 @@ import type { Post } from '~/types/post'
 const { getProducts } = useProducts()
 const { getPosts } = usePosts()
 
-const perPage = 10
+const perPage = 30
 const perPagePost = 4
 const currentProductPage = ref(1)
 const currentPostPage = ref(1)

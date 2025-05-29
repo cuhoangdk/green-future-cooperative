@@ -69,7 +69,7 @@
                 }
             ]">
                 <!-- Top Bar -->
-                <header class="sticky top-0 z-30 bg-white border-b border-gray-200">
+                <header class="sticky top-0 z-100 bg-white border-b border-gray-200">
                     <div class="flex items-center justify-between px-4 py-1.5">
                         <div class="flex items-center">
                             <button @click="toggleSidebar"
@@ -227,7 +227,7 @@ const filteredMenus = computed(() => {
         return menus.value
     } else {
         return menus.value.filter(menu =>
-            ['Trang chủ', 'Nông trại', 'Sản phẩm', 'Đơn hàng'].includes(menu.label)
+            ['Nông trại', 'Sản phẩm', 'Đơn hàng'].includes(menu.label)
         )
     }
 })

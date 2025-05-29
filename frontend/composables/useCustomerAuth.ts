@@ -8,7 +8,7 @@ export const useCustomerAuth = () => {
     const accessToken = useCookie('customer_access_token', { maxAge: 7200 })
     const refreshToken = useCookie('customer_refresh_token', { maxAge: 30 * 24 * 60 * 60 })
     const currentCustomer = useCookie<Customer | null>('customer_current', {
-        maxAge: 7200,
+        maxAge: 30 * 24 * 60 * 60,
         default: () => null,
         encode: (value) => {
             if (!value) return ''

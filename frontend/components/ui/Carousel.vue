@@ -1,6 +1,6 @@
 <!-- components/Carousel.vue -->
 <template>
-    <div class="relative w-full h-[500px]">
+    <div class="relative w-full aspect-[5/3] max-h-[500px]">
         <!-- Carousel container -->
         <div class="carousel-container w-full h-full overflow-hidden relative">
             <transition-group name="slide" tag="div" class="flex h-full"
@@ -22,7 +22,7 @@
             <button @click="prevSlide"
                 class="btn btn-square btn-soft rounded-full opacity-70" >
                 <span class="sr-only">Previous</span>
-                <ArrowLeft class="h-6 w-6" />
+                <ChevronLeft class="h-6 w-6" />
             </button>
         </div>
 
@@ -30,7 +30,7 @@
             <button @click="nextSlide"
             class="btn btn-square btn-soft rounded-full opacity-70" >
             <span class="sr-only">Next</span>
-                <ArrowRight class="h-6 w-6" />
+                <ChevronRight class="h-6 w-6" />
             </button>
         </div>
 
@@ -55,7 +55,7 @@
 
 <script setup lang="ts">
 import type { CarouselItem } from '~/types/carousel'
-import { StopCircle, PlayCircle, ArrowLeft, ArrowRight } from 'lucide-vue-next'
+import { StopCircle, PlayCircle, ChevronLeft, ChevronRight } from 'lucide-vue-next'
 
 
 const props = defineProps({

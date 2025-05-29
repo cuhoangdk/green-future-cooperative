@@ -14,7 +14,10 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 
   // Nếu đang ở trang login và đã đăng nhập, chuyển hướng đến dashboard
   if (to.path === '/admin/login' && refreshToken.value) {
-    return navigateTo('/admin')
+    if (currentUser.value?.is_super_admin)
+      return navigateTo('/admin')
+    else
+      return navigateTo('/admin/products')
   }
 
   // Nếu không có accessToken và refreshToken, chuyển hướng về login

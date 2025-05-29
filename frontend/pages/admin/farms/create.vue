@@ -106,7 +106,7 @@
                 <div class="border-t border-gray-200 pt-5">
                     <h3 class="text-lg font-medium text-gray-800 mb-3">Vị trí</h3>
                     <div class="mb-4">
-                        <LMap ref="map" style="height: 350px" :zoom="12"
+                        <LMap class="z-1" ref="map" style="height: 350px" :zoom="12"
                             :center="[form.latitude ?? 0, form.longitude ?? 0]" :use-global-leaflet="true">
                             <LTileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                                 attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'

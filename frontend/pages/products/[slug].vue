@@ -58,7 +58,7 @@
                             </p>
                         </div>
                         <hr class="border border-gray-200 mb-3">
-                        <div class="mt-4 flex flex-col lg:flex-row gap-4 justify-center items-center md:justify-start">
+                        <div v-if="isAuthenticated" class="mt-4 flex flex-col lg:flex-row gap-4 justify-center items-center md:justify-start">
                             <div v-if="ableToAddToCart" class="join">
                                 <button @click="decreaseQuantity"
                                     class="btn btn-outline btn-primary join-item rounded-l-full w-[40px] h-[40px] p-0"
@@ -82,6 +82,12 @@
                             <ProductBuyButton v-else :addProductToCart="addProductToCart" :quantity="quantity"
                                 :isAddingToCart="isAddingToCart" :stock-quantity="product.stock_quantity" />
                         </div>
+                                    <div v-else class="flex items-center justify-center gap-3 w-full">
+                                        <div class="text-red-600 font-bold">Bạn cần đăng nhập để đặt hàng!</div>
+                                        <NuxtLink to="/login" class="btn btn-primary rounded-full">
+                                            Đăng nhập
+                                        </NuxtLink>
+                                    </div>
                     </div>
                 </div>
             </div>

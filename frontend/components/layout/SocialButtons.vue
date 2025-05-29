@@ -1,10 +1,10 @@
 <template>
     <div>
         <button @click="scrollToTop"
-            class="fixed bottom-14 lg:bottom-8 left-4 btn btn-square btn-primary rounded-full ">
+            class="fixed bottom-14 lg:bottom-8 left-4 btn btn-square btn-primary rounded-full z-50">
             <ArrowUp class="w-6 h-6" />
         </button>
-        <div class="fixed bottom-14 lg:bottom-8 right-4 flex flex-col space-y-2">
+        <div class="fixed bottom-14 lg:bottom-8 right-4 flex flex-col space-y-2 z-50">
             <a v-for="link in socialLinks" :key="link.name" :href="link.url" :class="link.bgColor" target="_blank"
                 class="btn btn-square btn-ghost rounded-full text-white z-50">
                 <component :is="link.icon" class="w-6 h-6" />

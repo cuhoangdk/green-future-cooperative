@@ -63,9 +63,10 @@ watch(socialLinksData, (newValue) => {
 }, { immediate: true })
 
 const validateLink = (key: string) => {
-    const urlRegex = /^(https?:\/\/)?([\w\-]+\.)+[\w\-]+(\/[\w\-]*)*\/?$/
-    linkErrors[key] = !urlRegex.test(socialLinks[key])
-}
+    // Updated regex to allow URLs with query strings and complex paths
+    const urlRegex = /^(https?:\/\/)?([\w\-]+\.)+[\w\-]+(\/[\w\-._~:/?#[\]@!$&'()*+,;=]*)?$/i;
+    linkErrors[key] = !urlRegex.test(socialLinks[key]);
+};
 
 const hasErrors = computed(() => Object.values(linkErrors).some((error) => error))
 
